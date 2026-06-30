@@ -1,8 +1,485 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+import tourStops from '../data/tour-stops.json';
+
+// NOTE: Placeholder content. Items marked (TBC) await Simon's confirmed copy
+// (content-checklist.md): itinerary's 43 stops, pricing, photography, reviews.
+
+// Mapbox access token — placeholder, filled in later. Empty => OpenStreetMap fallback.
+const MAPBOX_TOKEN = '';
+
+const icons = {
+  clock: '<path d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />',
+  tag: '<path d="M9.568 3H5.25A2.25 2.25 0 0 0 3 5.25v4.318c0 .597.237 1.17.659 1.591l9.581 9.581c.699.699 1.78.872 2.607.33a18.095 18.095 0 0 0 5.223-5.223c.542-.827.369-1.908-.33-2.607L11.16 3.66A2.25 2.25 0 0 0 9.568 3Z" /><path d="M6 6h.008v.008H6V6Z" />',
+  pin: '<path d="M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" /><path d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1 1 15 0Z" />',
+  shield: '<path d="M9 12.75 11.25 15 15 9.75m-3-7.036A11.959 11.959 0 0 1 3.598 6 11.99 11.99 0 0 0 3 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.249-8.25-3.285Z" />',
+  check: '<path d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />',
+};
+
+// heroicons solid star path (used for the rating)
+const STAR =
+  'M11.48 3.499a.562.562 0 0 1 1.04 0l2.125 5.111a.563.563 0 0 0 .475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 0 0-.182.557l1.285 5.385a.562.562 0 0 1-.84.61l-4.725-2.885a.563.563 0 0 0-.586 0L6.982 20.54a.562.562 0 0 1-.84-.61l1.285-5.386a.562.562 0 0 0-.182-.557l-4.204-3.602a.562.562 0 0 1 .321-.988l5.518-.442a.563.563 0 0 0 .475-.345L11.48 3.5Z';
+
+const keyFacts = [
+  { text: '60 minutes', icon: icons.clock },
+  { text: 'From £13 per person', icon: icons.tag },
+  { text: 'Millennium Footbridge, Salford Quays', icon: icons.pin },
+  { text: 'Free cancellation', icon: icons.shield },
+];
+
+const included = [
+  'Live onboard commentary',
+  'Heated indoor cabin and open-air deck',
+  'Licensed bar onboard',
+  'Approx. 1 hour return cruise',
+];
+
+const bookDirect = [
+  'Official source — you book direct with the operator.',
+  'Always the latest live availability.',
+  'Direct support from the Manchester River Cruises team.',
+];
+
+const dayOut = [
+  { title: 'IWM North', desc: 'Imperial War Museum North, moments from the quay.', href: '/discover/visiting-iwm-north' },
+  { title: 'The Lowry', desc: 'Theatre, galleries and waterside dining.', href: '/discover/things-to-do-near-the-lowry' },
+  { title: 'Coronation Street Tour', desc: 'The official set tour at MediaCity.', href: '/discover/coronation-street-tour-manchester' },
+  { title: 'Sightseeing bus', desc: 'Combine your cruise with a city bus tour.', href: null },
+];
+
+const faqs = [
+  {
+    q: 'Where does the City River Tour depart from?',
+    a: 'Cruises depart from the Millennium Footbridge at Salford Quays (M50 3RB), beside MediaCityUK.',
+  },
+  { q: 'How long is the cruise?', a: 'Approximately 60 minutes return. (TBC)' },
+  { q: 'Is the boat accessible?', a: 'Accessibility details to be confirmed. (TBC)' },
+  { q: 'What is your cancellation policy?', a: 'Free cancellation — full policy TBC.' },
+];
+
+const pageTitle = 'City River Tour — Manchester River Cruises';
+
+// Shared style tokens for this page (light theme)
+const card = 'rounded-card bg-panel shadow-sm ring-1 ring-black/5';
+const placeholderTile =
+  'flex items-center justify-center rounded-card border border-dashed border-black/15 bg-panel text-sm text-subtle';
+const galleryTile =
+  'flex h-full w-full items-center justify-center rounded-card bg-panel text-sm text-subtle ring-1 ring-black/5 transition hover:brightness-95';
+const heading = 'text-2xl font-bold tracking-tight text-ink sm:text-3xl';
+const accentBar = 'mt-3 h-1 w-12 rounded-full bg-primary';
 ---
 
-<BaseLayout title="City River Tour — Manchester River Cruises">
-  <h1>City River Tour</h1>
-  <p>This page is coming soon.</p>
+<BaseLayout title={pageTitle}>
+  <!-- Mapbox GL JS (CDN — loaded only on this page) -->
+  <link rel="stylesheet" href="https://api.mapbox.com/mapbox-gl-js/v3.9.0/mapbox-gl.css" />
+
+  <div class="pb-24 md:pb-0">
+    {/* 1. Photo gallery mosaic — full width, before the title */}
+    <section aria-label="Photo gallery" class="mx-auto max-w-6xl px-4 pt-6 sm:px-6 lg:px-8">
+      <div class="grid grid-cols-1 gap-2 sm:grid-cols-5 sm:items-start">
+        <a href="#lightbox" class="block sm:col-span-3" aria-label="Open gallery">
+          <div class={`aspect-[4/3] ${galleryTile}`}>Main photo (TBC)</div>
+        </a>
+        <div class="flex flex-col gap-2 sm:col-span-2">
+          <a href="#lightbox" class="block" aria-label="Open gallery">
+            <div class={`aspect-[16/9] ${galleryTile}`}>Photo 2 (TBC)</div>
+          </a>
+          <a href="#lightbox" class="block" aria-label="Open gallery">
+            <div class={`aspect-[16/9] ${galleryTile}`}>Photo 3 (TBC)</div>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    {/* 2. Title + rating */}
+    <section class="mx-auto max-w-6xl px-4 pt-8 sm:px-6 lg:px-8">
+      <h1 class="text-3xl font-bold tracking-tight text-ink sm:text-4xl md:text-5xl">
+        City River Tour — Manchester Ship Canal
+      </h1>
+      <div class="mt-4 flex flex-wrap items-center gap-x-4 gap-y-2">
+        <div class="flex items-center gap-2">
+          <span class="sr-only">Rated 4.5 out of 5 stars</span>
+          <div class="flex items-center text-amber-400" aria-hidden="true">
+            {[0, 1, 2, 3].map(() => (
+              <svg class="h-5 w-5" viewBox="0 0 24 24" fill="currentColor"><path d={STAR} /></svg>
+            ))}
+            <svg class="h-5 w-5" viewBox="0 0 24 24">
+              <defs>
+                <linearGradient id="halfStarTop">
+                  <stop offset="50%" stop-color="currentColor" />
+                  <stop offset="50%" stop-color="rgb(0 0 0 / 0.12)" />
+                </linearGradient>
+              </defs>
+              <path fill="url(#halfStarTop)" d={STAR} />
+            </svg>
+          </div>
+          <span class="text-sm font-semibold text-ink">4.5</span>
+        </div>
+        <a href="#reviews" class="text-sm font-medium text-primary hover:underline">518 Google reviews</a>
+        <span class="rounded-full bg-primary/10 px-2.5 py-0.5 text-xs font-semibold text-primary">Top Rated</span>
+      </div>
+    </section>
+
+    {/* 3. Key facts strip */}
+    <section class="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
+      <div class="mt-6 flex flex-col gap-3 border-y border-black/10 py-4 text-sm sm:flex-row sm:flex-wrap sm:items-center">
+        {
+          keyFacts.map((f, i) => (
+            <div
+              class={`flex items-center gap-2 ${i > 0 ? 'sm:border-l sm:border-black/10 sm:pl-6' : ''}`}
+            >
+              <svg
+                class="h-4.5 w-4.5 flex-none text-primary"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.5"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                aria-hidden="true"
+                set:html={f.icon}
+              />
+              <span class="text-body">{f.text}</span>
+            </div>
+          ))
+        }
+        <span class="inline-flex items-center gap-1 rounded-full bg-primary/10 px-2.5 py-1 text-xs font-semibold text-primary sm:ml-2">
+          <svg
+            class="h-3.5 w-3.5"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.5"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            aria-hidden="true"
+            set:html={icons.clock}
+          />
+          24-hour cancellation
+        </span>
+      </div>
+    </section>
+
+    {/* Interactive route map — between the gallery and the booking section */}
+    <section aria-labelledby="route-map-heading" class="mx-auto max-w-6xl px-4 pt-10 sm:px-6 lg:px-8">
+      <h2 id="route-map-heading" class={heading}>Explore the route</h2>
+      <div class={accentBar}></div>
+      <p class="mt-4 max-w-3xl text-body">
+        Follow the full Manchester Ship Canal route — tap a numbered stop for details.
+      </p>
+      <div
+        id="route-map"
+        class="mt-6 h-[300px] w-full overflow-hidden rounded-card ring-1 ring-black/5 md:h-[450px]"
+      >
+      </div>
+      <noscript>
+        <p class="mt-2 text-sm text-subtle">Enable JavaScript to view the interactive route map.</p>
+      </noscript>
+    </section>
+
+    {/* 4. Two-column: main content (left 58%) + sticky booking panel (right 38%, 4% gap).
+        Booking panel is DOM-first so on mobile it sits above the content (full width, not sticky). */}
+    <div class="mx-auto max-w-6xl px-4 py-10 sm:px-6 md:py-12 lg:grid lg:grid-cols-[58%_38%] lg:items-start lg:gap-[4%] lg:px-8">
+      {/* Right column — booking panel */}
+      <aside id="book" class="mb-10 lg:order-2 lg:mb-0 lg:sticky lg:top-20">
+        <div class="rounded-card bg-white p-6 shadow-xl ring-1 ring-black/5">
+          <div class="flex items-baseline justify-between">
+            <span class="text-sm text-subtle">From</span>
+            <span class="text-3xl font-bold text-ink">
+              £13<span class="ml-1 text-sm font-normal text-subtle">per person</span>
+            </span>
+          </div>
+          <p class="mt-1 text-sm text-subtle">Adults £13 · Seniors £11</p>
+
+          {/* Ventrata embedded widget placeholder — integration handled in a later step.
+              No checkout script is loaded on this page. */}
+          <div class={`mt-5 min-h-44 p-6 text-center ${placeholderTile}`}>
+            Live availability &amp; booking widget will appear here.
+          </div>
+
+          <h3 class="mt-6 text-sm font-semibold text-ink">Why book direct?</h3>
+          <ul class="mt-3 space-y-2">
+            {
+              bookDirect.map((point) => (
+                <li class="flex gap-2 text-sm text-body">
+                  <span aria-hidden="true" class="mt-0.5 flex-none text-primary">✓</span>
+                  <span>{point}</span>
+                </li>
+              ))
+            }
+            <li class="flex gap-2 text-sm text-body">
+              <span aria-hidden="true" class="mt-0.5 flex-none text-primary">✓</span>
+              <a href="/manage-booking" class="font-medium text-primary hover:underline">Manage My Booking</a>
+            </li>
+          </ul>
+        </div>
+      </aside>
+
+      {/* Left column — main content */}
+      <div class="space-y-12 md:space-y-14 lg:order-1">
+        {/* Full description */}
+        <section aria-labelledby="overview">
+          <h2 id="overview" class={heading}>About the cruise</h2>
+          <div class={accentBar}></div>
+          <div class="mt-6 max-w-3xl space-y-4 text-lg leading-relaxed text-body">
+            <p>
+              The City River Tour is our signature sightseeing cruise and the best way to see
+              Manchester and Salford from the water. Settle into the heated cabin or take in the
+              views from the deck as our crew share the stories behind the waterway.
+            </p>
+            <p class="text-base text-subtle">
+              Full description, highlights and what's included — TBC from Simon (content-checklist.md).
+            </p>
+          </div>
+        </section>
+
+        {/* What's included */}
+        <section aria-labelledby="included">
+          <h2 id="included" class={heading}>What's included</h2>
+          <div class={accentBar}></div>
+          <ul class="mt-6 grid gap-3 sm:grid-cols-2">
+            {
+              included.map((item) => (
+                <li class="flex items-start gap-2 text-body">
+                  <svg
+                    class="mt-0.5 h-5 w-5 flex-none text-primary"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="1.5"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    aria-hidden="true"
+                    set:html={icons.check}
+                  />
+                  <span>{item}</span>
+                </li>
+              ))
+            }
+          </ul>
+          <p class="mt-3 text-sm text-subtle">Final inclusions TBC.</p>
+        </section>
+
+        {/* Route itinerary */}
+        <section aria-labelledby="route">
+          <h2 id="route" class={heading}>Your route</h2>
+          <div class={accentBar}></div>
+          <p class="mt-6 max-w-3xl text-lg leading-relaxed text-body">
+            The cruise follows the Manchester Ship Canal with live commentary at each landmark.
+          </p>
+          <p class="mt-4 text-subtle">
+            Full route itinerary — 43 commentary stops from the GPS commentary app — TBC from Simon.
+          </p>
+        </section>
+
+        {/* Make a day of it */}
+        <section aria-labelledby="day-out">
+          <h2 id="day-out" class={heading}>Make a day of it</h2>
+          <div class={accentBar}></div>
+          <div class="mt-8 grid gap-4 sm:grid-cols-2">
+            {
+              dayOut.map((item) => (
+                <div class={`flex flex-col p-5 transition hover:ring-black/10 ${card}`}>
+                  <h3 class="font-semibold text-ink">{item.title}</h3>
+                  <p class="mt-2 text-sm leading-relaxed text-subtle">{item.desc}</p>
+                  {item.href && (
+                    <a href={item.href} class="mt-3 inline-block text-sm font-medium text-primary hover:underline">
+                      Find out more
+                    </a>
+                  )}
+                </div>
+              ))
+            }
+          </div>
+        </section>
+
+        {/* Getting Here (fixed template for bookable product pages) */}
+        <section aria-labelledby="getting-here">
+          <h2 id="getting-here" class={heading}>Getting here</h2>
+          <div class={accentBar}></div>
+          <div class="mt-8 grid gap-8 sm:grid-cols-2">
+            <div class="space-y-6 text-body">
+              <div>
+                <h3 class="font-semibold text-ink">Where to board</h3>
+                <p class="mt-1 leading-relaxed">
+                  Millennium Footbridge, Salford Quays, Manchester, M50 3RB — beside MediaCityUK,
+                  a short walk from The Lowry and the Imperial War Museum North.
+                </p>
+                <a
+                  href="https://www.google.com/maps/search/?api=1&query=Millennium+Footbridge+Salford+Quays+M50+3RB"
+                  class="mt-2 inline-block font-medium text-primary hover:underline"
+                  rel="noopener"
+                  target="_blank"
+                >
+                  Open in Google Maps
+                </a>
+              </div>
+              <div>
+                <h3 class="font-semibold text-ink">By tram</h3>
+                <p class="mt-1 leading-relaxed">Take the Metrolink to MediaCityUK; the boarding point is a few minutes' walk.</p>
+              </div>
+              <div>
+                <h3 class="font-semibold text-ink">Parking &amp; taxis</h3>
+                <p class="mt-1 leading-relaxed">Quayside car parks are nearby. Taxi drop-off is available close to the footbridge. (Details TBC.)</p>
+              </div>
+            </div>
+            <div class={`aspect-[4/3] ${placeholderTile}`}>Map / boarding point photo (TBC)</div>
+          </div>
+        </section>
+
+        {/* FAQ */}
+        <section aria-labelledby="faq">
+          <h2 id="faq" class={heading}>Frequently asked questions</h2>
+          <div class={accentBar}></div>
+          <div class="mt-8 max-w-3xl overflow-hidden rounded-card ring-1 ring-black/5">
+            {
+              faqs.map((item) => (
+                <details class="group border-b border-black/10 bg-panel last:border-b-0">
+                  <summary class="flex cursor-pointer list-none items-center justify-between gap-4 p-5 font-medium text-ink">
+                    {item.q}
+                    <span aria-hidden="true" class="flex-none text-xl text-primary transition-transform group-open:rotate-45">+</span>
+                  </summary>
+                  <p class="px-5 pb-5 leading-relaxed text-body">{item.a}</p>
+                </details>
+              ))
+            }
+          </div>
+        </section>
+
+        {/* Reviews */}
+        <section aria-labelledby="reviews">
+          <h2 id="reviews" class={heading}>Reviews</h2>
+          <div class={accentBar}></div>
+          <div class="mt-6 flex flex-wrap items-center gap-4 rounded-card bg-panel p-5 ring-1 ring-black/5">
+            <div class="text-4xl font-bold text-ink">4.5</div>
+            <div>
+              <div class="flex items-center text-amber-400" aria-hidden="true">
+                {[0, 1, 2, 3].map(() => (
+                  <svg class="h-5 w-5" viewBox="0 0 24 24" fill="currentColor"><path d={STAR} /></svg>
+                ))}
+                <svg class="h-5 w-5" viewBox="0 0 24 24">
+                  <defs>
+                    <linearGradient id="halfStarRev">
+                      <stop offset="50%" stop-color="currentColor" />
+                      <stop offset="50%" stop-color="rgb(0 0 0 / 0.12)" />
+                    </linearGradient>
+                  </defs>
+                  <path fill="url(#halfStarRev)" d={STAR} />
+                </svg>
+              </div>
+              <a href="#" class="mt-1 inline-block text-sm font-medium text-primary hover:underline">
+                518 Google reviews
+              </a>
+            </div>
+          </div>
+          <div class="mt-6 grid gap-4 sm:grid-cols-2">
+            {
+              Array.from({ length: 2 }).map((_, i) => (
+                <figure class={`p-6 ${card}`}>
+                  <blockquote class="leading-relaxed text-body">
+                    "Sample review placeholder — to be replaced with a real Google review."
+                  </blockquote>
+                  <figcaption class="mt-4 text-sm text-subtle">Guest review {i + 1} (TBC)</figcaption>
+                </figure>
+              ))
+            }
+          </div>
+        </section>
+      </div>
+    </div>
+  </div>
+
+  {/* Lightbox placeholder — pure CSS via :target, no JavaScript */}
+  <div
+    id="lightbox"
+    class="fixed inset-0 z-[60] hidden items-center justify-center bg-black/80 p-4 target:flex"
+  >
+    <div class="relative w-full max-w-3xl">
+      <a href="#" class="absolute -top-9 right-0 text-sm font-medium text-white/80 hover:text-white" aria-label="Close gallery">
+        ✕ Close
+      </a>
+      <div class="flex aspect-[16/10] items-center justify-center rounded-card bg-white/10 text-sm text-white/80 ring-1 ring-white/20">
+        Lightbox gallery viewer (TBC)
+      </div>
+    </div>
+  </div>
+
+  {/* Mobile sticky Book Now — pure CSS, no JavaScript */}
+  <div class="fixed inset-x-0 bottom-0 z-40 border-t border-black/10 bg-white/95 p-3 backdrop-blur md:hidden">
+    <a href="#book" class="btn btn-primary w-full">Book Now</a>
+  </div>
+
+  {/* Mapbox GL JS — deferred (non render-blocking); init runs on window load */}
+  <script is:inline defer src="https://api.mapbox.com/mapbox-gl-js/v3.9.0/mapbox-gl.js"></script>
+  <script is:inline define:vars={{ stops: tourStops, token: MAPBOX_TOKEN }}>
+    window.addEventListener('load', function () {
+      if (typeof mapboxgl === 'undefined' || !document.getElementById('route-map')) return;
+
+      var hasToken = !!token;
+      if (hasToken) mapboxgl.accessToken = token;
+
+      // Mapbox style when a token is present; OpenStreetMap raster fallback otherwise.
+      var style = hasToken
+        ? 'mapbox://styles/mapbox/streets-v12'
+        : {
+            version: 8,
+            sources: {
+              osm: {
+                type: 'raster',
+                tiles: ['https://tile.openstreetmap.org/{z}/{x}/{y}.png'],
+                tileSize: 256,
+                attribution: '© OpenStreetMap contributors',
+              },
+            },
+            layers: [{ id: 'osm', type: 'raster', source: 'osm' }],
+          };
+
+      var start = stops.length ? [stops[0].lng, stops[0].lat] : [-2.296, 53.471];
+      var map = new mapboxgl.Map({ container: 'route-map', style: style, center: start, zoom: 12 });
+      map.addControl(new mapboxgl.NavigationControl(), 'top-right');
+
+      map.on('load', function () {
+        if (!stops.length) return;
+
+        // Order stops by their id so the line connects them in correct route sequence.
+        var ordered = stops.slice().sort(function (a, b) { return a.id - b.id; });
+        // Route line (blue) connecting all stops in sequence.
+        var coords = ordered.map(function (s) { return [s.lng, s.lat]; });
+        map.addSource('route', {
+          type: 'geojson',
+          data: { type: 'Feature', properties: {}, geometry: { type: 'LineString', coordinates: coords } },
+        });
+        map.addLayer({
+          id: 'route-line',
+          type: 'line',
+          source: 'route',
+          layout: { 'line-join': 'round', 'line-cap': 'round' },
+          paint: { 'line-color': '#276EF1', 'line-width': 4 },
+        });
+
+        // Numbered markers — outward leg (o) blue, return leg (r) a lighter shade.
+        var bounds = new mapboxgl.LngLatBounds();
+        ordered.forEach(function (s, i) {
+          var num = i + 1; // sequential 1..N along the route
+          bounds.extend([s.lng, s.lat]);
+          var color = s.leg === 'r' ? '#6b9bef' : '#276EF1';
+          var el = document.createElement('div');
+          el.setAttribute('aria-label', 'Stop ' + num + ': ' + s.name);
+          el.style.cssText =
+            'width:26px;height:26px;display:flex;align-items:center;justify-content:center;' +
+            'border-radius:9999px;color:#fff;font:600 12px/1 sans-serif;border:2px solid #fff;' +
+            'box-shadow:0 1px 4px rgba(0,0,0,.3);cursor:pointer;background:' + color;
+          el.textContent = num;
+          var popup = new mapboxgl.Popup({ offset: 18 }).setHTML(
+            '<div style="font:13px/1.4 sans-serif;color:#1a1a1a">' +
+              '<strong>' + s.emoji + ' ' + s.name + '</strong><br>' + s.description +
+            '</div>'
+          );
+          new mapboxgl.Marker({ element: el }).setLngLat([s.lng, s.lat]).setPopup(popup).addTo(map);
+        });
+
+        map.fitBounds(bounds, { padding: 48, maxZoom: 15, duration: 0 });
+      });
+    });
+  </script>
 </BaseLayout>
