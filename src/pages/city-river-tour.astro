@@ -5,9 +5,6 @@ import tourStops from '../data/tour-stops.json';
 // NOTE: Placeholder content. Items marked (TBC) await Simon's confirmed copy
 // (content-checklist.md): itinerary's 43 stops, pricing, photography, reviews.
 
-// Mapbox access token — placeholder, filled in later. Empty => OpenStreetMap fallback.
-const MAPBOX_TOKEN = '';
-
 const icons = {
   clock: '<path d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />',
   tag: '<path d="M9.568 3H5.25A2.25 2.25 0 0 0 3 5.25v4.318c0 .597.237 1.17.659 1.591l9.581 9.581c.699.699 1.78.872 2.607.33a18.095 18.095 0 0 0 5.223-5.223c.542-.827.369-1.908-.33-2.607L11.16 3.66A2.25 2.25 0 0 0 9.568 3Z" /><path d="M6 6h.008v.008H6V6Z" />',
@@ -40,11 +37,23 @@ const bookDirect = [
   'Direct support from the Manchester River Cruises team.',
 ];
 
+// "Make a day of it" — TEMPORARY hardcoded list. To be migrated to Astro Content
+// Collections in a future CMS pass; do not treat this as a permanent data structure.
 const dayOut = [
-  { title: 'IWM North', desc: 'Imperial War Museum North, moments from the quay.', href: '/discover/visiting-iwm-north' },
-  { title: 'The Lowry', desc: 'Theatre, galleries and waterside dining.', href: '/discover/things-to-do-near-the-lowry' },
-  { title: 'Coronation Street Tour', desc: 'The official set tour at MediaCity.', href: '/discover/coronation-street-tour-manchester' },
-  { title: 'Sightseeing bus', desc: 'Combine your cruise with a city bus tour.', href: null },
+  { name: 'IWM North', desc: "Free entry to Daniel Libeskind's iconic war museum, just steps from the boarding point.", href: '/discover/visiting-iwm-north' },
+  { name: 'The Lowry', desc: 'Theatre, gallery and waterfront dining right at Salford Quays.', href: 'https://thelowry.com' },
+  { name: 'Coronation Street Tour', desc: "Walk the cobbles of the world's longest-running soap.", href: '/discover/coronation-street-tour-manchester' },
+  { name: 'Old Trafford Stadium Tour', desc: 'Behind-the-scenes access to the Theatre of Dreams.', href: 'https://www.manutd.com/en/visit-old-trafford' },
+  { name: "Nell's Pizza", desc: 'Acclaimed sourdough pizza a short walk from the quays.', href: 'https://nellspizza.co.uk' },
+  { name: 'Ordsall Hall', desc: 'One of the finest Tudor manor houses in the north of England, free entry.', href: 'https://www.ordsallhall.com' },
+];
+
+// MRC cross-sell ("You might also enjoy") — TEMPORARY static items.
+// TODO (step 9): replace with live Ventrata product data.
+const crossSell = [
+  { name: 'Cruise with Father Christmas', desc: 'A magical festive cruise the whole family will love', href: '/santa-cruise-manchester' },
+  { name: 'ABBA Cruise', desc: 'Dance the night away on the water to the greatest ABBA hits', href: '/cruises/abba' },
+  { name: 'Boat to Old Trafford', desc: 'The best way to arrive on matchday', href: '/mufc-ferry' },
 ];
 
 const faqs = [
@@ -130,8 +139,42 @@ const accentBar = 'mt-3 h-1 w-12 rounded-full bg-primary';
   {/* Schema.org structured data (JSON-LD) */}
   <script type="application/ld+json" is:inline set:html={JSON.stringify(structuredData)} />
 
-  <!-- Mapbox GL JS (CDN — loaded only on this page) -->
-  <link rel="stylesheet" href="https://api.mapbox.com/mapbox-gl-js/v3.9.0/mapbox-gl.css" />
+  <!-- Leaflet (CDN — loaded only on this page). CSS must load before the JS below. -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <style is:global>
+    /* Explicit pixel height in CSS (Leaflet needs a real height, not only Tailwind). */
+    #route-map {
+      height: 300px;
+    }
+    @media (min-width: 768px) {
+      #route-map {
+        height: 450px;
+      }
+    }
+  </style>
+  <style>
+    /* Cross-sell rotator: stack the items and fade through them (5s each, 15s loop). */
+    .cross-sell {
+      display: grid;
+    }
+    .cross-sell-item {
+      grid-area: 1 / 1;
+      opacity: 0;
+      pointer-events: none;
+      animation: crossSellFade 15s infinite;
+    }
+    @keyframes crossSellFade {
+      0% { opacity: 0; pointer-events: none; }
+      2% { opacity: 1; pointer-events: auto; }
+      31% { opacity: 1; pointer-events: auto; }
+      33% { opacity: 0; pointer-events: none; }
+      100% { opacity: 0; pointer-events: none; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .cross-sell-item { animation: none; }
+      .cross-sell-item:first-child { opacity: 1; pointer-events: auto; }
+    }
+  </style>
 
   <div class="pb-24 md:pb-0">
     {/* 1. Photo gallery mosaic — full width, before the title */}
@@ -229,7 +272,7 @@ const accentBar = 'mt-3 h-1 w-12 rounded-full bg-primary';
       </p>
       <div
         id="route-map"
-        class="mt-6 h-[300px] w-full overflow-hidden rounded-card ring-1 ring-black/5 md:h-[450px]"
+        class="mt-6 w-full overflow-hidden rounded-card ring-1 ring-black/5"
       >
       </div>
       <noscript>
@@ -272,6 +315,27 @@ const accentBar = 'mt-3 h-1 w-12 rounded-full bg-primary';
               <a href="/manage-booking" class="font-medium text-primary hover:underline">Manage My Booking</a>
             </li>
           </ul>
+        </div>
+
+        {/* MRC cross-sell — hidden on mobile. TODO (step 9): replace with live Ventrata product data. */}
+        <div class="mt-6 hidden rounded-card bg-white p-5 shadow-sm ring-1 ring-black/5 lg:block">
+          <h2 class="text-sm font-semibold uppercase tracking-wider text-subtle">You might also enjoy</h2>
+          <div class="cross-sell mt-4">
+            {
+              crossSell.map((p, i) => (
+                <article class="cross-sell-item" style={`animation-delay:${i * 5}s`}>
+                  <div class="flex aspect-[16/9] items-center justify-center rounded-card bg-panel text-xs text-subtle">
+                    Image (TBC)
+                  </div>
+                  <strong class="mt-3 block text-ink">{p.name}</strong>
+                  <p class="mt-1 text-sm leading-relaxed text-subtle">{p.desc}</p>
+                  <a href={p.href} class="mt-2 inline-block text-sm font-medium text-primary hover:underline">
+                    Find out more
+                  </a>
+                </article>
+              ))
+            }
+          </div>
         </div>
       </aside>
 
@@ -330,27 +394,6 @@ const accentBar = 'mt-3 h-1 w-12 rounded-full bg-primary';
           <p class="mt-4 text-subtle">
             Full route itinerary — 43 commentary stops from the GPS commentary app — TBC from Simon.
           </p>
-        </section>
-
-        {/* Make a day of it */}
-        <section aria-labelledby="day-out">
-          <h2 id="day-out" class={heading}>Make a day of it</h2>
-          <div class={accentBar}></div>
-          <div class="mt-8 grid gap-4 sm:grid-cols-2">
-            {
-              dayOut.map((item) => (
-                <div class={`flex flex-col p-5 transition hover:ring-black/10 ${card}`}>
-                  <h3 class="font-semibold text-ink">{item.title}</h3>
-                  <p class="mt-2 text-sm leading-relaxed text-subtle">{item.desc}</p>
-                  {item.href && (
-                    <a href={item.href} class="mt-3 inline-block text-sm font-medium text-primary hover:underline">
-                      Find out more
-                    </a>
-                  )}
-                </div>
-              ))
-            }
-          </div>
         </section>
 
         {/* Getting Here (fixed template for bookable product pages) */}
@@ -447,6 +490,42 @@ const accentBar = 'mt-3 h-1 w-12 rounded-full bg-primary';
         </section>
       </div>
     </div>
+
+    {/* Make a day of it — full-width grey band below the two-column block.
+        TEMPORARY hardcoded list; to migrate to Astro Content Collections in a future CMS pass. */}
+    <section aria-labelledby="day-out" class="bg-panel">
+      <div class="mx-auto max-w-6xl px-4 py-12 sm:px-6 md:py-16 lg:px-8">
+        <h2 id="day-out" class={heading}>Make a day of it</h2>
+        <div class={accentBar}></div>
+        <p class="mt-4 max-w-2xl text-body">Combine your cruise with these nearby attractions.</p>
+        <div class="mt-8 grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-3">
+          {
+            dayOut.map((item) => {
+              const external = item.href.startsWith('http');
+              return (
+                <article class="group flex flex-col overflow-hidden rounded-card bg-white shadow-sm ring-1 ring-black/5 transition hover:-translate-y-0.5 hover:shadow-md hover:ring-black/10">
+                  <div class="flex aspect-[16/9] items-center justify-center bg-panel text-xs text-subtle">
+                    Image (TBC)
+                  </div>
+                  <div class="flex flex-1 flex-col p-4">
+                    <h3 class="font-semibold text-ink">{item.name}</h3>
+                    <p class="mt-1 text-sm leading-relaxed text-subtle">{item.desc}</p>
+                    <a
+                      href={item.href}
+                      target={external ? '_blank' : undefined}
+                      rel={external ? 'noopener' : undefined}
+                      class="mt-3 inline-block text-sm font-medium text-primary hover:underline"
+                    >
+                      Find out more
+                    </a>
+                  </div>
+                </article>
+              );
+            })
+          }
+        </div>
+      </div>
+    </section>
   </div>
 
   {/* Lightbox placeholder — pure CSS via :target, no JavaScript */}
@@ -469,77 +548,47 @@ const accentBar = 'mt-3 h-1 w-12 rounded-full bg-primary';
     <a href="#book" class="btn btn-primary w-full">Book Now</a>
   </div>
 
-  {/* Mapbox GL JS — deferred (non render-blocking); init runs on window load */}
-  <script is:inline defer src="https://api.mapbox.com/mapbox-gl-js/v3.9.0/mapbox-gl.js"></script>
-  <script is:inline define:vars={{ stops: tourStops, token: MAPBOX_TOKEN }}>
-    window.addEventListener('load', function () {
-      if (typeof mapboxgl === 'undefined' || !document.getElementById('route-map')) return;
+  {/* Leaflet — CSS is loaded above (before this JS). Markers only, no route line. */}
+  <script is:inline src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script is:inline define:vars={{ stops: tourStops }}>
+    document.addEventListener('DOMContentLoaded', function () {
+      if (typeof L === 'undefined') return;
+      var el = document.getElementById('route-map');
+      if (!el || !stops.length) return;
 
-      var hasToken = !!token;
-      if (hasToken) mapboxgl.accessToken = token;
+      // Stops in route order (by id), numbered 1..N.
+      var ordered = stops.slice().sort(function (a, b) { return a.id - b.id; });
 
-      // Mapbox style when a token is present; OpenStreetMap raster fallback otherwise.
-      var style = hasToken
-        ? 'mapbox://styles/mapbox/streets-v12'
-        : {
-            version: 8,
-            sources: {
-              osm: {
-                type: 'raster',
-                tiles: ['https://tile.openstreetmap.org/{z}/{x}/{y}.png'],
-                tileSize: 256,
-                attribution: '© OpenStreetMap contributors',
-              },
-            },
-            layers: [{ id: 'osm', type: 'raster', source: 'osm' }],
-          };
+      var map = L.map(el, { scrollWheelZoom: false });
+      L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 19,
+        attribution: '&copy; OpenStreetMap contributors',
+      }).addTo(map);
 
-      var start = stops.length ? [stops[0].lng, stops[0].lat] : [-2.296, 53.471];
-      var map = new mapboxgl.Map({ container: 'route-map', style: style, center: start, zoom: 12 });
-      map.addControl(new mapboxgl.NavigationControl(), 'top-right');
-
-      map.on('load', function () {
-        if (!stops.length) return;
-
-        // Order stops by their id so the line connects them in correct route sequence.
-        var ordered = stops.slice().sort(function (a, b) { return a.id - b.id; });
-        // Route line (blue) connecting all stops in sequence.
-        var coords = ordered.map(function (s) { return [s.lng, s.lat]; });
-        map.addSource('route', {
-          type: 'geojson',
-          data: { type: 'Feature', properties: {}, geometry: { type: 'LineString', coordinates: coords } },
+      // Numbered markers only — no connecting polyline.
+      var latlngs = [];
+      ordered.forEach(function (s) {
+        latlngs.push([s.lat, s.lng]);
+        var icon = L.divIcon({
+          className: 'route-marker',
+          iconSize: [32, 32],
+          iconAnchor: [16, 16],
+          popupAnchor: [0, -16],
+          html:
+            '<div style="width:32px;height:32px;display:flex;align-items:center;justify-content:center;' +
+            'border-radius:9999px;background:#fff;font-size:16px;line-height:1;' +
+            'box-shadow:0 1px 4px rgba(0,0,0,.3);">' + s.emoji + '</div>',
         });
-        map.addLayer({
-          id: 'route-line',
-          type: 'line',
-          source: 'route',
-          layout: { 'line-join': 'round', 'line-cap': 'round' },
-          paint: { 'line-color': '#276EF1', 'line-width': 4 },
-        });
-
-        // Numbered markers — outward leg (o) blue, return leg (r) a lighter shade.
-        var bounds = new mapboxgl.LngLatBounds();
-        ordered.forEach(function (s, i) {
-          var num = i + 1; // sequential 1..N along the route
-          bounds.extend([s.lng, s.lat]);
-          var color = s.leg === 'r' ? '#6b9bef' : '#276EF1';
-          var el = document.createElement('div');
-          el.setAttribute('aria-label', 'Stop ' + num + ': ' + s.name);
-          el.style.cssText =
-            'width:26px;height:26px;display:flex;align-items:center;justify-content:center;' +
-            'border-radius:9999px;color:#fff;font:600 12px/1 sans-serif;border:2px solid #fff;' +
-            'box-shadow:0 1px 4px rgba(0,0,0,.3);cursor:pointer;background:' + color;
-          el.textContent = num;
-          var popup = new mapboxgl.Popup({ offset: 18 }).setHTML(
+        L.marker([s.lat, s.lng], { icon: icon })
+          .addTo(map)
+          .bindPopup(
             '<div style="font:13px/1.4 sans-serif;color:#1a1a1a">' +
               '<strong>' + s.emoji + ' ' + s.name + '</strong><br>' + s.description +
             '</div>'
           );
-          new mapboxgl.Marker({ element: el }).setLngLat([s.lng, s.lat]).setPopup(popup).addTo(map);
-        });
-
-        map.fitBounds(bounds, { padding: 48, maxZoom: 15, duration: 0 });
       });
+
+      map.fitBounds(latlngs, { padding: [40, 40] });
     });
   </script>
 </BaseLayout>
