@@ -59,6 +59,63 @@ const faqs = [
 
 const pageTitle = 'City River Tour — Manchester River Cruises';
 
+// Schema.org structured data (JSON-LD). Rendered from the page (BaseLayout owns <head>;
+// JSON-LD is valid in <body> too). validFrom uses the build date.
+const today = new Date().toISOString().slice(0, 10);
+const SITE = 'https://www.manchesterrivercruises.com';
+const structuredData = {
+  '@context': 'https://schema.org',
+  '@graph': [
+    {
+      '@type': ['TouristAttraction', 'Product'],
+      name: 'City River Tour — Manchester Ship Canal',
+      description:
+        'Sightseeing cruise on the Manchester Ship Canal and River Irwell departing from Millennium Footbridge, Salford Quays. 60-minute round trip with audio commentary past IWM North, MediaCity, Old Trafford and more.',
+      url: `${SITE}/city-river-tour`,
+      touristType: 'Sightseeing',
+      availableLanguage: 'English',
+      aggregateRating: {
+        '@type': 'AggregateRating',
+        ratingValue: 4.5,
+        reviewCount: 518,
+        bestRating: 5,
+      },
+      address: {
+        '@type': 'PostalAddress',
+        streetAddress: 'Millennium Footbridge, The Quays',
+        addressLocality: 'Salford',
+        postalCode: 'M50 3RB',
+        addressCountry: 'GB',
+      },
+      geo: {
+        '@type': 'GeoCoordinates',
+        latitude: 53.4705,
+        longitude: -2.296,
+      },
+      offers: {
+        '@type': 'Offer',
+        price: 13,
+        priceCurrency: 'GBP',
+        url: `${SITE}/city-river-tour`,
+        availability: 'https://schema.org/InStock',
+        validFrom: today,
+      },
+      provider: {
+        '@type': 'LocalBusiness',
+        name: 'Manchester River Cruises',
+        url: SITE,
+      },
+    },
+    {
+      '@type': 'BreadcrumbList',
+      itemListElement: [
+        { '@type': 'ListItem', position: 1, name: 'Home', item: `${SITE}/` },
+        { '@type': 'ListItem', position: 2, name: 'City River Tour', item: `${SITE}/city-river-tour` },
+      ],
+    },
+  ],
+};
+
 // Shared style tokens for this page (light theme)
 const card = 'rounded-card bg-panel shadow-sm ring-1 ring-black/5';
 const placeholderTile =
@@ -70,6 +127,9 @@ const accentBar = 'mt-3 h-1 w-12 rounded-full bg-primary';
 ---
 
 <BaseLayout title={pageTitle}>
+  {/* Schema.org structured data (JSON-LD) */}
+  <script type="application/ld+json" is:inline set:html={JSON.stringify(structuredData)} />
+
   <!-- Mapbox GL JS (CDN — loaded only on this page) -->
   <link rel="stylesheet" href="https://api.mapbox.com/mapbox-gl-js/v3.9.0/mapbox-gl.css" />
 
