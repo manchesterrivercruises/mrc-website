@@ -1,6 +1,64 @@
 ---
+// Primary navigation structure (matches docs/website-brief.md Section 11.1 URLs).
+const cruises = [
+  { label: 'City River Tour', href: '/city-river-tour' },
+  { label: 'Events', href: '/events' },
+  { label: 'MUFC Ferry', href: '/mufc-ferry' },
+];
+
+const links = [
+  { label: 'Private Hire', href: '/private-hire' },
+  { label: "What's On", href: '/whats-on' },
+  { label: 'Discover', href: '/discover' },
+  { label: 'Plan Your Visit', href: '/plan-your-visit' },
+  { label: 'About', href: '/about' },
+];
+
+const itemClass =
+  'block rounded-md px-3 py-2 text-sm font-medium text-slate-200 transition-colors hover:bg-slate-800 hover:text-white';
 ---
 
-<nav aria-label="Primary">
-  {/* Navigation placeholder — links added later */}
+<nav
+  aria-label="Primary"
+  class="absolute left-0 top-16 z-40 hidden w-full flex-col gap-1 border-t border-slate-800 bg-slate-900 p-4 peer-checked:flex md:static md:top-auto md:z-auto md:flex md:w-auto md:flex-row md:items-center md:gap-1 md:border-0 md:bg-transparent md:p-0"
+>
+  {/* Cruises dropdown — native <details>, no JS, links present in static HTML */}
+  <details class="group md:relative">
+    <summary
+      class={`flex cursor-pointer list-none items-center justify-between gap-1 ${itemClass}`}
+    >
+      Cruises
+      <svg
+        class="h-4 w-4 transition-transform group-open:rotate-180"
+        fill="none"
+        viewBox="0 0 24 24"
+        stroke-width="2"
+        stroke="currentColor"
+        aria-hidden="true"
+      >
+        <path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
+      </svg>
+    </summary>
+    <ul
+      class="mt-1 flex flex-col gap-1 pl-4 md:absolute md:left-0 md:top-full md:mt-2 md:min-w-52 md:rounded-md md:border md:border-slate-800 md:bg-slate-800 md:p-2 md:pl-2 md:shadow-lg"
+    >
+      {
+        cruises.map((c) => (
+          <li>
+            <a href={c.href} class={itemClass}>
+              {c.label}
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+  </details>
+
+  {
+    links.map((l) => (
+      <a href={l.href} class={itemClass}>
+        {l.label}
+      </a>
+    ))
+  }
 </nav>
