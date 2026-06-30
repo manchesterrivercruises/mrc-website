@@ -15,12 +15,12 @@ const links = [
 ];
 
 const itemClass =
-  'block rounded-md px-3 py-2 text-sm font-medium text-slate-200 transition-colors hover:bg-slate-800 hover:text-white';
+  'block rounded-md px-3 py-2 text-sm font-medium text-white transition-colors hover:bg-white/10';
 ---
 
 <nav
   aria-label="Primary"
-  class="absolute left-0 top-16 z-40 hidden w-full flex-col gap-1 border-t border-slate-800 bg-slate-900 p-4 peer-checked:flex md:static md:top-auto md:z-auto md:flex md:w-auto md:flex-row md:items-center md:gap-1 md:border-0 md:bg-transparent md:p-0"
+  class="absolute left-0 top-16 z-40 hidden w-full flex-col gap-1 border-t border-white/10 bg-dark p-4 shadow-xl peer-checked:flex md:static md:top-auto md:z-auto md:flex md:w-auto md:flex-row md:items-center md:gap-1 md:border-0 md:bg-transparent md:p-0 md:shadow-none"
 >
   {/* Cruises dropdown — native <details>, no JS, links present in static HTML */}
   <details class="group md:relative">
@@ -40,7 +40,7 @@ const itemClass =
       </svg>
     </summary>
     <ul
-      class="mt-1 flex flex-col gap-1 pl-4 md:absolute md:left-0 md:top-full md:mt-2 md:min-w-52 md:rounded-md md:border md:border-slate-800 md:bg-slate-800 md:p-2 md:pl-2 md:shadow-lg"
+      class="mt-1 flex flex-col gap-1 pl-4 md:absolute md:left-0 md:top-full md:mt-2 md:min-w-52 md:rounded-card md:bg-surface md:p-2 md:pl-2 md:shadow-xl md:ring-1 md:ring-white/10"
     >
       {
         cruises.map((c) => (
