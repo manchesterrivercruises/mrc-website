@@ -98,7 +98,21 @@ const dateFmt = new Intl.DateTimeFormat('en-GB', {
   hour12: true,
 });
 
-const upcoming = mockEvents.filter((e) => !e.draft).sort((a, b) => a.startDate.getTime() - b.startDate.getTime());
+// `availability` ('available' | 'limited' | 'soldout') is a MOCK stand-in — in STEP 9 the
+// badge + CTA state will be driven by LIVE OCTO availability data, not this hardcoded spread.
+// Values are spread across all three states (aligned to mockEvents order) so every badge is
+// visible for review — including in the default "Events & Nights / This week" view.
+const availabilityStates = [
+  'available', 'limited', 'available', 'soldout', 'available', 'limited', // this week
+  'available', 'limited', 'soldout', 'available', 'limited', // rest of this month
+  'available', 'available', 'limited', 'soldout', // next month
+  'available', 'limited', 'available', 'available', 'soldout', 'available', 'limited', 'available', // months 3-6
+] as const;
+
+const upcoming = mockEvents
+  .map((e, i) => ({ ...e, availability: availabilityStates[i] ?? 'available' }))
+  .filter((e) => !e.draft)
+  .sort((a, b) => a.startDate.getTime() - b.startDate.getTime());
 
 // Default type filter: Events & Nights. Default date filter: This week.
 const typeFilters = [
@@ -240,6 +254,7 @@ const structuredData = {
                   href={hrefForKey(key)}
                   image={e.heroImage}
                   imageAlt={e.heroImageAlt}
+                  availability={e.availability}
                 />
               </div>
             );
