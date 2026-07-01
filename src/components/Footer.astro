@@ -1,6 +1,70 @@
 ---
+const year = new Date().getFullYear();
+
+// Social links placeholder — real profile URLs TBC from Simon.
+const social = [
+  { label: 'Facebook', href: '#' },
+  { label: 'Instagram', href: '#' },
+  { label: 'Tripadvisor', href: '#' },
+];
 ---
 
-<footer>
-  {/* Footer placeholder — content added later */}
+<footer class="border-t border-white/10 bg-dark text-muted">
+  <div class="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
+    <div class="grid gap-8 sm:grid-cols-2 md:grid-cols-3">
+      {/* Brand */}
+      <div>
+        <p class="text-lg font-semibold text-white">Manchester River Cruises</p>
+        <p class="mt-3 max-w-xs text-sm text-muted">
+          Sightseeing cruises and private hire on the Manchester Ship Canal from Salford Quays.
+        </p>
+      </div>
+
+      {/* Contact details — placeholder values, confirm before launch */}
+      <div>
+        <h2 class="text-xs font-semibold uppercase tracking-wider text-white">Contact</h2>
+        <address class="mt-4 space-y-2 text-sm not-italic text-muted">
+          <p>Salford Quays, Manchester, M50 3RB</p>
+          <p>
+            <a href="mailto:info@manchesterrivercruises.com" class="transition-colors hover:text-white">
+              info@manchesterrivercruises.com
+            </a>
+          </p>
+          <p>
+            <a href="tel:+440000000000" class="transition-colors hover:text-white">Phone number TBC</a>
+          </p>
+        </address>
+      </div>
+
+      {/* Social links + Manage My Booking */}
+      <div>
+        <h2 class="text-xs font-semibold uppercase tracking-wider text-white">Follow us</h2>
+        <ul class="mt-4 flex flex-wrap gap-4 text-sm">
+          {
+            social.map((s) => (
+              <li>
+                <a
+                  href={s.href}
+                  class="text-muted transition-colors hover:text-white"
+                  aria-label={`${s.label} (link TBC)`}
+                >
+                  {s.label}
+                </a>
+              </li>
+            ))
+          }
+        </ul>
+        <a
+          href="/manage-booking"
+          class="mt-6 inline-block text-sm font-medium text-primary transition-colors hover:underline"
+        >
+          Manage My Booking
+        </a>
+      </div>
+    </div>
+
+    <div class="mt-10 border-t border-white/10 pt-6 text-xs text-muted">
+      <p>&copy; {year} Manchester River Cruises. All rights reserved.</p>
+    </div>
+  </div>
 </footer>

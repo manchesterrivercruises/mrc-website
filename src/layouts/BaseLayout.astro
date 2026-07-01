@@ -15,11 +15,24 @@ const { title = 'Manchester River Cruises' } = Astro.props;
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <!-- Inter (Google Fonts) — backs the --font-sans design token -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
     <title>{title}</title>
   </head>
-  <body>
+  <body class="flex min-h-screen flex-col bg-page text-ink">
+    <a
+      href="#main"
+      class="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-[60] focus:rounded-md focus:bg-primary focus:px-4 focus:py-2 focus:font-medium focus:text-white"
+    >
+      Skip to content
+    </a>
     <Header />
-    <main>
+    <main id="main" class="flex-grow bg-white">
       <slot />
     </main>
     <Footer />

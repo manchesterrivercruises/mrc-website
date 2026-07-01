@@ -8,3 +8,14 @@
 # OCTO API proxy functions will live here (see build sequence step 7).
 [functions]
   directory = "netlify/functions"
+
+# --- Staging / non-production: keep crawlers out -------------------------------
+# Netlify's [[headers]] cannot be scoped per deploy context, so instead we append
+# a _headers rule (X-Robots-Tag: noindex, applied to every path) ONLY for
+# preview and branch deploys. Production uses the plain [build] command above and
+# is therefore left indexable.
+[context.deploy-preview]
+  command = '''npm run build && printf '/*\n  X-Robots-Tag: noindex\n' >> dist/_headers'''
+
+[context.branch-deploy]
+  command = '''npm run build && printf '/*\n  X-Robots-Tag: noindex\n' >> dist/_headers'''

@@ -1,0 +1,15 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+
+export function getStaticPaths() {
+  // Placeholder slug(s) only — real tours will be supplied from config/Ventrata later.
+  return [{ params: { slug: 'example-tour' } }];
+}
+
+const { slug } = Astro.params;
+---
+
+<BaseLayout title={`${slug} — Manchester River Cruises`}>
+  <h1>Cruise: {slug}</h1>
+  <p>This page is coming soon.</p>
+</BaseLayout>
