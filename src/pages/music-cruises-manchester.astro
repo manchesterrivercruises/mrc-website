@@ -1,8 +1,124 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+import SectionHeading from '../components/SectionHeading.astro';
+import CTAButton from '../components/CTAButton.astro';
+import FAQSection from '../components/FAQSection.astro';
+import GettingHere from '../components/GettingHere.astro';
+import ProductCard from '../components/ProductCard.astro';
+
+const icons = {
+  calendar:
+    '<path d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5" />',
+  tag: '<path d="M9.568 3H5.25A2.25 2.25 0 0 0 3 5.25v4.318c0 .597.237 1.17.659 1.591l9.581 9.581c.699.699 1.78.872 2.607.33a18.095 18.095 0 0 0 5.223-5.223c.542-.827.369-1.908-.33-2.607L11.16 3.66A2.25 2.25 0 0 0 9.568 3Z" /><path d="M6 6h.008v.008H6V6Z" />',
+  music:
+    '<path d="M9 9l10.5-3m0 6.553v3.75a2.25 2.25 0 0 1-1.632 2.163l-1.32.377a1.803 1.803 0 1 1-.99-3.467l2.31-.66a2.25 2.25 0 0 0 1.632-2.163V4.575a.75.75 0 0 0-.926-.729l-8.4 2.4a.75.75 0 0 0-.544.721v9.146a2.25 2.25 0 0 1-1.632 2.163l-1.32.377a1.803 1.803 0 1 1-.99-3.467l2.31-.66A2.25 2.25 0 0 0 9 12.626V6.75" />',
+  sparkles:
+    '<path d="M9.813 15.904 9 18.75l-.813-2.846a4.5 4.5 0 0 0-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 0 0 3.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 0 0 3.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 0 0-3.09 3.09Z" /><path d="M18.259 8.715 18 9.75l-.259-1.035a3.375 3.375 0 0 0-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 0 0 2.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 0 0 2.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 0 0-2.456 2.456Z" />',
+};
+
+const keyFacts = [
+  { text: 'Events year-round', icon: icons.calendar },
+  { text: 'From £28 per person', icon: icons.tag },
+  { text: 'Live tribute & party nights', icon: icons.music },
+  { text: 'Licensed bar onboard', icon: icons.sparkles },
+];
+
+const faqs = [
+  { q: 'Is there a dress code?', a: 'Come as you are or dress to impress — most guests make a night of it. (TBC)' },
+  { q: 'Is there a bar onboard?', a: 'Yes — every music cruise has a fully licensed bar. (TBC)' },
+  { q: 'Are there age restrictions?', a: 'Evening music and party nights are usually over-18s. Exact restrictions vary by event. (TBC)' },
+  { q: 'Can I make a group booking?', a: 'Absolutely — music cruises are perfect for groups and celebrations. Group details TBC.' },
+  { q: "What's included?", a: 'Your cruise, live entertainment and access to the onboard bar (drinks not included). (TBC)' },
+];
+
+const SITE = 'https://www.manchesterrivercruises.com';
+const pageTitle = 'Music Cruises Manchester — Live Music on the Water';
+const pageDescription =
+  'Music cruises in Manchester — live tribute and party nights on the Manchester Ship Canal, from ABBA and Elvis to Dolly, Adele, Club Classics, Soul River and Decks on Deck. Licensed bar onboard. Book direct.';
+
+const structuredData = {
+  '@context': 'https://schema.org',
+  '@type': 'TouristAttraction',
+  name: 'Music Cruises Manchester',
+  description: pageDescription,
+  url: `${SITE}/music-cruises-manchester`,
+  touristType: 'Nightlife',
+  availableLanguage: 'English',
+  address: { '@type': 'PostalAddress', streetAddress: 'Millennium Footbridge, The Quays', addressLocality: 'Salford', postalCode: 'M50 3RB', addressCountry: 'GB' },
+  geo: { '@type': 'GeoCoordinates', latitude: 53.4705, longitude: -2.296 },
+};
 ---
 
-<BaseLayout title="Music Cruises Manchester — Manchester River Cruises">
-  <h1>Music Cruises Manchester</h1>
-  <p>This page is coming soon.</p>
+<BaseLayout title={pageTitle} description={pageDescription}>
+  {/* Schema.org structured data (TouristAttraction) */}
+  <script type="application/ld+json" is:inline set:html={JSON.stringify(structuredData)} />
+
+  <div class="pb-24 md:pb-0">
+    {/* Hero — dark navy, gold accents */}
+    <section class="bg-dark text-white">
+      <div class="mx-auto max-w-6xl px-4 py-20 sm:px-6 md:py-28 lg:px-8">
+        <p class="text-sm font-semibold uppercase tracking-[0.2em] text-accent">Live music on the water</p>
+        <h1 class="mt-3 text-4xl font-bold tracking-tight text-white sm:text-5xl md:text-6xl">Music Cruises Manchester</h1>
+        <p class="mt-5 max-w-2xl text-lg leading-relaxed text-white/80">
+          Tribute and party nights on the Manchester Ship Canal.
+        </p>
+        <div class="mt-8 flex flex-wrap items-center gap-4">
+          <CTAButton href="/whats-on">See upcoming music cruises</CTAButton>
+          <span class="text-sm text-white/70">From £28 · licensed bar onboard</span>
+        </div>
+      </div>
+    </section>
+
+    {/* Key facts strip */}
+    <section class="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
+      <div class="mt-6 flex flex-col gap-3 border-y border-black/10 py-4 text-sm sm:flex-row sm:flex-wrap sm:items-center">
+        {
+          keyFacts.map((f, i) => (
+            <div class={`flex items-center gap-2 ${i > 0 ? 'sm:border-l sm:border-black/10 sm:pl-6' : ''}`}>
+              <svg class="h-4.5 w-4.5 flex-none text-primary" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" set:html={f.icon} />
+              <span class="text-body">{f.text}</span>
+            </div>
+          ))
+        }
+      </div>
+    </section>
+
+    {/* Content (single column) */}
+    <div class="mx-auto max-w-6xl px-4 py-10 sm:px-6 md:py-12 lg:px-8">
+      <div class="space-y-12 md:space-y-14">
+        <section aria-labelledby="about">
+          <SectionHeading id="about">Manchester's floating music venue</SectionHeading>
+          <div class="mt-6 max-w-3xl space-y-4 text-lg leading-relaxed text-body">
+            <p>
+              Set sail for a night to remember. Our music cruises span every era and genre — from
+              ABBA, Elvis and Dolly tributes to Adele, Club Classics, Soul River and Decks on Deck
+              day parties — all with live entertainment, a licensed bar and unbeatable views of the
+              waterfront after dark.
+            </p>
+            <p class="text-base text-subtle">Full line-up and descriptions — TBC from Simon (content-checklist.md).</p>
+          </div>
+          <div class="mt-6">
+            <CTAButton href="/whats-on">See what's on</CTAButton>
+          </div>
+        </section>
+
+        <FAQSection faqs={faqs} title="Music cruise FAQs" />
+
+        {/* Cross-sell to City River Tour */}
+        <section aria-labelledby="also">
+          <SectionHeading id="also">Prefer a daytime cruise?</SectionHeading>
+          <div class="mt-8 sm:max-w-sm">
+            <ProductCard name="City River Tour" desc="Our signature 60-minute sightseeing cruise along the Manchester Ship Canal." href="/city-river-tour" />
+          </div>
+        </section>
+
+        <GettingHere />
+      </div>
+    </div>
+  </div>
+
+  {/* Mobile sticky CTA — link to the events listing (no product widget). */}
+  <div class="fixed inset-x-0 bottom-0 z-40 border-t border-black/10 bg-white/95 p-3 backdrop-blur md:hidden">
+    <CTAButton href="/whats-on" class="w-full">See music cruises</CTAButton>
+  </div>
 </BaseLayout>
