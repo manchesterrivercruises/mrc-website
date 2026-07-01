@@ -1,8 +1,54 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+import SectionHeading from '../components/SectionHeading.astro';
+import ProductCard from '../components/ProductCard.astro';
+
+const SITE = 'https://www.manchesterrivercruises.com';
+const pageTitle = 'Plan Your Visit — Manchester River Cruises';
+const pageDescription =
+  'Plan your visit to Manchester River Cruises — getting here, accessibility, FAQs, gift vouchers and what to bring for your cruise from Salford Quays.';
+
+const links = [
+  { name: 'Getting Here', desc: 'Directions by tram, car, taxi and bike, plus parking.', href: '/getting-here' },
+  { name: 'Accessibility', desc: 'Boarding, onboard facilities and assistance.', href: '/accessibility' },
+  { name: 'FAQ', desc: 'Answers to the most common questions.', href: '/faq' },
+  { name: 'Gift Vouchers', desc: 'Give the gift of a cruise.', href: '/gift-vouchers' },
+  { name: "What's On", desc: 'Upcoming departures, events and music nights.', href: '/whats-on' },
+];
+
+const structuredData = {
+  '@context': 'https://schema.org',
+  '@type': 'WebPage',
+  name: 'Plan Your Visit',
+  description: pageDescription,
+  url: `${SITE}/plan-your-visit`,
+};
 ---
 
-<BaseLayout title="Plan Your Visit — Manchester River Cruises">
-  <h1>Plan Your Visit</h1>
-  <p>This page is coming soon.</p>
+<BaseLayout title={pageTitle} description={pageDescription}>
+  {/* Schema.org structured data (WebPage) */}
+  <script type="application/ld+json" is:inline set:html={JSON.stringify(structuredData)} />
+
+  <div class="mx-auto max-w-6xl px-4 py-16 sm:px-6 md:py-20 lg:px-8">
+    <h1 class="text-3xl font-bold tracking-tight text-ink sm:text-4xl">Plan Your Visit</h1>
+    <p class="mt-4 max-w-2xl text-lg leading-relaxed text-body">
+      Everything you need to plan a great day — or night — on the water.
+    </p>
+
+    <div class="mt-10 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      {links.map((l) => <ProductCard name={l.name} desc={l.desc} href={l.href} linkText="View" />)}
+    </div>
+
+    {/* What to bring */}
+    <section aria-labelledby="what-to-bring" class="mt-16">
+      <SectionHeading id="what-to-bring">What to bring</SectionHeading>
+      <div class="mt-6 max-w-3xl space-y-4 text-lg leading-relaxed text-body">
+        <p>
+          Dress for the weather and the water. Bring layers — it can be cooler on the open deck, even
+          on a warm day — along with a waterproof just in case, and a camera for the skyline.
+        </p>
+        <p class="text-base text-subtle">There's a heated indoor cabin onboard if the weather turns.</p>
+      </div>
+    </section>
+  </div>
 </BaseLayout>
