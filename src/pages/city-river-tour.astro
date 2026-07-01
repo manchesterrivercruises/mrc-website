@@ -170,6 +170,13 @@ const galleryTile =
         height: 450px;
       }
     }
+
+    /* Hide the Ventrata loading skeleton once the embedded widget injects its own
+       content (any child other than the skeleton). :has() is within the project's
+       modern-browser baseline (same as Tailwind v4). */
+    aside[ventrata-embedded-widget]:has(> :not(.widget-loading)) > .widget-loading {
+      display: none;
+    }
   </style>
   <style>
     /* Cross-sell rotator: stack the items and fade through them (5s each, 15s loop). */
