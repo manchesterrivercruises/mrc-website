@@ -1,8 +1,156 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+import EventCard from '../components/EventCard.astro';
+
+// Product IDs (see .env.example) used to derive the tour-type filter category.
+const CITY_RIVER_TOUR_ID = 'ef45d8bd-529c-4dae-9c35-cd1b8e4e0a75';
+const MUFC_FERRY_ID = '458c8d36-8268-481d-ae47-491b41508b8e';
+
+// MOCK DATA — shape matches the `events` Content Collection schema (src/content/config.ts):
+// { title, description, ventrataProductId?, startDate?, endDate?, priceFrom?, heroImage?, heroImageAlt?, draft }.
+// STEP 9: replace `mockEvents` with getCollection('events').map(e => e.data) or live OCTO-derived
+// data of the same shape — the rendering below does not change.
+const mockEvents = [
+  { title: 'City River Tour', description: 'Our signature 60-minute sightseeing cruise along the Manchester Ship Canal.', ventrataProductId: CITY_RIVER_TOUR_ID, startDate: new Date('2026-07-11T14:00:00'), priceFrom: 13, heroImageAlt: 'City River Tour boat on the Manchester Ship Canal', draft: false },
+  { title: 'City River Tour', description: 'Weekend afternoon departure with live onboard commentary.', ventrataProductId: CITY_RIVER_TOUR_ID, startDate: new Date('2026-07-18T14:00:00'), priceFrom: 13, heroImageAlt: 'City River Tour boat at Salford Quays', draft: false },
+  { title: 'ABBA Cruise', description: 'Dance the night away on the water to the greatest ABBA hits.', ventrataProductId: '50a5eb12-f9ad-4b1f-9a70-e880bd28152b', startDate: new Date('2026-08-08T19:30:00'), priceFrom: 30, heroImageAlt: 'ABBA tribute party cruise', draft: false },
+  { title: 'Diana Ross Cruise', description: 'A glittering tribute night celebrating the music of Diana Ross.', ventrataProductId: '19441cae-34e1-440d-b7c1-534a9a2a163e', startDate: new Date('2026-08-15T19:30:00'), priceFrom: 30, heroImageAlt: 'Diana Ross tribute cruise', draft: false },
+  { title: 'Boat to Old Trafford', description: 'Beat the traffic — arrive at the match by boat along the canal.', ventrataProductId: MUFC_FERRY_ID, startDate: new Date('2026-08-23T13:00:00'), priceFrom: 12, heroImageAlt: 'Ferry boat heading to Old Trafford', draft: false },
+  { title: 'Club Classics', description: 'An evening of club anthems and dancefloor fillers on the water.', ventrataProductId: '46688aed-c6e3-4d6d-933b-efcba00d34fe', startDate: new Date('2026-08-29T20:00:00'), priceFrom: 28, heroImageAlt: 'Club Classics party boat', draft: false },
+  { title: 'Back to the 90s', description: 'The biggest hits of the 1990s, live on the canal.', ventrataProductId: 'fb15c1fc-84f9-455b-a6d6-e8de0db30b3d', startDate: new Date('2026-09-12T20:00:00'), priceFrom: 28, heroImageAlt: 'Back to the 90s party cruise', draft: false },
+  { title: 'Boat to Old Trafford', description: 'Matchday ferry to Old Trafford — a stress-free way to arrive.', ventrataProductId: MUFC_FERRY_ID, startDate: new Date('2026-09-13T13:00:00'), priceFrom: 12, heroImageAlt: 'Matchday ferry on the Manchester Ship Canal', draft: false },
+  { title: 'Cruise with Father Christmas', description: 'A magical festive family cruise with a visit from Santa.', ventrataProductId: '6cabf36f-f48f-48c7-83c0-c964983a9dff', startDate: new Date('2026-12-06T15:00:00'), priceFrom: 18, heroImageAlt: 'Festive Santa cruise', draft: false },
+];
+
+function tourType(productId) {
+  if (productId === CITY_RIVER_TOUR_ID) return 'City River Tour';
+  if (productId === MUFC_FERRY_ID) return 'MUFC Ferry';
+  return 'Events';
+}
+function typeHref(type) {
+  if (type === 'City River Tour') return '/city-river-tour';
+  if (type === 'MUFC Ferry') return '/mufc-ferry';
+  return '/events';
+}
+
+const dateFmt = new Intl.DateTimeFormat('en-GB', {
+  weekday: 'short',
+  day: 'numeric',
+  month: 'short',
+  hour: 'numeric',
+  minute: '2-digit',
+  hour12: true,
+});
+
+// Upcoming, non-draft, soonest first.
+const upcoming = mockEvents.filter((e) => !e.draft).sort((a, b) => a.startDate.getTime() - b.startDate.getTime());
+
+const filters = [
+  { value: 'all', label: 'All' },
+  { value: 'crt', label: 'City River Tour' },
+  { value: 'events', label: 'Events' },
+  { value: 'mufc', label: 'MUFC Ferry' },
+];
+
+const SITE = 'https://www.manchesterrivercruises.com';
+const pageTitle = "What's On — Manchester River Cruises";
+const pageDescription =
+  'Upcoming departures and events on the Manchester Ship Canal — City River Tour sightseeing cruises, live music and party nights, and Boat to Old Trafford matchday ferries. Book direct.';
+
+// Basic schema: an ItemList of scheduled Events.
+const structuredData = {
+  '@context': 'https://schema.org',
+  '@type': 'ItemList',
+  name: pageTitle,
+  itemListElement: upcoming.map((e, i) => ({
+    '@type': 'ListItem',
+    position: i + 1,
+    item: {
+      '@type': 'Event',
+      name: e.title,
+      startDate: e.startDate.toISOString(),
+      eventStatus: 'https://schema.org/EventScheduled',
+      eventAttendanceMode: 'https://schema.org/OfflineEventAttendanceMode',
+      location: {
+        '@type': 'Place',
+        name: 'Millennium Footbridge, Salford Quays',
+        address: {
+          '@type': 'PostalAddress',
+          streetAddress: 'Millennium Footbridge, The Quays',
+          addressLocality: 'Salford',
+          postalCode: 'M50 3RB',
+          addressCountry: 'GB',
+        },
+      },
+      url: `${SITE}${typeHref(tourType(e.ventrataProductId))}`,
+      ...(e.priceFrom != null && {
+        offers: {
+          '@type': 'Offer',
+          price: e.priceFrom,
+          priceCurrency: 'GBP',
+          availability: 'https://schema.org/InStock',
+          url: `${SITE}${typeHref(tourType(e.ventrataProductId))}`,
+        },
+      }),
+    },
+  })),
+};
 ---
 
-<BaseLayout title="What's On — Manchester River Cruises">
-  <h1>What's On</h1>
-  <p>This page is coming soon.</p>
+<BaseLayout title={pageTitle} description={pageDescription}>
+  {/* Basic Schema.org structured data (ItemList of Events) */}
+  <script type="application/ld+json" is:inline set:html={JSON.stringify(structuredData)} />
+
+  {/* JS-free tour-type filter (CSS :has + radios): hide cards that don't match the checked filter. */}
+  <style is:global>
+    .whats-on:has(input[value="crt"]:checked) .event-card:not([data-type="City River Tour"]),
+    .whats-on:has(input[value="events"]:checked) .event-card:not([data-type="Events"]),
+    .whats-on:has(input[value="mufc"]:checked) .event-card:not([data-type="MUFC Ferry"]) {
+      display: none;
+    }
+  </style>
+
+  <section class="mx-auto max-w-6xl px-4 py-12 sm:px-6 md:py-16 lg:px-8">
+    <h1 class="text-3xl font-bold tracking-tight text-ink sm:text-4xl md:text-5xl">What's On</h1>
+    <p class="mt-4 max-w-2xl text-lg leading-relaxed text-body">
+      Upcoming departures and events on the Manchester Ship Canal — sightseeing cruises, live music
+      and party nights, and matchday ferries to Old Trafford.
+    </p>
+
+    <div class="whats-on mt-8">
+      {/* Filters */}
+      <fieldset class="filter-bar m-0 flex flex-wrap gap-2 border-0 p-0">
+        <legend class="sr-only">Filter by tour type</legend>
+        {
+          filters.map((f) => (
+            <label class="cursor-pointer">
+              <input type="radio" name="wo-filter" value={f.value} checked={f.value === 'all'} class="peer sr-only" />
+              <span class="inline-block rounded-full border border-black/15 px-4 py-1.5 text-sm font-medium text-body transition hover:border-primary/50 peer-checked:border-primary peer-checked:bg-primary peer-checked:text-white">
+                {f.label}
+              </span>
+            </label>
+          ))
+        }
+      </fieldset>
+
+      {/* Event grid */}
+      <div class="event-grid mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        {
+          upcoming.map((e) => {
+            const type = tourType(e.ventrataProductId);
+            return (
+              <EventCard
+                type={type}
+                title={e.title}
+                description={e.description}
+                dateLabel={dateFmt.format(e.startDate)}
+                priceFrom={e.priceFrom}
+                href={typeHref(type)}
+              />
+            );
+          })
+        }
+      </div>
+    </div>
+  </section>
 </BaseLayout>
