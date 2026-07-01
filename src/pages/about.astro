@@ -1,8 +1,127 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+import SectionHeading from '../components/SectionHeading.astro';
+import CTAButton from '../components/CTAButton.astro';
+import ProductCard from '../components/ProductCard.astro';
+
+// Fleet — TEMPORARY placeholder data. Move to a `vessels` Content Collection once real
+// vessel content (descriptions, capacities, photos) is provided (see content-management.md).
+const vessels = [
+  { name: 'Princess Katherine' },
+  { name: 'Isabella' },
+  { name: 'Melody' },
+  { name: 'Georgina' },
+  { name: 'Joyce Too' },
+];
+
+const bookDirect = [
+  'Official source — you book direct with the operator.',
+  'Always the latest live availability.',
+  'Direct support from the Manchester River Cruises team.',
+];
+
+const SITE = 'https://www.manchesterrivercruises.com';
+const pageTitle = 'About Manchester River Cruises';
+const pageDescription =
+  'About Manchester River Cruises — sightseeing cruises, events and private hire on the Manchester Ship Canal from Salford Quays. Meet our fleet and the team behind the boats.';
+
+const structuredData = {
+  '@context': 'https://schema.org',
+  '@graph': [
+    { '@type': 'AboutPage', name: 'About Manchester River Cruises', description: pageDescription, url: `${SITE}/about` },
+    {
+      '@type': 'LocalBusiness',
+      name: 'Manchester River Cruises',
+      url: SITE,
+      email: 'info@manchesterrivercruises.com',
+      address: { '@type': 'PostalAddress', streetAddress: 'Millennium Footbridge, The Quays', addressLocality: 'Salford', postalCode: 'M50 3RB', addressCountry: 'GB' },
+      geo: { '@type': 'GeoCoordinates', latitude: 53.4705, longitude: -2.296 },
+    },
+  ],
+};
 ---
 
-<BaseLayout title="About — Manchester River Cruises">
-  <h1>About</h1>
-  <p>This page is coming soon.</p>
+<BaseLayout title={pageTitle} description={pageDescription}>
+  {/* Schema.org structured data (AboutPage + LocalBusiness) */}
+  <script type="application/ld+json" is:inline set:html={JSON.stringify(structuredData)} />
+
+  <div class="mx-auto max-w-6xl px-4 py-16 sm:px-6 md:py-20 lg:px-8">
+    <h1 class="text-3xl font-bold tracking-tight text-ink sm:text-4xl md:text-5xl">About Manchester River Cruises</h1>
+    <p class="mt-4 max-w-2xl text-lg leading-relaxed text-body">
+      Sightseeing cruises, events and private hire on the Manchester Ship Canal — here's the story
+      behind the boats.
+    </p>
+
+    <div class="mt-12 space-y-16">
+      {/* Our story */}
+      <section aria-labelledby="story">
+        <SectionHeading id="story">Our story</SectionHeading>
+        <div class="mt-6 max-w-3xl space-y-4 text-lg leading-relaxed text-body">
+          <p>
+            Manchester River Cruises was founded to bring river tours to the heart of Manchester,
+            operating from Salford Quays. We're passionate about the city's waterways and the history
+            written along the Manchester Ship Canal.
+          </p>
+          <p class="text-base text-subtle">Full company story — TBC from Simon (content-checklist.md).</p>
+        </div>
+      </section>
+
+      {/* Our fleet */}
+      <section aria-labelledby="fleet">
+        <SectionHeading id="fleet">Our fleet</SectionHeading>
+        <p class="mt-6 max-w-3xl text-body">
+          Meet the boats that carry you along the water. Vessel details and capacities are coming soon.
+        </p>
+        <div class="mt-8 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {
+            vessels.map((v) => (
+              <ProductCard
+                name={v.name}
+                desc="Description and passenger capacity — TBC."
+                href="/vessels"
+                linkText="View fleet"
+              />
+            ))
+          }
+        </div>
+      </section>
+
+      {/* Our team */}
+      <section aria-labelledby="team">
+        <SectionHeading id="team">Meet the team</SectionHeading>
+        <div class="mt-6 max-w-3xl space-y-4 text-lg leading-relaxed text-body">
+          <p class="text-base text-subtle">Team introductions and photos — TBC from Simon (content-checklist.md).</p>
+        </div>
+      </section>
+
+      {/* Why book direct */}
+      <section aria-labelledby="book-direct">
+        <SectionHeading id="book-direct">Why book direct</SectionHeading>
+        <ul class="mt-6 max-w-3xl space-y-3">
+          {
+            bookDirect.map((point) => (
+              <li class="flex gap-3 text-body">
+                <span aria-hidden="true" class="mt-0.5 flex-none text-primary">✓</span>
+                <span>{point}</span>
+              </li>
+            ))
+          }
+        </ul>
+      </section>
+
+      {/* Awards & press */}
+      <section aria-labelledby="press">
+        <SectionHeading id="press">Awards &amp; press</SectionHeading>
+        <p class="mt-6 max-w-3xl text-base text-subtle">Awards and press coverage — TBC.</p>
+      </section>
+    </div>
+
+    {/* Book a cruise CTA */}
+    <div class="mt-16 rounded-card bg-panel p-6 ring-1 ring-black/5 sm:flex sm:items-center sm:justify-between sm:gap-6">
+      <p class="font-semibold text-ink">Ready to get on the water?</p>
+      <div class="mt-4 shrink-0 sm:mt-0">
+        <CTAButton href="/city-river-tour">Book a cruise</CTAButton>
+      </div>
+    </div>
+  </div>
 </BaseLayout>
