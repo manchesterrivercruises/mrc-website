@@ -145,6 +145,10 @@ const accentBar = 'mt-3 h-1 w-12 rounded-full bg-primary';
     /* Explicit pixel height in CSS (Leaflet needs a real height, not only Tailwind). */
     #route-map {
       height: 300px;
+      /* Own stacking context at z-0 so Leaflet's internal z-indexes (panes/controls
+         up to ~1000) stay contained below the sticky header (z-50). */
+      position: relative;
+      z-index: 0;
     }
     @media (min-width: 768px) {
       #route-map {
