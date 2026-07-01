@@ -1,0 +1,33 @@
+---
+import SectionHeading from './SectionHeading.astro';
+
+// FAQ accordion built from native <details>/<summary> — no JavaScript.
+interface Props {
+  faqs: { q: string; a: string }[];
+  id?: string;
+  title?: string;
+}
+const { faqs, id = 'faq', title = 'Frequently asked questions' } = Astro.props;
+---
+
+<section aria-labelledby={id}>
+  <SectionHeading id={id}>{title}</SectionHeading>
+  <div class="mt-8 max-w-3xl overflow-hidden rounded-card ring-1 ring-black/5">
+    {
+      faqs.map((item) => (
+        <details class="group border-b border-black/10 bg-panel last:border-b-0">
+          <summary class="flex cursor-pointer list-none items-center justify-between gap-4 p-5 font-medium text-ink">
+            {item.q}
+            <span
+              aria-hidden="true"
+              class="flex-none text-xl text-primary transition-transform group-open:rotate-45"
+            >
+              +
+            </span>
+          </summary>
+          <p class="px-5 pb-5 leading-relaxed text-body">{item.a}</p>
+        </details>
+      ))
+    }
+  </div>
+</section>

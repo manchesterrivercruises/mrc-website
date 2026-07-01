@@ -5,7 +5,7 @@ They are non-negotiable. Do not deviate from them without explicit written appro
 
 ---
 
-## The 14 Rules
+## The 15 Rules
 
 1. **Do not expose the Ventrata OCTO connection key in client-side code.** It must only live in server-side environment variables (Netlify environment or `.env` locally).
 
@@ -15,7 +15,7 @@ They are non-negotiable. Do not deviate from them without explicit written appro
 
 4. **API-driven availability data should enhance the site.** It must not replace static, crawlable SEO content. Every page must have meaningful static copy that exists in the HTML at build time.
 
-5. **City River Tour is the default homepage hero.** The hero product is set in a config file, not auto-selected by the API. Do not change the featured product without explicit instruction from the project owner.
+5. **City River Tour is the default homepage hero.** The hero product is set in a config file, not auto-selected by the API. Do not change the featured product without explicit instruction from the project owner. **Confirmed:** the homepage hero is and remains City River Tour, chosen in config and never selected by the API.
 
 6. **All product and event pages must include static, crawlable copy** — not just dynamically loaded content. Crawlers must be able to read meaningful content without executing JavaScript.
 
@@ -36,8 +36,12 @@ They are non-negotiable. Do not deviate from them without explicit written appro
     - `/docs/seo-pages.md` for metadata/schema work
     - `/docs/content-checklist.md` for missing copy and assets
     - `/docs/launch-checklist.md` for redirects, DNS, and launch steps
+    - `/docs/content-management.md` for Content Collections and the CMS workflow (coming soon — file to be added)
+    - `/docs/integrations.md` for third-party integrations: Mapbox/Leaflet, Google Tag Manager, Ventrata OCTO (coming soon — file to be added)
 
 14. **Dynamic tour pages must be scoped under `/cruises/[slug]`**, not at the top level. A top-level `src/pages/[slug].astro` catch-all in Astro intercepts valid static routes like `/about`, `/contact`, and `/vessels`. Never create top-level dynamic route files.
+
+15. **CSS convention.** Use Tailwind utility classes for layout and spacing; keep design tokens and base styles in `src/styles/global.css`; and extract repeated UI patterns into reusable Astro components under `src/components/`. Never recreate card, button, or heading patterns inline on individual pages — use the shared components (`SectionHeading`, `CTAButton`, `BookingPanel`, `ProductCard`, `AttractionCard`, `FAQSection`, `ReviewStrip`, …) and add new ones there when a pattern repeats.
 
 ---
 

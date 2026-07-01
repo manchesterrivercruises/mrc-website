@@ -1,33 +1,30 @@
 /* Tailwind CSS v4 entry point.
-   In v4 the theme config lives here in CSS (via @theme), not a tailwind.config.js.
-   These are design tokens only — not yet applied to any page. */
+   In v4 the theme config lives here in CSS (via @theme), not a tailwind.config.js. */
 @import "tailwindcss";
 
 /* ---------------------------------------------------------------------------
-   Tailwind theme tokens
-   Defining these in @theme generates matching utilities (e.g. bg-primary,
-   text-muted, font-sans, rounded-button) AND emits them as CSS custom
-   properties on :root automatically.
-
-   Palette derived from the current manchesterrivercruises.com:
-   primary = primary-500, dark = bg-gray-900.
+   Tailwind theme tokens — MRC brand palette (navy + gold)
+   Defining these in @theme generates matching utilities (bg-primary, text-accent,
+   text-muted, font-sans, rounded-card …) AND emits them as :root custom properties.
 --------------------------------------------------------------------------- */
 @theme {
   /* Brand */
-  --color-primary: #276ef1; /* CTA / button / link colour — bright blue */
+  --color-primary: #1a2744; /* primary navy — brand + dark chrome */
+  --color-accent: #e8b84b; /* gold / amber — prices, CTAs, key highlights */
+  --color-brand: #69b3e4; /* logo blue — logo mark only */
 
-  /* Dark chrome — header & footer stay dark */
-  --color-dark: #181715; /* header / footer background */
-  --color-surface: #211f1d; /* elevated panels on the dark header (nav dropdown) */
-  --color-muted: #8b8b8b; /* secondary text on dark chrome */
+  /* Dark chrome — header & footer (navy) */
+  --color-dark: #1a2744; /* header / footer background */
+  --color-surface: #223052; /* elevated navy panel (e.g. nav dropdown) */
 
   /* Light theme — page content */
   --color-page: #ffffff; /* body / main background (white) */
-  --color-white: #ffffff; /* main content areas */
-  --color-panel: #f5f4f2; /* cards / panels on the light background */
-  --color-ink: #1a1a1a; /* primary text on light */
-  --color-body: #393f44; /* body copy on light */
-  --color-subtle: #5f5f5f; /* secondary text on light (AA on white) */
+  --color-white: #ffffff; /* white */
+  --color-panel: #f5f5f5; /* cards / panels (warm light grey) */
+  --color-ink: #1a1a1a; /* primary text */
+  --color-body: #1a1a1a; /* body text */
+  --color-muted: #666666; /* muted / secondary text */
+  --color-subtle: #666666; /* secondary text (alias of muted) */
 
   /* Typography (Synthese on the live site → Inter is the closest free match) */
   --font-sans: "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
@@ -42,12 +39,10 @@
 }
 
 /* ---------------------------------------------------------------------------
-   Semantic CSS custom properties
-   Plain-CSS aliases that mirror the brief's wording, layered on top of the
-   Tailwind theme tokens above.
+   Semantic CSS custom properties (aliases)
 --------------------------------------------------------------------------- */
 :root {
-  --accent: var(--color-primary);
+  --accent: var(--color-accent);
   --background: var(--color-dark);
   --text-body: var(--color-body);
   --text-white: var(--color-white);
@@ -71,7 +66,6 @@
 
 /* ---------------------------------------------------------------------------
    Reusable button styles built from the tokens above.
-   Defined here for later use — intentionally NOT applied to any page yet.
 --------------------------------------------------------------------------- */
 @layer components {
   .btn {
@@ -88,22 +82,22 @@
       border-color 150ms ease;
   }
 
-  /* Blue fill */
+  /* Gold fill — primary CTA */
   .btn-primary {
-    background-color: var(--color-primary);
-    color: var(--color-white);
+    background-color: var(--color-accent);
+    color: var(--color-primary);
   }
   .btn-primary:hover {
-    background-color: #1b5fd6; /* darker blue */
+    background-color: #c1953a; /* darker gold */
   }
 
-  /* Transparent with blue border */
+  /* Transparent with navy border — secondary */
   .btn-outline {
     background-color: transparent;
     color: var(--color-primary);
     border: 1px solid var(--color-primary);
   }
   .btn-outline:hover {
-    background-color: rgb(39 110 241 / 0.08);
+    background-color: rgb(26 39 68 / 0.08); /* navy 8% */
   }
 }
