@@ -1,8 +1,87 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+import SectionHeading from '../components/SectionHeading.astro';
+import CTAButton from '../components/CTAButton.astro';
+import FAQSection from '../components/FAQSection.astro';
+
+const SITE = 'https://www.manchesterrivercruises.com';
+const pageTitle = 'Gift Vouchers — Manchester River Cruises';
+const pageDescription =
+  'Gift vouchers for Manchester River Cruises — give the gift of a cruise. Redeemable against the City River Tour, events or any amount. Buy online.';
+
+const options = [
+  { name: 'City River Tour', desc: 'A voucher for our signature 60-minute sightseeing cruise.' },
+  { name: 'Events & music nights', desc: 'A voucher towards any of our events or music cruises.' },
+  { name: 'Any amount', desc: 'Choose a value and let them pick their own cruise.' },
+];
+
+const faqs = [
+  { q: 'How long are gift vouchers valid for?', a: 'Validity period TBC.' },
+  { q: 'Can I top up a voucher?', a: 'TBC.' },
+  { q: "What if the recipient doesn't use it?", a: 'TBC.' },
+];
+
+const structuredData = {
+  '@context': 'https://schema.org',
+  '@type': 'WebPage',
+  name: 'Gift Vouchers',
+  description: pageDescription,
+  url: `${SITE}/gift-vouchers`,
+};
 ---
 
-<BaseLayout title="Gift Vouchers — Manchester River Cruises">
-  <h1>Gift Vouchers</h1>
-  <p>This page is coming soon.</p>
+<BaseLayout title={pageTitle} description={pageDescription}>
+  {/* Schema.org structured data (WebPage) */}
+  <script type="application/ld+json" is:inline set:html={JSON.stringify(structuredData)} />
+
+  <div class="mx-auto max-w-3xl px-4 py-16 sm:px-6 md:py-20">
+    <h1 class="text-3xl font-bold tracking-tight text-ink sm:text-4xl">Gift Vouchers</h1>
+    <p class="mt-4 text-lg leading-relaxed text-body">
+      Give the gift of a cruise. A Manchester River Cruises gift voucher is a memorable present for
+      birthdays, anniversaries or Christmas — redeemable against any of our cruises.
+    </p>
+
+    {/* Ventrata gift voucher widget — PLACEHOLDER only.
+        The live embed uses the SAME Ventrata checkout script as the booking widget, plus a
+        container element. Script wired in a later step. */}
+    <div
+      class="mt-8 flex min-h-80 items-center justify-center rounded-card border border-dashed border-black/15 bg-panel p-8 text-center text-sm text-subtle"
+    >
+      The gift voucher purchase will load here.
+    </div>
+
+    <div class="mt-12 space-y-12">
+      {/* Options */}
+      <section aria-labelledby="options">
+        <SectionHeading id="options">Voucher options</SectionHeading>
+        <ul class="mt-6 grid gap-4 sm:grid-cols-3">
+          {
+            options.map((o) => (
+              <li class="rounded-card bg-panel p-5 ring-1 ring-black/5">
+                <h3 class="font-semibold text-ink">{o.name}</h3>
+                <p class="mt-1 text-sm text-body">{o.desc}</p>
+              </li>
+            ))
+          }
+        </ul>
+      </section>
+
+      {/* How to redeem */}
+      <section aria-labelledby="redeem">
+        <SectionHeading id="redeem">How to redeem</SectionHeading>
+        <p class="mt-6 leading-relaxed text-body">
+          Enter your voucher code at checkout when booking online. Full redemption steps TBC.
+        </p>
+      </section>
+
+      <FAQSection faqs={faqs} title="Gift voucher FAQs" />
+    </div>
+
+    <div class="mt-12 rounded-card bg-panel p-6 ring-1 ring-black/5 sm:flex sm:items-center sm:justify-between sm:gap-6">
+      <p class="font-semibold text-ink">Prefer to book a cruise now?</p>
+      <div class="mt-4 shrink-0 sm:mt-0">
+        <CTAButton href="/city-river-tour">Book a cruise</CTAButton>
+      </div>
+    </div>
+  </div>
 </BaseLayout>
