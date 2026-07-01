@@ -1,8 +1,88 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+import FAQSection from '../components/FAQSection.astro';
+import CTAButton from '../components/CTAButton.astro';
+
+const general = [
+  { q: 'What is Manchester River Cruises?', a: 'We run sightseeing tours, events and private hire on the Manchester Ship Canal and River Irwell from Salford Quays. (TBC)' },
+  { q: 'Where do you depart from?', a: 'All cruises depart from the Millennium Footbridge at Salford Quays (M50 3RB), beside MediaCityUK.' },
+  { q: 'How long are the cruises?', a: 'The City River Tour is around 60 minutes; event and music cruises vary in length. (TBC)' },
+  { q: 'Is there a bar onboard?', a: 'Yes — most cruises have a fully licensed bar onboard. (TBC)' },
+  { q: 'Can I bring children?', a: 'Yes — daytime cruises are family-friendly. Some evening events are over-18s only. (TBC)' },
+];
+
+const cityRiverTour = [
+  { q: 'What will I see?', a: 'Highlights include MediaCityUK, the Imperial War Museum North, Old Trafford and the historic docks, with live commentary along the way. (TBC)' },
+  { q: 'Do I need to book in advance?', a: 'We strongly recommend booking online in advance, especially at weekends and in peak season. (TBC)' },
+  { q: 'What if it rains?', a: 'The boat has a heated indoor cabin, so cruises run in most weather. (TBC)' },
+  { q: 'Is commentary provided?', a: 'Yes — live onboard commentary points out the landmarks along the route. (TBC)' },
+];
+
+const events = [
+  { q: 'What is the dress code?', a: "There's no strict dress code, but most guests dress up to make a night of it. (TBC)" },
+  { q: 'Are events suitable for all ages?', a: 'Evening music and party nights are usually over-18s; family-friendly events are clearly marked. (TBC)' },
+  { q: 'Can I book a table?', a: 'Table and group options vary by event — check the individual event for details. (TBC)' },
+];
+
+const gettingHere = [
+  { q: 'Where exactly do I board?', a: 'Boarding is at the Millennium Footbridge, Salford Quays, M50 3RB, beside MediaCityUK.' },
+  { q: 'Is there parking?', a: 'Quayside car parks are nearby. (Details TBC.)' },
+  { q: 'Which tram stop?', a: "Take the Metrolink to MediaCityUK; the boarding point is a few minutes' walk." },
+];
+
+const booking = [
+  { q: 'Can I amend my booking?', a: 'Yes — use our Manage My Booking page to view, amend or cancel your booking. (TBC)' },
+  { q: 'What is the cancellation policy?', a: 'Free cancellation up to 24 hours before departure. Full policy TBC.' },
+  { q: 'Do you offer group discounts?', a: 'We welcome groups and can help with larger bookings. Group pricing TBC.' },
+  { q: 'Can I buy gift vouchers?', a: 'Yes — gift vouchers are available and redeemable against any cruise. See our Gift Vouchers page. (TBC)' },
+];
+
+const accessibility = [
+  { q: 'Is the boat wheelchair accessible?', a: 'Step-free boarding is available where tides allow. Full accessibility details TBC.' },
+  { q: 'Are assistance dogs allowed?', a: 'Yes — assistance dogs are welcome onboard. (TBC)' },
+  { q: 'Do you cater for dietary requirements?', a: 'Where food is served we aim to cater for dietary requirements — please let us know in advance. (TBC)' },
+];
+
+const SITE = 'https://www.manchesterrivercruises.com';
+const pageTitle = 'Frequently Asked Questions — Manchester River Cruises';
+const pageDescription =
+  'Manchester River Cruises FAQs — everything you need to know before your cruise, from what you will see and what to wear to booking, cancellations and accessibility.';
+
+// FAQPage schema built from every Q&A on the page.
+const allFaqs = [...general, ...cityRiverTour, ...events, ...gettingHere, ...booking, ...accessibility];
+const structuredData = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: allFaqs.map((f) => ({
+    '@type': 'Question',
+    name: f.q,
+    acceptedAnswer: { '@type': 'Answer', text: f.a },
+  })),
+};
 ---
 
-<BaseLayout title="FAQ — Manchester River Cruises">
-  <h1>FAQ</h1>
-  <p>This page is coming soon.</p>
+<BaseLayout title={pageTitle} description={pageDescription}>
+  {/* Schema.org structured data (FAQPage) */}
+  <script type="application/ld+json" is:inline set:html={JSON.stringify(structuredData)} />
+
+  <div class="mx-auto max-w-3xl px-4 py-16 sm:px-6 md:py-20">
+    <h1 class="text-3xl font-bold tracking-tight text-ink sm:text-4xl">Frequently Asked Questions</h1>
+    <p class="mt-4 text-lg leading-relaxed text-body">Everything you need to know before your cruise.</p>
+
+    <div class="mt-10 space-y-12">
+      <FAQSection faqs={general} title="General" id="general" />
+      <FAQSection faqs={cityRiverTour} title="City River Tour" id="city-river-tour" />
+      <FAQSection faqs={events} title="Events & Music Nights" id="events" />
+      <FAQSection faqs={gettingHere} title="Getting Here" id="getting-here" />
+      <FAQSection faqs={booking} title="Booking & Cancellation" id="booking" />
+      <FAQSection faqs={accessibility} title="Accessibility" id="accessibility" />
+    </div>
+
+    <div class="mt-12 rounded-card bg-panel p-6 ring-1 ring-black/5 sm:flex sm:items-center sm:justify-between sm:gap-6">
+      <p class="font-semibold text-ink">Still have a question?</p>
+      <div class="mt-4 shrink-0 sm:mt-0">
+        <CTAButton href="/contact">Get in touch</CTAButton>
+      </div>
+    </div>
+  </div>
 </BaseLayout>
