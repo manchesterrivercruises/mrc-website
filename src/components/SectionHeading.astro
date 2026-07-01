@@ -1,0 +1,14 @@
+---
+// Section heading + accent bar. Used for all major section titles.
+interface Props {
+  id?: string;
+  as?: string; // heading level, defaults to h2
+}
+const { id, as = 'h2' } = Astro.props;
+const Tag = as;
+---
+
+<Tag id={id} class="text-2xl font-bold tracking-tight text-ink sm:text-3xl">
+  <slot />
+</Tag>
+<div class="mt-3 h-1 w-12 rounded-full bg-accent"></div>

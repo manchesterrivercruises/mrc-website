@@ -1,0 +1,24 @@
+---
+// Primary (gold fill) or outline (navy border) call-to-action button.
+// Renders an <a> when href is given, otherwise a <button>.
+interface Props {
+  href?: string;
+  variant?: 'primary' | 'outline';
+  class?: string;
+  [key: string]: unknown;
+}
+const { href, variant = 'primary', class: className = '', ...rest } = Astro.props;
+const classes = `btn btn-${variant}${className ? ` ${className}` : ''}`;
+---
+
+{
+  href ? (
+    <a href={href} class={classes} {...rest}>
+      <slot />
+    </a>
+  ) : (
+    <button type="button" class={classes} {...rest}>
+      <slot />
+    </button>
+  )
+}
