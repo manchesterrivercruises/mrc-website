@@ -1,0 +1,33 @@
+---
+// Horizontal key-facts strip used on product / SEO pages. Each fact is { text, icon }
+// where `icon` is the inner SVG path markup (injected via set:html). Extra trailing
+// content (e.g. a cancellation badge) can be passed via the default slot.
+interface Props {
+  facts: { text: string; icon: string }[];
+}
+const { facts } = Astro.props;
+---
+
+<section class="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
+  <div class="mt-6 flex flex-col gap-3 border-y border-black/10 py-4 text-sm sm:flex-row sm:flex-wrap sm:items-center">
+    {
+      facts.map((f, i) => (
+        <div class={`flex items-center gap-2 ${i > 0 ? 'sm:border-l sm:border-black/10 sm:pl-6' : ''}`}>
+          <svg
+            class="h-4.5 w-4.5 flex-none text-primary"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.5"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            aria-hidden="true"
+            set:html={f.icon}
+          />
+          <span class="text-body">{f.text}</span>
+        </div>
+      ))
+    }
+    <slot />
+  </div>
+</section>
