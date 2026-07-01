@@ -5,7 +5,7 @@ import tailwindcss from '@tailwindcss/vite';
 
 // https://astro.build/config
 export default defineConfig({
-  site: 'https://manchesterrivercruises.com',
+  site: 'https://www.manchesterrivercruises.com',
   // Static output (default). The Netlify adapter is the deployment target.
   adapter: netlify(),
   vite: {
