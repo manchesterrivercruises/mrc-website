@@ -1,8 +1,153 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+import SectionHeading from '../components/SectionHeading.astro';
+import CTAButton from '../components/CTAButton.astro';
+
+const SITE = 'https://www.manchesterrivercruises.com';
+const pageTitle = 'Contact Us — Manchester River Cruises';
+const pageDescription =
+  'Contact Manchester River Cruises — get in touch with our team by email, phone or using our enquiry form. Departing from Millennium Footbridge, Salford Quays.';
+
+const subjects = ['General Enquiry', 'Booking Help', 'Group Travel', 'Private Hire', 'Press/Media', 'Other'];
+const social = [
+  { label: 'Facebook', href: '#' },
+  { label: 'Instagram', href: '#' },
+];
+
+const inputClass =
+  'mt-1 w-full rounded-md border border-black/15 bg-white px-3 py-2 text-sm text-ink focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary';
+const fieldLabel = 'block text-sm font-medium text-ink';
+
+const structuredData = {
+  '@context': 'https://schema.org',
+  '@graph': [
+    { '@type': 'ContactPage', name: 'Contact Us', description: pageDescription, url: `${SITE}/contact` },
+    {
+      '@type': 'LocalBusiness',
+      name: 'Manchester River Cruises',
+      url: SITE,
+      email: 'info@manchesterrivercruises.com',
+      address: { '@type': 'PostalAddress', streetAddress: 'Millennium Footbridge, The Quays', addressLocality: 'Salford', postalCode: 'M50 3RB', addressCountry: 'GB' },
+      geo: { '@type': 'GeoCoordinates', latitude: 53.4705, longitude: -2.296 },
+    },
+  ],
+};
 ---
 
-<BaseLayout title="Contact — Manchester River Cruises">
-  <h1>Contact</h1>
-  <p>This page is coming soon.</p>
+<BaseLayout title={pageTitle} description={pageDescription}>
+  {/* Schema.org structured data (ContactPage + LocalBusiness) */}
+  <script type="application/ld+json" is:inline set:html={JSON.stringify(structuredData)} />
+
+  <div class="mx-auto max-w-6xl px-4 py-16 sm:px-6 md:py-20 lg:px-8">
+    <h1 class="text-3xl font-bold tracking-tight text-ink sm:text-4xl">Contact Us</h1>
+    <p class="mt-4 text-lg leading-relaxed text-body">Get in touch with the Manchester River Cruises team.</p>
+
+    {/* Success message — revealed by the script below when ?success=true is in the URL */}
+    <div id="contact-success" hidden class="mt-6 rounded-card bg-panel p-4 text-body ring-1 ring-black/5">
+      <p class="font-medium text-ink">Thanks for getting in touch. We'll get back to you within 24 hours.</p>
+    </div>
+
+    <div class="mt-10 grid gap-10 md:grid-cols-2">
+      {/* Left column — contact details */}
+      <div>
+        <SectionHeading as="h2">Contact details</SectionHeading>
+        <div class="mt-6 space-y-5 text-body">
+          <div>
+            <h3 class="text-xs font-semibold uppercase tracking-wider text-subtle">Email</h3>
+            <p class="mt-1">
+              <a href="mailto:info@manchesterrivercruises.com" class="font-medium text-primary hover:underline">info@manchesterrivercruises.com</a>
+              <span class="text-subtle">(TBC)</span>
+            </p>
+          </div>
+          <div>
+            <h3 class="text-xs font-semibold uppercase tracking-wider text-subtle">Phone</h3>
+            <p class="mt-1">Phone number TBC</p>
+          </div>
+          <div>
+            <h3 class="text-xs font-semibold uppercase tracking-wider text-subtle">Address</h3>
+            <address class="mt-1 not-italic">Millennium Footbridge, Salford Quays, Manchester, M50 3RB</address>
+          </div>
+          <div>
+            <h3 class="text-xs font-semibold uppercase tracking-wider text-subtle">Follow us</h3>
+            <ul class="mt-1 flex flex-wrap gap-4">
+              {
+                social.map((s) => (
+                  <li>
+                    <a href={s.href} class="font-medium text-primary hover:underline" aria-label={`${s.label} (link TBC)`}>
+                      {s.label}
+                    </a>
+                  </li>
+                ))
+              }
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      {/* Right column — enquiry form (Netlify Forms; static HTML at build time) */}
+      <div>
+        <SectionHeading as="h2">Send us a message</SectionHeading>
+        <form
+          name="contact"
+          method="POST"
+          action="/contact?success=true"
+          data-netlify="true"
+          data-netlify-honeypot="bot-field"
+          class="mt-6 space-y-4"
+        >
+          {/* Required by Netlify Forms to identify the submission */}
+          <input type="hidden" name="form-name" value="contact" />
+          {/* Honeypot — hidden from humans */}
+          <p class="hidden">
+            <label>Don't fill this out if you're human: <input name="bot-field" /></label>
+          </p>
+
+          <div>
+            <label for="name" class={fieldLabel}>Name</label>
+            <input type="text" id="name" name="name" autocomplete="name" required class={inputClass} />
+          </div>
+          <div>
+            <label for="email" class={fieldLabel}>Email</label>
+            <input type="email" id="email" name="email" autocomplete="email" required class={inputClass} />
+          </div>
+          <div>
+            <label for="phone" class={fieldLabel}>Phone</label>
+            <input type="tel" id="phone" name="phone" autocomplete="tel" class={inputClass} />
+          </div>
+          <div>
+            <label for="subject" class={fieldLabel}>Subject</label>
+            <select id="subject" name="subject" class={inputClass}>
+              {subjects.map((s) => <option value={s}>{s}</option>)}
+            </select>
+          </div>
+          <div>
+            <label for="message" class={fieldLabel}>Message</label>
+            <textarea id="message" name="message" rows="5" required class={inputClass}></textarea>
+          </div>
+          <div>
+            <button type="submit" class="btn btn-primary">Send message</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    {/* FAQ link */}
+    <div class="mt-12 rounded-card bg-panel p-6 ring-1 ring-black/5 sm:flex sm:items-center sm:justify-between sm:gap-6">
+      <p class="font-semibold text-ink">Looking for quick answers?</p>
+      <div class="mt-4 shrink-0 sm:mt-0">
+        <CTAButton href="/faq" variant="outline">Check our FAQ</CTAButton>
+      </div>
+    </div>
+  </div>
+
+  {/* Reveal the success message after a Netlify Forms redirect to ?success=true */}
+  <script>
+    if (new URLSearchParams(window.location.search).get('success') === 'true') {
+      const el = document.getElementById('contact-success');
+      if (el) {
+        el.hidden = false;
+        el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+    }
+  </script>
 </BaseLayout>
