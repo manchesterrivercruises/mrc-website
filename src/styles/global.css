@@ -10,7 +10,7 @@
 @theme {
   /* Brand */
   --color-primary: #1a2744; /* primary navy — brand + dark chrome */
-  --color-accent: #d4a843; /* gold / amber — prices, CTAs, key highlights */
+  --color-accent: #e8b84b; /* gold / amber — prices, CTAs, key highlights */
   --color-brand: #69b3e4; /* logo blue — logo mark only */
 
   /* Dark chrome — header & footer (navy) */
