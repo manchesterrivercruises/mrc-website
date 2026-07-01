@@ -7,6 +7,7 @@ import ProductCard from '../components/ProductCard.astro';
 import AttractionCard from '../components/AttractionCard.astro';
 import FAQSection from '../components/FAQSection.astro';
 import ReviewStrip from '../components/ReviewStrip.astro';
+import GettingHere from '../components/GettingHere.astro';
 import tourStops from '../data/tour-stops.json';
 
 // NOTE: Placeholder content. Items marked (TBC) await Simon's confirmed copy
@@ -132,9 +133,7 @@ const structuredData = {
   ],
 };
 
-// Page-local style token still used by non-componentised placeholder tiles.
-const placeholderTile =
-  'flex items-center justify-center rounded-card border border-dashed border-black/15 bg-panel text-sm text-subtle';
+// Page-local style token for the gallery placeholder tiles.
 const galleryTile =
   'flex h-full w-full items-center justify-center rounded-card bg-panel text-sm text-subtle ring-1 ring-black/5 transition hover:brightness-95';
 ---
@@ -389,38 +388,8 @@ const galleryTile =
           </p>
         </section>
 
-        {/* Getting Here (fixed template for bookable product pages) */}
-        <section aria-labelledby="getting-here">
-          <SectionHeading id="getting-here">Getting here</SectionHeading>
-          <div class="mt-8 grid gap-8 sm:grid-cols-2">
-            <div class="space-y-6 text-body">
-              <div>
-                <h3 class="font-semibold text-ink">Where to board</h3>
-                <p class="mt-1 leading-relaxed">
-                  Millennium Footbridge, Salford Quays, Manchester, M50 3RB — beside MediaCityUK,
-                  a short walk from The Lowry and the Imperial War Museum North.
-                </p>
-                <a
-                  href="https://www.google.com/maps/search/?api=1&query=Millennium+Footbridge+Salford+Quays+M50+3RB"
-                  class="mt-2 inline-block font-medium text-primary hover:underline"
-                  rel="noopener"
-                  target="_blank"
-                >
-                  Open in Google Maps
-                </a>
-              </div>
-              <div>
-                <h3 class="font-semibold text-ink">By tram</h3>
-                <p class="mt-1 leading-relaxed">Take the Metrolink to MediaCityUK; the boarding point is a few minutes' walk.</p>
-              </div>
-              <div>
-                <h3 class="font-semibold text-ink">Parking &amp; taxis</h3>
-                <p class="mt-1 leading-relaxed">Quayside car parks are nearby. Taxi drop-off is available close to the footbridge. (Details TBC.)</p>
-              </div>
-            </div>
-            <div class={`aspect-[4/3] ${placeholderTile}`}>Map / boarding point photo (TBC)</div>
-          </div>
-        </section>
+        {/* Getting Here (shared component — fixed template for bookable product pages) */}
+        <GettingHere />
 
         {/* FAQ */}
         <FAQSection faqs={faqs} />
