@@ -62,9 +62,15 @@ const mockEvents = [
   { title: 'Boat to Old Trafford', description: 'Matchday ferry to Old Trafford.', ventrataProductId: MUFC_FERRY_ID, startDate: inDays(45, 13, 0), priceFrom: 12, heroImage: tempImages.oldTrafford, heroImageAlt: 'Matchday ferry', draft: false },
   { title: 'Adele Cruise', description: 'A soaring tribute to Adele on the water.', ventrataProductId: '99a19bc1-64d3-4f69-bd68-fb44348053a6', startDate: inDays(52, 19, 30), priceFrom: 30, heroImage: tempImages.adele, heroImageAlt: 'Adele tribute cruise', draft: false },
 
-  // Beyond (third month — data spread; not surfaced by the current three filters)
+  // Months 3-6 (61-180 days) — so "Next 3 months", "Next 6 months" and the range picker have data.
   { title: "Rollin' on the River", description: 'Classic rock and river anthems.', ventrataProductId: 'd711f0c0-7939-4d6b-9219-6995de6723c3', startDate: inDays(66, 20, 0), priceFrom: 28, heroImage: tempImages.elvisLive, heroImageAlt: "Rollin' on the River cruise", draft: false },
   { title: 'Dolly Cruise', description: 'A country night celebrating Dolly Parton.', ventrataProductId: 'f370910f-7d5e-49bb-89b6-dea2ca86f2a9', startDate: inDays(80, 19, 30), priceFrom: 28, heroImage: tempImages.dolly, heroImageAlt: 'Dolly Parton tribute cruise', draft: false },
+  { title: 'Swinging on the River', description: 'Swing and Rat Pack classics after dark.', ventrataProductId: 'ee4143b6-9c32-4db2-9d1f-807c858696fa', startDate: inDays(95, 19, 30), priceFrom: 28, heroImage: tempImages.swinging, heroImageAlt: 'Swing and Rat Pack cruise', draft: false },
+  { title: 'City River Tour', description: 'Autumn sightseeing cruise on the Ship Canal.', ventrataProductId: CITY_RIVER_TOUR_ID, startDate: inDays(110, 14, 0), priceFrom: 13, heroImage: tempImages.cityRiverTour, heroImageAlt: 'City River Tour boat', draft: false },
+  { title: 'Decks on Deck', description: 'A daytime deck party on the water.', ventrataProductId: 'cf398297-36a2-4a42-878f-5e409407f059', startDate: inDays(125, 15, 0), priceFrom: 30, heroImage: tempImages.decksOnDeck, heroImageAlt: 'Decks on Deck day party', draft: false },
+  { title: 'Boat to Old Trafford', description: 'Matchday ferry to Old Trafford.', ventrataProductId: MUFC_FERRY_ID, startDate: inDays(140, 13, 0), priceFrom: 12, heroImage: tempImages.oldTrafford, heroImageAlt: 'Matchday ferry', draft: false },
+  { title: 'Elvis Live', description: 'A full Elvis Presley tribute night.', ventrataProductId: '2fe9c519-e00a-4a0d-8067-e7e5c15a023e', startDate: inDays(155, 19, 30), priceFrom: 28, heroImage: tempImages.elvisLive, heroImageAlt: 'Elvis Live tribute cruise', draft: false },
+  { title: 'ABBA Cruise', description: 'The greatest ABBA hits return to the water.', ventrataProductId: '50a5eb12-f9ad-4b1f-9a70-e880bd28152b', startDate: inDays(170, 19, 30), priceFrom: 30, heroImage: tempImages.abba, heroImageAlt: 'ABBA tribute cruise', draft: false },
 ];
 
 function typeKey(productId: string): string {
@@ -104,7 +110,9 @@ const typeFilters = [
 const dateFilters = [
   { value: 'week', label: 'This week', isDefault: true },
   { value: 'month', label: 'This month' },
-  { value: 'nextmonth', label: 'Next month' },
+  { value: '3months', label: 'Next 3 months' },
+  { value: '6months', label: 'Next 6 months' },
+  { value: 'all', label: 'All dates' },
 ];
 
 // Before/after venues — TEMPORARY lightweight strip.
@@ -123,6 +131,8 @@ const pageDescription =
 
 const pillClass =
   'inline-block rounded-full border border-black/15 px-4 py-1.5 text-sm font-medium text-body transition hover:border-primary/50 peer-checked:border-primary peer-checked:bg-primary peer-checked:text-white';
+const dateInputClass =
+  'rounded-md border border-black/15 bg-white px-3 py-1.5 text-sm text-ink focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary';
 
 // Basic schema: an ItemList of scheduled Events.
 const structuredData = {
@@ -189,8 +199,8 @@ const structuredData = {
         }
       </fieldset>
 
-      {/* Date filter */}
-      <fieldset class="m-0 mt-3 flex flex-wrap gap-2 border-0 p-0">
+      {/* Date quick-filters */}
+      <fieldset id="wo-date-filters" class="m-0 mt-3 flex flex-wrap gap-2 border-0 p-0 transition-opacity">
         <legend class="sr-only">Filter by date</legend>
         {
           dateFilters.map((f) => (
@@ -201,6 +211,17 @@ const structuredData = {
           ))
         }
       </fieldset>
+
+      {/* Date range picker — when BOTH dates are set it overrides the quick-filters above. */}
+      <div class="mt-3 flex flex-wrap items-center gap-2 text-sm">
+        <label for="wo-from" class="font-medium text-body">From</label>
+        <input type="date" id="wo-from" class={dateInputClass} aria-label="From date" />
+        <label for="wo-to" class="font-medium text-body">To</label>
+        <input type="date" id="wo-to" class={dateInputClass} aria-label="To date" />
+        <button type="button" id="wo-clear-dates" class="ml-1 font-medium text-primary hover:underline">
+          Clear dates
+        </button>
+      </div>
 
       {/* Event grid — each card wrapped in a display:contents element carrying the
           data-type / data-date the filter script reads. */}
@@ -259,33 +280,61 @@ const structuredData = {
     function applyWhatsOnFilters() {
       const typeEl = document.querySelector('input[name="wo-type"]:checked') as HTMLInputElement | null;
       const dateEl = document.querySelector('input[name="wo-date"]:checked') as HTMLInputElement | null;
-      if (!typeEl || !dateEl) return;
+      const fromEl = document.getElementById('wo-from') as HTMLInputElement | null;
+      const toEl = document.getElementById('wo-to') as HTMLInputElement | null;
+      if (!typeEl) return;
+
       const type = typeEl.value;
-      const dateFilter = dateEl.value;
+      const dateFilter = dateEl ? dateEl.value : 'all';
+      const fromMs = fromEl && fromEl.value ? new Date(fromEl.value + 'T00:00:00').getTime() : null;
+      const toMs = toEl && toEl.value ? new Date(toEl.value + 'T23:59:59').getTime() : null;
+      const rangeActive = fromMs !== null && toMs !== null;
       const now = Date.now();
       let visible = 0;
 
       document.querySelectorAll<HTMLElement>('.event-item').forEach((item) => {
         const t = item.getAttribute('data-type');
-        const iso = item.getAttribute('data-date') || '';
-        const days = (new Date(iso).getTime() - now) / 86400000;
+        const ms = new Date(item.getAttribute('data-date') || '').getTime();
+        const days = (ms - now) / 86400000;
         const matchType = type === 'all' || t === type;
-        let matchDate = true;
-        if (dateFilter === 'week') matchDate = days >= 0 && days <= 7;
+        let matchDate;
+        if (rangeActive) matchDate = ms >= (fromMs as number) && ms <= (toMs as number);
+        else if (dateFilter === 'week') matchDate = days >= 0 && days <= 7;
         else if (dateFilter === 'month') matchDate = days >= 0 && days <= 30;
-        else if (dateFilter === 'nextmonth') matchDate = days > 30 && days <= 60;
+        else if (dateFilter === '3months') matchDate = days >= 0 && days <= 90;
+        else if (dateFilter === '6months') matchDate = days >= 0 && days <= 180;
+        else matchDate = true; // 'all'
         const show = matchType && matchDate;
         item.style.display = show ? '' : 'none';
         if (show) visible++;
       });
 
+      // A set range overrides the quick-filters — dim + disable them to make that clear.
+      const dateFilters = document.getElementById('wo-date-filters');
+      if (dateFilters) {
+        dateFilters.classList.toggle('opacity-40', rangeActive);
+        dateFilters.classList.toggle('pointer-events-none', rangeActive);
+      }
+
       const empty = document.querySelector('.wo-empty') as HTMLElement | null;
       if (empty) empty.hidden = visible > 0;
     }
 
-    document.querySelectorAll('input[name="wo-type"], input[name="wo-date"]').forEach((el) => {
-      el.addEventListener('change', applyWhatsOnFilters);
+    document
+      .querySelectorAll('input[name="wo-type"], input[name="wo-date"], #wo-from, #wo-to')
+      .forEach((el) => {
+        el.addEventListener('change', applyWhatsOnFilters);
+        el.addEventListener('input', applyWhatsOnFilters);
+      });
+
+    document.getElementById('wo-clear-dates')?.addEventListener('click', () => {
+      const fromEl = document.getElementById('wo-from') as HTMLInputElement | null;
+      const toEl = document.getElementById('wo-to') as HTMLInputElement | null;
+      if (fromEl) fromEl.value = '';
+      if (toEl) toEl.value = '';
+      applyWhatsOnFilters();
     });
+
     applyWhatsOnFilters();
   </script>
 </BaseLayout>
