@@ -1,8 +1,73 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+import CTAButton from '../components/CTAButton.astro';
+
+// Fleet — TEMPORARY placeholder data with inline detailed cards. Replace with a `vessels`
+// Content Collection (and a dedicated VesselCard) once real content is provided
+// (descriptions, capacities, photos — see content-management.md).
+const vessels = [
+  { name: 'Princess Katherine', capacity: 'TBC', bestFor: 'Sightseeing tours, events & private hire' },
+  { name: 'Isabella', capacity: 'TBC', bestFor: 'Sightseeing tours & private hire' },
+  { name: 'Melody', capacity: 'TBC', bestFor: 'Sightseeing tours & events' },
+  { name: 'Georgina', capacity: 'TBC', bestFor: 'Smaller groups & private hire' },
+  { name: 'Joyce Too', capacity: 'TBC', bestFor: 'Sightseeing tours & private hire' },
+];
+
+const SITE = 'https://www.manchesterrivercruises.com';
+const pageTitle = 'Our Fleet — Manchester River Cruises';
+const pageDescription =
+  'The Manchester River Cruises fleet — Princess Katherine, Isabella, Melody, Georgina and Joyce Too. Passenger capacities and details for sightseeing, events and private hire.';
+
+const structuredData = {
+  '@context': 'https://schema.org',
+  '@type': 'WebPage',
+  name: 'Our Fleet',
+  description: pageDescription,
+  url: `${SITE}/vessels`,
+};
 ---
 
-<BaseLayout title="Our Vessels — Manchester River Cruises">
-  <h1>Our Vessels</h1>
-  <p>This page is coming soon.</p>
+<BaseLayout title={pageTitle} description={pageDescription}>
+  {/* Schema.org structured data (WebPage) */}
+  <script type="application/ld+json" is:inline set:html={JSON.stringify(structuredData)} />
+
+  <div class="mx-auto max-w-6xl px-4 py-16 sm:px-6 md:py-20 lg:px-8">
+    <h1 class="text-3xl font-bold tracking-tight text-ink sm:text-4xl">Our Fleet</h1>
+    <p class="mt-4 max-w-2xl text-lg leading-relaxed text-body">
+      Meet the boats that carry you along the Manchester Ship Canal. Full vessel details, capacities
+      and photos are coming soon.
+    </p>
+
+    {/* TEMP: inline detailed vessel cards — move to a vessels Content Collection with a VesselCard. */}
+    <div class="mt-10 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+      {
+        vessels.map((v) => (
+          <article class="overflow-hidden rounded-card bg-panel shadow-sm ring-1 ring-black/5">
+            <div class="flex aspect-[16/9] items-center justify-center bg-black/5 text-sm text-subtle">Image (TBC)</div>
+            <div class="p-5">
+              <h2 class="text-lg font-semibold text-ink">{v.name}</h2>
+              <dl class="mt-3 space-y-2 text-sm">
+                <div class="flex gap-2">
+                  <dt class="w-24 flex-none font-medium text-subtle">Capacity</dt>
+                  <dd class="text-body">{v.capacity}</dd>
+                </div>
+                <div class="flex gap-2">
+                  <dt class="w-24 flex-none font-medium text-subtle">Best for</dt>
+                  <dd class="text-body">{v.bestFor}</dd>
+                </div>
+              </dl>
+              <p class="mt-3 text-sm text-subtle">Vessel description — TBC.</p>
+            </div>
+          </article>
+        ))
+      }
+    </div>
+
+    <div class="mt-16 rounded-card bg-panel p-6 ring-1 ring-black/5 sm:flex sm:items-center sm:justify-between sm:gap-6">
+      <p class="font-semibold text-ink">Ready to get on the water?</p>
+      <div class="mt-4 shrink-0 sm:mt-0">
+        <CTAButton href="/city-river-tour">Book a cruise</CTAButton>
+      </div>
+    </div>
+  </div>
 </BaseLayout>
