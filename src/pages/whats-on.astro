@@ -81,7 +81,7 @@ function typeKey(productId: string): string {
 function typeLabel(key: string): string {
   if (key === 'crt') return 'City River Tour';
   if (key === 'mufc') return 'MUFC Ferry';
-  return 'Events & Nights';
+  return 'Events';
 }
 function hrefForKey(key: string): string {
   if (key === 'crt') return '/city-river-tour';
@@ -117,7 +117,7 @@ const upcoming = mockEvents
 // Default type filter: Events & Nights. Default date filter: This week.
 const typeFilters = [
   { value: 'all', label: 'All' },
-  { value: 'events', label: 'Events & Nights', isDefault: true },
+  { value: 'events', label: 'Events', isDefault: true },
   { value: 'mufc', label: 'MUFC Ferry' },
   { value: 'crt', label: 'City River Tour' },
 ];
