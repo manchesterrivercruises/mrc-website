@@ -1,14 +1,17 @@
 ---
 // Primary navigation structure (matches docs/website-brief.md Section 11.1 URLs).
+// Cruises dropdown is the booking menu; individual events are reached via What's On
+// and the category pages, not the dropdown.
 const cruises = [
   { label: 'City River Tour', href: '/city-river-tour' },
-  { label: 'Events', href: '/events' },
-  { label: 'MUFC Ferry', href: '/mufc-ferry' },
+  { label: "What's On", href: '/whats-on' },
+  { label: 'Live Music Nights', href: '/music-cruises-manchester' },
+  { label: 'Boat to Old Trafford', href: '/mufc-ferry' },
+  { label: 'Private Hire', href: '/private-hire' },
 ];
 
+// Top-level links — What's On and Private Hire now live in the Cruises dropdown.
 const links = [
-  { label: 'Private Hire', href: '/private-hire' },
-  { label: "What's On", href: '/whats-on' },
   { label: 'Discover', href: '/discover' },
   { label: 'Plan Your Visit', href: '/plan-your-visit' },
   { label: 'About', href: '/about' },

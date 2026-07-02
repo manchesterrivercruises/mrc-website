@@ -7,6 +7,16 @@ import FAQSection from '../components/FAQSection.astro';
 import GettingHere from '../components/GettingHere.astro';
 import KeyFacts from '../components/KeyFacts.astro';
 import ProductCard from '../components/ProductCard.astro';
+import { getCollection } from 'astro:content';
+
+// Event lists pulled from the events collection (drafts excluded), split by category.
+const events = await getCollection('events', ({ data }) => !data.draft);
+const liveMusicNights = events
+  .filter((e) => e.data.category === 'live-music')
+  .sort((a, b) => a.data.title.localeCompare(b.data.title));
+const djNights = events
+  .filter((e) => e.data.category === 'dj-night')
+  .sort((a, b) => a.data.title.localeCompare(b.data.title));
 
 const icons = {
   calendar:
@@ -93,15 +103,35 @@ const structuredData = {
           </div>
         </section>
 
-        {/* Featured music nights — each links to its own event page (/cruises/[slug]). */}
-        <section aria-labelledby="featured">
-          <SectionHeading id="featured">Featured music nights</SectionHeading>
+        {/* Live Music Nights — from the events collection (category: live-music). */}
+        <section aria-labelledby="live-music">
+          <SectionHeading id="live-music">Live Music Nights</SectionHeading>
+          <p class="mt-6 max-w-3xl text-body">
+            Live tribute and themed nights — a singer, a band and a boatful of people who know every word.
+          </p>
           <div class="mt-8 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            <ProductCard name="ABBA Cruise" desc="Dance the night away to the greatest ABBA hits on the water." href="/cruises/abba-tribute-cruise" linkText="ABBA Cruise" />
-            <ProductCard name="Elvis Rocks" desc="The King returns for a rock 'n' roll cruise on the Ship Canal." href="/cruises/elvis-rocks-cruise" linkText="Elvis Rocks" />
-            <ProductCard name="Dolly Cruise" desc="A warm-hearted country night celebrating the songs of Dolly Parton." href="/cruises/dolly-cruise" linkText="Dolly Cruise" />
+            {
+              liveMusicNights.map((e) => (
+                <ProductCard name={e.data.title} desc={e.data.shortTagline ?? e.data.description} href={`/cruises/${e.id}`} linkText="View & book" />
+              ))
+            }
           </div>
-          <p class="mt-6 text-sm text-subtle">See all upcoming dates and more nights on the <a href="/whats-on" class="font-medium text-primary hover:underline">What's On</a> page.</p>
+        </section>
+
+        {/* DJ Nights — from the events collection (category: dj-night). */}
+        <section aria-labelledby="dj-nights">
+          <SectionHeading id="dj-nights">DJ Nights</SectionHeading>
+          <p class="mt-6 max-w-3xl text-body">
+            DJ-led party cruises — anthems, floor-fillers and the city skyline as your dancefloor backdrop.
+          </p>
+          <div class="mt-8 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {
+              djNights.map((e) => (
+                <ProductCard name={e.data.title} desc={e.data.shortTagline ?? e.data.description} href={`/cruises/${e.id}`} linkText="View & book" />
+              ))
+            }
+          </div>
+          <p class="mt-6 text-sm text-subtle">See all upcoming dates on the <a href="/whats-on" class="font-medium text-primary hover:underline">What's On</a> page.</p>
         </section>
 
         <FAQSection faqs={faqs} title="Music cruise FAQs" />

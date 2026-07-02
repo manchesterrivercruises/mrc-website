@@ -7,6 +7,13 @@ import FAQSection from '../components/FAQSection.astro';
 import GettingHere from '../components/GettingHere.astro';
 import KeyFacts from '../components/KeyFacts.astro';
 import ProductCard from '../components/ProductCard.astro';
+import { getCollection } from 'astro:content';
+
+// This SEO landing sells ALL nights: every live-music + DJ event from the collection
+// (drafts excluded), each linking to its own product page.
+const allNights = (
+  await getCollection('events', ({ data }) => !data.draft && (data.category === 'live-music' || data.category === 'dj-night'))
+).sort((a, b) => a.data.title.localeCompare(b.data.title));
 
 const icons = {
   calendar:
@@ -92,6 +99,22 @@ const structuredData = {
           </div>
           <div class="mt-6">
             <CTAButton href="/whats-on">See party cruises</CTAButton>
+          </div>
+        </section>
+
+        {/* All our nights — live music + DJ, from the events collection, each linking to its product page. */}
+        <section aria-labelledby="nights">
+          <SectionHeading id="nights">Our party & music nights</SectionHeading>
+          <p class="mt-6 max-w-3xl text-body">
+            From DJ-led party cruises to live tribute acts, here's what's sailing on the Ship Canal —
+            pick a night and book direct.
+          </p>
+          <div class="mt-8 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {
+              allNights.map((e) => (
+                <ProductCard name={e.data.title} desc={e.data.shortTagline ?? e.data.description} href={`/cruises/${e.id}`} linkText="View & book" />
+              ))
+            }
           </div>
         </section>
 
