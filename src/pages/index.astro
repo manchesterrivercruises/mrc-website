@@ -6,6 +6,7 @@ import CTAButton from '../components/CTAButton.astro';
 import EventCard from '../components/EventCard.astro';
 import ProductCard from '../components/ProductCard.astro';
 import StarRating from '../components/StarRating.astro';
+import { site } from '../data/site';
 
 // ─────────────────────────────────────────────────────────────────────────────
 // FEATURED HERO PRODUCT — manual config, NEVER API-selected (AGENTS.md rule 5).
@@ -21,9 +22,9 @@ const heroProduct = {
   imageAlt: 'The City River Tour boat cruising past MediaCity at Salford Quays',
 };
 
-// Google review figures (TBC — confirm against the live Google listing before launch).
-const RATING = 4.5;
-const REVIEW_COUNT = 518;
+// Google review figures — sourced from src/data/site.ts (single source of truth).
+const RATING = site.rating.value;
+const REVIEW_COUNT = site.rating.count;
 
 // ─────────────────────────────────────────────────────────────────────────────
 // WHAT'S ON STRIP — MOCK DATA, shape matches the `events` collection schema.
@@ -72,7 +73,7 @@ const statTiles = [
   { stat: 'Salford Quays', label: 'Departing from' },
 ];
 
-const SITE = 'https://www.manchesterrivercruises.com';
+const SITE = site.url;
 const pageTitle = 'Manchester River Cruises | Boat Tours, Events & Ferry from Salford Quays';
 const pageDescription =
   'Sightseeing river cruises, live music and party nights, and matchday ferries on the Manchester Ship Canal from Salford Quays. Book direct with Manchester River Cruises.';
@@ -82,17 +83,17 @@ const structuredData = {
   '@graph': [
     {
       '@type': 'WebSite',
-      name: 'Manchester River Cruises',
+      name: site.name,
       url: SITE,
     },
     {
       '@type': ['TouristAttraction', 'LocalBusiness'],
-      name: 'Manchester River Cruises',
+      name: site.name,
       description: pageDescription,
       url: SITE,
-      email: 'info@manchesterrivercruises.com',
-      address: { '@type': 'PostalAddress', streetAddress: 'Millennium Footbridge, The Quays', addressLocality: 'Salford', postalCode: 'M50 3RB', addressCountry: 'GB' },
-      geo: { '@type': 'GeoCoordinates', latitude: 53.4705, longitude: -2.296 },
+      email: site.email,
+      address: { '@type': 'PostalAddress', ...site.address },
+      geo: { '@type': 'GeoCoordinates', ...site.geo },
       aggregateRating: { '@type': 'AggregateRating', ratingValue: RATING, reviewCount: REVIEW_COUNT, bestRating: 5 },
     },
   ],

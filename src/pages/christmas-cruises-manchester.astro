@@ -1,5 +1,6 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+import { site } from '../data/site';
 import SectionHeading from '../components/SectionHeading.astro';
 import BookingPanel from '../components/BookingPanel.astro';
 import ProductCard from '../components/ProductCard.astro';
@@ -27,12 +28,6 @@ const keyFacts = [
   { text: 'From £13 per person', icon: icons.tag },
   { text: 'Millennium Footbridge, Salford Quays', icon: icons.pin },
   { text: 'Festive theming onboard', icon: icons.sparkles },
-];
-
-const bookDirect = [
-  'Official source — you book direct with the operator.',
-  'Always the latest live availability.',
-  'Direct support from the Manchester River Cruises team.',
 ];
 
 // Christmas products for the events grid (ProductCard). Ventrata product IDs in comments.
@@ -65,7 +60,7 @@ const faqs = [
   },
 ];
 
-const SITE = 'https://www.manchesterrivercruises.com';
+const SITE = site.url;
 const pageTitle = 'Christmas Cruises Manchester — Manchester River Cruises';
 const pageDescription =
   'Festive Christmas cruises on the Manchester Ship Canal from Salford Quays — Cruise with Father Christmas, sensory-friendly Santa SEN cruises and Christmas party nights. From £13. Book direct.';
@@ -81,14 +76,8 @@ const structuredData = {
       url: `${SITE}/christmas-cruises-manchester`,
       touristType: 'Christmas',
       availableLanguage: 'English',
-      address: {
-        '@type': 'PostalAddress',
-        streetAddress: 'Millennium Footbridge, The Quays',
-        addressLocality: 'Salford',
-        postalCode: 'M50 3RB',
-        addressCountry: 'GB',
-      },
-      geo: { '@type': 'GeoCoordinates', latitude: 53.4705, longitude: -2.296 },
+      address: { '@type': 'PostalAddress', ...site.address },
+      geo: { '@type': 'GeoCoordinates', ...site.geo },
     },
     {
       '@type': 'Event',
@@ -100,13 +89,7 @@ const structuredData = {
       location: {
         '@type': 'Place',
         name: 'Millennium Footbridge, Salford Quays',
-        address: {
-          '@type': 'PostalAddress',
-          streetAddress: 'Millennium Footbridge, The Quays',
-          addressLocality: 'Salford',
-          postalCode: 'M50 3RB',
-          addressCountry: 'GB',
-        },
+        address: { '@type': 'PostalAddress', ...site.address },
       },
       url: `${SITE}/santa-cruise-manchester`,
       offers: {
@@ -150,7 +133,7 @@ const structuredData = {
     <div class="mx-auto max-w-6xl px-4 py-10 sm:px-6 md:py-12 lg:grid lg:grid-cols-[58%_38%] lg:items-start lg:gap-[4%] lg:px-8">
       {/* Right column — booking panel (Santa Cruise 6cabf36f). Widget placeholder only. */}
       <aside id="book" class="mb-10 lg:order-2 lg:mb-0 lg:sticky lg:top-20">
-        <BookingPanel price="£13" priceNote="Adults £13 · Children TBC" bookDirect={bookDirect} />
+        <BookingPanel price="£13" priceNote="Adults £13 · Children TBC" />
       </aside>
 
       {/* Left column — main content */}

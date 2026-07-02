@@ -1,5 +1,6 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+import { site } from '../data/site';
 import SectionHeading from '../components/SectionHeading.astro';
 import BookingPanel from '../components/BookingPanel.astro';
 import ProductCard from '../components/ProductCard.astro';
@@ -28,12 +29,6 @@ const keyFacts = [
   { text: 'Father Christmas onboard', icon: icons.gift },
 ];
 
-const bookDirect = [
-  'Official source — you book direct with the operator.',
-  'Always the latest live availability.',
-  'Direct support from the Manchester River Cruises team.',
-];
-
 const faqs = [
   { q: 'Is there an age limit?', a: 'Santa cruises are designed for families with young children, but all ages are welcome. (TBC)' },
   { q: 'What does Santa bring?', a: 'Every child meets Father Christmas and receives a gift onboard. (Details TBC.)' },
@@ -41,7 +36,7 @@ const faqs = [
   { q: 'When is the booking deadline?', a: 'Santa cruises sell out quickly — we recommend booking early. Exact deadlines TBC.' },
 ];
 
-const SITE = 'https://www.manchesterrivercruises.com';
+const SITE = site.url;
 const pageTitle = 'Santa Cruise Manchester — Meet Father Christmas on the Water';
 const pageDescription =
   'Santa Cruise Manchester — a magical festive cruise on the Manchester Ship Canal where children meet Father Christmas onboard. Families welcome, from £13. Book direct.';
@@ -56,8 +51,8 @@ const structuredData = {
       url: `${SITE}/santa-cruise-manchester`,
       touristType: 'Christmas',
       availableLanguage: 'English',
-      address: { '@type': 'PostalAddress', streetAddress: 'Millennium Footbridge, The Quays', addressLocality: 'Salford', postalCode: 'M50 3RB', addressCountry: 'GB' },
-      geo: { '@type': 'GeoCoordinates', latitude: 53.4705, longitude: -2.296 },
+      address: { '@type': 'PostalAddress', ...site.address },
+      geo: { '@type': 'GeoCoordinates', ...site.geo },
     },
     {
       '@type': 'Event',
@@ -66,7 +61,7 @@ const structuredData = {
       startDate: '2026-12-06T15:00:00',
       eventStatus: 'https://schema.org/EventScheduled',
       eventAttendanceMode: 'https://schema.org/OfflineEventAttendanceMode',
-      location: { '@type': 'Place', name: 'Millennium Footbridge, Salford Quays', address: { '@type': 'PostalAddress', streetAddress: 'Millennium Footbridge, The Quays', addressLocality: 'Salford', postalCode: 'M50 3RB', addressCountry: 'GB' } },
+      location: { '@type': 'Place', name: 'Millennium Footbridge, Salford Quays', address: { '@type': 'PostalAddress', ...site.address } },
       url: `${SITE}/santa-cruise-manchester`,
       offers: { '@type': 'Offer', price: 13, priceCurrency: 'GBP', availability: 'https://schema.org/InStock', url: `${SITE}/santa-cruise-manchester` },
     },
@@ -99,7 +94,7 @@ const structuredData = {
     <div class="mx-auto max-w-6xl px-4 py-10 sm:px-6 md:py-12 lg:grid lg:grid-cols-[58%_38%] lg:items-start lg:gap-[4%] lg:px-8">
       {/* Right column — booking panel (Santa Cruise 6cabf36f). Widget placeholder only. */}
       <aside id="book" class="mb-10 lg:order-2 lg:mb-0 lg:sticky lg:top-20">
-        <BookingPanel price="£13" priceNote="Adults £13 · Children TBC" bookDirect={bookDirect} />
+        <BookingPanel price="£13" priceNote="Adults £13 · Children TBC" />
       </aside>
 
       {/* Left column — main content */}

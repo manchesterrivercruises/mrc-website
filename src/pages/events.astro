@@ -1,5 +1,6 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+import { site } from '../data/site';
 import SectionHeading from '../components/SectionHeading.astro';
 import CTAButton from '../components/CTAButton.astro';
 import FAQSection from '../components/FAQSection.astro';
@@ -78,7 +79,7 @@ const faqs = [
   { q: 'Can I make a group booking?', a: 'Yes — we welcome groups for events. For larger groups, exclusive private hire may suit you better. Group booking details TBC.' },
 ];
 
-const SITE = 'https://www.manchesterrivercruises.com';
+const SITE = site.url;
 const pageTitle = 'Events & Special Cruises Manchester — Music, Party & Family Cruises';
 const pageDescription =
   'Event cruises on the Manchester Ship Canal — live music tribute nights, boat parties, Christmas and Santa cruises, kids events and seasonal specials. Licensed bar onboard. Book direct.';

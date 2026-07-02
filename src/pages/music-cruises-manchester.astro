@@ -1,5 +1,6 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+import { site } from '../data/site';
 import SectionHeading from '../components/SectionHeading.astro';
 import CTAButton from '../components/CTAButton.astro';
 import FAQSection from '../components/FAQSection.astro';
@@ -32,7 +33,7 @@ const faqs = [
   { q: "What's included?", a: 'Your cruise, live entertainment and access to the onboard bar (drinks not included). (TBC)' },
 ];
 
-const SITE = 'https://www.manchesterrivercruises.com';
+const SITE = site.url;
 const pageTitle = 'Music Cruises Manchester — Live Music on the Water';
 const pageDescription =
   'Music cruises in Manchester — live tribute and party nights on the Manchester Ship Canal, from ABBA and Elvis to Dolly, Adele, Club Classics, Soul River and Decks on Deck. Licensed bar onboard. Book direct.';
@@ -45,8 +46,8 @@ const structuredData = {
   url: `${SITE}/music-cruises-manchester`,
   touristType: 'Nightlife',
   availableLanguage: 'English',
-  address: { '@type': 'PostalAddress', streetAddress: 'Millennium Footbridge, The Quays', addressLocality: 'Salford', postalCode: 'M50 3RB', addressCountry: 'GB' },
-  geo: { '@type': 'GeoCoordinates', latitude: 53.4705, longitude: -2.296 },
+  address: { '@type': 'PostalAddress', ...site.address },
+  geo: { '@type': 'GeoCoordinates', ...site.geo },
 };
 ---
 

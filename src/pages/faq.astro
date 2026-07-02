@@ -1,5 +1,6 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+import { site } from '../data/site';
 import FAQSection from '../components/FAQSection.astro';
 import CTAButton from '../components/CTAButton.astro';
 
@@ -43,7 +44,7 @@ const accessibility = [
   { q: 'Do you cater for dietary requirements?', a: 'Where food is served we aim to cater for dietary requirements — please let us know in advance. (TBC)' },
 ];
 
-const SITE = 'https://www.manchesterrivercruises.com';
+const SITE = site.url;
 const pageTitle = 'Frequently Asked Questions — Manchester River Cruises';
 const pageDescription =
   'Manchester River Cruises FAQs — everything you need to know before your cruise, from what you will see and what to wear to booking, cancellations and accessibility.';

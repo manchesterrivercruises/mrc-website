@@ -2,6 +2,7 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import SectionHeading from '../components/SectionHeading.astro';
 import EventCard from '../components/EventCard.astro';
+import { site } from '../data/site';
 
 // Product IDs (see .env.example) used to derive the tour-type filter category.
 const CITY_RIVER_TOUR_ID = 'ef45d8bd-529c-4dae-9c35-cd1b8e4e0a75';
@@ -138,7 +139,7 @@ const venues = [
   { name: 'Holiday Inn MediaCity', tagline: 'Hotel', distance: '5 min walk' },
 ];
 
-const SITE = 'https://www.manchesterrivercruises.com';
+const SITE = site.url;
 const pageTitle = "What's On — Manchester River Cruises";
 const pageDescription =
   'Upcoming departures and events on the Manchester Ship Canal — City River Tour sightseeing cruises, live music and party nights, and Boat to Old Trafford matchday ferries. Book direct.';
@@ -165,13 +166,7 @@ const structuredData = {
       location: {
         '@type': 'Place',
         name: 'Millennium Footbridge, Salford Quays',
-        address: {
-          '@type': 'PostalAddress',
-          streetAddress: 'Millennium Footbridge, The Quays',
-          addressLocality: 'Salford',
-          postalCode: 'M50 3RB',
-          addressCountry: 'GB',
-        },
+        address: { '@type': 'PostalAddress', ...site.address },
       },
       url: `${SITE}${hrefForKey(typeKey(e.ventrataProductId))}`,
       ...(e.priceFrom != null && {

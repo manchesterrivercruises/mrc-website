@@ -1,5 +1,6 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+import { site } from '../data/site';
 import CTAButton from '../components/CTAButton.astro';
 
 // Fleet — TEMPORARY placeholder data with inline detailed cards. Replace with a `vessels`
@@ -13,7 +14,7 @@ const vessels = [
   { name: 'Joyce Too', capacity: 'TBC', bestFor: 'Sightseeing tours & private hire' },
 ];
 
-const SITE = 'https://www.manchesterrivercruises.com';
+const SITE = site.url;
 const pageTitle = 'Our Fleet — Manchester River Cruises';
 const pageDescription =
   'The Manchester River Cruises fleet — Princess Katherine, Isabella, Melody, Georgina and Joyce Too. Passenger capacities and details for sightseeing, events and private hire.';

@@ -1,5 +1,6 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+import { site } from '../data/site';
 import SectionHeading from '../components/SectionHeading.astro';
 import CTAButton from '../components/CTAButton.astro';
 import FAQSection from '../components/FAQSection.astro';
@@ -32,7 +33,7 @@ const faqs = [
   { q: 'Can we bring our own drinks?', a: 'There is a fully licensed bar onboard; outside drinks are not usually permitted. (TBC)' },
 ];
 
-const SITE = 'https://www.manchesterrivercruises.com';
+const SITE = site.url;
 const pageTitle = 'Party Boat Manchester — Boat Parties on the Ship Canal';
 const pageDescription =
   'Party boat hire and boat parties in Manchester on the Ship Canal — birthdays, hen dos and work nights out. Join a scheduled party cruise or hire a boat exclusively. Licensed bar onboard. Book direct.';
@@ -45,8 +46,8 @@ const structuredData = {
   url: `${SITE}/party-boat-manchester`,
   touristType: 'Nightlife',
   availableLanguage: 'English',
-  address: { '@type': 'PostalAddress', streetAddress: 'Millennium Footbridge, The Quays', addressLocality: 'Salford', postalCode: 'M50 3RB', addressCountry: 'GB' },
-  geo: { '@type': 'GeoCoordinates', latitude: 53.4705, longitude: -2.296 },
+  address: { '@type': 'PostalAddress', ...site.address },
+  geo: { '@type': 'GeoCoordinates', ...site.geo },
 };
 ---
 

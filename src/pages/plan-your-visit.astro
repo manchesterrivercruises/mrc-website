@@ -1,9 +1,10 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+import { site } from '../data/site';
 import SectionHeading from '../components/SectionHeading.astro';
 import ProductCard from '../components/ProductCard.astro';
 
-const SITE = 'https://www.manchesterrivercruises.com';
+const SITE = site.url;
 const pageTitle = 'Plan Your Visit — Manchester River Cruises';
 const pageDescription =
   'Plan your visit to Manchester River Cruises — getting here, accessibility, FAQs, gift vouchers and what to bring for your cruise from Salford Quays.';

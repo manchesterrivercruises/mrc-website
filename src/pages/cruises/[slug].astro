@@ -8,6 +8,7 @@ import FAQSection from '../../components/FAQSection.astro';
 import BookingPanel from '../../components/BookingPanel.astro';
 import ProductCard from '../../components/ProductCard.astro';
 import GettingHere from '../../components/GettingHere.astro';
+import { site } from '../../data/site';
 
 // One page per event, generated from the `events` content collection.
 // Content lives in src/content/events/*.md — layout stays here in the template.
@@ -54,16 +55,10 @@ const keyFacts = [
   { text: 'Millennium Footbridge departure', icon: icons.pin },
 ];
 
-const bookDirect = [
-  'Official source — you book direct with the operator.',
-  'Always the latest live availability.',
-  'Direct support from the Manchester River Cruises team.',
-];
-
 // FAQSection expects { q, a }[]; map the collection's { question, answer } shape.
 const faqItems = faqs.map((f) => ({ q: f.question, a: f.answer }));
 
-const SITE = 'https://www.manchesterrivercruises.com';
+const SITE = site.url;
 const pageTitle = `${title} — Manchester River Cruises`;
 
 const structuredData = {
@@ -76,8 +71,8 @@ const structuredData = {
   location: {
     '@type': 'Place',
     name: 'Manchester River Cruises, Millennium Footbridge',
-    address: { '@type': 'PostalAddress', streetAddress: 'Millennium Footbridge, The Quays', addressLocality: 'Salford', postalCode: 'M50 3RB', addressCountry: 'GB' },
-    geo: { '@type': 'GeoCoordinates', latitude: 53.4705, longitude: -2.296 },
+    address: { '@type': 'PostalAddress', ...site.address },
+    geo: { '@type': 'GeoCoordinates', ...site.geo },
   },
   ...(priceFrom != null
     ? { offers: { '@type': 'Offer', price: priceFrom, priceCurrency: 'GBP', availability: 'https://schema.org/InStock', url: `${SITE}/cruises/${entry.id}` } }
@@ -146,7 +141,7 @@ const structuredData = {
 
         {/* Right — sticky booking panel */}
         <aside id="book" class="lg:sticky lg:top-6 lg:self-start scroll-mt-6">
-          <BookingPanel price={priceFrom != null ? `£${priceFrom}` : 'TBC'} bookDirect={bookDirect}>
+          <BookingPanel price={priceFrom != null ? `£${priceFrom}` : 'TBC'}>
             <Fragment slot="widget">
               {/*
                 STEP 6/9: Ventrata embedded checkout for this event.
