@@ -1,8 +1,270 @@
 ---
+import { getCollection } from 'astro:content';
 import BaseLayout from '../layouts/BaseLayout.astro';
+import SectionHeading from '../components/SectionHeading.astro';
+import CTAButton from '../components/CTAButton.astro';
+import EventCard from '../components/EventCard.astro';
+import ProductCard from '../components/ProductCard.astro';
+import StarRating from '../components/StarRating.astro';
+
+// ─────────────────────────────────────────────────────────────────────────────
+// FEATURED HERO PRODUCT — manual config, NEVER API-selected (AGENTS.md rule 5).
+// Defaults to City River Tour. Change here for a seasonal campaign; do not wire
+// this to the OCTO API. `title`/`subtitle` drive the hero copy.
+// ─────────────────────────────────────────────────────────────────────────────
+const heroProduct = {
+  title: 'See Manchester from the Water',
+  subtitle: 'Sightseeing cruises, live music nights and matchday ferries from Salford Quays',
+  href: '/city-river-tour',
+  ctaLabel: 'Book the City River Tour',
+  image: '/images/hero-city-river-tour.jpg', // placeholder — real WebP asset TBC
+  imageAlt: 'The City River Tour boat cruising past MediaCity at Salford Quays',
+};
+
+// Google review figures (TBC — confirm against the live Google listing before launch).
+const RATING = 4.5;
+const REVIEW_COUNT = 518;
+
+// ─────────────────────────────────────────────────────────────────────────────
+// WHAT'S ON STRIP — MOCK DATA, shape matches the `events` collection schema.
+// STEP 9: replace `upcoming` with getCollection('events') / live OCTO data of the
+// same shape — the EventCard rendering below does not change.
+// Dates are anchored relative to build time so the strip always shows future dates.
+// ─────────────────────────────────────────────────────────────────────────────
+const now = new Date();
+function inDays(days: number, hour: number, minute: number): Date {
+  const d = new Date(now.getTime() + days * 24 * 60 * 60 * 1000);
+  d.setHours(hour, minute, 0, 0);
+  return d;
+}
+const upcoming = [
+  { type: 'City River Tour', title: 'City River Tour', description: 'Our signature 60-minute sightseeing cruise along the Ship Canal.', startDate: inDays(2, 14, 0), priceFrom: 13, href: '/city-river-tour', draft: false },
+  { type: 'Events & Nights', title: 'ABBA Cruise', description: 'Dance the night away to the greatest ABBA hits.', startDate: inDays(4, 19, 30), priceFrom: 30, href: '/whats-on', draft: false },
+  { type: 'MUFC Ferry', title: 'Boat to Old Trafford', description: 'Beat the traffic — arrive at the match by boat.', startDate: inDays(6, 13, 0), priceFrom: 12, href: '/mufc-ferry', draft: false },
+  { type: 'Events & Nights', title: 'Club Classics', description: 'Club anthems and dancefloor fillers on the canal.', startDate: inDays(9, 20, 0), priceFrom: 28, href: '/whats-on', draft: false },
+];
+const dateFmt = new Intl.DateTimeFormat('en-GB', { weekday: 'short', day: 'numeric', month: 'short' });
+const timeFmt = new Intl.DateTimeFormat('en-GB', { hour: 'numeric', minute: '2-digit', hour12: true });
+const dateLabel = (d: Date) => `${dateFmt.format(d)} · ${timeFmt.format(d).replace(':00', '')}`;
+
+// ─────────────────────────────────────────────────────────────────────────────
+// DISCOVER TEASERS — 3 newest guides, live from the collection.
+// ─────────────────────────────────────────────────────────────────────────────
+const discoverTeasers = (await getCollection('discover', ({ data }) => !data.draft))
+  .sort((a, b) => (b.data.publishDate?.getTime() ?? 0) - (a.data.publishDate?.getTime() ?? 0))
+  .slice(0, 3);
+
+// City River Tour feature — compact fact row.
+const factIcons = {
+  clock: '<path d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />',
+  tag: '<path d="M9.568 3H5.25A2.25 2.25 0 0 0 3 5.25v4.318c0 .597.237 1.17.659 1.591l9.581 9.581c.699.699 1.78.872 2.607.33a18.095 18.095 0 0 0 5.223-5.223c.542-.827.369-1.908-.33-2.607L11.16 3.66A2.25 2.25 0 0 0 9.568 3Z" /><path d="M6 6h.008v.008H6V6Z" />',
+  check: '<path d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />',
+};
+const cityFacts = [
+  { text: '60 minutes', icon: factIcons.clock },
+  { text: 'From £13', icon: factIcons.tag },
+  { text: 'Free cancellation', icon: factIcons.check },
+];
+
+const statTiles = [
+  { stat: '43', label: 'Commentary stops' },
+  { stat: '5', label: 'Vessels in the fleet' },
+  { stat: 'Salford Quays', label: 'Departing from' },
+];
+
+const SITE = 'https://www.manchesterrivercruises.com';
+const pageTitle = 'Manchester River Cruises | Boat Tours, Events & Ferry from Salford Quays';
+const pageDescription =
+  'Sightseeing river cruises, live music and party nights, and matchday ferries on the Manchester Ship Canal from Salford Quays. Book direct with Manchester River Cruises.';
+
+const structuredData = {
+  '@context': 'https://schema.org',
+  '@graph': [
+    {
+      '@type': 'WebSite',
+      name: 'Manchester River Cruises',
+      url: SITE,
+    },
+    {
+      '@type': ['TouristAttraction', 'LocalBusiness'],
+      name: 'Manchester River Cruises',
+      description: pageDescription,
+      url: SITE,
+      email: 'info@manchesterrivercruises.com',
+      address: { '@type': 'PostalAddress', streetAddress: 'Millennium Footbridge, The Quays', addressLocality: 'Salford', postalCode: 'M50 3RB', addressCountry: 'GB' },
+      geo: { '@type': 'GeoCoordinates', latitude: 53.4705, longitude: -2.296 },
+      aggregateRating: { '@type': 'AggregateRating', ratingValue: RATING, reviewCount: REVIEW_COUNT, bestRating: 5 },
+    },
+  ],
+};
 ---
 
-<BaseLayout title="Manchester River Cruises">
-  <h1>Manchester River Cruises</h1>
-  <p>This page is coming soon.</p>
+<BaseLayout title={pageTitle} description={pageDescription}>
+  {/* Schema.org structured data (WebSite + TouristAttraction/LocalBusiness w/ aggregateRating) */}
+  <script type="application/ld+json" is:inline set:html={JSON.stringify(structuredData)} />
+
+  {/* 1. HERO ─────────────────────────────────────────────────────────────── */}
+  <section class="bg-dark text-white">
+    <div class="mx-auto grid max-w-6xl gap-10 px-4 py-20 sm:px-6 md:py-28 lg:grid-cols-2 lg:items-center lg:gap-12 lg:px-8">
+      <div>
+        <p class="text-sm font-semibold uppercase tracking-[0.2em] text-accent">Manchester River Cruises</p>
+        <h1 class="mt-3 text-4xl font-bold tracking-tight text-white sm:text-5xl md:text-6xl">{heroProduct.title}</h1>
+        <p class="mt-5 max-w-xl text-lg leading-relaxed text-white/80">{heroProduct.subtitle}</p>
+        <div class="mt-8 flex flex-wrap items-center gap-4">
+          <CTAButton href={heroProduct.href}>{heroProduct.ctaLabel}</CTAButton>
+          <CTAButton href="/whats-on" variant="outline">What's On</CTAButton>
+        </div>
+        {/* Trust line */}
+        <div class="mt-6 flex items-center gap-2 text-sm text-white/80">
+          <StarRating rating={RATING} size="h-4 w-4" />
+          <span><span class="font-semibold text-white">{RATING} stars</span> · {REVIEW_COUNT} Google reviews</span>
+        </div>
+      </div>
+      {/* Hero image placeholder — swap for a real WebP asset */}
+      <div class="flex aspect-[4/3] items-center justify-center rounded-card bg-white/5 text-xs text-white/40 ring-1 ring-white/10 lg:aspect-[5/4]">
+        {heroProduct.imageAlt}
+      </div>
+    </div>
+  </section>
+
+  {/* 2. CITY RIVER TOUR FEATURE (always present regardless of hero config) ─── */}
+  <section aria-labelledby="crt" class="mx-auto max-w-6xl px-4 py-16 sm:px-6 md:py-20 lg:px-8">
+    <div class="grid gap-10 lg:grid-cols-2 lg:items-center lg:gap-12">
+      <div class="flex aspect-[16/10] items-center justify-center rounded-card bg-panel text-xs text-subtle">
+        City River Tour photo (TBC)
+      </div>
+      <div>
+        <SectionHeading id="crt">The City River Tour</SectionHeading>
+        <p class="mt-6 text-lg leading-relaxed text-body">
+          Our signature sightseeing cruise glides along the historic Manchester Ship Canal from Salford
+          Quays, with live commentary bringing the waterfront's landmarks and stories to life.
+        </p>
+        <ul class="mt-6 flex flex-col gap-3 text-sm sm:flex-row sm:flex-wrap sm:items-center sm:gap-6">
+          {
+            cityFacts.map((f) => (
+              <li class="flex items-center gap-2">
+                <svg class="h-5 w-5 flex-none text-primary" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" set:html={f.icon} />
+                <span class="text-body">{f.text}</span>
+              </li>
+            ))
+          }
+        </ul>
+        <div class="mt-8">
+          <CTAButton href="/city-river-tour">Book the City River Tour</CTAButton>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  {/* 3. WHAT'S ON STRIP ───────────────────────────────────────────────────── */}
+  <section aria-labelledby="coming-up" class="bg-panel">
+    <div class="mx-auto max-w-6xl px-4 py-16 sm:px-6 md:py-20 lg:px-8">
+      <div class="flex flex-wrap items-end justify-between gap-4">
+        <SectionHeading id="coming-up">Coming up</SectionHeading>
+        <a href="/whats-on" class="text-sm font-medium text-primary hover:underline">See all dates →</a>
+      </div>
+      <div class="mt-8 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        {
+          upcoming.map((e) => (
+            <EventCard
+              type={e.type}
+              title={e.title}
+              description={e.description}
+              dateLabel={dateLabel(e.startDate)}
+              priceFrom={e.priceFrom}
+              href={e.href}
+            />
+          ))
+        }
+      </div>
+      <div class="mt-8">
+        <CTAButton href="/whats-on" variant="outline">See all dates</CTAButton>
+      </div>
+    </div>
+  </section>
+
+  {/* 4. EVENTS GRID ───────────────────────────────────────────────────────── */}
+  <section aria-labelledby="nights" class="mx-auto max-w-6xl px-4 py-16 sm:px-6 md:py-20 lg:px-8">
+    <SectionHeading id="nights">Nights to remember</SectionHeading>
+    <div class="mt-8 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      <ProductCard name="Music Cruises" desc="Live tribute and themed nights — ABBA, Elvis, Dolly, Adele, Soul and more." href="/music-cruises-manchester" linkText="Music cruises" />
+      <ProductCard name="Party Nights" desc="Boat parties on the Ship Canal — dancing, drinks and the city skyline." href="/party-boat-manchester" linkText="Party nights" />
+      <ProductCard name="Christmas Cruises" desc="Festive party nights and seasonal cruises through the winter." href="/christmas-cruises-manchester" linkText="Christmas cruises" />
+    </div>
+  </section>
+
+  {/* 5. MUFC FERRY CALLOUT ────────────────────────────────────────────────── */}
+  <section aria-labelledby="mufc" class="bg-dark text-white">
+    <div class="mx-auto flex max-w-6xl flex-col gap-6 px-4 py-14 sm:px-6 md:flex-row md:items-center md:justify-between lg:px-8">
+      <div>
+        <h2 id="mufc" class="text-2xl font-bold tracking-tight sm:text-3xl">Matchday by boat</h2>
+        <p class="mt-2 max-w-2xl text-lg leading-relaxed text-white/80">
+          Skip the matchday traffic and arrive at Old Trafford by ferry along the Ship Canal.
+        </p>
+      </div>
+      <div class="shrink-0">
+        <CTAButton href="/mufc-ferry">MUFC Ferry</CTAButton>
+      </div>
+    </div>
+  </section>
+
+  {/* 6. PRIVATE HIRE CALLOUT ──────────────────────────────────────────────── */}
+  <section aria-labelledby="private" class="mx-auto max-w-6xl px-4 py-16 sm:px-6 md:py-20 lg:px-8">
+    <div class="rounded-card bg-panel p-8 ring-1 ring-black/5 sm:flex sm:items-center sm:justify-between sm:gap-6 sm:p-10">
+      <div>
+        <h2 id="private" class="text-2xl font-bold tracking-tight text-ink sm:text-3xl">Make it yours</h2>
+        <p class="mt-2 max-w-2xl text-lg leading-relaxed text-body">
+          Charter a boat exclusively for your celebration, corporate event or private party.
+        </p>
+      </div>
+      <div class="mt-6 shrink-0 sm:mt-0">
+        <CTAButton href="/private-hire" variant="outline">Private hire</CTAButton>
+      </div>
+    </div>
+  </section>
+
+  {/* 7. DISCOVER TEASERS ──────────────────────────────────────────────────── */}
+  <section aria-labelledby="discover" class="bg-panel">
+    <div class="mx-auto max-w-6xl px-4 py-16 sm:px-6 md:py-20 lg:px-8">
+      <div class="flex flex-wrap items-end justify-between gap-4">
+        <SectionHeading id="discover">Plan your day</SectionHeading>
+        <a href="/discover" class="text-sm font-medium text-primary hover:underline">All guides →</a>
+      </div>
+      <div class="mt-8 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        {
+          discoverTeasers.map((g) => (
+            <ProductCard
+              name={g.data.title}
+              desc={g.data.description}
+              href={`/discover/${g.id}`}
+              linkText="Read guide"
+              imageLabel={g.data.heroImageAlt ?? 'Image (TBC)'}
+            />
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  {/* 8. SOCIAL PROOF ──────────────────────────────────────────────────────── */}
+  <section aria-labelledby="proof" class="mx-auto max-w-6xl px-4 py-16 sm:px-6 md:py-20 lg:px-8">
+    <h2 id="proof" class="sr-only">Why book with us</h2>
+    <div class="flex flex-col items-center gap-3 text-center">
+      <StarRating rating={RATING} size="h-7 w-7" />
+      <p class="text-2xl font-bold text-ink">
+        {RATING} / 5
+        <span class="ml-2 align-middle text-base font-normal text-subtle">from {REVIEW_COUNT} Google reviews</span>
+      </p>
+    </div>
+    <div class="mt-10 grid grid-cols-1 gap-4 sm:grid-cols-3">
+      {
+        statTiles.map((t) => (
+          <div class="rounded-card bg-panel p-8 text-center ring-1 ring-black/5">
+            <div class="text-3xl font-bold text-primary sm:text-4xl">{t.stat}</div>
+            <div class="mt-2 text-sm text-subtle">{t.label}</div>
+          </div>
+        ))
+      }
+    </div>
+  </section>
 </BaseLayout>

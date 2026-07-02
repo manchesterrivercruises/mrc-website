@@ -1,8 +1,106 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+import SectionHeading from '../components/SectionHeading.astro';
+import CTAButton from '../components/CTAButton.astro';
+
+// Standalone, detailed Getting Here page. The shared <GettingHere /> component is the SUMMARY
+// version embedded on product pages; this page expands on it with full travel detail.
+const SITE = 'https://www.manchesterrivercruises.com';
+const pageTitle = 'Getting Here — Manchester River Cruises';
+const pageDescription =
+  'How to get to Manchester River Cruises at the Millennium Footbridge, Salford Quays (M50 3RB) — by tram, car, taxi and bike, with parking options and directions.';
+
+const placeholderTile =
+  'flex items-center justify-center rounded-card border border-dashed border-black/15 bg-panel p-8 text-center text-sm text-subtle';
+
+const structuredData = {
+  '@context': 'https://schema.org',
+  '@type': 'WebPage',
+  name: 'Getting Here',
+  description: pageDescription,
+  url: `${SITE}/getting-here`,
+};
 ---
 
-<BaseLayout title="Getting Here — Manchester River Cruises">
-  <h1>Getting Here</h1>
-  <p>This page is coming soon.</p>
+<BaseLayout title={pageTitle} description={pageDescription}>
+  {/* Schema.org structured data (WebPage) */}
+  <script type="application/ld+json" is:inline set:html={JSON.stringify(structuredData)} />
+
+  <div class="mx-auto max-w-6xl px-4 py-16 sm:px-6 md:py-20 lg:px-8">
+    <h1 class="text-3xl font-bold tracking-tight text-ink sm:text-4xl">Getting Here</h1>
+    <p class="mt-4 max-w-2xl text-lg leading-relaxed text-body">
+      All cruises depart from the Millennium Footbridge at Salford Quays (M50 3RB), beside
+      MediaCityUK — a short walk from The Lowry and the Imperial War Museum North.
+    </p>
+
+    {/* Map embed + boarding photo placeholders */}
+    <div class="mt-8 grid gap-4 sm:grid-cols-2">
+      {/* Google Maps embed placeholder — the <iframe> embed drops in here. */}
+      <div class={`aspect-video ${placeholderTile}`}>Google Maps embed loads here (TBC)</div>
+      <div class={`aspect-video ${placeholderTile}`}>Boarding point photo (TBC)</div>
+    </div>
+
+    <div class="mt-12 grid gap-10 md:grid-cols-2">
+      <section aria-labelledby="board">
+        <SectionHeading id="board">Where to board</SectionHeading>
+        <p class="mt-6 leading-relaxed text-body">
+          Millennium Footbridge, Salford Quays, Manchester, M50 3RB. Look for the boarding point on
+          the quayside beside the footbridge.
+        </p>
+        <a
+          href="https://www.google.com/maps/search/?api=1&query=Millennium+Footbridge+Salford+Quays+M50+3RB"
+          class="mt-2 inline-block font-medium text-primary hover:underline"
+          rel="noopener"
+          target="_blank"
+        >
+          Open in Google Maps
+        </a>
+      </section>
+
+      <section aria-labelledby="tram">
+        <SectionHeading id="tram">By tram</SectionHeading>
+        <p class="mt-6 leading-relaxed text-body">
+          Take the Metrolink to <strong>MediaCityUK</strong> (on the Eccles/MediaCityUK line). From
+          the stop it's a few minutes' walk across to the Millennium Footbridge. Nearby stops
+          include Harbour City and Broadway. (Details TBC.)
+        </p>
+      </section>
+
+      <section aria-labelledby="car">
+        <SectionHeading id="car">By car &amp; parking</SectionHeading>
+        <p class="mt-6 leading-relaxed text-body">
+          Salford Quays is signposted from the M602 and M60. There are several pay-and-display and
+          multi-storey car parks around the Quays and MediaCityUK, a short walk from the boarding
+          point.
+        </p>
+        <ul class="mt-3 space-y-1 text-sm text-subtle">
+          <li>Car park names &amp; distances — TBC</li>
+          <li>Driving directions from the motorway — TBC</li>
+        </ul>
+      </section>
+
+      <section aria-labelledby="taxi">
+        <SectionHeading id="taxi">By taxi</SectionHeading>
+        <p class="mt-6 leading-relaxed text-body">
+          Taxis and ride-shares can drop off close to the Millennium Footbridge. Exact drop-off point
+          TBC.
+        </p>
+      </section>
+
+      <section aria-labelledby="bike">
+        <SectionHeading id="bike">By bike</SectionHeading>
+        <p class="mt-6 leading-relaxed text-body">
+          Salford Quays is well connected by cycle routes along the waterfront. Cycle parking
+          locations — TBC.
+        </p>
+      </section>
+    </div>
+
+    <div class="mt-16 rounded-card bg-panel p-6 ring-1 ring-black/5 sm:flex sm:items-center sm:justify-between sm:gap-6">
+      <p class="font-semibold text-ink">Ready to get on the water?</p>
+      <div class="mt-4 shrink-0 sm:mt-0">
+        <CTAButton href="/city-river-tour">Book a cruise</CTAButton>
+      </div>
+    </div>
+  </div>
 </BaseLayout>

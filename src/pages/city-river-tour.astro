@@ -7,6 +7,8 @@ import ProductCard from '../components/ProductCard.astro';
 import AttractionCard from '../components/AttractionCard.astro';
 import FAQSection from '../components/FAQSection.astro';
 import ReviewStrip from '../components/ReviewStrip.astro';
+import GettingHere from '../components/GettingHere.astro';
+import KeyFacts from '../components/KeyFacts.astro';
 import tourStops from '../data/tour-stops.json';
 
 // NOTE: Placeholder content. Items marked (TBC) await Simon's confirmed copy
@@ -132,9 +134,7 @@ const structuredData = {
   ],
 };
 
-// Page-local style token still used by non-componentised placeholder tiles.
-const placeholderTile =
-  'flex items-center justify-center rounded-card border border-dashed border-black/15 bg-panel text-sm text-subtle';
+// Page-local style token for the gallery placeholder tiles.
 const galleryTile =
   'flex h-full w-full items-center justify-center rounded-card bg-panel text-sm text-subtle ring-1 ring-black/5 transition hover:brightness-95';
 ---
@@ -249,43 +249,23 @@ const galleryTile =
       </div>
     </section>
 
-    {/* 3. Key facts strip */}
-    <section class="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
-      <div class="mt-6 flex flex-col gap-3 border-y border-black/10 py-4 text-sm sm:flex-row sm:flex-wrap sm:items-center">
-        {
-          keyFacts.map((f, i) => (
-            <div class={`flex items-center gap-2 ${i > 0 ? 'sm:border-l sm:border-black/10 sm:pl-6' : ''}`}>
-              <svg
-                class="h-4.5 w-4.5 flex-none text-primary"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="1.5"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                aria-hidden="true"
-                set:html={f.icon}
-              />
-              <span class="text-body">{f.text}</span>
-            </div>
-          ))
-        }
-        <span class="inline-flex items-center gap-1 rounded-full bg-primary/10 px-2.5 py-1 text-xs font-semibold text-primary sm:ml-2">
-          <svg
-            class="h-3.5 w-3.5"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="1.5"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            aria-hidden="true"
-            set:html={icons.clock}
-          />
-          24-hour cancellation
-        </span>
-      </div>
-    </section>
+    {/* Key facts strip (with 24-hour cancellation badge via the slot) */}
+    <KeyFacts facts={keyFacts}>
+      <span class="inline-flex items-center gap-1 rounded-full bg-primary/10 px-2.5 py-1 text-xs font-semibold text-primary sm:ml-2">
+        <svg
+          class="h-3.5 w-3.5"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.5"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          aria-hidden="true"
+          set:html={icons.clock}
+        />
+        24-hour cancellation
+      </span>
+    </KeyFacts>
 
     {/* Interactive route map — between the gallery and the booking section */}
     <section aria-labelledby="route-map-heading" class="mx-auto max-w-6xl px-4 pt-10 sm:px-6 lg:px-8">
@@ -389,38 +369,8 @@ const galleryTile =
           </p>
         </section>
 
-        {/* Getting Here (fixed template for bookable product pages) */}
-        <section aria-labelledby="getting-here">
-          <SectionHeading id="getting-here">Getting here</SectionHeading>
-          <div class="mt-8 grid gap-8 sm:grid-cols-2">
-            <div class="space-y-6 text-body">
-              <div>
-                <h3 class="font-semibold text-ink">Where to board</h3>
-                <p class="mt-1 leading-relaxed">
-                  Millennium Footbridge, Salford Quays, Manchester, M50 3RB — beside MediaCityUK,
-                  a short walk from The Lowry and the Imperial War Museum North.
-                </p>
-                <a
-                  href="https://www.google.com/maps/search/?api=1&query=Millennium+Footbridge+Salford+Quays+M50+3RB"
-                  class="mt-2 inline-block font-medium text-primary hover:underline"
-                  rel="noopener"
-                  target="_blank"
-                >
-                  Open in Google Maps
-                </a>
-              </div>
-              <div>
-                <h3 class="font-semibold text-ink">By tram</h3>
-                <p class="mt-1 leading-relaxed">Take the Metrolink to MediaCityUK; the boarding point is a few minutes' walk.</p>
-              </div>
-              <div>
-                <h3 class="font-semibold text-ink">Parking &amp; taxis</h3>
-                <p class="mt-1 leading-relaxed">Quayside car parks are nearby. Taxi drop-off is available close to the footbridge. (Details TBC.)</p>
-              </div>
-            </div>
-            <div class={`aspect-[4/3] ${placeholderTile}`}>Map / boarding point photo (TBC)</div>
-          </div>
-        </section>
+        {/* Getting Here (shared component — fixed template for bookable product pages) */}
+        <GettingHere />
 
         {/* FAQ */}
         <FAQSection faqs={faqs} />

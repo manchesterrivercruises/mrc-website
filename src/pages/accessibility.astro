@@ -1,8 +1,73 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+import SectionHeading from '../components/SectionHeading.astro';
+import CTAButton from '../components/CTAButton.astro';
+
+const SITE = 'https://www.manchesterrivercruises.com';
+const pageTitle = 'Accessibility — Manchester River Cruises';
+const pageDescription =
+  'Accessibility information for Manchester River Cruises — boarding, onboard facilities, wheelchair access, assistance dogs and our sensory-friendly SEN cruises.';
+
+const structuredData = {
+  '@context': 'https://schema.org',
+  '@type': 'WebPage',
+  name: 'Accessibility',
+  description: pageDescription,
+  url: `${SITE}/accessibility`,
+};
 ---
 
-<BaseLayout title="Accessibility — Manchester River Cruises">
-  <h1>Accessibility</h1>
-  <p>This page is coming soon.</p>
+<BaseLayout title={pageTitle} description={pageDescription}>
+  {/* Schema.org structured data (WebPage) */}
+  <script type="application/ld+json" is:inline set:html={JSON.stringify(structuredData)} />
+
+  <div class="mx-auto max-w-3xl px-4 py-16 sm:px-6 md:py-20">
+    <h1 class="text-3xl font-bold tracking-tight text-ink sm:text-4xl">Accessibility</h1>
+    <p class="mt-4 text-lg leading-relaxed text-body">
+      We want everyone to enjoy a cruise. Here's what to expect — and please get in touch before you
+      book if you have any specific requirements so we can help.
+    </p>
+
+    <div class="mt-10 space-y-10">
+      <section aria-labelledby="boarding">
+        <SectionHeading id="boarding">Boarding</SectionHeading>
+        <p class="mt-6 leading-relaxed text-body">
+          Boarding is at the Millennium Footbridge, Salford Quays. Step-free boarding is available
+          where tides allow; our crew are on hand to assist. Full boarding details TBC.
+        </p>
+      </section>
+      <section aria-labelledby="onboard">
+        <SectionHeading id="onboard">Onboard facilities</SectionHeading>
+        <p class="mt-6 leading-relaxed text-body">
+          Boats have a heated indoor cabin and an open deck, with onboard toilets. Specific facility
+          details TBC.
+        </p>
+      </section>
+      <section aria-labelledby="wheelchair">
+        <SectionHeading id="wheelchair">Wheelchair access</SectionHeading>
+        <p class="mt-6 leading-relaxed text-body">
+          Wheelchair access varies by vessel and tide. Please contact us in advance so we can advise
+          on the best departure for you. Full details TBC.
+        </p>
+      </section>
+      <section aria-labelledby="dogs">
+        <SectionHeading id="dogs">Assistance dogs</SectionHeading>
+        <p class="mt-6 leading-relaxed text-body">Assistance dogs are welcome onboard. (TBC)</p>
+      </section>
+      <section aria-labelledby="sen">
+        <SectionHeading id="sen">Sensory-friendly (SEN) cruises</SectionHeading>
+        <p class="mt-6 leading-relaxed text-body">
+          We run a relaxed, sensory-friendly SEN Santa cruise designed for children with additional
+          needs. Details TBC.
+        </p>
+      </section>
+    </div>
+
+    <div class="mt-12 rounded-card bg-panel p-6 ring-1 ring-black/5 sm:flex sm:items-center sm:justify-between sm:gap-6">
+      <p class="font-semibold text-ink">Have a specific requirement?</p>
+      <div class="mt-4 shrink-0 sm:mt-0">
+        <CTAButton href="/contact" variant="outline">Contact us</CTAButton>
+      </div>
+    </div>
+  </div>
 </BaseLayout>

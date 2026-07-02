@@ -1,8 +1,355 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+import SectionHeading from '../components/SectionHeading.astro';
+import EventCard from '../components/EventCard.astro';
+
+// Product IDs (see .env.example) used to derive the tour-type filter category.
+const CITY_RIVER_TOUR_ID = 'ef45d8bd-529c-4dae-9c35-cd1b8e4e0a75';
+const MUFC_FERRY_ID = '458c8d36-8268-481d-ae47-491b41508b8e';
+
+// Mock dates are anchored RELATIVE to build time so the date filters always have
+// matches when previewed. Date filters are rolling windows (see the client script):
+//   This week = next 7 days · This month = next 30 days · Next month = 30-60 days.
+const now = new Date();
+function inDays(days: number, hour: number, minute: number): Date {
+  const d = new Date(now.getTime() + days * 24 * 60 * 60 * 1000);
+  d.setHours(hour, minute, 0, 0);
+  return d;
+}
+
+// TEMP images — hotlinked directly from the CURRENT live manchesterrivercruises.com,
+// for REVIEW ONLY. These are NOT our assets, are not optimised, and some are stand-ins for
+// events without a dedicated photo. Replace every one with a properly hosted WebP asset
+// before launch (see content-checklist). Every URL below is TBC / temporary.
+const tempImages = {
+  cityRiverTour: 'https://optimise2.assets-servd.host/river-cruises/production/images/City-River-Tours-Thumbnail-500-350-1.png?w=800&h=543&q=80&fm=webp&fit=crop&crop=focalpoint&fp-x=0.5&fp-y=0.5&dm=1715165712&s=11b98b821586bd382154b5ea94b4d7c1', // TBC
+  oldTrafford: 'https://optimise2.assets-servd.host/river-cruises/production/images/Boat-to-Old-Trafford-Thumbnail-500-350.png?w=800&h=543&q=80&fm=webp&fit=crop&crop=focalpoint&fp-x=0.5&fp-y=0.5&dm=1715166524&s=9837aaf5bcf5e234155fed0bd3e48e3c', // TBC
+  abba: 'https://optimise2.assets-servd.host/river-cruises/production/images/ABBA/ABBA-thumbnail-500-x-350-px.webp?w=800&h=543&q=80&fm=webp&fit=crop&crop=focalpoint&fp-x=0.5&fp-y=0.5&dm=1778759103&s=923a9e0a51bb7abe75ceb987b55303c5', // TBC
+  boatTropicana: 'https://optimise2.assets-servd.host/river-cruises/production/images/Boat-Tropicana-Thumbnail-500x350.png?w=800&h=543&q=80&fm=webp&fit=crop&crop=focalpoint&fp-x=0.5&fp-y=0.5&dm=1715166431&s=1837b5eb336b2dfa38bdb1e7af50fc1e', // TBC
+  decksOnDeck: 'https://optimise2.assets-servd.host/river-cruises/production/images/Decks-on-Deck/Copy-of-Decks-on-Deck-500-x-350-px.webp?w=800&h=543&q=80&fm=webp&fit=crop&crop=focalpoint&fp-x=0.5&fp-y=0.5&dm=1778759365&s=adb219588119f3d60c5778a4a9cc3763', // TBC (stand-in)
+  dolly: 'https://optimise2.assets-servd.host/river-cruises/production/images/Dolly-Cruise-Thumbnail-500-x-350.webp?w=800&h=543&q=80&fm=webp&fit=crop&crop=focalpoint&fp-x=0.5&fp-y=0.5&dm=1778759311&s=a2c066c30044a94e7946e71de0db1495', // TBC
+  elvisLive: 'https://optimise2.assets-servd.host/river-cruises/production/images/Elvis-Cruise-1.webp?w=800&h=543&q=80&fm=webp&fit=crop&crop=focalpoint&fp-x=0.5&fp-y=0.5&dm=1778759164&s=119ef3ba6b1b84de2bba390032be05f1', // TBC (stand-in)
+  swinging: 'https://optimise2.assets-servd.host/river-cruises/production/images/Swing-Rat-Pack-Cruise-thumbnail-500350.webp?w=800&h=543&q=80&fm=webp&fit=crop&crop=focalpoint&fp-x=0.5&fp-y=0.5&dm=1778759237&s=ffa771e13934d3086fc41840c85beb2a', // TBC (stand-in)
+  elvisRocks: 'https://optimise2.assets-servd.host/river-cruises/production/images/Elvis-Rocks/Elvis-Rocks-thumbnail-500-x-300-px-1.webp?w=800&h=543&q=80&fm=webp&fit=crop&crop=focalpoint&fp-x=0.5&fp-y=0.5&dm=1778759338&s=c966f0ada6983a3dcca5e3b19680785e', // TBC
+  dianaRoss: 'https://optimise2.assets-servd.host/river-cruises/production/images/Diana-Ross/Diana-Ross-WEB-Thumbnail-500-x-350.webp?w=800&h=543&q=80&fm=webp&fit=crop&crop=focalpoint&fp-x=0.5&fp-y=0.5&dm=1778759283&s=9a1a52d7af1ea9c625f56ad80e63dcc8', // TBC
+  adele: 'https://optimise2.assets-servd.host/river-cruises/production/images/Adele-Thumbnail-1200-630.webp?w=800&h=543&q=80&fm=webp&fit=crop&crop=focalpoint&fp-x=0.5&fp-y=0.5&dm=1778758996&s=57ec4847393b8dbb440de2033a0451b9', // TBC
+  backTo90s: 'https://optimise2.assets-servd.host/river-cruises/production/images/90-Boat-Cruise-thumbnail-500-x-350.png?w=800&h=543&q=80&fm=webp&fit=crop&crop=focalpoint&fp-x=0.5&fp-y=0.5&dm=1715168233&s=8a41a2b3d2b256aee4a726d480f4d1e8', // TBC
+};
+
+// MOCK DATA — shape matches the `events` Content Collection schema (src/content/config.ts).
+// heroImage values are the TEMP hotlinked URLs above (all TBC — see tempImages).
+// STEP 9: replace `mockEvents` with getCollection('events').map(e => e.data) or live
+// OCTO-derived data of the same shape — the rendering below does not change.
+const mockEvents = [
+  // This week (0-7 days)
+  { title: 'City River Tour', description: 'Our signature 60-minute sightseeing cruise along the Ship Canal.', ventrataProductId: CITY_RIVER_TOUR_ID, startDate: inDays(1, 14, 0), priceFrom: 13, heroImage: tempImages.cityRiverTour, heroImageAlt: 'City River Tour boat', draft: false },
+  { title: 'Soul River', description: 'A night of soul and Motown classics on the water.', ventrataProductId: '8c425994-25e9-4bc3-bce3-1181951142c8', startDate: inDays(2, 19, 30), priceFrom: 30, heroImage: tempImages.swinging, heroImageAlt: 'Soul River music cruise', draft: false },
+  { title: 'Boat to Old Trafford', description: 'Beat the traffic — arrive at the match by boat.', ventrataProductId: MUFC_FERRY_ID, startDate: inDays(3, 13, 0), priceFrom: 12, heroImage: tempImages.oldTrafford, heroImageAlt: 'Ferry to Old Trafford', draft: false },
+  { title: 'ABBA Cruise', description: 'Dance the night away to the greatest ABBA hits.', ventrataProductId: '50a5eb12-f9ad-4b1f-9a70-e880bd28152b', startDate: inDays(4, 19, 30), priceFrom: 30, heroImage: tempImages.abba, heroImageAlt: 'ABBA tribute cruise', draft: false },
+  { title: 'Club Classics', description: 'Club anthems and dancefloor fillers on the canal.', ventrataProductId: '46688aed-c6e3-4d6d-933b-efcba00d34fe', startDate: inDays(6, 20, 0), priceFrom: 28, heroImage: tempImages.decksOnDeck, heroImageAlt: 'Club Classics party boat', draft: false },
+  { title: 'City River Tour', description: 'Weekend afternoon departure with live commentary.', ventrataProductId: CITY_RIVER_TOUR_ID, startDate: inDays(6, 14, 0), priceFrom: 13, heroImage: tempImages.cityRiverTour, heroImageAlt: 'City River Tour at Salford Quays', draft: false },
+
+  // Rest of this month (8-30 days)
+  { title: 'City River Tour', description: 'Midweek sightseeing cruise from Salford Quays.', ventrataProductId: CITY_RIVER_TOUR_ID, startDate: inDays(10, 14, 0), priceFrom: 13, heroImage: tempImages.cityRiverTour, heroImageAlt: 'City River Tour boat', draft: false },
+  { title: 'Diana Ross Cruise', description: 'A glittering tribute to the music of Diana Ross.', ventrataProductId: '19441cae-34e1-440d-b7c1-534a9a2a163e', startDate: inDays(13, 19, 30), priceFrom: 30, heroImage: tempImages.dianaRoss, heroImageAlt: 'Diana Ross tribute cruise', draft: false },
+  { title: 'Boat to Old Trafford', description: 'Matchday ferry — a stress-free way to arrive.', ventrataProductId: MUFC_FERRY_ID, startDate: inDays(17, 13, 0), priceFrom: 12, heroImage: tempImages.oldTrafford, heroImageAlt: 'Matchday ferry', draft: false },
+  { title: 'Back to the 90s', description: 'The biggest hits of the 1990s, live on the water.', ventrataProductId: 'fb15c1fc-84f9-455b-a6d6-e8de0db30b3d', startDate: inDays(21, 20, 0), priceFrom: 28, heroImage: tempImages.backTo90s, heroImageAlt: 'Back to the 90s party cruise', draft: false },
+  { title: 'Elvis Rocks', description: 'The King returns for a rock ‘n’ roll cruise.', ventrataProductId: '9b61248a-b567-4cda-8b17-97d55e944b0b', startDate: inDays(27, 19, 30), priceFrom: 28, heroImage: tempImages.elvisRocks, heroImageAlt: 'Elvis tribute cruise', draft: false },
+
+  // Next month (31-60 days)
+  { title: 'Boat Tropicana', description: 'A tropical party night on the canal.', ventrataProductId: 'f137c230-50c4-41e0-bc75-5485fccf2668', startDate: inDays(34, 20, 0), priceFrom: 28, heroImage: tempImages.boatTropicana, heroImageAlt: 'Boat Tropicana party cruise', draft: false },
+  { title: 'City River Tour', description: 'Late-summer sightseeing cruise.', ventrataProductId: CITY_RIVER_TOUR_ID, startDate: inDays(38, 14, 0), priceFrom: 13, heroImage: tempImages.cityRiverTour, heroImageAlt: 'City River Tour boat', draft: false },
+  { title: 'Boat to Old Trafford', description: 'Matchday ferry to Old Trafford.', ventrataProductId: MUFC_FERRY_ID, startDate: inDays(45, 13, 0), priceFrom: 12, heroImage: tempImages.oldTrafford, heroImageAlt: 'Matchday ferry', draft: false },
+  { title: 'Adele Cruise', description: 'A soaring tribute to Adele on the water.', ventrataProductId: '99a19bc1-64d3-4f69-bd68-fb44348053a6', startDate: inDays(52, 19, 30), priceFrom: 30, heroImage: tempImages.adele, heroImageAlt: 'Adele tribute cruise', draft: false },
+
+  // Months 3-6 (61-180 days) — so "Next 3 months", "Next 6 months" and the range picker have data.
+  { title: "Rollin' on the River", description: 'Classic rock and river anthems.', ventrataProductId: 'd711f0c0-7939-4d6b-9219-6995de6723c3', startDate: inDays(66, 20, 0), priceFrom: 28, heroImage: tempImages.elvisLive, heroImageAlt: "Rollin' on the River cruise", draft: false },
+  { title: 'Dolly Cruise', description: 'A country night celebrating Dolly Parton.', ventrataProductId: 'f370910f-7d5e-49bb-89b6-dea2ca86f2a9', startDate: inDays(80, 19, 30), priceFrom: 28, heroImage: tempImages.dolly, heroImageAlt: 'Dolly Parton tribute cruise', draft: false },
+  { title: 'Swinging on the River', description: 'Swing and Rat Pack classics after dark.', ventrataProductId: 'ee4143b6-9c32-4db2-9d1f-807c858696fa', startDate: inDays(95, 19, 30), priceFrom: 28, heroImage: tempImages.swinging, heroImageAlt: 'Swing and Rat Pack cruise', draft: false },
+  { title: 'City River Tour', description: 'Autumn sightseeing cruise on the Ship Canal.', ventrataProductId: CITY_RIVER_TOUR_ID, startDate: inDays(110, 14, 0), priceFrom: 13, heroImage: tempImages.cityRiverTour, heroImageAlt: 'City River Tour boat', draft: false },
+  { title: 'Decks on Deck', description: 'A daytime deck party on the water.', ventrataProductId: 'cf398297-36a2-4a42-878f-5e409407f059', startDate: inDays(125, 15, 0), priceFrom: 30, heroImage: tempImages.decksOnDeck, heroImageAlt: 'Decks on Deck day party', draft: false },
+  { title: 'Boat to Old Trafford', description: 'Matchday ferry to Old Trafford.', ventrataProductId: MUFC_FERRY_ID, startDate: inDays(140, 13, 0), priceFrom: 12, heroImage: tempImages.oldTrafford, heroImageAlt: 'Matchday ferry', draft: false },
+  { title: 'Elvis Live', description: 'A full Elvis Presley tribute night.', ventrataProductId: '2fe9c519-e00a-4a0d-8067-e7e5c15a023e', startDate: inDays(155, 19, 30), priceFrom: 28, heroImage: tempImages.elvisLive, heroImageAlt: 'Elvis Live tribute cruise', draft: false },
+  { title: 'ABBA Cruise', description: 'The greatest ABBA hits return to the water.', ventrataProductId: '50a5eb12-f9ad-4b1f-9a70-e880bd28152b', startDate: inDays(170, 19, 30), priceFrom: 30, heroImage: tempImages.abba, heroImageAlt: 'ABBA tribute cruise', draft: false },
+];
+
+function typeKey(productId: string): string {
+  if (productId === CITY_RIVER_TOUR_ID) return 'crt';
+  if (productId === MUFC_FERRY_ID) return 'mufc';
+  return 'events';
+}
+function typeLabel(key: string): string {
+  if (key === 'crt') return 'City River Tour';
+  if (key === 'mufc') return 'MUFC Ferry';
+  return 'Events';
+}
+function hrefForKey(key: string): string {
+  if (key === 'crt') return '/city-river-tour';
+  if (key === 'mufc') return '/mufc-ferry';
+  return '/events';
+}
+
+const dateFmt = new Intl.DateTimeFormat('en-GB', {
+  weekday: 'short',
+  day: 'numeric',
+  month: 'short',
+  hour: 'numeric',
+  minute: '2-digit',
+  hour12: true,
+});
+
+// `availability` ('available' | 'limited' | 'soldout') is a MOCK stand-in — in STEP 9 the
+// badge + CTA state will be driven by LIVE OCTO availability data, not this hardcoded spread.
+// Values are spread across all three states (aligned to mockEvents order) so every badge is
+// visible for review — including in the default "Events & Nights / This week" view.
+const availabilityStates = [
+  'available', 'limited', 'available', 'soldout', 'available', 'limited', // this week
+  'available', 'limited', 'soldout', 'available', 'limited', // rest of this month
+  'available', 'available', 'limited', 'soldout', // next month
+  'available', 'limited', 'available', 'available', 'soldout', 'available', 'limited', 'available', // months 3-6
+] as const;
+
+const upcoming = mockEvents
+  .map((e, i) => ({ ...e, availability: availabilityStates[i] ?? 'available' }))
+  .filter((e) => !e.draft)
+  .sort((a, b) => a.startDate.getTime() - b.startDate.getTime());
+
+// Default type filter: Events & Nights. Default date filter: This week.
+const typeFilters = [
+  { value: 'all', label: 'All' },
+  { value: 'events', label: 'Events', isDefault: true },
+  { value: 'mufc', label: 'MUFC Ferry' },
+  { value: 'crt', label: 'City River Tour' },
+];
+const dateFilters = [
+  { value: 'week', label: 'This week', isDefault: true },
+  { value: 'month', label: 'This month' },
+  { value: '3months', label: 'Next 3 months' },
+  { value: '6months', label: 'Next 6 months' },
+  { value: 'all', label: 'All dates' },
+];
+
+// Before/after venues — TEMPORARY lightweight strip.
+// TODO: move to a dedicated /discover/ page later.
+const venues = [
+  { name: 'Kargo', tagline: 'Waterfront bar and kitchen', distance: '3 min walk' },
+  { name: 'The Alchemist', tagline: 'Cocktail bar and restaurant', distance: '5 min walk' },
+  { name: "Nell's Pizza", tagline: 'Sourdough pizza', distance: '8 min walk' },
+  { name: 'Holiday Inn MediaCity', tagline: 'Hotel', distance: '5 min walk' },
+];
+
+const SITE = 'https://www.manchesterrivercruises.com';
+const pageTitle = "What's On — Manchester River Cruises";
+const pageDescription =
+  'Upcoming departures and events on the Manchester Ship Canal — City River Tour sightseeing cruises, live music and party nights, and Boat to Old Trafford matchday ferries. Book direct.';
+
+const pillClass =
+  'inline-block rounded-full border border-black/15 px-4 py-1.5 text-sm font-medium text-body transition hover:border-primary/50 peer-checked:border-primary peer-checked:bg-primary peer-checked:text-white';
+const dateInputClass =
+  'rounded-md border border-black/15 bg-white px-3 py-1.5 text-sm text-ink focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary';
+
+// Basic schema: an ItemList of scheduled Events.
+const structuredData = {
+  '@context': 'https://schema.org',
+  '@type': 'ItemList',
+  name: pageTitle,
+  itemListElement: upcoming.map((e, i) => ({
+    '@type': 'ListItem',
+    position: i + 1,
+    item: {
+      '@type': 'Event',
+      name: e.title,
+      startDate: e.startDate.toISOString(),
+      eventStatus: 'https://schema.org/EventScheduled',
+      eventAttendanceMode: 'https://schema.org/OfflineEventAttendanceMode',
+      location: {
+        '@type': 'Place',
+        name: 'Millennium Footbridge, Salford Quays',
+        address: {
+          '@type': 'PostalAddress',
+          streetAddress: 'Millennium Footbridge, The Quays',
+          addressLocality: 'Salford',
+          postalCode: 'M50 3RB',
+          addressCountry: 'GB',
+        },
+      },
+      url: `${SITE}${hrefForKey(typeKey(e.ventrataProductId))}`,
+      ...(e.priceFrom != null && {
+        offers: {
+          '@type': 'Offer',
+          price: e.priceFrom,
+          priceCurrency: 'GBP',
+          availability: 'https://schema.org/InStock',
+          url: `${SITE}${hrefForKey(typeKey(e.ventrataProductId))}`,
+        },
+      }),
+    },
+  })),
+};
 ---
 
-<BaseLayout title="What's On — Manchester River Cruises">
-  <h1>What's On</h1>
-  <p>This page is coming soon.</p>
+<BaseLayout title={pageTitle} description={pageDescription}>
+  {/* Basic Schema.org structured data (ItemList of Events) */}
+  <script type="application/ld+json" is:inline set:html={JSON.stringify(structuredData)} />
+
+  <section class="mx-auto max-w-6xl px-4 py-12 sm:px-6 md:py-16 lg:px-8">
+    <h1 class="text-3xl font-bold tracking-tight text-ink sm:text-4xl md:text-5xl">What's On</h1>
+    <p class="mt-4 max-w-2xl text-lg leading-relaxed text-body">
+      Upcoming departures and events on the Manchester Ship Canal — sightseeing cruises, live music
+      and party nights, and matchday ferries to Old Trafford.
+    </p>
+
+    <div class="whats-on mt-8">
+      {/* Tour-type filter */}
+      <fieldset class="m-0 flex flex-wrap gap-2 border-0 p-0">
+        <legend class="sr-only">Filter by tour type</legend>
+        {
+          typeFilters.map((f) => (
+            <label class="cursor-pointer">
+              <input type="radio" name="wo-type" value={f.value} checked={f.isDefault} class="peer sr-only" />
+              <span class={pillClass}>{f.label}</span>
+            </label>
+          ))
+        }
+      </fieldset>
+
+      {/* Date quick-filters */}
+      <fieldset id="wo-date-filters" class="m-0 mt-3 flex flex-wrap gap-2 border-0 p-0 transition-opacity">
+        <legend class="sr-only">Filter by date</legend>
+        {
+          dateFilters.map((f) => (
+            <label class="cursor-pointer">
+              <input type="radio" name="wo-date" value={f.value} checked={f.isDefault} class="peer sr-only" />
+              <span class={pillClass}>{f.label}</span>
+            </label>
+          ))
+        }
+      </fieldset>
+
+      {/* Date range picker — when BOTH dates are set it overrides the quick-filters above. */}
+      <div class="mt-3 flex flex-wrap items-center gap-2 text-sm">
+        <label for="wo-from" class="font-medium text-body">From</label>
+        <input type="date" id="wo-from" class={dateInputClass} aria-label="From date" />
+        <label for="wo-to" class="font-medium text-body">To</label>
+        <input type="date" id="wo-to" class={dateInputClass} aria-label="To date" />
+        <button type="button" id="wo-clear-dates" class="ml-1 font-medium text-primary hover:underline">
+          Clear dates
+        </button>
+      </div>
+
+      {/* Event grid — each card wrapped in a display:contents element carrying the
+          data-type / data-date the filter script reads. */}
+      <div class="event-grid mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        {
+          upcoming.map((e) => {
+            const key = typeKey(e.ventrataProductId);
+            return (
+              <div class="event-item contents" data-type={key} data-date={e.startDate.toISOString()}>
+                <EventCard
+                  type={typeLabel(key)}
+                  title={e.title}
+                  description={e.description}
+                  dateLabel={dateFmt.format(e.startDate)}
+                  priceFrom={e.priceFrom}
+                  href={hrefForKey(key)}
+                  image={e.heroImage}
+                  imageAlt={e.heroImageAlt}
+                  availability={e.availability}
+                />
+              </div>
+            );
+          })
+        }
+      </div>
+
+      <p class="wo-empty mt-6 text-subtle" hidden>
+        No events match these filters — try a different tour type or date range.
+      </p>
+    </div>
+  </section>
+
+  {/* "Before or after your cruise" venues strip — TEMPORARY, lightweight.
+      TODO: move to a dedicated /discover/ page later. */}
+  <section class="mx-auto max-w-6xl px-4 pb-12 sm:px-6 md:pb-16 lg:px-8">
+    <SectionHeading as="h2">Before or after your cruise</SectionHeading>
+    <p class="mt-4 max-w-2xl text-body">A few favourites within a short walk of the boarding point.</p>
+    <div class="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-4 sm:gap-4">
+      {
+        venues.map((v) => (
+          <div class="overflow-hidden rounded-card bg-white shadow-sm ring-1 ring-black/5">
+            <div class="flex aspect-[16/10] items-center justify-center bg-panel text-xs text-subtle">Image (TBC)</div>
+            <div class="p-3">
+              <h3 class="text-sm font-semibold text-ink">{v.name}</h3>
+              <p class="mt-0.5 text-xs leading-relaxed text-subtle">{v.tagline}</p>
+              <p class="mt-1 text-xs font-medium text-primary">{v.distance}</p>
+            </div>
+          </div>
+        ))
+      }
+    </div>
+  </section>
+
+  {/* Client filter: combine tour-type + date, show/hide cards. Cards remain in the
+      static HTML for crawlers; JS only toggles visibility. */}
+  <script>
+    function applyWhatsOnFilters() {
+      const typeEl = document.querySelector('input[name="wo-type"]:checked') as HTMLInputElement | null;
+      const dateEl = document.querySelector('input[name="wo-date"]:checked') as HTMLInputElement | null;
+      const fromEl = document.getElementById('wo-from') as HTMLInputElement | null;
+      const toEl = document.getElementById('wo-to') as HTMLInputElement | null;
+      if (!typeEl) return;
+
+      const type = typeEl.value;
+      const dateFilter = dateEl ? dateEl.value : 'all';
+      const fromMs = fromEl && fromEl.value ? new Date(fromEl.value + 'T00:00:00').getTime() : null;
+      const toMs = toEl && toEl.value ? new Date(toEl.value + 'T23:59:59').getTime() : null;
+      const rangeActive = fromMs !== null && toMs !== null;
+      const now = Date.now();
+      let visible = 0;
+
+      document.querySelectorAll<HTMLElement>('.event-item').forEach((item) => {
+        const t = item.getAttribute('data-type');
+        const ms = new Date(item.getAttribute('data-date') || '').getTime();
+        const days = (ms - now) / 86400000;
+        const matchType = type === 'all' || t === type;
+        let matchDate;
+        if (rangeActive) matchDate = ms >= (fromMs as number) && ms <= (toMs as number);
+        else if (dateFilter === 'week') matchDate = days >= 0 && days <= 7;
+        else if (dateFilter === 'month') matchDate = days >= 0 && days <= 30;
+        else if (dateFilter === '3months') matchDate = days >= 0 && days <= 90;
+        else if (dateFilter === '6months') matchDate = days >= 0 && days <= 180;
+        else matchDate = true; // 'all'
+        const show = matchType && matchDate;
+        item.style.display = show ? '' : 'none';
+        if (show) visible++;
+      });
+
+      // A set range overrides the quick-filters — dim + disable them to make that clear.
+      const dateFilters = document.getElementById('wo-date-filters');
+      if (dateFilters) {
+        dateFilters.classList.toggle('opacity-40', rangeActive);
+        dateFilters.classList.toggle('pointer-events-none', rangeActive);
+      }
+
+      const empty = document.querySelector('.wo-empty') as HTMLElement | null;
+      if (empty) empty.hidden = visible > 0;
+    }
+
+    document
+      .querySelectorAll('input[name="wo-type"], input[name="wo-date"], #wo-from, #wo-to')
+      .forEach((el) => {
+        el.addEventListener('change', applyWhatsOnFilters);
+        el.addEventListener('input', applyWhatsOnFilters);
+      });
+
+    document.getElementById('wo-clear-dates')?.addEventListener('click', () => {
+      const fromEl = document.getElementById('wo-from') as HTMLInputElement | null;
+      const toEl = document.getElementById('wo-to') as HTMLInputElement | null;
+      if (fromEl) fromEl.value = '';
+      if (toEl) toEl.value = '';
+      applyWhatsOnFilters();
+    });
+
+    applyWhatsOnFilters();
+  </script>
 </BaseLayout>

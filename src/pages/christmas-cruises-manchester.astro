@@ -1,8 +1,233 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+import SectionHeading from '../components/SectionHeading.astro';
+import BookingPanel from '../components/BookingPanel.astro';
+import ProductCard from '../components/ProductCard.astro';
+import FAQSection from '../components/FAQSection.astro';
+import CTAButton from '../components/CTAButton.astro';
+import GettingHere from '../components/GettingHere.astro';
+import KeyFacts from '../components/KeyFacts.astro';
+
+// Santa Cruise product — powers the booking panel + mobile sticky CTA.
+// The Ventrata checkout widget/script is wired in a later step; placeholder for now.
+const SANTA_CRUISE_ID = '6cabf36f-f48f-48c7-83c0-c964983a9dff';
+
+const icons = {
+  calendar:
+    '<path d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5" />',
+  tag: '<path d="M9.568 3H5.25A2.25 2.25 0 0 0 3 5.25v4.318c0 .597.237 1.17.659 1.591l9.581 9.581c.699.699 1.78.872 2.607.33a18.095 18.095 0 0 0 5.223-5.223c.542-.827.369-1.908-.33-2.607L11.16 3.66A2.25 2.25 0 0 0 9.568 3Z" /><path d="M6 6h.008v.008H6V6Z" />',
+  pin: '<path d="M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" /><path d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1 1 15 0Z" />',
+  sparkles:
+    '<path d="M9.813 15.904 9 18.75l-.813-2.846a4.5 4.5 0 0 0-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 0 0 3.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 0 0 3.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 0 0-3.09 3.09Z" /><path d="M18.259 8.715 18 9.75l-.259-1.035a3.375 3.375 0 0 0-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 0 0 2.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 0 0 2.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 0 0-2.456 2.456Z" />',
+  check: '<path d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />',
+};
+
+const keyFacts = [
+  { text: 'November – January', icon: icons.calendar },
+  { text: 'From £13 per person', icon: icons.tag },
+  { text: 'Millennium Footbridge, Salford Quays', icon: icons.pin },
+  { text: 'Festive theming onboard', icon: icons.sparkles },
+];
+
+const bookDirect = [
+  'Official source — you book direct with the operator.',
+  'Always the latest live availability.',
+  'Direct support from the Manchester River Cruises team.',
+];
+
+// Christmas products for the events grid (ProductCard). Ventrata product IDs in comments.
+const christmasProducts = [
+  { name: 'Cruise with Father Christmas', desc: 'A magical festive cruise with a visit from Santa — a family favourite.', href: '/santa-cruise-manchester' }, // 6cabf36f
+  { name: 'Santa SEN Cruise', desc: 'A relaxed, sensory-friendly Santa cruise for children with additional needs.', href: '/santa-cruise-manchester' }, // 4cfbc7f7
+  { name: 'Christmas Party Nights', desc: 'Festive music and party cruises to celebrate with friends and colleagues.', href: '/events' },
+];
+
+const included = [
+  'Festive menu onboard',
+  'Live entertainment and music',
+  'Onboard decorations and a festive atmosphere',
+  'A visit from Father Christmas on Santa cruises',
+];
+
+const faqs = [
+  {
+    q: 'When is the booking deadline for Christmas cruises?',
+    a: 'Christmas cruises are hugely popular and often sell out, so we recommend booking early. Exact deadlines TBC.',
+  },
+  { q: 'Can I make a group booking?', a: 'Yes — we welcome groups and festive parties. Group booking details TBC.' },
+  {
+    q: 'What should I wear?',
+    a: 'Dress warmly (and festively!). There is a heated indoor cabin, but the open deck can be cold in winter. (TBC)',
+  },
+  {
+    q: 'Are the Christmas cruises accessible?',
+    a: 'Accessibility details — including our sensory-friendly SEN Santa cruise — are TBC.',
+  },
+];
+
+const SITE = 'https://www.manchesterrivercruises.com';
+const pageTitle = 'Christmas Cruises Manchester — Manchester River Cruises';
+const pageDescription =
+  'Festive Christmas cruises on the Manchester Ship Canal from Salford Quays — Cruise with Father Christmas, sensory-friendly Santa SEN cruises and Christmas party nights. From £13. Book direct.';
+
+// Schema.org — TouristAttraction + Event. (Event startDate is a representative TBC date.)
+const structuredData = {
+  '@context': 'https://schema.org',
+  '@graph': [
+    {
+      '@type': 'TouristAttraction',
+      name: 'Christmas Cruises Manchester',
+      description: pageDescription,
+      url: `${SITE}/christmas-cruises-manchester`,
+      touristType: 'Christmas',
+      availableLanguage: 'English',
+      address: {
+        '@type': 'PostalAddress',
+        streetAddress: 'Millennium Footbridge, The Quays',
+        addressLocality: 'Salford',
+        postalCode: 'M50 3RB',
+        addressCountry: 'GB',
+      },
+      geo: { '@type': 'GeoCoordinates', latitude: 53.4705, longitude: -2.296 },
+    },
+    {
+      '@type': 'Event',
+      name: 'Cruise with Father Christmas',
+      description: 'A magical festive cruise with a visit from Santa on the Manchester Ship Canal.',
+      startDate: '2026-12-06T15:00:00',
+      eventStatus: 'https://schema.org/EventScheduled',
+      eventAttendanceMode: 'https://schema.org/OfflineEventAttendanceMode',
+      location: {
+        '@type': 'Place',
+        name: 'Millennium Footbridge, Salford Quays',
+        address: {
+          '@type': 'PostalAddress',
+          streetAddress: 'Millennium Footbridge, The Quays',
+          addressLocality: 'Salford',
+          postalCode: 'M50 3RB',
+          addressCountry: 'GB',
+        },
+      },
+      url: `${SITE}/santa-cruise-manchester`,
+      offers: {
+        '@type': 'Offer',
+        price: 13,
+        priceCurrency: 'GBP',
+        availability: 'https://schema.org/InStock',
+        url: `${SITE}/santa-cruise-manchester`,
+      },
+    },
+  ],
+};
 ---
 
-<BaseLayout title="Christmas Cruises in Manchester — Manchester River Cruises">
-  <h1>Christmas Cruises in Manchester</h1>
-  <p>This page is coming soon.</p>
+<BaseLayout title={pageTitle} description={pageDescription}>
+  {/* Schema.org structured data (TouristAttraction + Event) */}
+  <script type="application/ld+json" is:inline set:html={JSON.stringify(structuredData)} />
+
+  <div class="pb-24 md:pb-0">
+    {/* Hero — dark navy, gold accents, festive feel */}
+    <section class="bg-dark text-white">
+      <div class="mx-auto max-w-6xl px-4 py-20 sm:px-6 md:py-28 lg:px-8">
+        <p class="text-sm font-semibold uppercase tracking-[0.2em] text-accent">Christmas on the water</p>
+        <h1 class="mt-3 text-4xl font-bold tracking-tight text-white sm:text-5xl md:text-6xl">
+          Christmas Cruises Manchester
+        </h1>
+        <p class="mt-5 max-w-2xl text-lg leading-relaxed text-white/80">
+          Celebrate the festive season on the Manchester Ship Canal.
+        </p>
+        <div class="mt-8 flex flex-wrap items-center gap-4">
+          <CTAButton href="#book">Book Now</CTAButton>
+          <span class="text-sm text-white/70">From £13 · November – January</span>
+        </div>
+      </div>
+    </section>
+
+    {/* Key facts strip */}
+    <KeyFacts facts={keyFacts} />
+
+    {/* Two-column: left content + right sticky booking panel (matches City River Tour). */}
+    <div class="mx-auto max-w-6xl px-4 py-10 sm:px-6 md:py-12 lg:grid lg:grid-cols-[58%_38%] lg:items-start lg:gap-[4%] lg:px-8">
+      {/* Right column — booking panel (Santa Cruise 6cabf36f). Widget placeholder only. */}
+      <aside id="book" class="mb-10 lg:order-2 lg:mb-0 lg:sticky lg:top-20">
+        <BookingPanel price="£13" priceNote="Adults £13 · Children TBC" bookDirect={bookDirect} />
+      </aside>
+
+      {/* Left column — main content */}
+      <div class="space-y-12 md:space-y-14 lg:order-1">
+        {/* Intro */}
+        <section aria-labelledby="about">
+          <SectionHeading id="about">A festive cruise to remember</SectionHeading>
+          <div class="mt-6 max-w-3xl space-y-4 text-lg leading-relaxed text-body">
+            <p>
+              Wrap up warm and join us on the water this Christmas. Glide along the Manchester Ship
+              Canal aboard a festively decorated boat, with a warm heated cabin, seasonal music and a
+              magical atmosphere — the perfect way to celebrate with family, friends or colleagues.
+            </p>
+            <p class="text-base text-subtle">Full festive description and highlights — TBC from Simon (content-checklist.md).</p>
+          </div>
+        </section>
+
+        {/* Christmas products (ProductCard) */}
+        <section aria-labelledby="christmas-cruises">
+          <SectionHeading id="christmas-cruises">Our Christmas cruises</SectionHeading>
+          <div class="mt-8 grid grid-cols-1 gap-4 sm:grid-cols-2">
+            {christmasProducts.map((p) => <ProductCard name={p.name} desc={p.desc} href={p.href} />)}
+          </div>
+        </section>
+
+        {/* What's included */}
+        <section aria-labelledby="included">
+          <SectionHeading id="included">What's included</SectionHeading>
+          <ul class="mt-6 grid gap-3 sm:grid-cols-2">
+            {
+              included.map((item) => (
+                <li class="flex items-start gap-2 text-body">
+                  <svg
+                    class="mt-0.5 h-5 w-5 flex-none text-primary"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="1.5"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    aria-hidden="true"
+                    set:html={icons.check}
+                  />
+                  <span>{item}</span>
+                </li>
+              ))
+            }
+          </ul>
+          <p class="mt-3 text-sm text-subtle">Festive menu, entertainment and decorations — final details TBC.</p>
+        </section>
+
+        {/* Getting Here (shared component) */}
+        <GettingHere />
+
+        {/* FAQ */}
+        <FAQSection faqs={faqs} title="Christmas cruise FAQs" />
+
+        {/* Gift vouchers callout */}
+        <section aria-labelledby="gift-vouchers">
+          <div class="rounded-card bg-panel p-6 ring-1 ring-black/5 sm:flex sm:items-center sm:justify-between sm:gap-6">
+            <div>
+              <h2 id="gift-vouchers" class="text-lg font-semibold text-ink">Give the gift of a cruise</h2>
+              <p class="mt-1 text-sm leading-relaxed text-body">
+                Gift vouchers make a perfect Christmas present — redeemable against any cruise.
+              </p>
+            </div>
+            <div class="mt-4 shrink-0 sm:mt-0">
+              <CTAButton href="/gift-vouchers" variant="outline">Gift vouchers</CTAButton>
+            </div>
+          </div>
+        </section>
+      </div>
+    </div>
+  </div>
+
+  {/* Mobile sticky Book Now (Santa Cruise) — scrolls to the booking panel; no Ventrata script yet. */}
+  <div class="fixed inset-x-0 bottom-0 z-40 border-t border-black/10 bg-white/95 p-3 backdrop-blur md:hidden">
+    <CTAButton href="#book" class="w-full">Book Now</CTAButton>
+  </div>
 </BaseLayout>

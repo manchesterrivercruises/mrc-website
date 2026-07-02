@@ -1,8 +1,250 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+import SectionHeading from '../components/SectionHeading.astro';
+import CTAButton from '../components/CTAButton.astro';
+import KeyFacts from '../components/KeyFacts.astro';
+import ProductCard from '../components/ProductCard.astro';
+import FAQSection from '../components/FAQSection.astro';
+import GettingHere from '../components/GettingHere.astro';
+
+const icons = {
+  sparkles:
+    '<path d="M9.813 15.904 9 18.75l-.813-2.846a4.5 4.5 0 0 0-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 0 0 3.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 0 0 3.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 0 0-3.09 3.09Z" /><path d="M18.259 8.715 18 9.75l-.259-1.035a3.375 3.375 0 0 0-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 0 0 2.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 0 0 2.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 0 0-2.456 2.456Z" />',
+  users:
+    '<path d="M15 19.128a9.38 9.38 0 0 0 2.625.372 9.337 9.337 0 0 0 4.121-.952 4.125 4.125 0 0 0-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 0 1 8.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0 1 11.964-3.07M12 6.375a3.375 3.375 0 1 1-6.75 0 3.375 3.375 0 0 1 6.75 0Zm8.25 2.25a2.625 2.625 0 1 1-5.25 0 2.625 2.625 0 0 1 5.25 0Z" />',
+  pin: '<path d="M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" /><path d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1 1 15 0Z" />',
+  cake: '<path d="M12 8.25v-1.5m0 1.5c-1.355 0-2.697.056-4.024.166C6.845 8.51 6 9.473 6 10.608v2.513m6-4.87c1.355 0 2.697.055 4.024.165C17.155 8.51 18 9.473 18 10.608v2.513m-3-4.87v-1.5m-6 1.5v-1.5m12 9.75-1.5.75a3.354 3.354 0 0 1-3 0 3.354 3.354 0 0 0-3 0 3.354 3.354 0 0 1-3 0 3.354 3.354 0 0 0-3 0 3.354 3.354 0 0 1-3 0L3 16.5m15-3.38a48.474 48.474 0 0 0-6-.37c-2.032 0-4.034.126-6 .37m12 0c.39.049.777.102 1.163.16 1.07.16 1.837 1.094 1.837 2.175v5.17c0 .62-.504 1.124-1.125 1.124H4.125A1.125 1.125 0 0 1 3 20.625v-5.17c0-1.08.768-2.014 1.837-2.174A47.78 47.78 0 0 1 6 13.12" />',
+};
+
+const keyFacts = [
+  { text: 'Exclusive whole-vessel hire', icon: icons.sparkles },
+  { text: 'Up to TBC guests', icon: icons.users },
+  { text: 'Salford Quays departure', icon: icons.pin },
+  { text: 'Bespoke catering available', icon: icons.cake },
+];
+
+const occasions = [
+  'Corporate events',
+  'Celebrations',
+  'Filming & photography',
+  'Product launches',
+  'Birthday parties',
+  'Hen & stag dos',
+  'Weddings',
+];
+
+const hireVessels = [{ name: 'Princess Katherine' }, { name: 'Isabella' }, { name: 'Melody' }];
+
+const included = [
+  'Exclusive use of the whole vessel',
+  'Experienced crew and skipper',
+  'Licensed bar service',
+  'Catering options (TBC)',
+  'Sound system (TBC)',
+];
+
+const eventTypes = ['Corporate Event', 'Birthday', 'Hen/Stag', 'Wedding', 'Filming', 'Product Launch', 'Other'];
+const hearAbout = ['Google search', 'Social media', 'Recommendation', "We've cruised before", 'Other'];
+
+const faqs = [
+  { q: 'Is there a minimum hire duration?', a: 'Minimum hire duration TBC.' },
+  { q: 'What catering options are available?', a: 'We offer a range of catering options to suit your event — details TBC.' },
+  { q: 'Can we bring our own alcohol?', a: 'There is a licensed bar onboard; corkage and bring-your-own policy TBC.' },
+  { q: 'Is there a DJ or sound system?', a: 'A sound system is available onboard; DJ and entertainment options TBC.' },
+  { q: 'How far in advance should we book?', a: 'We recommend enquiring as early as possible, especially for peak dates. (TBC)' },
+  { q: 'Is a deposit required?', a: 'Deposit and payment terms TBC.' },
+];
+
+const inputClass =
+  'mt-1 w-full rounded-md border border-black/15 bg-white px-3 py-2 text-sm text-ink focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary';
+const fieldLabel = 'block text-sm font-medium text-ink';
+
+const SITE = 'https://www.manchesterrivercruises.com';
+// Note: the "private boat hire manchester" keyword is owned by the dedicated SEO page
+// (/private-boat-hire-manchester). This page targets the "private hire" enquiry intent
+// with its own distinct title/description/H1 to avoid duplicate titles (AGENTS.md rule 7).
+const pageTitle = 'Private Hire — Exclusive Boat Hire for Events & Celebrations — Manchester River Cruises';
+const pageDescription =
+  'Hire a whole boat for your event with Manchester River Cruises. Exclusive private hire for corporate events, celebrations, weddings, filming and parties from Salford Quays. Enquire today.';
+
+const structuredData = {
+  '@context': 'https://schema.org',
+  '@graph': [
+    {
+      '@type': 'Service',
+      name: 'Private Hire — Manchester River Cruises',
+      description: pageDescription,
+      serviceType: 'Private boat hire',
+      areaServed: 'Manchester',
+      url: `${SITE}/private-hire`,
+      provider: { '@type': 'LocalBusiness', name: 'Manchester River Cruises', url: SITE },
+    },
+    {
+      '@type': 'LocalBusiness',
+      name: 'Manchester River Cruises',
+      url: SITE,
+      email: 'info@manchesterrivercruises.com',
+      address: { '@type': 'PostalAddress', streetAddress: 'Millennium Footbridge, The Quays', addressLocality: 'Salford', postalCode: 'M50 3RB', addressCountry: 'GB' },
+      geo: { '@type': 'GeoCoordinates', latitude: 53.4705, longitude: -2.296 },
+    },
+  ],
+};
 ---
 
-<BaseLayout title="Private Hire — Manchester River Cruises">
-  <h1>Private Hire</h1>
-  <p>This page is coming soon.</p>
+<BaseLayout title={pageTitle} description={pageDescription}>
+  {/* Schema.org structured data (Service + LocalBusiness) */}
+  <script type="application/ld+json" is:inline set:html={JSON.stringify(structuredData)} />
+
+  <div>
+    {/* Hero — dark navy, gold accents, premium tone */}
+    <section class="bg-dark text-white">
+      <div class="mx-auto max-w-6xl px-4 py-20 sm:px-6 md:py-28 lg:px-8">
+        <p class="text-sm font-semibold uppercase tracking-[0.2em] text-accent">Private hire</p>
+        <h1 class="mt-3 text-4xl font-bold tracking-tight text-white sm:text-5xl md:text-6xl">Private Hire</h1>
+        <p class="mt-5 max-w-2xl text-lg leading-relaxed text-white/80">
+          Exclusive hire of the whole vessel for your event — corporate days, celebrations, weddings and more.
+        </p>
+        <div class="mt-8">
+          <CTAButton href="#enquire">Enquire now</CTAButton>
+        </div>
+      </div>
+    </section>
+
+    <KeyFacts facts={keyFacts} />
+
+    <div class="mx-auto max-w-6xl px-4 py-12 sm:px-6 md:py-16 lg:px-8">
+      <div class="space-y-16">
+        {/* About */}
+        <section aria-labelledby="about">
+          <SectionHeading id="about">The whole boat, exclusively yours</SectionHeading>
+          <div class="mt-6 max-w-3xl space-y-4 text-lg leading-relaxed text-body">
+            <p>
+              Private hire gives you exclusive use of one of our vessels — a striking, memorable
+              setting on the water for whatever you're planning. Our team will help tailor every
+              detail, from catering to timings, so you can simply enjoy the occasion.
+            </p>
+            <p class="text-base text-subtle">Full private hire details — TBC from Simon (content-checklist.md).</p>
+          </div>
+          <ul class="mt-6 flex flex-wrap gap-2">
+            {
+              occasions.map((o) => (
+                <li class="rounded-full bg-panel px-3 py-1 text-sm text-body ring-1 ring-black/5">{o}</li>
+              ))
+            }
+          </ul>
+        </section>
+
+        {/* Vessels for hire */}
+        <section aria-labelledby="vessels">
+          <SectionHeading id="vessels">Our vessels for hire</SectionHeading>
+          <div class="mt-8 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {hireVessels.map((v) => <ProductCard name={v.name} desc="Capacity and details — TBC." href="/vessels" linkText="View fleet" />)}
+          </div>
+        </section>
+
+        {/* What's included */}
+        <section aria-labelledby="included">
+          <SectionHeading id="included">What's included</SectionHeading>
+          <ul class="mt-6 max-w-3xl space-y-3">
+            {
+              included.map((item) => (
+                <li class="flex gap-3 text-body">
+                  <span aria-hidden="true" class="mt-0.5 flex-none text-primary">✓</span>
+                  <span>{item}</span>
+                </li>
+              ))
+            }
+          </ul>
+        </section>
+
+        {/* Enquiry form (Netlify Forms; static HTML at build time) */}
+        <section id="enquire" aria-labelledby="enquire-heading">
+          <SectionHeading id="enquire-heading">Enquire about private hire</SectionHeading>
+
+          {/* Success message — revealed by the script below when ?success=true is in the URL */}
+          <div id="ph-success" hidden class="mt-6 rounded-card bg-panel p-4 text-body ring-1 ring-black/5">
+            <p class="font-medium text-ink">Thanks for your enquiry. We'll get back to you within 24 hours.</p>
+          </div>
+
+          <form
+            name="private-hire-enquiry"
+            method="POST"
+            action="/private-hire?success=true"
+            data-netlify="true"
+            data-netlify-honeypot="bot-field"
+            class="mt-6 max-w-3xl"
+          >
+            {/* Required by Netlify Forms to identify the submission */}
+            <input type="hidden" name="form-name" value="private-hire-enquiry" />
+            {/* Honeypot — hidden from humans */}
+            <p class="hidden">
+              <label>Don't fill this out if you're human: <input name="bot-field" /></label>
+            </p>
+
+            <div class="grid gap-4 sm:grid-cols-2">
+              <div>
+                <label for="name" class={fieldLabel}>Name</label>
+                <input type="text" id="name" name="name" autocomplete="name" required class={inputClass} />
+              </div>
+              <div>
+                <label for="email" class={fieldLabel}>Email</label>
+                <input type="email" id="email" name="email" autocomplete="email" required class={inputClass} />
+              </div>
+              <div>
+                <label for="phone" class={fieldLabel}>Phone</label>
+                <input type="tel" id="phone" name="phone" autocomplete="tel" class={inputClass} />
+              </div>
+              <div>
+                <label for="company" class={fieldLabel}>Company <span class="text-subtle">(optional)</span></label>
+                <input type="text" id="company" name="company" autocomplete="organization" class={inputClass} />
+              </div>
+              <div>
+                <label for="event-type" class={fieldLabel}>Event type</label>
+                <select id="event-type" name="event-type" class={inputClass}>
+                  {eventTypes.map((t) => <option value={t}>{t}</option>)}
+                </select>
+              </div>
+              <div>
+                <label for="preferred-date" class={fieldLabel}>Preferred date</label>
+                <input type="date" id="preferred-date" name="preferred-date" class={inputClass} />
+              </div>
+              <div>
+                <label for="guests" class={fieldLabel}>Approximate guest numbers</label>
+                <input type="number" id="guests" name="guests" min="1" inputmode="numeric" class={inputClass} />
+              </div>
+              <div>
+                <label for="hear-about" class={fieldLabel}>How did you hear about us?</label>
+                <select id="hear-about" name="hear-about" class={inputClass}>
+                  {hearAbout.map((h) => <option value={h}>{h}</option>)}
+                </select>
+              </div>
+              <div class="sm:col-span-2">
+                <label for="requirements" class={fieldLabel}>Additional requirements</label>
+                <textarea id="requirements" name="requirements" rows="5" class={inputClass}></textarea>
+              </div>
+            </div>
+
+            <div class="mt-4">
+              <button type="submit" class="btn btn-primary">Send enquiry</button>
+            </div>
+          </form>
+        </section>
+
+        <FAQSection faqs={faqs} title="Private hire FAQs" />
+
+        <GettingHere />
+      </div>
+    </div>
+  </div>
+
+  {/* Reveal the success message after a Netlify Forms redirect to ?success=true */}
+  <script>
+    if (new URLSearchParams(window.location.search).get('success') === 'true') {
+      const el = document.getElementById('ph-success');
+      if (el) {
+        el.hidden = false;
+        el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+    }
+  </script>
 </BaseLayout>

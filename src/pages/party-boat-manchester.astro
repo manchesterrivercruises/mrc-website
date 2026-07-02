@@ -1,8 +1,131 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+import SectionHeading from '../components/SectionHeading.astro';
+import CTAButton from '../components/CTAButton.astro';
+import FAQSection from '../components/FAQSection.astro';
+import GettingHere from '../components/GettingHere.astro';
+import KeyFacts from '../components/KeyFacts.astro';
+import ProductCard from '../components/ProductCard.astro';
+
+const icons = {
+  calendar:
+    '<path d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5" />',
+  tag: '<path d="M9.568 3H5.25A2.25 2.25 0 0 0 3 5.25v4.318c0 .597.237 1.17.659 1.591l9.581 9.581c.699.699 1.78.872 2.607.33a18.095 18.095 0 0 0 5.223-5.223c.542-.827.369-1.908-.33-2.607L11.16 3.66A2.25 2.25 0 0 0 9.568 3Z" /><path d="M6 6h.008v.008H6V6Z" />',
+  users:
+    '<path d="M15 19.128a9.38 9.38 0 0 0 2.625.372 9.337 9.337 0 0 0 4.121-.952 4.125 4.125 0 0 0-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 0 1 8.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0 1 11.964-3.07M12 6.375a3.375 3.375 0 1 1-6.75 0 3.375 3.375 0 0 1 6.75 0Zm8.25 2.25a2.625 2.625 0 1 1-5.25 0 2.625 2.625 0 0 1 5.25 0Z" />',
+  sparkles:
+    '<path d="M9.813 15.904 9 18.75l-.813-2.846a4.5 4.5 0 0 0-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 0 0 3.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 0 0 3.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 0 0-3.09 3.09Z" /><path d="M18.259 8.715 18 9.75l-.259-1.035a3.375 3.375 0 0 0-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 0 0 2.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 0 0 2.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 0 0-2.456 2.456Z" />',
+};
+
+const keyFacts = [
+  { text: 'Birthdays, hen dos & work dos', icon: icons.users },
+  { text: 'From £28 per person', icon: icons.tag },
+  { text: 'Licensed bar onboard', icon: icons.sparkles },
+  { text: 'Private hire available', icon: icons.calendar },
+];
+
+const faqs = [
+  { q: 'Can I hire a boat exclusively (private hire)?', a: 'Yes — you can hire a boat just for your group. See our private hire page for details. (TBC)' },
+  { q: 'What group sizes can you accommodate?', a: 'From small groups to large parties — exact vessel capacities TBC.' },
+  { q: "What's included?", a: 'Your cruise and access to the onboard licensed bar (drinks not included). (TBC)' },
+  { q: 'Are there age restrictions?', a: 'Evening party cruises are usually over-18s; family-friendly options are also available. (TBC)' },
+  { q: 'Can we bring our own drinks?', a: 'There is a fully licensed bar onboard; outside drinks are not usually permitted. (TBC)' },
+];
+
+const SITE = 'https://www.manchesterrivercruises.com';
+const pageTitle = 'Party Boat Manchester — Boat Parties on the Ship Canal';
+const pageDescription =
+  'Party boat hire and boat parties in Manchester on the Ship Canal — birthdays, hen dos and work nights out. Join a scheduled party cruise or hire a boat exclusively. Licensed bar onboard. Book direct.';
+
+const structuredData = {
+  '@context': 'https://schema.org',
+  '@type': 'TouristAttraction',
+  name: 'Party Boat Manchester',
+  description: pageDescription,
+  url: `${SITE}/party-boat-manchester`,
+  touristType: 'Nightlife',
+  availableLanguage: 'English',
+  address: { '@type': 'PostalAddress', streetAddress: 'Millennium Footbridge, The Quays', addressLocality: 'Salford', postalCode: 'M50 3RB', addressCountry: 'GB' },
+  geo: { '@type': 'GeoCoordinates', latitude: 53.4705, longitude: -2.296 },
+};
 ---
 
-<BaseLayout title="Party Boat Manchester — Manchester River Cruises">
-  <h1>Party Boat Manchester</h1>
-  <p>This page is coming soon.</p>
+<BaseLayout title={pageTitle} description={pageDescription}>
+  {/* Schema.org structured data (TouristAttraction) */}
+  <script type="application/ld+json" is:inline set:html={JSON.stringify(structuredData)} />
+
+  <div class="pb-24 md:pb-0">
+    {/* Hero — dark navy, gold accents */}
+    <section class="bg-dark text-white">
+      <div class="mx-auto max-w-6xl px-4 py-20 sm:px-6 md:py-28 lg:px-8">
+        <p class="text-sm font-semibold uppercase tracking-[0.2em] text-accent">Boat parties on the water</p>
+        <h1 class="mt-3 text-4xl font-bold tracking-tight text-white sm:text-5xl md:text-6xl">Party Boat Manchester</h1>
+        <p class="mt-5 max-w-2xl text-lg leading-relaxed text-white/80">
+          Birthdays, hen dos and work nights out on the Manchester Ship Canal.
+        </p>
+        <div class="mt-8 flex flex-wrap items-center gap-x-6 gap-y-3">
+          <CTAButton href="/whats-on">See party cruises</CTAButton>
+          <a href="/private-hire" class="text-sm font-medium text-white/90 underline-offset-4 hover:underline">
+            Or enquire about private hire →
+          </a>
+        </div>
+      </div>
+    </section>
+
+    {/* Key facts strip */}
+    <KeyFacts facts={keyFacts} />
+
+    {/* Content (single column) */}
+    <div class="mx-auto max-w-6xl px-4 py-10 sm:px-6 md:py-12 lg:px-8">
+      <div class="space-y-12 md:space-y-14">
+        <section aria-labelledby="about">
+          <SectionHeading id="about">Celebrate on the water</SectionHeading>
+          <div class="mt-6 max-w-3xl space-y-4 text-lg leading-relaxed text-body">
+            <p>
+              Looking for something a bit different? A boat party on the Manchester Ship Canal is a
+              brilliant way to mark a birthday, hen do or work night out — dancing, a licensed bar and
+              the city's waterfront skyline as your backdrop. Join a scheduled party cruise, or hire a
+              boat exclusively for your group.
+            </p>
+            <p class="text-base text-subtle">Full details and packages — TBC from Simon (content-checklist.md).</p>
+          </div>
+          <div class="mt-6">
+            <CTAButton href="/whats-on">See party cruises</CTAButton>
+          </div>
+        </section>
+
+        {/* Private hire callout */}
+        <section aria-labelledby="private-hire">
+          <div class="rounded-card bg-panel p-6 ring-1 ring-black/5 sm:flex sm:items-center sm:justify-between sm:gap-6">
+            <div>
+              <h2 id="private-hire" class="text-lg font-semibold text-ink">Want the whole boat?</h2>
+              <p class="mt-1 text-sm leading-relaxed text-body">
+                Hire a boat exclusively for your celebration — ideal for larger groups and private events.
+              </p>
+            </div>
+            <div class="mt-4 shrink-0 sm:mt-0">
+              <CTAButton href="/private-hire" variant="outline">Private hire</CTAButton>
+            </div>
+          </div>
+        </section>
+
+        <FAQSection faqs={faqs} title="Party boat FAQs" />
+
+        {/* Cross-sell to City River Tour */}
+        <section aria-labelledby="also">
+          <SectionHeading id="also">Prefer a daytime cruise?</SectionHeading>
+          <div class="mt-8 sm:max-w-sm">
+            <ProductCard name="City River Tour" desc="Our signature 60-minute sightseeing cruise along the Manchester Ship Canal." href="/city-river-tour" />
+          </div>
+        </section>
+
+        <GettingHere />
+      </div>
+    </div>
+  </div>
+
+  {/* Mobile sticky CTA — link to the events listing (no product widget). */}
+  <div class="fixed inset-x-0 bottom-0 z-40 border-t border-black/10 bg-white/95 p-3 backdrop-blur md:hidden">
+    <CTAButton href="/whats-on" class="w-full">See party cruises</CTAButton>
+  </div>
 </BaseLayout>
