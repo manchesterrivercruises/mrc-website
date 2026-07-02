@@ -109,6 +109,123 @@ Product IDs are stored in `.env` — use placeholders during build.
 
 ---
 
+## Newly researched widget capabilities
+
+Each capability below is tagged as a **website-task** (something we implement in this
+repo — embed config, files, links, or code) or a **dashboard-task** (something MRC/Simon
+enables in the Ventrata dashboard, no code change). Some need both — the tag names the
+primary owner and the note calls out the other side.
+
+Exact `data-config` key names should be confirmed against MRC's specific Ventrata
+checkout before shipping — Ventrata occasionally versions these. Treat the JSON below as
+the intended shape, not a guaranteed literal.
+
+### Calendar First mode — date-led browsing · **website-task**
+
+Opens the widget on the calendar/date step first, so customers browse by date before
+picking a product/option. Good fit for the What's On flow and seasonal event pages where
+"what's on *this date*" is the natural entry point.
+
+```html
+<button
+  ventrata-checkout
+  data-config='{"productID": "<PRODUCT_ID>", "calendarFirst": true}'
+>
+  Check dates
+</button>
+```
+
+Set per embed via `data-config`. May also expose a dashboard default — if enabled there,
+the site config still wins per widget. Confirm the exact key in MRC's checkout.
+
+### Bottom Bar — persistent cart visibility · **website-task**
+
+Shows a persistent bottom bar summarising the current cart (items + total) so customers
+can see and return to their basket while browsing. Pairs naturally with Multibooking.
+
+```html
+<script
+  src="https://cdn.checkout.ventrata.com/v3/production/ventrata-checkout.min.js"
+  type="module"
+  data-config='{"apiKey":"<CHECKOUT_API_KEY>", "env": "test", "bottomBar": true}'
+></script>
+```
+
+Enabled via the checkout config on pages that carry the widget. May also be toggled in
+the dashboard — confirm which layer controls it in MRC's account.
+
+### Multibooking — multi-product cart · **dashboard-task** (+ website-task)
+
+Lets a customer add multiple products/departures to one cart and check out together
+(e.g. City River Tour + a Christmas event). Primarily a **dashboard-task**: Multibooking
+must be enabled on the MRC Ventrata account. Once on, the widget honours it and the
+**Bottom Bar** (above) becomes the recommended way to surface the growing cart, so treat
+the bar as the paired website-task. No per-product code beyond normal embeds.
+
+### Apple Pay domain association file · **website-task**
+
+Apple Pay in the checkout requires a domain association file served at a fixed path:
+
+```
+/.well-known/apple-developer-merchantid-domain-association
+```
+
+Place the file (obtained from Ventrata/the payment provider) in `public/` so Astro copies
+it to the site root at build:
+
+```
+public/.well-known/apple-developer-merchantid-domain-association
+```
+
+Must be served as-is (no extension, correct raw content, HTTP 200) from the production
+domain. Add to the launch checklist — Apple Pay will silently not offer if the file is
+missing or wrong. Verify after DNS cutover with `curl -i https://manchesterrivercruises.com/.well-known/apple-developer-merchantid-domain-association`.
+
+### Marketing links that auto-open checkout · **website-task**
+
+The widget can auto-open over the product page when the URL carries the right query
+params — useful for email/social campaigns that drop customers straight into checkout,
+optionally with a promo code pre-applied.
+
+```
+https://manchesterrivercruises.com/city-river-tour?openWidget=true&promoCode=XMAS25
+```
+
+- `openWidget=true` — the checkout script on that page opens the widget on load.
+- `promoCode=<CODE>` — pre-applies the code in the cart.
+
+**Website-task:** ensure the target page loads the checkout script (so the params are
+read) and build campaign URLs correctly. Promo codes themselves are created and managed
+in the dashboard (**dashboard-task**). Confirm exact param names against MRC's checkout.
+
+### Order Recovery Email — abandoned cart recovery · **dashboard-task**
+
+Ventrata can automatically email customers who start but don't complete a booking. This
+is a pure **dashboard setting** — no website code. Note it overlaps with the Klaviyo
+"abandoned checkout" flow in `docs/integrations.md`; confirm with the Ventrata account
+manager which system owns recovery so customers aren't emailed twice.
+
+### GTM dataLayer e-commerce events · **website-task**
+
+Per Ventrata's tracking manual, the checkout widget pushes GA4-style e-commerce events to
+`window.dataLayer`, which Google Tag Manager picks up:
+
+| Event | Fires when |
+|-------|-----------|
+| `view_item` | Product/widget viewed |
+| `add_to_cart` | Item added to cart |
+| `begin_checkout` | Checkout started |
+| `purchase` | Booking completed |
+
+**Website-task:** GTM must be present to capture these — it lives in `BaseLayout` per
+`docs/integrations.md` (GTM is the single tag layer; GA4/Pixel are configured inside GTM,
+not in code). The events fire automatically from the widget; our job is to make sure GTM
+is loaded on widget-bearing pages and to build the matching triggers/tags in the GTM
+dashboard. Ventrata-side tracking may need switching on in the dashboard — confirm in
+MRC's account. See `docs/integrations.md` for the full GTM architecture.
+
+---
+
 ## OCTO API (read-only, server-side only)
 
 Base URL: `https://api.ventrata.com/octo`
