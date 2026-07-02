@@ -2,8 +2,9 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import SectionHeading from '../components/SectionHeading.astro';
 import CTAButton from '../components/CTAButton.astro';
+import { site } from '../data/site';
 
-const SITE = 'https://www.manchesterrivercruises.com';
+const SITE = site.url;
 const pageTitle = 'Contact Us — Manchester River Cruises';
 const pageDescription =
   'Contact Manchester River Cruises — get in touch with our team by email, phone or using our enquiry form. Departing from Millennium Footbridge, Salford Quays.';
@@ -24,11 +25,12 @@ const structuredData = {
     { '@type': 'ContactPage', name: 'Contact Us', description: pageDescription, url: `${SITE}/contact` },
     {
       '@type': 'LocalBusiness',
-      name: 'Manchester River Cruises',
-      url: SITE,
-      email: 'info@manchesterrivercruises.com',
-      address: { '@type': 'PostalAddress', streetAddress: 'Millennium Footbridge, The Quays', addressLocality: 'Salford', postalCode: 'M50 3RB', addressCountry: 'GB' },
-      geo: { '@type': 'GeoCoordinates', latitude: 53.4705, longitude: -2.296 },
+      name: site.name,
+      url: site.url,
+      email: site.email,
+      telephone: site.phone,
+      address: { '@type': 'PostalAddress', ...site.address },
+      geo: { '@type': 'GeoCoordinates', ...site.geo },
     },
   ],
 };
@@ -55,17 +57,18 @@ const structuredData = {
           <div>
             <h3 class="text-xs font-semibold uppercase tracking-wider text-subtle">Email</h3>
             <p class="mt-1">
-              <a href="mailto:info@manchesterrivercruises.com" class="font-medium text-primary hover:underline">info@manchesterrivercruises.com</a>
-              <span class="text-subtle">(TBC)</span>
+              <a href={`mailto:${site.email}`} class="font-medium text-primary hover:underline">{site.email}</a>
             </p>
           </div>
           <div>
             <h3 class="text-xs font-semibold uppercase tracking-wider text-subtle">Phone</h3>
-            <p class="mt-1">Phone number TBC</p>
+            <p class="mt-1">
+              <a href={site.phoneHref} class="font-medium text-primary hover:underline">{site.phone}</a>
+            </p>
           </div>
           <div>
             <h3 class="text-xs font-semibold uppercase tracking-wider text-subtle">Address</h3>
-            <address class="mt-1 not-italic">Millennium Footbridge, Salford Quays, Manchester, M50 3RB</address>
+            <address class="mt-1 not-italic">{site.addressDisplay}</address>
           </div>
           <div>
             <h3 class="text-xs font-semibold uppercase tracking-wider text-subtle">Follow us</h3>

@@ -1,0 +1,38 @@
+---
+// Shared horizontal trust/stat band. Pass a `stats` array of { value, label, icon? }
+// where `icon` is the inner SVG path markup (injected via set:html, like KeyFacts).
+// No background — a border-y strip that sits inside any content container.
+interface Props {
+  stats: { value: string; label: string; icon?: string }[];
+  class?: string;
+}
+const { stats, class: className = '' } = Astro.props;
+---
+
+<section class={`border-y border-black/10 ${className}`}>
+  <div class="grid grid-cols-2 gap-6 py-8 sm:grid-cols-4">
+    {
+      stats.map((s) => (
+        <div class="flex flex-col items-center gap-2 text-center sm:flex-row sm:items-center sm:gap-3 sm:text-left">
+          {s.icon && (
+            <svg
+              class="h-8 w-8 flex-none text-primary"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.5"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              aria-hidden="true"
+              set:html={s.icon}
+            />
+          )}
+          <div>
+            <p class="text-xl font-bold leading-tight text-ink">{s.value}</p>
+            <p class="text-sm text-subtle">{s.label}</p>
+          </div>
+        </div>
+      ))
+    }
+  </div>
+</section>
