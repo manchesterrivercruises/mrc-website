@@ -19,7 +19,7 @@ faqs:
   - question: Is there a bar onboard?
     answer: Yes — a fully licensed bar is open throughout.
 heroImageAlt: Guests in Halloween costumes dancing to a DJ aboard a Manchester River Cruises party boat at night
-draft: false
+draft: true
 ---
 
 There is nowhere spookier — or more fun — to spend Halloween than out on the dark water. The Halloween Boat Party turns the Manchester Ship Canal into a floating fright night, with a DJ, a licensed bar and a boatful of ghouls, witches and questionable costumes ready to dance until the witching hour.

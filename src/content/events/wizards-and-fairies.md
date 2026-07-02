@@ -19,7 +19,7 @@ faqs:
   - question: Can adults come too?
     answer: Yes — every child needs a grown-up aboard, and parents and carers are very welcome. (TBC)
 heroImageAlt: Children in wizard and fairy costumes enjoying a magical family cruise aboard a Manchester River Cruises boat
-draft: false
+draft: true
 ---
 
 Grab your wand, pin on your wings and prepare for a spot of magic on the water. Wizards & Fairies transforms the Manchester Ship Canal into an enchanted world where little ones can cast spells, meet fairies and set sail with a cast of magical characters.

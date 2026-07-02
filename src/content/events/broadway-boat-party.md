@@ -19,7 +19,7 @@ faqs:
   - question: Is there a bar onboard?
     answer: Yes — a fully licensed bar is open throughout.
 heroImageAlt: Musical-theatre performers singing to guests aboard a Manchester River Cruises boat at night
-draft: false
+draft: true
 ---
 
 If you know every word to every showstopper, this one is for you. The Broadway Boat Party brings the drama, the belters and the sheer joy of musical theatre to the Manchester Ship Canal — a night where the whole boat becomes the chorus.

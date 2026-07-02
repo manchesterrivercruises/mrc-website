@@ -70,3 +70,20 @@ Update this file as items are confirmed.
 | 17 | City River Tour | ef45d8bd-529c-4dae-9c35-cd1b8e4e0a75 |
 | 18 | Boat to Old Trafford | 458c8d36-8268-481d-ae47-491b41508b8e |
 | 19 | Swinging on the River | ee4143b6-9c32-4db2-9d1f-807c858696fa |
+
+### Dormant / inactive events
+
+The following events are not currently running. Their markdown lives in
+`src/content/events/` but is set `draft: true`, so **no `/cruises/[slug]` page is
+built and they are excluded from all listings**. Reactivate by flipping the flag to
+`draft: false` when the event returns.
+
+| Product | Slug | Status |
+|---------|------|--------|
+| Club Classics | club-classics-cruise | Dormant (draft) — product ID `46688aed-c6e3-4d6d-933b-efcba00d34fe` on file |
+| Broadway Boat Party | broadway-boat-party | Dormant (draft) — full Ventrata product ID still TBC (only `d8b67a96` supplied; not in the 19-product list above) |
+| Wizards & Fairies | wizards-and-fairies | Dormant (draft) — full Ventrata product ID still TBC (only `093a89af` supplied; not in the 19-product list above) |
+| Halloween Boat Party | halloween-boat-party | Dormant (draft) — full Ventrata product ID still TBC (only `aec4cd6b` supplied; not in the 19-product list above) |
+
+Before reactivating Broadway, Wizards & Fairies or Halloween, confirm the product
+exists in Ventrata and replace the partial ID with the full product ID.

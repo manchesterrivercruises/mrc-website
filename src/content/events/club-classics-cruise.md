@@ -19,7 +19,7 @@ faqs:
   - question: Is there a bar onboard?
     answer: Yes — a fully licensed bar is open throughout.
 heroImageAlt: A DJ playing to a packed dancefloor aboard a Manchester River Cruises party boat at night
-draft: false
+draft: true
 ---
 
 Some nights out just hit different — and there's nothing quite like a proper dancefloor floating out on the water. Club Classics is our all-out party cruise: DJ locked in, bass rolling across the canal, and two hours of the anthems that made you fall in love with a big night out in the first place.
