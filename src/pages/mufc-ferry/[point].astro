@@ -1,0 +1,178 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import PageHero from '../../components/PageHero.astro';
+import SectionHeading from '../../components/SectionHeading.astro';
+import CTAButton from '../../components/CTAButton.astro';
+import KeyFacts from '../../components/KeyFacts.astro';
+import BookingPanel from '../../components/BookingPanel.astro';
+import { site } from '../../data/site';
+import { departurePoints, otherDeparturePoint } from '../../data/mufcFerry';
+
+// One page per ferry departure point. Both routes arrive at Trafford Wharf; the
+// customer picks where to depart. Content is data-driven from src/data/mufcFerry.ts.
+export async function getStaticPaths() {
+  return departurePoints.map((point) => ({ params: { point: point.slug }, props: { point } }));
+}
+
+const { point } = Astro.props;
+const other = otherDeparturePoint(point.slug);
+
+// Matchday ferry price — TBC, confirm with Simon.
+const PRICE_FROM = 12;
+
+const icons = {
+  pin: '<path d="M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" /><path d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1 1 15 0Z" />',
+  flag: '<path d="M3 3v1.5M3 21v-6m0 0 2.77-.693a9 9 0 0 1 6.208.682l.108.054a9 9 0 0 0 6.086.71l3.114-.732a48.524 48.524 0 0 1-.005-10.499l-3.11.732a9 9 0 0 1-6.085-.711l-.108-.054a9 9 0 0 0-6.208-.682L3 4.5M3 15V4.5" />',
+  clock: '<path d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />',
+  calendar:
+    '<path d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5" />',
+};
+
+const keyFacts = [
+  { text: 'Departure address TBC', icon: icons.pin },
+  { text: 'Arrives Trafford Wharf', icon: icons.flag },
+  { text: 'Approx. 20 minutes', icon: icons.clock },
+  { text: 'Matchdays only', icon: icons.calendar },
+];
+
+const mapsQuery = encodeURIComponent(`${point.name} Manchester`);
+
+const pageTitle = `${point.name} Matchday Ferry to Old Trafford — Manchester River Cruises`;
+const pageDescription = `Catch the matchday ferry to Old Trafford from ${point.name} (${point.location}). Arrive at Trafford Wharf, a short walk from the ground. Book direct.`;
+
+const structuredData = {
+  '@context': 'https://schema.org',
+  '@type': 'BoatTrip',
+  name: `MUFC Matchday Ferry — ${point.name} to Trafford Wharf`,
+  description: pageDescription,
+  url: `${site.url}/mufc-ferry/${point.slug}`,
+  departureBoatTerminal: { '@type': 'BoatTerminal', name: point.name },
+  arrivalBoatTerminal: { '@type': 'BoatTerminal', name: 'Trafford Wharf' },
+  provider: { '@type': 'LocalBusiness', name: site.name, url: site.url },
+  offers: { '@type': 'Offer', price: PRICE_FROM, priceCurrency: 'GBP', availability: 'https://schema.org/InStock', url: `${site.url}/mufc-ferry/${point.slug}` },
+};
+---
+
+<BaseLayout title={pageTitle} description={pageDescription}>
+  {/* Schema.org structured data (BoatTrip) */}
+  <script type="application/ld+json" is:inline set:html={JSON.stringify(structuredData)} />
+
+  <div class="pb-24 md:pb-0">
+    <PageHero
+      eyebrow="Matchday ferry"
+      title={`Depart from ${point.name}`}
+      subtitle={`Board at ${point.location} and cruise to Trafford Wharf — the stadium end, beside IWM North and a short walk from Old Trafford.`}
+    >
+      <CTAButton href="#book">Book now</CTAButton>
+    </PageHero>
+
+    <KeyFacts facts={keyFacts} />
+
+    <div class="mx-auto max-w-6xl px-4 py-12 sm:px-6 md:py-16 lg:px-8">
+      <div class="grid gap-10 lg:grid-cols-[1fr_22rem] lg:gap-12">
+        {/* Left — content */}
+        <div class="space-y-16">
+          {/* Boarding details */}
+          <section aria-labelledby="boarding">
+            <SectionHeading id="boarding">Boarding at {point.name}</SectionHeading>
+            <div class="mt-6 max-w-2xl space-y-4 text-lg leading-relaxed text-body">
+              <p>
+                The {point.name} ferry departs from {point.location}. Please arrive in good time to
+                board ahead of departure.
+              </p>
+              <p class="text-base text-subtle">
+                Exact boarding location, arrival time before departure and check-in details — TBC from Simon (content-checklist.md).
+              </p>
+            </div>
+          </section>
+
+          {/* Arriving at Trafford Wharf */}
+          <section aria-labelledby="arrival">
+            <SectionHeading id="arrival">Arriving at Trafford Wharf</SectionHeading>
+            <div class="mt-6 max-w-2xl space-y-4 text-lg leading-relaxed text-body">
+              <p>
+                The ferry arrives at Trafford Wharf, at the stadium end of the ship canal beside IWM
+                North — a short walk from Old Trafford.
+              </p>
+              <p class="text-base text-subtle">
+                What happens on arrival, the walk to the ground, and return-journey boarding after the
+                final whistle — TBC from Simon (content-checklist.md).
+              </p>
+            </div>
+          </section>
+
+          {/* Getting to this departure point — departure-specific, NOT the shared
+              GettingHere component (which describes the Millennium Footbridge). */}
+          <section aria-labelledby="getting-here">
+            <SectionHeading id="getting-here">Getting to {point.name}</SectionHeading>
+            <div class="mt-6 max-w-2xl space-y-4 text-lg leading-relaxed text-body">
+              <p>{point.name} is at {point.location}.</p>
+              <p class="text-base text-subtle">
+                Directions, nearest tram/parking and the exact boarding point for {point.name} — TBC from Simon (content-checklist.md).
+              </p>
+              <a
+                href={`https://www.google.com/maps/search/?api=1&query=${mapsQuery}`}
+                class="inline-block font-medium text-primary hover:underline"
+                rel="noopener"
+                target="_blank"
+              >
+                Open in Google Maps
+              </a>
+            </div>
+          </section>
+
+          {/* Cross-link to the other departure point */}
+          {
+            other && (
+              <section aria-labelledby="other-point">
+                <div class="rounded-card bg-panel p-6 ring-1 ring-black/5 sm:flex sm:items-center sm:justify-between sm:gap-6">
+                  <div>
+                    <h2 id="other-point" class="text-lg font-semibold text-ink">Prefer to depart from {other.name}?</h2>
+                    <p class="mt-1 text-sm leading-relaxed text-body">
+                      The {other.name} ferry departs from {other.location} and also arrives at Trafford Wharf.
+                    </p>
+                  </div>
+                  <div class="mt-4 shrink-0 sm:mt-0">
+                    <CTAButton href={`/mufc-ferry/${other.slug}`} variant="outline">Depart from {other.name}</CTAButton>
+                  </div>
+                </div>
+              </section>
+            )
+          }
+        </div>
+
+        {/* Right — sticky booking panel */}
+        <aside id="book" class="lg:sticky lg:top-6 lg:self-start scroll-mt-6">
+          <BookingPanel price={`£${PRICE_FROM}`} priceSuffix="per person" priceNote="Matchday service · price TBC">
+            <Fragment slot="widget">
+              {/*
+                STEP 6/9: Ventrata embedded checkout for this ferry departure.
+                Load the checkout script on this page (see docs/ventrata-integration.md —
+                do NOT load it globally) and uncomment the embedded widget below.
+                productID is this departure's ventrataProductId (safe in the DOM).
+                NOTE: Stephenson's Bridge uses a PLACEHOLDER id until Simon creates the
+                product in Ventrata (point.productReady === false).
+
+                <aside class="min-h-[50rem] h-auto w-full" ventrata-embedded-widget
+                  data-config={`{"productID":"${point.ventrataProductId}","embedded":true}`}></aside>
+              */}
+              <div
+                class="flex min-h-44 items-center justify-center rounded-card border border-dashed border-black/15 bg-panel p-6 text-center text-sm text-subtle"
+                data-ventrata-product-id={point.ventrataProductId}
+              >
+                {point.productReady
+                  ? 'Live availability & booking widget will appear here.'
+                  : 'Booking opens once this departure is set up in Ventrata (TBC).'}
+              </div>
+            </Fragment>
+          </BookingPanel>
+        </aside>
+      </div>
+    </div>
+  </div>
+
+  {/* Mobile sticky Book Now — scrolls to the booking panel */}
+  <div class="fixed inset-x-0 bottom-0 z-40 border-t border-black/10 bg-white/95 p-3 backdrop-blur md:hidden">
+    <CTAButton href="#book" class="w-full">Book now · from £{PRICE_FROM}</CTAButton>
+  </div>
+</BaseLayout>

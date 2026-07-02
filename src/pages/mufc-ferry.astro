@@ -1,8 +1,188 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+import PageHero from '../components/PageHero.astro';
+import SectionHeading from '../components/SectionHeading.astro';
+import CTAButton from '../components/CTAButton.astro';
+import ProductCard from '../components/ProductCard.astro';
+import FAQSection from '../components/FAQSection.astro';
+import KeyFacts from '../components/KeyFacts.astro';
+import CTASection from '../components/CTASection.astro';
+import { site } from '../data/site';
+import { departurePoints, TRAFFORD_WHARF, OLD_TRAFFORD } from '../data/mufcFerry';
+
+const icons = {
+  calendar:
+    '<path d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5" />',
+  clock: '<path d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />',
+  pin: '<path d="M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" /><path d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1 1 15 0Z" />',
+  tag: '<path d="M9.568 3H5.25A2.25 2.25 0 0 0 3 5.25v4.318c0 .597.237 1.17.659 1.591l9.581 9.581c.699.699 1.78.872 2.607.33a18.095 18.095 0 0 0 5.223-5.223c.542-.827.369-1.908-.33-2.607L11.16 3.66A2.25 2.25 0 0 0 9.568 3Z" /><path d="M6 6h.008v.008H6V6Z" />',
+};
+
+const keyFacts = [
+  { text: 'Matchdays only', icon: icons.calendar },
+  { text: 'Approx. 20 minutes', icon: icons.clock },
+  { text: 'Arrives Trafford Wharf', icon: icons.pin },
+  { text: 'From £12 (TBC)', icon: icons.tag },
+];
+
+// Map markers — two departure points + the shared arrival and the stadium.
+// Markers only, no route lines.
+const mapMarkers = [
+  { ...departurePoints[0], emoji: '⛴️', kind: 'Departure point' },
+  { ...departurePoints[1], emoji: '⛴️', kind: 'Departure point' },
+  { name: TRAFFORD_WHARF.name, lat: TRAFFORD_WHARF.lat, lng: TRAFFORD_WHARF.lng, emoji: '📍', kind: 'Arrival — short walk to the ground' },
+  { name: OLD_TRAFFORD.name, lat: OLD_TRAFFORD.lat, lng: OLD_TRAFFORD.lng, emoji: '⚽', kind: 'Old Trafford stadium' },
+];
+
+const faqs = [
+  { q: 'Where does the ferry arrive?', a: 'Both routes arrive at Trafford Wharf, at the stadium end beside IWM North — a short walk from Old Trafford.' },
+  { q: 'Which departure point should I choose?', a: "Choose whichever is most convenient for you: Ralli Quay (River Irwell near New Bailey, Salford) or Stephenson's Bridge (near Water Street). Both arrive at the same place." },
+  { q: 'How long does the crossing take?', a: 'Approximately 20 minutes each way. (TBC)' },
+  { q: 'Does the ferry run for every match?', a: 'The ferry runs on selected matchdays only. Check availability for your fixture when booking. (TBC)' },
+  { q: 'Is there a return service after the game?', a: 'Yes — the ferry returns from Trafford Wharf after the final whistle. Return boarding details TBC.' },
+  { q: 'Can I hire a boat for a private group on matchday?', a: 'Yes — private matchday hire is available for groups. Get in touch to enquire.' },
+];
+
+const pageTitle = 'MUFC Ferry Service — Matchday Boat to Old Trafford';
+const pageDescription =
+  'Beat the matchday traffic and travel to Old Trafford by boat. Choose your departure — Ralli Quay or Stephenson’s Bridge — and arrive at Trafford Wharf, a short walk from the ground.';
+
+const structuredData = {
+  '@context': 'https://schema.org',
+  '@type': 'Service',
+  name: 'MUFC Matchday Ferry',
+  serviceType: 'Matchday ferry service',
+  description: pageDescription,
+  url: `${site.url}/mufc-ferry`,
+  areaServed: 'Manchester',
+  provider: {
+    '@type': 'LocalBusiness',
+    name: site.name,
+    url: site.url,
+    email: site.email,
+    address: { '@type': 'PostalAddress', ...site.address },
+    geo: { '@type': 'GeoCoordinates', ...site.geo },
+  },
+};
 ---
 
-<BaseLayout title="MUFC Ferry Service — Manchester River Cruises">
-  <h1>MUFC Ferry Service</h1>
-  <p>This page is coming soon.</p>
+<BaseLayout title={pageTitle} description={pageDescription}>
+  {/* Schema.org structured data (Service) */}
+  <script type="application/ld+json" is:inline set:html={JSON.stringify(structuredData)} />
+
+  {/* Leaflet (CDN — loaded only on this page). CSS must load before the JS below. */}
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <style is:global>
+    /* Leaflet needs a real pixel height, not only Tailwind. Own stacking context at
+       z-0 so its panes/controls stay below the sticky header (z-50). */
+    #ferry-map {
+      height: 320px;
+      position: relative;
+      z-index: 0;
+    }
+    @media (min-width: 768px) {
+      #ferry-map {
+        height: 460px;
+      }
+    }
+  </style>
+
+  <PageHero
+    eyebrow="Matchday by boat"
+    title="MUFC Ferry Service"
+    subtitle="Beat the matchday traffic and travel to Old Trafford by boat. Choose your departure point — both routes arrive at Trafford Wharf, a short walk from the ground."
+  >
+    <CTAButton href="#choose">Choose your departure</CTAButton>
+  </PageHero>
+
+  <KeyFacts facts={keyFacts} />
+
+  <div class="mx-auto max-w-6xl px-4 py-12 sm:px-6 md:py-16 lg:px-8">
+    <div class="space-y-16">
+      {/* Choose your departure */}
+      <section id="choose" aria-labelledby="choose-heading" class="scroll-mt-6">
+        <SectionHeading id="choose-heading">Choose your departure point</SectionHeading>
+        <p class="mt-6 max-w-3xl text-body">
+          Both ferry routes arrive at Trafford Wharf, at the stadium end beside IWM North — just a
+          short walk from Old Trafford. Pick whichever departure point suits you best.
+        </p>
+        <div class="mt-8 grid grid-cols-1 gap-4 sm:grid-cols-2">
+          {
+            departurePoints.map((p) => (
+              <ProductCard
+                name={`Depart from ${p.name}`}
+                desc={`Departs ${p.location}. Arrives Trafford Wharf — a short walk from the ground.`}
+                href={`/mufc-ferry/${p.slug}`}
+                linkText="View & book"
+                imageLabel="Departure point photo (TBC)"
+              />
+            ))
+          }
+        </div>
+      </section>
+
+      {/* Map — four markers, no route lines */}
+      <section aria-labelledby="map-heading">
+        <SectionHeading id="map-heading">The route at a glance</SectionHeading>
+        <p class="mt-6 max-w-3xl text-body">
+          Two departure points, one destination. The map shows both departure points, the arrival at
+          Trafford Wharf and Old Trafford itself.
+        </p>
+        <div id="ferry-map" class="mt-8 w-full overflow-hidden rounded-card ring-1 ring-black/5"></div>
+        <noscript>
+          <p class="mt-2 text-sm text-subtle">Enable JavaScript to view the interactive map.</p>
+        </noscript>
+      </section>
+
+      <FAQSection faqs={faqs} title="MUFC Ferry FAQs" />
+    </div>
+  </div>
+
+  {/* Private matchday hire callout */}
+  <CTASection
+    heading="Travelling as a group?"
+    text="Hire a boat exclusively for your group on matchday — a stress-free, memorable way to arrive at the game together."
+    primaryHref="/private-hire"
+    primaryLabel="Enquire about private matchday hire"
+  />
+
+  {/* Leaflet — CSS is loaded above. Markers only, no route line. */}
+  <script is:inline src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script is:inline define:vars={{ markers: mapMarkers }}>
+    document.addEventListener('DOMContentLoaded', function () {
+      if (typeof L === 'undefined') return;
+      var el = document.getElementById('ferry-map');
+      if (!el || !markers.length) return;
+
+      var map = L.map(el, { scrollWheelZoom: false });
+      L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 19,
+        attribution: '&copy; OpenStreetMap contributors',
+      }).addTo(map);
+
+      var latlngs = [];
+      markers.forEach(function (m) {
+        latlngs.push([m.lat, m.lng]);
+        var icon = L.divIcon({
+          className: 'ferry-marker',
+          iconSize: [32, 32],
+          iconAnchor: [16, 16],
+          popupAnchor: [0, -16],
+          html:
+            '<div style="width:32px;height:32px;display:flex;align-items:center;justify-content:center;' +
+            'border-radius:9999px;background:#fff;font-size:16px;line-height:1;' +
+            'box-shadow:0 1px 4px rgba(0,0,0,.3);">' + m.emoji + '</div>',
+        });
+        L.marker([m.lat, m.lng], { icon: icon })
+          .addTo(map)
+          .bindPopup(
+            '<div style="font:13px/1.4 sans-serif;color:#1a1a1a">' +
+              '<strong>' + m.emoji + ' ' + m.name + '</strong><br>' + m.kind +
+            '</div>'
+          );
+      });
+
+      map.fitBounds(latlngs, { padding: [40, 40] });
+    });
+  </script>
 </BaseLayout>
