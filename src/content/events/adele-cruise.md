@@ -1,0 +1,33 @@
+---
+title: Adele Cruise
+description: A soaring tribute to Adele on the Manchester Ship Canal — the biggest ballads and anthems performed live, with a licensed bar and the city skyline after dark.
+shortTagline: Rolling in the Deep — a night of Adele's greatest songs, live on the water.
+ventrataProductId: 99a19bc1-64d3-4f69-bd68-fb44348053a6
+category: live-music
+duration: Approx. 2 hours (TBC)
+priceFrom: 30
+whatToExpect:
+  - Live tribute to Adele's biggest ballads and anthems
+  - Goosebump moments and full-boat singalongs
+  - Licensed bar onboard throughout the evening
+  - Manchester's waterfront skyline as your backdrop
+faqs:
+  - question: Which Adele songs are performed?
+    answer: All the favourites — "Rolling in the Deep", "Someone Like You", "Hello" and "Set Fire to the Rain" among them. (TBC)
+  - question: Is this an over-18s event?
+    answer: Evening cruises are usually over-18s; age restrictions are confirmed at booking. (TBC)
+  - question: Is there a bar onboard?
+    answer: Yes — a fully licensed bar is open throughout the cruise.
+heroImageAlt: An Adele tribute singer performing to guests aboard a Manchester River Cruises boat at night
+draft: false
+---
+
+Some voices just stop you in your tracks — and few catalogues hit quite as hard as Adele's. Our Adele Cruise brings those soaring ballads and unforgettable anthems to life on the water, for an evening that swings between goosebumps and full-throated singalong.
+
+As the boat slips out from Salford Quays, the set builds through the songs you know by heart. There are the tender, hold-your-breath moments — "Someone Like You", "Make You Feel My Love" — and the big, defiant belters like "Rolling in the Deep" and "Set Fire to the Rain" that get the whole boat singing as one. It is the kind of night where strangers end up arm in arm, phone torches swaying, everyone finding their own voice somewhere in the chorus.
+
+The setting only adds to the emotion. With Manchester's illuminated waterfront gliding past the windows and a fully licensed bar keeping the evening flowing, there is a real sense of occasion from the moment you step aboard. It makes a wonderful night out for a birthday, a girls' night or simply a group who love their music with genuine feeling.
+
+Adele's songs are made for sharing, and hearing them live — out on the water, under the city lights — gives them an extra shimmer you won't forget in a hurry. Whether you are here for the heartbreak or the fireworks, this is a night that stays with you.
+
+Our Adele nights are always popular and tickets go quickly, so gather your group and book early. Come and say hello — we'll see you on the water.

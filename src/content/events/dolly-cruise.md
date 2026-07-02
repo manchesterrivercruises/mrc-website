@@ -3,7 +3,7 @@ title: Dolly Cruise
 description: A country night celebrating Dolly Parton on the Manchester Ship Canal — live tribute, singalong classics, a licensed bar and a whole lot of heart.
 shortTagline: Working 9 to 5 all week? Sail away to a night of Dolly on the water.
 ventrataProductId: f370910f-7d5e-49bb-89b6-dea2ca86f2a9
-category: music
+category: live-music
 duration: Approx. 2 hours (TBC)
 priceFrom: 28
 whatToExpect:

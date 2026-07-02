@@ -3,7 +3,7 @@ title: Club Classics
 description: Club anthems and dancefloor fillers on the Manchester Ship Canal — a DJ-led party cruise with a licensed bar and the city skyline after dark.
 shortTagline: Anthems, lasers and the canal after dark — the ultimate club night afloat.
 ventrataProductId: 46688aed-c6e3-4d6d-933b-efcba00d34fe
-category: party
+category: dj-night
 duration: Approx. 2 hours (TBC)
 priceFrom: 28
 whatToExpect:

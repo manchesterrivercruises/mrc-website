@@ -1,0 +1,33 @@
+---
+title: Soul River
+description: A night of soul and Motown classics on the Manchester Ship Canal — live music, a licensed bar and dancing as the city skyline drifts past.
+shortTagline: Soul, Motown and Northern gold — a feel-good night on the water.
+ventrataProductId: 8c425994-25e9-4bc3-bce3-1181951142c8
+category: live-music
+duration: Approx. 2 hours (TBC)
+priceFrom: 30
+whatToExpect:
+  - Live soul, Motown and Northern Soul classics
+  - Dancing and singalongs as the boat cruises the canal
+  - Licensed bar onboard all evening
+  - Manchester's waterfront lit up around you
+faqs:
+  - question: What kind of music is played?
+    answer: A feel-good mix of soul, Motown and Northern Soul floor-fillers. (TBC)
+  - question: Is this an over-18s event?
+    answer: Evening cruises are usually over-18s; age restrictions are confirmed at booking. (TBC)
+  - question: Is there a bar onboard?
+    answer: Yes — a fully licensed bar is open throughout.
+heroImageAlt: Guests dancing to a live soul band aboard a Manchester River Cruises boat at night
+draft: false
+---
+
+There is no music quite like soul for lifting a room — and Soul River pours all of that warmth and rhythm out across the Manchester Ship Canal. It is a night of Motown magic, Northern Soul stompers and the timeless classics that never fail to fill a floor.
+
+As the boat pushes out from Salford Quays, the good feeling starts almost immediately. The set glides through the golden era — the shimmer of Motown, the horns and hooks of classic soul, the driving beat of Northern Soul that has kept dancefloors moving for decades. These are songs built for singing along and spinning around, and before long the whole boat is caught up in it.
+
+With a fully licensed bar onboard and the city's waterfront lights drifting past the windows, the atmosphere is pure joy. Soul brings people together like nothing else — all ages, all moods, everyone finding the groove — and there is something special about hearing it out on the water, with the skyline as your backdrop.
+
+It makes a brilliant night out for a birthday, a group of friends or anyone who loves music with heart and a beat you can't sit still to. Come ready to dance, because Soul River rarely leaves anyone in their seat for long.
+
+Our soul nights have a loyal following and tickets go quickly, so gather your group and book ahead. Keep the faith — and we'll see you on the dancefloor.

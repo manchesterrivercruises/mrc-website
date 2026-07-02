@@ -1,0 +1,33 @@
+---
+title: Diana Ross Cruise
+description: A glittering tribute to the music of Diana Ross on the Manchester Ship Canal — Motown and disco classics performed live, with a licensed bar and dancefloor.
+shortTagline: Glamour, Motown and disco — a dazzling Diana Ross night afloat.
+ventrataProductId: 19441cae-34e1-440d-b7c1-534a9a2a163e
+category: live-music
+duration: Approx. 2 hours (TBC)
+priceFrom: 30
+whatToExpect:
+  - Live tribute to the music of Diana Ross and The Supremes
+  - Motown and disco floor-fillers to dance to
+  - Licensed bar onboard all evening
+  - A glamorous night out on the water
+faqs:
+  - question: What songs can we expect?
+    answer: Supremes and solo classics alike — "I'm Coming Out", "Ain't No Mountain High Enough", "Chain Reaction" and "Upside Down". (TBC)
+  - question: Is there a dress code?
+    answer: No formal dress code, but this is a night to dress up and bring the glamour if you fancy it. (TBC)
+  - question: Is there a bar onboard?
+    answer: Yes — a fully licensed bar is open throughout.
+heroImageAlt: A Diana Ross tribute performer in a sequined gown entertaining guests aboard a Manchester River Cruises boat
+draft: false
+---
+
+Few artists sparkle quite like Diana Ross — and our Diana Ross Cruise brings all that glamour, joy and pure Motown magic to the Manchester Ship Canal. It is a night to dress up, let go and dance, with one of the most beloved songbooks in pop as your soundtrack.
+
+From the moment the boat leaves Salford Quays, the hits keep coming. There is the shimmer of The Supremes — "Baby Love", "You Can't Hurry Love" — and the soaring solo anthems that defined a disco era: "I'm Coming Out", "Upside Down", "Ain't No Mountain High Enough". It is music built to move to, and before long the dancefloor is full and the whole boat is glowing.
+
+There is something wonderfully uplifting about a Diana Ross night. The songs are generous and full of heart, the atmosphere is warm, and with a fully licensed bar and Manchester's waterfront lights drifting past the windows, the whole evening feels like an occasion. It is a brilliant choice for a birthday, a hen party or a group of friends who simply want to dance and sing the night away.
+
+Bring the glamour, bring your best moves, and let the diva of disco carry you through the evening. Whether you have loved these songs for decades or you are discovering them anew, this is a feel-good night from the first note to the last.
+
+Diana Ross nights are a firm favourite and tickets don't last long — so round up your group and book ahead. Come and shine with us on the water.

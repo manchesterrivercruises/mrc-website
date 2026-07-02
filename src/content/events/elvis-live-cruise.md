@@ -1,0 +1,33 @@
+---
+title: Elvis Live
+description: An evening with the King on the Manchester Ship Canal — the ballads, the showstoppers and the Vegas-era classics performed live, with a licensed bar onboard.
+shortTagline: An evening with the King — the crooner, the showman, the legend, live on the water.
+ventrataProductId: 2fe9c519-e00a-4a0d-8067-e7e5c15a023e
+category: live-music
+duration: Approx. 2 hours (TBC)
+priceFrom: 28
+whatToExpect:
+  - Live Elvis tribute spanning the ballads and the showstoppers
+  - Singalong classics and a touch of Vegas showmanship
+  - Licensed bar onboard all evening
+  - The lights of Salford Quays after dark
+faqs:
+  - question: How is this different from Elvis Rocks?
+    answer: Elvis Live leans into the crooner and Vegas-era showman — the ballads and big finishers — while Elvis Rocks is a rowdier rock 'n' roll night. Both are a great time. (TBC)
+  - question: Is this an over-18s event?
+    answer: Evening cruises are usually over-18s; age restrictions are confirmed at booking. (TBC)
+  - question: Is there a bar onboard?
+    answer: Yes — a fully licensed bar is open throughout the cruise.
+heroImageAlt: An Elvis tribute performer in a Vegas-style jumpsuit singing to guests aboard a Manchester River Cruises boat
+draft: false
+---
+
+There was only ever one King — and Elvis Live brings his full range to the Manchester Ship Canal for an unforgettable evening. Where our Elvis Rocks night is all rock 'n' roll swagger, this is the other side of Elvis: the crooner, the showman, the Vegas legend in the white jumpsuit, delivering the ballads and big finishers that still give you chills.
+
+As the boat cruises out from Salford Quays, the set moves through the songs that made Elvis immortal. There is the tenderness of "Can't Help Falling in Love" and "Are You Lonesome Tonight?", the drama of "Suspicious Minds", and the goosebump-inducing climb of "An American Trilogy". It is a night of genuine showmanship — a scarf or two may be handed out — and the atmosphere builds beautifully as the evening goes on.
+
+With a fully licensed bar onboard and Manchester's waterfront lights sliding past the windows, the whole thing feels like a proper event. It is a wonderful night for fans who grew up on the King, for a birthday or anniversary, or for anyone who simply loves a great voice and a bit of old-school glamour.
+
+Whether you come to sway along to the ballads or to belt out the showstoppers, Elvis Live is a warm, feel-good tribute to the greatest entertainer of them all. Expect singalongs, a few happy tears, and a standing ovation by the end.
+
+Our Elvis nights are always in demand, so gather your fellow fans and book early. Thank you very much — we'll see you on the water.

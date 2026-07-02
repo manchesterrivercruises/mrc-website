@@ -3,7 +3,7 @@ title: Elvis Rocks
 description: The King returns for a rock 'n' roll cruise on the Manchester Ship Canal — live Elvis tribute, a licensed bar and a night of hip-shaking classics.
 shortTagline: The King is back — a rock 'n' roll night afloat on the Ship Canal.
 ventrataProductId: 9b61248a-b567-4cda-8b17-97d55e944b0b
-category: music
+category: live-music
 duration: Approx. 2 hours (TBC)
 priceFrom: 28
 whatToExpect:
