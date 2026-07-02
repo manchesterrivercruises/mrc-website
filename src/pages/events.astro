@@ -1,8 +1,187 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+import SectionHeading from '../components/SectionHeading.astro';
+import CTAButton from '../components/CTAButton.astro';
+import FAQSection from '../components/FAQSection.astro';
+import GettingHere from '../components/GettingHere.astro';
+import KeyFacts from '../components/KeyFacts.astro';
+import ProductCard from '../components/ProductCard.astro';
+
+const icons = {
+  calendar:
+    '<path d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5" />',
+  tag: '<path d="M9.568 3H5.25A2.25 2.25 0 0 0 3 5.25v4.318c0 .597.237 1.17.659 1.591l9.581 9.581c.699.699 1.78.872 2.607.33a18.095 18.095 0 0 0 5.223-5.223c.542-.827.369-1.908-.33-2.607L11.16 3.66A2.25 2.25 0 0 0 9.568 3Z" /><path d="M6 6h.008v.008H6V6Z" />',
+  sparkles:
+    '<path d="M9.813 15.904 9 18.75l-.813-2.846a4.5 4.5 0 0 0-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 0 0 3.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 0 0 3.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 0 0-3.09 3.09Z" /><path d="M18.259 8.715 18 9.75l-.259-1.035a3.375 3.375 0 0 0-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 0 0 2.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 0 0 2.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 0 0-2.456 2.456Z" />',
+  pin: '<path d="M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" /><path d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1 1 15 0Z" />',
+};
+
+const keyFacts = [
+  { text: 'Evening & weekend events', icon: icons.calendar },
+  { text: 'From £20 (TBC)', icon: icons.tag },
+  { text: 'Licensed bar onboard', icon: icons.sparkles },
+  { text: 'Millennium Footbridge departure', icon: icons.pin },
+];
+
+// Event categories — each links to its SEO page or the What's On listing.
+const categories = [
+  {
+    name: 'Music Cruises',
+    desc: 'Live tributes and themed nights — ABBA, Elvis, Dolly, Adele, Soul and Club Classics.',
+    href: '/music-cruises-manchester',
+    linkText: 'Music cruises',
+  },
+  {
+    name: 'Party Nights',
+    desc: 'Boat parties on the Ship Canal — dancing, drinks and the city skyline as your backdrop.',
+    href: '/party-boat-manchester',
+    linkText: 'Party nights',
+  },
+  {
+    name: 'Christmas Cruises',
+    desc: 'Festive party nights and seasonal cruises through November, December and January.',
+    href: '/christmas-cruises-manchester',
+    linkText: 'Christmas cruises',
+  },
+  {
+    name: 'Santa Cruise',
+    desc: 'A magical festive cruise with a visit from Father Christmas — a family favourite.',
+    href: '/santa-cruise-manchester',
+    linkText: 'Santa cruise',
+  },
+  {
+    name: 'Kids Events',
+    desc: 'Family adventures afloat — Pirates & Mermaids and Wizards & Fairies themed cruises.',
+    href: '/whats-on',
+    linkText: 'See dates',
+  },
+  {
+    name: 'Seasonal Specials',
+    desc: "Occasion cruises through the year — Mother's Day, Father's Day and Halloween.",
+    href: '/whats-on',
+    linkText: 'See dates',
+  },
+];
+
+const steps = [
+  { title: 'Book your tickets', body: 'Choose your event and date and book direct for the latest availability.' },
+  { title: 'Arrive 15 minutes early', body: 'Come to the Millennium Footbridge boarding point at Salford Quays in good time to board.' },
+  { title: 'Enjoy the cruise', body: 'Most events last approximately 2 hours (TBC), with a licensed bar onboard throughout.' },
+];
+
+const faqs = [
+  { q: 'Are there age restrictions?', a: 'Some evening party and music cruises are over-18s, while kids and family events are all ages. Age restrictions are shown on each event. (TBC)' },
+  { q: 'Is there a dress code?', a: 'There is no formal dress code — come as you are, though some themed nights are more fun in costume. (TBC)' },
+  { q: "What's included in the ticket?", a: 'Your ticket includes the cruise and the event/entertainment. Food and drinks are available to buy onboard unless stated otherwise. (TBC)' },
+  { q: 'How much are drinks at the bar?', a: 'A fully licensed bar is onboard every event cruise. Bar prices TBC.' },
+  { q: 'Are the boats accessible?', a: 'Accessibility varies by vessel — please see our accessibility page or contact us before booking. (TBC)' },
+  { q: 'Can I make a group booking?', a: 'Yes — we welcome groups for events. For larger groups, exclusive private hire may suit you better. Group booking details TBC.' },
+];
+
+const SITE = 'https://www.manchesterrivercruises.com';
+const pageTitle = 'Events & Special Cruises Manchester — Music, Party & Family Cruises';
+const pageDescription =
+  'Event cruises on the Manchester Ship Canal — live music tribute nights, boat parties, Christmas and Santa cruises, kids events and seasonal specials. Licensed bar onboard. Book direct.';
+
+const structuredData = {
+  '@context': 'https://schema.org',
+  '@type': 'ItemList',
+  name: 'Events & Special Cruises',
+  description: pageDescription,
+  url: `${SITE}/events`,
+  itemListElement: categories.map((c, i) => ({
+    '@type': 'ListItem',
+    position: i + 1,
+    name: c.name,
+    url: `${SITE}${c.href}`,
+  })),
+};
 ---
 
-<BaseLayout title="Events & Special Cruises — Manchester River Cruises">
-  <h1>Events &amp; Special Cruises</h1>
-  <p>This page is coming soon.</p>
+<BaseLayout title={pageTitle} description={pageDescription}>
+  {/* Schema.org structured data (ItemList of event categories) */}
+  <script type="application/ld+json" is:inline set:html={JSON.stringify(structuredData)} />
+
+  <div>
+    {/* Hero — dark navy, gold accents */}
+    <section class="bg-dark text-white">
+      <div class="mx-auto max-w-6xl px-4 py-20 sm:px-6 md:py-28 lg:px-8">
+        <p class="text-sm font-semibold uppercase tracking-[0.2em] text-accent">What's on the water</p>
+        <h1 class="mt-3 text-4xl font-bold tracking-tight text-white sm:text-5xl md:text-6xl">Events &amp; Special Cruises</h1>
+        <p class="mt-5 max-w-2xl text-lg leading-relaxed text-white/80">
+          Live music, party nights and family events on the Manchester Ship Canal.
+        </p>
+        <div class="mt-8">
+          <CTAButton href="/whats-on">See all upcoming dates</CTAButton>
+        </div>
+      </div>
+    </section>
+
+    <KeyFacts facts={keyFacts} />
+
+    <div class="mx-auto max-w-6xl px-4 py-12 sm:px-6 md:py-16 lg:px-8">
+      <div class="space-y-16">
+        {/* Event categories */}
+        <section aria-labelledby="categories">
+          <SectionHeading id="categories">Event categories</SectionHeading>
+          <div class="mt-8 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {categories.map((c) => <ProductCard name={c.name} desc={c.desc} href={c.href} linkText={c.linkText} />)}
+          </div>
+        </section>
+
+        {/* Upcoming events */}
+        <section aria-labelledby="upcoming">
+          <SectionHeading id="upcoming">Upcoming events</SectionHeading>
+          <div class="mt-6 max-w-3xl space-y-4 text-lg leading-relaxed text-body">
+            <p>
+              New event cruises are added throughout the year. See the full What's On listing for live
+              dates, times and availability across every event.
+            </p>
+          </div>
+          <div class="mt-6">
+            <CTAButton href="/whats-on">See all upcoming dates</CTAButton>
+          </div>
+        </section>
+
+        {/* How events work */}
+        <section aria-labelledby="how">
+          <SectionHeading id="how">How events work</SectionHeading>
+          <div class="mt-8 grid grid-cols-1 gap-6 sm:grid-cols-3">
+            {
+              steps.map((s, i) => (
+                <div class="flex flex-col">
+                  <span
+                    aria-hidden="true"
+                    class="flex h-10 w-10 flex-none items-center justify-center rounded-full bg-accent font-bold text-dark"
+                  >
+                    {i + 1}
+                  </span>
+                  <h3 class="mt-4 text-lg font-semibold text-ink">{s.title}</h3>
+                  <p class="mt-2 text-sm leading-relaxed text-body">{s.body}</p>
+                </div>
+              ))
+            }
+          </div>
+        </section>
+
+        {/* Private events callout */}
+        <section aria-labelledby="private">
+          <div class="rounded-card bg-dark p-8 text-white sm:p-10">
+            <h2 id="private" class="text-2xl font-bold tracking-tight sm:text-3xl">Want the whole boat?</h2>
+            <p class="mt-3 max-w-2xl text-lg leading-relaxed text-white/80">
+              Hire a boat exclusively for your own event — private parties, celebrations and corporate
+              occasions, tailored around you.
+            </p>
+            <div class="mt-6">
+              <CTAButton href="/private-hire">Private events &amp; hire</CTAButton>
+            </div>
+          </div>
+        </section>
+
+        <FAQSection faqs={faqs} title="Events FAQs" />
+
+        <GettingHere />
+      </div>
+    </div>
+  </div>
 </BaseLayout>
