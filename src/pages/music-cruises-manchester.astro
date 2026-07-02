@@ -92,6 +92,17 @@ const structuredData = {
           </div>
         </section>
 
+        {/* Featured music nights — each links to its own event page (/cruises/[slug]). */}
+        <section aria-labelledby="featured">
+          <SectionHeading id="featured">Featured music nights</SectionHeading>
+          <div class="mt-8 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            <ProductCard name="ABBA Cruise" desc="Dance the night away to the greatest ABBA hits on the water." href="/cruises/abba-tribute-cruise" linkText="ABBA Cruise" />
+            <ProductCard name="Elvis Rocks" desc="The King returns for a rock 'n' roll cruise on the Ship Canal." href="/cruises/elvis-rocks-cruise" linkText="Elvis Rocks" />
+            <ProductCard name="Dolly Cruise" desc="A warm-hearted country night celebrating the songs of Dolly Parton." href="/cruises/dolly-cruise" linkText="Dolly Cruise" />
+          </div>
+          <p class="mt-6 text-sm text-subtle">See all upcoming dates and more nights on the <a href="/whats-on" class="font-medium text-primary hover:underline">What's On</a> page.</p>
+        </section>
+
         <FAQSection faqs={faqs} title="Music cruise FAQs" />
 
         {/* Cross-sell to City River Tour */}

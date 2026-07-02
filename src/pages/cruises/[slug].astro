@@ -1,15 +1,191 @@
 ---
+import { getCollection, render } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
+import SectionHeading from '../../components/SectionHeading.astro';
+import CTAButton from '../../components/CTAButton.astro';
+import KeyFacts from '../../components/KeyFacts.astro';
+import FAQSection from '../../components/FAQSection.astro';
+import BookingPanel from '../../components/BookingPanel.astro';
+import ProductCard from '../../components/ProductCard.astro';
+import GettingHere from '../../components/GettingHere.astro';
 
-export function getStaticPaths() {
-  // Placeholder slug(s) only — real tours will be supplied from config/Ventrata later.
-  return [{ params: { slug: 'example-tour' } }];
+// One page per event, generated from the `events` content collection.
+// Content lives in src/content/events/*.md — layout stays here in the template.
+export async function getStaticPaths() {
+  const events = await getCollection('events', ({ data }) => !data.draft);
+  return events.map((entry) => ({ params: { slug: entry.id }, props: { entry } }));
 }
 
-const { slug } = Astro.params;
+const { entry } = Astro.props;
+const { Content } = await render(entry);
+const {
+  title,
+  description,
+  shortTagline,
+  ventrataProductId,
+  category,
+  duration,
+  priceFrom,
+  whatToExpect = [],
+  faqs = [],
+  heroImageAlt,
+} = entry.data;
+
+const categoryLabels: Record<string, string> = {
+  music: 'Music cruise',
+  party: 'Party night',
+  kids: 'Kids event',
+  seasonal: 'Seasonal cruise',
+};
+const eyebrow = (category && categoryLabels[category]) ?? 'Event cruise';
+
+const icons = {
+  clock: '<path d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />',
+  tag: '<path d="M9.568 3H5.25A2.25 2.25 0 0 0 3 5.25v4.318c0 .597.237 1.17.659 1.591l9.581 9.581c.699.699 1.78.872 2.607.33a18.095 18.095 0 0 0 5.223-5.223c.542-.827.369-1.908-.33-2.607L11.16 3.66A2.25 2.25 0 0 0 9.568 3Z" /><path d="M6 6h.008v.008H6V6Z" />',
+  sparkles:
+    '<path d="M9.813 15.904 9 18.75l-.813-2.846a4.5 4.5 0 0 0-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 0 0 3.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 0 0 3.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 0 0-3.09 3.09Z" /><path d="M18.259 8.715 18 9.75l-.259-1.035a3.375 3.375 0 0 0-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 0 0 2.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 0 0 2.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 0 0-2.456 2.456Z" />',
+  pin: '<path d="M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" /><path d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1 1 15 0Z" />',
+};
+
+const keyFacts = [
+  ...(duration ? [{ text: duration, icon: icons.clock }] : []),
+  ...(priceFrom != null ? [{ text: `From £${priceFrom}`, icon: icons.tag }] : []),
+  { text: 'Licensed bar onboard', icon: icons.sparkles },
+  { text: 'Millennium Footbridge departure', icon: icons.pin },
+];
+
+const bookDirect = [
+  'Official source — you book direct with the operator.',
+  'Always the latest live availability.',
+  'Direct support from the Manchester River Cruises team.',
+];
+
+// FAQSection expects { q, a }[]; map the collection's { question, answer } shape.
+const faqItems = faqs.map((f) => ({ q: f.question, a: f.answer }));
+
+const SITE = 'https://www.manchesterrivercruises.com';
+const pageTitle = `${title} — Manchester River Cruises`;
+
+const structuredData = {
+  '@context': 'https://schema.org',
+  '@type': 'Event',
+  name: title,
+  description,
+  url: `${SITE}/cruises/${entry.id}`,
+  eventAttendanceMode: 'https://schema.org/OfflineEventAttendanceMode',
+  location: {
+    '@type': 'Place',
+    name: 'Manchester River Cruises, Millennium Footbridge',
+    address: { '@type': 'PostalAddress', streetAddress: 'Millennium Footbridge, The Quays', addressLocality: 'Salford', postalCode: 'M50 3RB', addressCountry: 'GB' },
+    geo: { '@type': 'GeoCoordinates', latitude: 53.4705, longitude: -2.296 },
+  },
+  ...(priceFrom != null
+    ? { offers: { '@type': 'Offer', price: priceFrom, priceCurrency: 'GBP', availability: 'https://schema.org/InStock', url: `${SITE}/cruises/${entry.id}` } }
+    : {}),
+  organizer: { '@type': 'Organization', name: 'Manchester River Cruises', url: SITE },
+};
 ---
 
-<BaseLayout title={`${slug} — Manchester River Cruises`}>
-  <h1>Cruise: {slug}</h1>
-  <p>This page is coming soon.</p>
+<BaseLayout title={pageTitle} description={description}>
+  {/* Schema.org structured data (Event) */}
+  <script type="application/ld+json" is:inline set:html={JSON.stringify(structuredData)} />
+
+  <div class="pb-24 md:pb-0">
+    {/* Hero — dark navy, gold accents */}
+    <section class="bg-dark text-white">
+      <div class="mx-auto max-w-6xl px-4 py-20 sm:px-6 md:py-24 lg:px-8">
+        <p class="text-sm font-semibold uppercase tracking-[0.2em] text-accent">{eyebrow}</p>
+        <h1 class="mt-3 text-4xl font-bold tracking-tight text-white sm:text-5xl md:text-6xl">{title}</h1>
+        {shortTagline && <p class="mt-5 max-w-2xl text-lg leading-relaxed text-white/80">{shortTagline}</p>}
+        <div class="mt-8">
+          <CTAButton href="#book">Book now</CTAButton>
+        </div>
+      </div>
+    </section>
+
+    <KeyFacts facts={keyFacts} />
+
+    {/* Two-column: content + sticky booking panel */}
+    <div class="mx-auto max-w-6xl px-4 py-12 sm:px-6 md:py-16 lg:px-8">
+      <div class="grid gap-10 lg:grid-cols-[1fr_22rem] lg:gap-12">
+        {/* Left — content */}
+        <div class="space-y-16">
+          <section aria-labelledby="about">
+            <SectionHeading id="about">About this cruise</SectionHeading>
+            <div class="article-body mt-6 max-w-2xl text-lg leading-relaxed text-body">
+              <Content />
+            </div>
+          </section>
+
+          {
+            whatToExpect.length > 0 && (
+              <section aria-labelledby="expect">
+                <SectionHeading id="expect">What to expect</SectionHeading>
+                <ul class="mt-6 max-w-2xl space-y-3">
+                  {whatToExpect.map((item) => (
+                    <li class="flex gap-3 text-body">
+                      <span aria-hidden="true" class="mt-0.5 flex-none text-primary">✓</span>
+                      <span>{item}</span>
+                    </li>
+                  ))}
+                </ul>
+              </section>
+            )
+          }
+
+          {faqItems.length > 0 && <FAQSection faqs={faqItems} title={`${title} FAQs`} />}
+
+          {/* Cross-sell */}
+          <section aria-labelledby="more">
+            <SectionHeading id="more">More nights on the water</SectionHeading>
+            <div class="mt-8 sm:max-w-sm">
+              <ProductCard name="Events & Special Cruises" desc="See every music night, party cruise and seasonal event on the Ship Canal." href="/events" linkText="All events" />
+            </div>
+          </section>
+        </div>
+
+        {/* Right — sticky booking panel */}
+        <aside id="book" class="lg:sticky lg:top-6 lg:self-start scroll-mt-6">
+          <BookingPanel price={priceFrom != null ? `£${priceFrom}` : 'TBC'} bookDirect={bookDirect}>
+            <Fragment slot="widget">
+              {/*
+                STEP 6/9: Ventrata embedded checkout for this event.
+                Load the checkout script on this page (see docs/ventrata-integration.md —
+                do NOT load it globally) and uncomment the embedded widget below. The
+                productID is the event's ventrataProductId (safe to appear in the DOM).
+
+                <aside class="min-h-[50rem] h-auto w-full" ventrata-embedded-widget
+                  data-config={`{"productID":"${ventrataProductId}","embedded":true}`}></aside>
+              */}
+              <div
+                class="flex min-h-44 items-center justify-center rounded-card border border-dashed border-black/15 bg-panel p-6 text-center text-sm text-subtle"
+                data-ventrata-product-id={ventrataProductId}
+              >
+                Live availability &amp; booking widget will appear here.
+              </div>
+            </Fragment>
+          </BookingPanel>
+        </aside>
+      </div>
+    </div>
+
+    <div class="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
+      <GettingHere />
+    </div>
+  </div>
+
+  {/* Mobile sticky Book Now — scrolls to the booking panel */}
+  <div class="fixed inset-x-0 bottom-0 z-40 border-t border-black/10 bg-white/95 p-3 backdrop-blur md:hidden">
+    <CTAButton href="#book" class="w-full">Book now{priceFrom != null ? ` · from £${priceFrom}` : ''}</CTAButton>
+  </div>
 </BaseLayout>
+
+<style>
+  /* Prose spacing for the markdown About body (no Tailwind Typography dependency). */
+  .article-body :global(p) {
+    margin-bottom: 1.25rem;
+  }
+  .article-body :global(p:last-child) {
+    margin-bottom: 0;
+  }
+</style>
