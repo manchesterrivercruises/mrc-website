@@ -1,9 +1,10 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+import { site } from '../data/site';
 import SectionHeading from '../components/SectionHeading.astro';
 import CTAButton from '../components/CTAButton.astro';
 
-const SITE = 'https://www.manchesterrivercruises.com';
+const SITE = site.url;
 const pageTitle = 'Accessibility — Manchester River Cruises';
 const pageDescription =
   'Accessibility information for Manchester River Cruises — boarding, onboard facilities, wheelchair access, assistance dogs and our sensory-friendly SEN cruises.';

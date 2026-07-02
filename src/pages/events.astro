@@ -1,5 +1,6 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+import { site } from '../data/site';
 import SectionHeading from '../components/SectionHeading.astro';
 import CTAButton from '../components/CTAButton.astro';
 import FAQSection from '../components/FAQSection.astro';
@@ -26,16 +27,22 @@ const keyFacts = [
 // Event categories — each links to its SEO page or the What's On listing.
 const categories = [
   {
-    name: 'Music Cruises',
-    desc: 'Live tributes and themed nights — ABBA, Elvis, Dolly, Adele, Soul and Club Classics.',
+    name: 'Live Music Nights',
+    desc: 'Live tribute and themed nights — ABBA, Elvis, Dolly, Adele, Diana Ross, Soul and more.',
     href: '/music-cruises-manchester',
-    linkText: 'Music cruises',
+    linkText: 'Live music nights',
   },
   {
-    name: 'Party Nights',
-    desc: 'Boat parties on the Ship Canal — dancing, drinks and the city skyline as your backdrop.',
-    href: '/party-boat-manchester',
-    linkText: 'Party nights',
+    name: 'DJ Nights',
+    desc: 'DJ-led party cruises — Boat Tropicana, Back to the 90s and Decks on Deck.',
+    href: '/whats-on',
+    linkText: 'See dates',
+  },
+  {
+    name: 'Family Events',
+    desc: 'Family adventures afloat — Pirates & Mermaids and cruises with Father Christmas.',
+    href: '/whats-on',
+    linkText: 'See dates',
   },
   {
     name: 'Christmas Cruises',
@@ -50,14 +57,8 @@ const categories = [
     linkText: 'Santa cruise',
   },
   {
-    name: 'Kids Events',
-    desc: 'Family adventures afloat — Pirates & Mermaids and Wizards & Fairies themed cruises.',
-    href: '/whats-on',
-    linkText: 'See dates',
-  },
-  {
     name: 'Seasonal Specials',
-    desc: "Occasion cruises through the year — Mother's Day, Father's Day and Halloween.",
+    desc: "Occasion cruises through the year — Mother's Day and Father's Day.",
     href: '/whats-on',
     linkText: 'See dates',
   },
@@ -78,7 +79,7 @@ const faqs = [
   { q: 'Can I make a group booking?', a: 'Yes — we welcome groups for events. For larger groups, exclusive private hire may suit you better. Group booking details TBC.' },
 ];
 
-const SITE = 'https://www.manchesterrivercruises.com';
+const SITE = site.url;
 const pageTitle = 'Events & Special Cruises Manchester — Music, Party & Family Cruises';
 const pageDescription =
   'Event cruises on the Manchester Ship Canal — live music tribute nights, boat parties, Christmas and Santa cruises, kids events and seasonal specials. Licensed bar onboard. Book direct.';

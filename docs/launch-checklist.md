@@ -25,6 +25,39 @@ Complete every item before switching the domain to the new site.
 
 ---
 
+## Launch robots.txt
+
+The live `public/robots.txt` is currently the **pre-launch** version (`User-agent: * / Disallow: /`) so the staging build stays out of the index. **Do not change it until cutover.**
+
+At go-live, replace `public/robots.txt` with the block below. It allows all crawlers, explicitly welcomes the major AI crawlers, and points to the sitemap index emitted by `@astrojs/sitemap`:
+
+```txt
+User-agent: *
+Allow: /
+
+# AI crawlers — explicitly allowed
+User-agent: GPTBot
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: Claude-Web
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: Google-Extended
+Allow: /
+
+Sitemap: https://www.manchesterrivercruises.com/sitemap-index.xml
+```
+
+Note: `@astrojs/sitemap` outputs `/sitemap-index.xml` (which references `/sitemap-0.xml`), so reference the index URL above. An AI-crawler description lives at `/llms.txt`.
+
+---
+
 ## URL redirect map
 
 Before cutover, map every current URL to its new equivalent.

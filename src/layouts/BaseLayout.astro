@@ -2,6 +2,7 @@
 import '../styles/global.css';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
+import { buildBreadcrumbs, type Crumb } from '../lib/breadcrumbs';
 
 interface Props {
   title?: string;
@@ -9,15 +10,34 @@ interface Props {
   image?: string; // og:image — path (resolved against the site) or absolute URL
   canonical?: string; // override the computed canonical URL
   ogType?: string; // og:type, e.g. "website" | "article"
+  breadcrumbs?: Crumb[]; // override the auto-derived breadcrumb trail
 }
 
 const {
   title = 'Manchester River Cruises',
   description = 'Sightseeing river cruises and private hire on the Manchester Ship Canal from Salford Quays. Book direct for the best availability.',
-  image = '/images/og-default.jpg',
+  image = '/images/logo-colour.png', // default og:image — brand logo until real photography exists
   canonical,
   ogType = 'website',
+  breadcrumbs,
 } = Astro.props;
+
+// BreadcrumbList — auto-derived from the pathname (Home > section > page) unless a
+// page passes an explicit `breadcrumbs` prop. Omitted on the homepage (single item).
+const crumbs = breadcrumbs ?? buildBreadcrumbs(Astro.url.pathname);
+const breadcrumbSchema =
+  crumbs.length > 1
+    ? {
+        '@context': 'https://schema.org',
+        '@type': 'BreadcrumbList',
+        itemListElement: crumbs.map((c, i) => ({
+          '@type': 'ListItem',
+          position: i + 1,
+          name: c.name,
+          item: c.url,
+        })),
+      }
+    : null;
 
 // Canonical + absolute OG URLs. Astro.site is set in astro.config.mjs.
 const siteURL = Astro.site ?? new URL('/', Astro.url);
@@ -78,6 +98,9 @@ const gtmId = process.env.GTM_CONTAINER_ID;
       rel="stylesheet"
     />
 
+    {/* BreadcrumbList structured data (auto-derived; omitted on the homepage) */}
+    {breadcrumbSchema && <script type="application/ld+json" is:inline set:html={JSON.stringify(breadcrumbSchema)} />}
+
     {/* Per-page head injection (extra meta, JSON-LD, preloads, etc.) */}
     <slot name="head" />
   </head>
@@ -108,5 +131,69 @@ const gtmId = process.env.GTM_CONTAINER_ID;
       <slot />
     </main>
     <Footer />
+
+    {/* Ventrata checkout pop-up: let the widget own the screen (global — affects every
+        page with a widget: City River Tour, event pages, ferry pages). Toggles the
+        `ventrata-open` class on <html>; the styling lives in global.css. */}
+    <script>
+      // Detect when Ventrata injects its full-screen checkout overlay and flag <html>
+      // so the sticky header drops below it, the mobile Book Now bar is hidden, and the
+      // background scroll is locked. Detection is STRUCTURAL — a fixed, viewport-covering
+      // element added under <body>, or a body-level element named "ventrata" — so it does
+      // not depend on Ventrata's internal z-index (which sits below our sticky UI and is
+      // exactly what caused the overlap).
+      (() => {
+        const root = document.documentElement;
+
+        function isOverlay(el: Element): boolean {
+          if (!el || el.nodeType !== 1) return false;
+          const cls = typeof el.className === 'string' ? el.className : '';
+          const named = /ventrata/i.test(el.id || '') || /ventrata/i.test(cls);
+          const cs = getComputedStyle(el);
+          if (cs.display === 'none' || cs.visibility === 'hidden') return false;
+          const r = el.getBoundingClientRect();
+          if (named && r.width > 0 && r.height > 0) return true;
+          return (
+            cs.position === 'fixed' &&
+            r.width >= window.innerWidth * 0.9 &&
+            r.height >= window.innerHeight * 0.7
+          );
+        }
+
+        function isOpen(): boolean {
+          const kids = document.body ? document.body.children : ([] as unknown as HTMLCollection);
+          for (let i = 0; i < kids.length; i++) {
+            if (isOverlay(kids[i])) return true;
+          }
+          return false;
+        }
+
+        let raf = 0;
+        function sync() {
+          raf = 0;
+          root.classList.toggle('ventrata-open', isOpen());
+        }
+        function schedule() {
+          if (!raf) raf = requestAnimationFrame(sync);
+        }
+
+        const observer = new MutationObserver(schedule);
+        observer.observe(document.body, {
+          childList: true,
+          subtree: true,
+          attributes: true,
+          attributeFilter: ['style', 'class', 'hidden'],
+        });
+
+        // Defensive: also react to any Ventrata custom events, should the SDK emit them
+        // (not currently documented — the observer above is the primary signal).
+        ['ventrata-checkout:open', 'ventrata-checkout:close', 'checkout:open', 'checkout:close'].forEach((name) => {
+          window.addEventListener(name, schedule);
+          document.addEventListener(name, schedule);
+        });
+
+        sync();
+      })();
+    </script>
   </body>
 </html>

@@ -1,0 +1,33 @@
+---
+title: Pirates & Mermaids
+description: A family adventure cruise on the Manchester Ship Canal — pirates, mermaids, games and singalongs for little ones, with grown-ups welcome aboard too.
+shortTagline: Ahoy, shipmates! A swashbuckling family adventure on the water.
+ventrataProductId: e264599a-9a49-4f3a-a693-fd31f962f8ac
+category: family
+duration: Approx. 1.5 hours (TBC)
+priceFrom: 15
+whatToExpect:
+  - Pirate and mermaid characters, games and singalongs
+  - A gentle cruise along the Ship Canal for all the family
+  - Refreshments available onboard
+  - A memorable day out for little adventurers
+faqs:
+  - question: What ages is this suitable for?
+    answer: It's designed for younger children and their families, but all ages are welcome aboard. (TBC)
+  - question: Should children come in costume?
+    answer: Absolutely — little pirates and mermaids are encouraged to dress up! Costumes are optional. (TBC)
+  - question: Can adults come too?
+    answer: Yes — every child needs a grown-up aboard, and parents and carers are very welcome. (TBC)
+heroImageAlt: Children in pirate and mermaid costumes enjoying a family cruise aboard a Manchester River Cruises boat
+draft: false
+---
+
+Ahoy there, shipmates! Pirates & Mermaids turns the Manchester Ship Canal into the setting for a proper family adventure, where little ones can hunt for treasure, meet magical mermaids and set sail with a friendly crew of pirates.
+
+From the moment your young adventurers step aboard at Salford Quays, the fun begins. There are games to play, songs to sing and characters to meet, all wrapped up in a gentle cruise along the water that is just the right length for little attention spans. Whether they come dressed as a fearsome pirate or a shimmering mermaid — costumes are warmly encouraged — every child is part of the story.
+
+For grown-ups, it is a chance to sit back and watch the delight on their faces as the boat glides along, with refreshments available onboard and plenty to point at as the waterfront drifts by. It is an easy, stress-free day out: no long queues, no marching between attractions, just a boat, a bit of magic and a lot of happy children.
+
+Pirates & Mermaids makes a wonderful treat for a birthday, a school holiday or simply a special day with the family. It is the kind of outing that children talk about for weeks afterwards — and the photos are pretty brilliant too.
+
+Our family cruises are hugely popular during the holidays and tickets go quickly, so gather your little crew and book ahead. Weigh anchor and set sail — adventure awaits on the water.

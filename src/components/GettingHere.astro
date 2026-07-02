@@ -1,5 +1,6 @@
 ---
 import SectionHeading from './SectionHeading.astro';
+import { site } from '../data/site';
 
 // Fixed "Getting Here" template — used on every bookable product page. All products depart
 // from the same boarding point (Millennium Footbridge, Salford Quays), so this is static.
@@ -14,7 +15,7 @@ const placeholderTile =
       <div>
         <h3 class="font-semibold text-ink">Where to board</h3>
         <p class="mt-1 leading-relaxed">
-          Millennium Footbridge, Salford Quays, Manchester, M50 3RB — beside MediaCityUK,
+          {site.addressDisplay} — beside MediaCityUK,
           a short walk from The Lowry and the Imperial War Museum North.
         </p>
         <a

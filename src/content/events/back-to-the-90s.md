@@ -1,0 +1,33 @@
+---
+title: Back to the 90s
+description: A 90s party cruise on the Manchester Ship Canal — dance anthems, indie bangers and pop classics spun by a DJ, with a licensed bar and non-stop dancing.
+shortTagline: Ravers, indie kids and pop lovers unite — the 90s party afloat.
+ventrataProductId: fb15c1fc-84f9-455b-a6d6-e8de0db30b3d
+category: dj-night
+duration: Approx. 2 hours (TBC)
+priceFrom: 28
+whatToExpect:
+  - A DJ spinning the biggest 90s anthems all night
+  - Dance, pop and indie classics from the decade
+  - Licensed bar onboard
+  - Manchester's waterfront skyline lit up around you
+faqs:
+  - question: What kind of 90s music is played?
+    answer: A bit of everything that defined the decade — dance anthems, pop classics and indie bangers. (TBC)
+  - question: Is this an over-18s event?
+    answer: Yes — Back to the 90s is an over-18s party cruise. ID may be required. (TBC)
+  - question: Is there a bar onboard?
+    answer: Yes — a fully licensed bar is open throughout.
+heroImageAlt: A packed dancefloor of guests dancing to 90s music aboard a Manchester River Cruises party boat
+draft: false
+---
+
+Whether you were a raver, an indie kid or strictly a Saturday-morning-chart-show devotee, the 90s had a tune for you — and Back to the 90s brings every last one of them to the Manchester Ship Canal for a proper nostalgia-fuelled party.
+
+As the boat pushes out from Salford Quays, the DJ takes you straight back. There are the euphoric dance anthems that ruled the clubs, the singalong pop that owned the charts, and the indie bangers that soundtracked a Manchester coming-of-age. One minute you're throwing shapes to a piano-house classic, the next you're arm-in-arm bellowing an anthem you haven't heard in years. It is a decade's worth of memories, all in one boatful of people who know every word.
+
+With a fully licensed bar onboard and the city's illuminated waterfront drifting past the windows, the mood is nothing but good. It is a fantastic night out for a birthday, a reunion of old friends or a big group who want to dance like it's 1996 all over again.
+
+The beauty of a 90s night is how it brings everyone together — the tunes are pure serotonin, and out on the water, with the skyline glowing around you, the party takes on a life of its own. No standing at the back allowed.
+
+Back to the 90s is one of our best-loved party cruises and tickets go quickly, so gather your crew and book ahead. Things can only get better — see you on the dancefloor.

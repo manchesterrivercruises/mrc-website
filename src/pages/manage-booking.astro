@@ -1,9 +1,10 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+import { site } from '../data/site';
 import SectionHeading from '../components/SectionHeading.astro';
 import CTAButton from '../components/CTAButton.astro';
 
-const SITE = 'https://www.manchesterrivercruises.com';
+const SITE = site.url;
 const pageTitle = 'Manage My Booking — Manchester River Cruises';
 const pageDescription =
   "View, amend or cancel your Manchester River Cruises booking online. You'll need your booking reference and the email address used when booking.";

@@ -6,6 +6,7 @@ import FAQSection from '../components/FAQSection.astro';
 import GettingHere from '../components/GettingHere.astro';
 import KeyFacts from '../components/KeyFacts.astro';
 import ProductCard from '../components/ProductCard.astro';
+import { site } from '../data/site';
 
 const icons = {
   sparkles:
@@ -64,7 +65,7 @@ const faqs = [
   { q: 'What routes are available?', a: 'Charters run on the Manchester Ship Canal from Salford Quays; route options are discussed when we plan your event. (TBC)' },
 ];
 
-const SITE = 'https://www.manchesterrivercruises.com';
+const SITE = site.url;
 const pageTitle = 'Private Boat Hire Manchester — Charter a Boat on the Ship Canal';
 const pageDescription =
   'Private boat hire in Manchester — charter a boat exclusively on the Manchester Ship Canal for birthdays, weddings, corporate away days, private dining and filming. Departs Salford Quays. Enquire today.';
@@ -85,9 +86,9 @@ const structuredData = {
       '@type': 'LocalBusiness',
       name: 'Manchester River Cruises',
       url: SITE,
-      email: 'info@manchesterrivercruises.com',
-      address: { '@type': 'PostalAddress', streetAddress: 'Millennium Footbridge, The Quays', addressLocality: 'Salford', postalCode: 'M50 3RB', addressCountry: 'GB' },
-      geo: { '@type': 'GeoCoordinates', latitude: 53.4705, longitude: -2.296 },
+      email: site.email,
+      address: { '@type': 'PostalAddress', ...site.address },
+      geo: { '@type': 'GeoCoordinates', ...site.geo },
     },
   ],
 };

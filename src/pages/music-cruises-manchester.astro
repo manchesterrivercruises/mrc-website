@@ -1,11 +1,22 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+import { site } from '../data/site';
 import SectionHeading from '../components/SectionHeading.astro';
 import CTAButton from '../components/CTAButton.astro';
 import FAQSection from '../components/FAQSection.astro';
 import GettingHere from '../components/GettingHere.astro';
 import KeyFacts from '../components/KeyFacts.astro';
 import ProductCard from '../components/ProductCard.astro';
+import { getCollection } from 'astro:content';
+
+// Event lists pulled from the events collection (drafts excluded), split by category.
+const events = await getCollection('events', ({ data }) => !data.draft);
+const liveMusicNights = events
+  .filter((e) => e.data.category === 'live-music')
+  .sort((a, b) => a.data.title.localeCompare(b.data.title));
+const djNights = events
+  .filter((e) => e.data.category === 'dj-night')
+  .sort((a, b) => a.data.title.localeCompare(b.data.title));
 
 const icons = {
   calendar:
@@ -32,7 +43,7 @@ const faqs = [
   { q: "What's included?", a: 'Your cruise, live entertainment and access to the onboard bar (drinks not included). (TBC)' },
 ];
 
-const SITE = 'https://www.manchesterrivercruises.com';
+const SITE = site.url;
 const pageTitle = 'Music Cruises Manchester — Live Music on the Water';
 const pageDescription =
   'Music cruises in Manchester — live tribute and party nights on the Manchester Ship Canal, from ABBA and Elvis to Dolly, Adele, Club Classics, Soul River and Decks on Deck. Licensed bar onboard. Book direct.';
@@ -45,8 +56,8 @@ const structuredData = {
   url: `${SITE}/music-cruises-manchester`,
   touristType: 'Nightlife',
   availableLanguage: 'English',
-  address: { '@type': 'PostalAddress', streetAddress: 'Millennium Footbridge, The Quays', addressLocality: 'Salford', postalCode: 'M50 3RB', addressCountry: 'GB' },
-  geo: { '@type': 'GeoCoordinates', latitude: 53.4705, longitude: -2.296 },
+  address: { '@type': 'PostalAddress', ...site.address },
+  geo: { '@type': 'GeoCoordinates', ...site.geo },
 };
 ---
 
@@ -90,6 +101,37 @@ const structuredData = {
           <div class="mt-6">
             <CTAButton href="/whats-on">See what's on</CTAButton>
           </div>
+        </section>
+
+        {/* Live Music Nights — from the events collection (category: live-music). */}
+        <section aria-labelledby="live-music">
+          <SectionHeading id="live-music">Live Music Nights</SectionHeading>
+          <p class="mt-6 max-w-3xl text-body">
+            Live tribute and themed nights — a singer, a band and a boatful of people who know every word.
+          </p>
+          <div class="mt-8 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {
+              liveMusicNights.map((e) => (
+                <ProductCard name={e.data.title} desc={e.data.shortTagline ?? e.data.description} href={`/cruises/${e.id}`} linkText="View & book" />
+              ))
+            }
+          </div>
+        </section>
+
+        {/* DJ Nights — from the events collection (category: dj-night). */}
+        <section aria-labelledby="dj-nights">
+          <SectionHeading id="dj-nights">DJ Nights</SectionHeading>
+          <p class="mt-6 max-w-3xl text-body">
+            DJ-led party cruises — anthems, floor-fillers and the city skyline as your dancefloor backdrop.
+          </p>
+          <div class="mt-8 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {
+              djNights.map((e) => (
+                <ProductCard name={e.data.title} desc={e.data.shortTagline ?? e.data.description} href={`/cruises/${e.id}`} linkText="View & book" />
+              ))
+            }
+          </div>
+          <p class="mt-6 text-sm text-subtle">See all upcoming dates on the <a href="/whats-on" class="font-medium text-primary hover:underline">What's On</a> page.</p>
         </section>
 
         <FAQSection faqs={faqs} title="Music cruise FAQs" />

@@ -1,5 +1,8 @@
 ---
+import BookDirect, { BOOK_DIRECT_POINTS } from './BookDirect.astro';
+
 // Booking panel: price, Ventrata widget placeholder, and "book direct" reassurance.
+// The reassurance copy comes from the shared BookDirect component (single source).
 interface Props {
   price: string;
   priceSuffix?: string;
@@ -11,7 +14,7 @@ const {
   price,
   priceSuffix = 'per person',
   priceNote,
-  bookDirect = [],
+  bookDirect = BOOK_DIRECT_POINTS,
   manageBookingHref = '/manage-booking',
 } = Astro.props;
 ---
@@ -38,20 +41,5 @@ const {
   </div>
 
   <h3 class="mt-6 text-sm font-semibold text-ink">Why book direct?</h3>
-  <ul class="mt-3 space-y-2">
-    {
-      bookDirect.map((point) => (
-        <li class="flex gap-2 text-sm text-body">
-          <span aria-hidden="true" class="mt-0.5 flex-none text-primary">
-            ✓
-          </span>
-          <span>{point}</span>
-        </li>
-      ))
-    }
-    <li class="flex gap-2 text-sm text-body">
-      <span aria-hidden="true" class="mt-0.5 flex-none text-primary">✓</span>
-      <a href={manageBookingHref} class="font-medium text-primary hover:underline">Manage My Booking</a>
-    </li>
-  </ul>
+  <BookDirect points={bookDirect} manageBookingHref={manageBookingHref} class="mt-3 text-sm" />
 </div>

@@ -1,0 +1,33 @@
+---
+title: Dolly Cruise
+description: A country night celebrating Dolly Parton on the Manchester Ship Canal — live tribute, singalong classics, a licensed bar and a whole lot of heart.
+shortTagline: Working 9 to 5 all week? Sail away to a night of Dolly on the water.
+ventrataProductId: f370910f-7d5e-49bb-89b6-dea2ca86f2a9
+category: live-music
+duration: Approx. 2 hours (TBC)
+priceFrom: 28
+whatToExpect:
+  - Live tribute to the songs of Dolly Parton
+  - Singalong country classics as the boat cruises the canal
+  - Licensed bar onboard all evening
+  - A warm, feel-good atmosphere from start to finish
+faqs:
+  - question: Which Dolly songs are performed?
+    answer: All the favourites — "9 to 5", "Jolene", "Islands in the Stream" and "I Will Always Love You" among them. (TBC)
+  - question: Is this a family-friendly event?
+    answer: Evening cruises are usually over-18s, though some daytime shows may suit families. Check the listing at booking. (TBC)
+  - question: Is there a bar onboard?
+    answer: Yes — a fully licensed bar is open throughout the cruise.
+heroImageAlt: A Dolly Parton tribute performer singing to guests aboard a Manchester River Cruises boat
+draft: false
+---
+
+Pour yourself a cup of ambition and come aboard — the Dolly Cruise is a warm-hearted country night out on the Manchester Ship Canal, celebrating the songs of the one and only Dolly Parton. It's part concert, part singalong, and entirely joyful.
+
+Nobody writes a song quite like Dolly, and hearing those classics live on the water is something special. As the boat drifts out from Salford Quays, the set winds its way through a catalogue everyone knows and loves — the toe-tapping fun of "9 to 5", the ache of "Jolene", the sweeping romance of "Islands in the Stream", and of course "I Will Always Love You", which never fails to bring the whole boat together for the big finish.
+
+There's a lovely, easy atmosphere to a Dolly night. It's the kind of evening where strangers end up singing arm in arm, where the choruses are loud and the mood is generous. A fully licensed bar keeps everyone topped up, and the gentle glide of the canal — Manchester's waterfront lights glimmering past the windows — makes the perfect backdrop for an evening that's as much about heart as it is about hits.
+
+It's a wonderful choice for a birthday, a girls' night, a gathering of friends, or anyone who simply adores Dolly and everything she stands for: warmth, wit and songs that stick with you for life. Come as you are — big hair optional but always welcome.
+
+Our Dolly nights have a loyal following and tickets don't hang around, so gather your group and book ahead. Working 9 to 5 is no way to make a living — so clock off, come down to the water, and let Dolly do the rest.

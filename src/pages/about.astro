@@ -1,11 +1,15 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+import PageHero from '../components/PageHero.astro';
 import SectionHeading from '../components/SectionHeading.astro';
 import CTAButton from '../components/CTAButton.astro';
-import ProductCard from '../components/ProductCard.astro';
+import TrustStrip from '../components/TrustStrip.astro';
+import BookDirect from '../components/BookDirect.astro';
+import CTASection from '../components/CTASection.astro';
+import { site } from '../data/site';
 
-// Fleet — TEMPORARY placeholder data. Move to a `vessels` Content Collection once real
-// vessel content (descriptions, capacities, photos) is provided (see content-management.md).
+// Fleet — brief teasers only; the detail lives on /vessels. TEMPORARY placeholder
+// data; move to a `vessels` Content Collection once real content is provided.
 const vessels = [
   { name: 'Princess Katherine' },
   { name: 'Isabella' },
@@ -14,28 +18,45 @@ const vessels = [
   { name: 'Joyce Too' },
 ];
 
-const bookDirect = [
-  'Official source — you book direct with the operator.',
-  'Always the latest live availability.',
-  'Direct support from the Manchester River Cruises team.',
+// Awards & press — drives the conditional section below. Empty for now, so the
+// section renders nothing. Add { title, source, href? } items to switch it on.
+const awards: { title: string; source?: string; href?: string }[] = [];
+
+const icons = {
+  calendar:
+    '<path d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5" />',
+  star: '<path d="M11.48 3.499a.562.562 0 0 1 1.04 0l2.125 5.111a.563.563 0 0 0 .475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 0 0-.182.557l1.285 5.385a.562.562 0 0 1-.84.61l-4.725-2.885a.563.563 0 0 0-.586 0L6.982 20.54a.562.562 0 0 1-.84-.61l1.285-5.386a.562.562 0 0 0-.182-.557l-4.204-3.602a.562.562 0 0 1 .321-.988l5.518-.442a.563.563 0 0 0 .475-.345L11.48 3.5Z" />',
+  lifebuoy:
+    '<path d="M16.712 4.33a9.027 9.027 0 0 1 1.652 1.306c.51.51.944 1.064 1.306 1.652M16.712 4.33l-3.448 4.138m3.448-4.138a9.014 9.014 0 0 0-9.424 0M19.67 7.288l-4.138 3.448m4.138-3.448a9.014 9.014 0 0 1 0 9.424m-4.138-5.976a3.736 3.736 0 0 0-.88-1.388 3.737 3.737 0 0 0-1.388-.88m2.268 2.268a3.765 3.765 0 0 1 0 2.528m-2.268-4.796a3.765 3.765 0 0 0-2.528 0m4.796 4.796c-.181.506-.475.982-.88 1.388a3.736 3.736 0 0 1-1.388.88m2.268-2.268 4.138 3.448m0 0a9.014 9.014 0 0 1-9.424 0m5.976-4.138a3.765 3.765 0 0 1-2.528 0m0 0a3.736 3.736 0 0 1-1.388-.88 3.737 3.737 0 0 1-.88-1.388m2.268 2.268L7.288 19.67m0 0a9.024 9.024 0 0 1-1.652-1.306 9.027 9.027 0 0 1-1.306-1.652m0 0 4.138-3.448M4.33 7.288l4.138 3.448M4.33 7.288a9.014 9.014 0 0 0 0 9.424m4.138-5.976a3.765 3.765 0 0 0 0 2.528m0-2.528L4.33 7.288" />',
+  badge:
+    '<path d="M9 12.75 11.25 15 15 9.75m-3-7.036A11.959 11.959 0 0 1 3.598 6 11.99 11.99 0 0 0 3 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285Z" />',
+};
+
+const trustStats = [
+  { value: 'TBC', label: 'Years operating', icon: icons.calendar },
+  { value: `${site.rating.value}★`, label: `${site.rating.count} Google reviews`, icon: icons.star },
+  { value: `${vessels.length}`, label: 'Vessels in our fleet', icon: icons.lifebuoy },
+  { value: 'Official', label: 'Operator — book direct', icon: icons.badge },
 ];
 
-const SITE = 'https://www.manchesterrivercruises.com';
-const pageTitle = 'About Manchester River Cruises';
+const pageTitle = `About ${site.name}`;
 const pageDescription =
   'About Manchester River Cruises — sightseeing cruises, events and private hire on the Manchester Ship Canal from Salford Quays. Meet our fleet and the team behind the boats.';
 
+// NAP + business data sourced from src/data/site.ts (single source of truth).
 const structuredData = {
   '@context': 'https://schema.org',
   '@graph': [
-    { '@type': 'AboutPage', name: 'About Manchester River Cruises', description: pageDescription, url: `${SITE}/about` },
+    { '@type': 'AboutPage', name: pageTitle, description: pageDescription, url: `${site.url}/about` },
     {
       '@type': 'LocalBusiness',
-      name: 'Manchester River Cruises',
-      url: SITE,
-      email: 'info@manchesterrivercruises.com',
-      address: { '@type': 'PostalAddress', streetAddress: 'Millennium Footbridge, The Quays', addressLocality: 'Salford', postalCode: 'M50 3RB', addressCountry: 'GB' },
-      geo: { '@type': 'GeoCoordinates', latitude: 53.4705, longitude: -2.296 },
+      name: site.name,
+      url: site.url,
+      email: site.email,
+      telephone: site.phone,
+      address: { '@type': 'PostalAddress', ...site.address },
+      geo: { '@type': 'GeoCoordinates', ...site.geo },
+      aggregateRating: { '@type': 'AggregateRating', ratingValue: site.rating.value, reviewCount: site.rating.count, bestRating: 5 },
     },
   ],
 };
@@ -45,14 +66,14 @@ const structuredData = {
   {/* Schema.org structured data (AboutPage + LocalBusiness) */}
   <script type="application/ld+json" is:inline set:html={JSON.stringify(structuredData)} />
 
-  <div class="mx-auto max-w-6xl px-4 py-16 sm:px-6 md:py-20 lg:px-8">
-    <h1 class="text-3xl font-bold tracking-tight text-ink sm:text-4xl md:text-5xl">About Manchester River Cruises</h1>
-    <p class="mt-4 max-w-2xl text-lg leading-relaxed text-body">
-      Sightseeing cruises, events and private hire on the Manchester Ship Canal — here's the story
-      behind the boats.
-    </p>
+  <PageHero
+    eyebrow="About us"
+    title={`About ${site.name}`}
+    subtitle="Sightseeing cruises, events and private hire on the Manchester Ship Canal — here's the story behind the boats."
+  />
 
-    <div class="mt-12 space-y-16">
+  <div class="mx-auto max-w-6xl px-4 py-16 sm:px-6 md:py-20 lg:px-8">
+    <div class="space-y-16">
       {/* Our story */}
       <section aria-labelledby="story">
         <SectionHeading id="story">Our story</SectionHeading>
@@ -66,62 +87,84 @@ const structuredData = {
         </div>
       </section>
 
-      {/* Our fleet */}
+      {/* Trust strip — sits immediately after Our Story */}
+      <TrustStrip stats={trustStats} />
+
+      {/* Our fleet — brief teasers; detail lives on /vessels */}
       <section aria-labelledby="fleet">
         <SectionHeading id="fleet">Our fleet</SectionHeading>
         <p class="mt-6 max-w-3xl text-body">
-          Meet the boats that carry you along the water. Vessel details and capacities are coming soon.
+          Meet the boats that carry you along the water. Each has its own character; full details and
+          passenger capacities live on our vessels page.
         </p>
-        <div class="mt-8 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <ul class="mt-8 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {
             vessels.map((v) => (
-              <ProductCard
-                name={v.name}
-                desc="Description and passenger capacity — TBC."
-                href="/vessels"
-                linkText="View fleet"
-              />
-            ))
-          }
-        </div>
-      </section>
-
-      {/* Our team */}
-      <section aria-labelledby="team">
-        <SectionHeading id="team">Meet the team</SectionHeading>
-        <div class="mt-6 max-w-3xl space-y-4 text-lg leading-relaxed text-body">
-          <p class="text-base text-subtle">Team introductions and photos — TBC from Simon (content-checklist.md).</p>
-        </div>
-      </section>
-
-      {/* Why book direct */}
-      <section aria-labelledby="book-direct">
-        <SectionHeading id="book-direct">Why book direct</SectionHeading>
-        <ul class="mt-6 max-w-3xl space-y-3">
-          {
-            bookDirect.map((point) => (
-              <li class="flex gap-3 text-body">
-                <span aria-hidden="true" class="mt-0.5 flex-none text-primary">✓</span>
-                <span>{point}</span>
+              <li class="rounded-card bg-panel p-5 ring-1 ring-black/5">
+                <strong class="block text-ink">{v.name}</strong>
+                <p class="mt-1 text-sm text-subtle">Description and passenger capacity — TBC.</p>
               </li>
             ))
           }
         </ul>
+        <div class="mt-8">
+          <CTAButton href="/vessels" variant="outline">View our vessels</CTAButton>
+        </div>
       </section>
 
-      {/* Awards & press */}
-      <section aria-labelledby="press">
-        <SectionHeading id="press">Awards &amp; press</SectionHeading>
-        <p class="mt-6 max-w-3xl text-base text-subtle">Awards and press coverage — TBC.</p>
+      {/* Our team — lightweight: one intro block + a single photo placeholder */}
+      <section aria-labelledby="team">
+        <SectionHeading id="team">Meet the team</SectionHeading>
+        <div class="mt-6 grid gap-8 md:grid-cols-2 md:items-center">
+          <div class="max-w-xl space-y-4 text-lg leading-relaxed text-body">
+            <p>
+              Behind every cruise is a small, dedicated crew — skippers, hosts and the office team who
+              keep the boats running and the welcome warm.
+            </p>
+            <p class="text-base text-subtle">Team introduction — TBC from Simon (content-checklist.md).</p>
+          </div>
+          <div class="flex aspect-[4/3] items-center justify-center rounded-card bg-panel text-xs text-subtle">
+            Team photo (TBC)
+          </div>
+        </div>
       </section>
-    </div>
 
-    {/* Book a cruise CTA */}
-    <div class="mt-16 rounded-card bg-panel p-6 ring-1 ring-black/5 sm:flex sm:items-center sm:justify-between sm:gap-6">
-      <p class="font-semibold text-ink">Ready to get on the water?</p>
-      <div class="mt-4 shrink-0 sm:mt-0">
-        <CTAButton href="/city-river-tour">Book a cruise</CTAButton>
-      </div>
+      {/* Why book direct — copy from the shared BookDirect component */}
+      <section aria-labelledby="book-direct">
+        <SectionHeading id="book-direct">Why book direct</SectionHeading>
+        <BookDirect class="mt-6 max-w-3xl" />
+      </section>
+
+      {/* Awards & press — renders only when the `awards` array has items */}
+      {
+        awards.length > 0 && (
+          <section aria-labelledby="press">
+            <SectionHeading id="press">Awards &amp; press</SectionHeading>
+            <ul class="mt-6 max-w-3xl space-y-3">
+              {awards.map((a) => (
+                <li class="text-body">
+                  {a.href ? (
+                    <a href={a.href} class="font-medium text-primary hover:underline">{a.title}</a>
+                  ) : (
+                    <span class="font-medium text-ink">{a.title}</span>
+                  )}
+                  {a.source && <span class="text-subtle"> — {a.source}</span>}
+                </li>
+              ))}
+            </ul>
+          </section>
+        )
+      }
     </div>
   </div>
+
+  {/* Split final CTA */}
+  <CTASection
+    heading="Ready to get on the water?"
+    text="Join our signature sightseeing cruise, or talk to us about hiring a boat exclusively for your event."
+    primaryHref="/city-river-tour"
+    primaryLabel="Book a sightseeing cruise"
+    secondaryHref="/private-hire"
+    secondaryLabel="Enquire about private hire"
+  />
 </BaseLayout>

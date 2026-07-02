@@ -1,0 +1,36 @@
+---
+// Shared "Why book direct" reassurance list — the single source of the copy.
+// Both BookingPanel and the About page consume this so the points live in one place.
+// Render a heading alongside it in the consumer (this component is just the list).
+export const BOOK_DIRECT_POINTS = [
+  'Official source — you book direct with the operator.',
+  'Always the latest live availability.',
+  'Direct support from the Manchester River Cruises team.',
+];
+
+interface Props {
+  points?: string[];
+  manageBookingHref?: string; // when set, appends a "Manage My Booking" link item
+  class?: string;
+}
+const { points = BOOK_DIRECT_POINTS, manageBookingHref, class: className = '' } = Astro.props;
+---
+
+<ul class={`space-y-3 ${className}`}>
+  {
+    points.map((point) => (
+      <li class="flex gap-3 text-body">
+        <span aria-hidden="true" class="mt-0.5 flex-none text-primary">✓</span>
+        <span>{point}</span>
+      </li>
+    ))
+  }
+  {
+    manageBookingHref && (
+      <li class="flex gap-3 text-body">
+        <span aria-hidden="true" class="mt-0.5 flex-none text-primary">✓</span>
+        <a href={manageBookingHref} class="font-medium text-primary hover:underline">Manage My Booking</a>
+      </li>
+    )
+  }
+</ul>

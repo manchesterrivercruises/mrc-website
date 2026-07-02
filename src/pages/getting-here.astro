@@ -1,11 +1,12 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+import { site } from '../data/site';
 import SectionHeading from '../components/SectionHeading.astro';
 import CTAButton from '../components/CTAButton.astro';
 
 // Standalone, detailed Getting Here page. The shared <GettingHere /> component is the SUMMARY
 // version embedded on product pages; this page expands on it with full travel detail.
-const SITE = 'https://www.manchesterrivercruises.com';
+const SITE = site.url;
 const pageTitle = 'Getting Here — Manchester River Cruises';
 const pageDescription =
   'How to get to Manchester River Cruises at the Millennium Footbridge, Salford Quays (M50 3RB) — by tram, car, taxi and bike, with parking options and directions.';
@@ -44,7 +45,7 @@ const structuredData = {
       <section aria-labelledby="board">
         <SectionHeading id="board">Where to board</SectionHeading>
         <p class="mt-6 leading-relaxed text-body">
-          Millennium Footbridge, Salford Quays, Manchester, M50 3RB. Look for the boarding point on
+          {site.addressDisplay}. Look for the boarding point on
           the quayside beside the footbridge.
         </p>
         <a

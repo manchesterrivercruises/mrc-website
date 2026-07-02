@@ -36,6 +36,7 @@ Full brief: `/docs/website-brief.md`
 | API / widget work | `/docs/ventrata-integration.md` |
 | SEO / metadata / schema | `/docs/seo-pages.md` |
 | Missing content / assets | `/docs/content-checklist.md` |
+| Images / alt text / WebP | `/docs/image-conventions.md` |
 | Launch / redirects / DNS | `/docs/launch-checklist.md` |
 | General architecture | `/docs/website-brief.md` |
 

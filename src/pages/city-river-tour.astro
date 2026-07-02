@@ -1,5 +1,6 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+import { site } from '../data/site';
 import SectionHeading from '../components/SectionHeading.astro';
 import CTAButton from '../components/CTAButton.astro';
 import BookingPanel from '../components/BookingPanel.astro';
@@ -40,12 +41,6 @@ const included = [
   'Approx. 1 hour return cruise',
 ];
 
-const bookDirect = [
-  'Official source — you book direct with the operator.',
-  'Always the latest live availability.',
-  'Direct support from the Manchester River Cruises team.',
-];
-
 // "Make a day of it" — TEMPORARY hardcoded list. To be migrated to Astro Content
 // Collections in a future CMS pass; do not treat this as a permanent data structure.
 const dayOut = [
@@ -80,7 +75,7 @@ const pageTitle = 'City River Tour — Manchester River Cruises';
 // Schema.org structured data (JSON-LD). Rendered from the page (BaseLayout owns <head>;
 // JSON-LD is valid in <body> too). validFrom uses the build date.
 const today = new Date().toISOString().slice(0, 10);
-const SITE = 'https://www.manchesterrivercruises.com';
+const SITE = site.url;
 const structuredData = {
   '@context': 'https://schema.org',
   '@graph': [
@@ -94,22 +89,12 @@ const structuredData = {
       availableLanguage: 'English',
       aggregateRating: {
         '@type': 'AggregateRating',
-        ratingValue: 4.5,
-        reviewCount: 518,
+        ratingValue: site.rating.value,
+        reviewCount: site.rating.count,
         bestRating: 5,
       },
-      address: {
-        '@type': 'PostalAddress',
-        streetAddress: 'Millennium Footbridge, The Quays',
-        addressLocality: 'Salford',
-        postalCode: 'M50 3RB',
-        addressCountry: 'GB',
-      },
-      geo: {
-        '@type': 'GeoCoordinates',
-        latitude: 53.4705,
-        longitude: -2.296,
-      },
+      address: { '@type': 'PostalAddress', ...site.address },
+      geo: { '@type': 'GeoCoordinates', ...site.geo },
       offers: {
         '@type': 'Offer',
         price: 13,
@@ -123,13 +108,6 @@ const structuredData = {
         name: 'Manchester River Cruises',
         url: SITE,
       },
-    },
-    {
-      '@type': 'BreadcrumbList',
-      itemListElement: [
-        { '@type': 'ListItem', position: 1, name: 'Home', item: `${SITE}/` },
-        { '@type': 'ListItem', position: 2, name: 'City River Tour', item: `${SITE}/city-river-tour` },
-      ],
     },
   ],
 };
@@ -284,7 +262,7 @@ const galleryTile =
     <div class="mx-auto max-w-6xl px-4 py-10 sm:px-6 md:py-12 lg:grid lg:grid-cols-[58%_38%] lg:items-start lg:gap-[4%] lg:px-8">
       {/* Right column — booking panel + cross-sell */}
       <aside id="book" class="mb-10 lg:order-2 lg:mb-0 lg:sticky lg:top-20">
-        <BookingPanel price="£13" priceNote="Adults £13 · Seniors £11" bookDirect={bookDirect}>
+        <BookingPanel price="£13" priceNote="Adults £13 · Seniors £11">
           {/* Ventrata embedded checkout widget (desktop) — City River Tour product. */}
           <aside
             slot="widget"
@@ -376,7 +354,7 @@ const galleryTile =
         <FAQSection faqs={faqs} />
 
         {/* Reviews */}
-        <ReviewStrip rating={4.5} reviewCount={518} />
+        <ReviewStrip rating={site.rating.value} reviewCount={site.rating.count} />
       </div>
     </div>
 

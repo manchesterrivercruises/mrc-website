@@ -6,6 +6,7 @@ import KeyFacts from '../components/KeyFacts.astro';
 import ProductCard from '../components/ProductCard.astro';
 import FAQSection from '../components/FAQSection.astro';
 import GettingHere from '../components/GettingHere.astro';
+import { site } from '../data/site';
 
 const icons = {
   sparkles:
@@ -59,7 +60,7 @@ const inputClass =
   'mt-1 w-full rounded-md border border-black/15 bg-white px-3 py-2 text-sm text-ink focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary';
 const fieldLabel = 'block text-sm font-medium text-ink';
 
-const SITE = 'https://www.manchesterrivercruises.com';
+const SITE = site.url;
 // Note: the "private boat hire manchester" keyword is owned by the dedicated SEO page
 // (/private-boat-hire-manchester). This page targets the "private hire" enquiry intent
 // with its own distinct title/description/H1 to avoid duplicate titles (AGENTS.md rule 7).
@@ -83,9 +84,9 @@ const structuredData = {
       '@type': 'LocalBusiness',
       name: 'Manchester River Cruises',
       url: SITE,
-      email: 'info@manchesterrivercruises.com',
-      address: { '@type': 'PostalAddress', streetAddress: 'Millennium Footbridge, The Quays', addressLocality: 'Salford', postalCode: 'M50 3RB', addressCountry: 'GB' },
-      geo: { '@type': 'GeoCoordinates', latitude: 53.4705, longitude: -2.296 },
+      email: site.email,
+      address: { '@type': 'PostalAddress', ...site.address },
+      geo: { '@type': 'GeoCoordinates', ...site.geo },
     },
   ],
 };

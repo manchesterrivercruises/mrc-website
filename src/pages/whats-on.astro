@@ -2,6 +2,8 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import SectionHeading from '../components/SectionHeading.astro';
 import EventCard from '../components/EventCard.astro';
+import { getCollection } from 'astro:content';
+import { site } from '../data/site';
 
 // Product IDs (see .env.example) used to derive the tour-type filter category.
 const CITY_RIVER_TOUR_ID = 'ef45d8bd-529c-4dae-9c35-cd1b8e4e0a75';
@@ -83,10 +85,17 @@ function typeLabel(key: string): string {
   if (key === 'mufc') return 'MUFC Ferry';
   return 'Events';
 }
-function hrefForKey(key: string): string {
-  if (key === 'crt') return '/city-river-tour';
-  if (key === 'mufc') return '/mufc-ferry';
-  return '/events';
+
+// Direct product links: resolve each event to its own page. Event tribute/party
+// cruises map by Ventrata product ID to their /cruises/[slug] page (from the events
+// collection, drafts excluded); CRT and the ferry keep their dedicated pages.
+const eventPages = await getCollection('events', ({ data }) => !data.draft);
+const slugByProductId = new Map(eventPages.map((e) => [e.data.ventrataProductId, e.id]));
+function hrefForEvent(productId: string): string | null {
+  if (productId === CITY_RIVER_TOUR_ID) return '/city-river-tour';
+  if (productId === MUFC_FERRY_ID) return '/mufc-ferry';
+  const slug = slugByProductId.get(productId);
+  return slug ? `/cruises/${slug}` : null;
 }
 
 const dateFmt = new Intl.DateTimeFormat('en-GB', {
@@ -110,8 +119,10 @@ const availabilityStates = [
 ] as const;
 
 const upcoming = mockEvents
-  .map((e, i) => ({ ...e, availability: availabilityStates[i] ?? 'available' }))
-  .filter((e) => !e.draft)
+  .map((e, i) => ({ ...e, availability: availabilityStates[i] ?? 'available', href: hrefForEvent(e.ventrataProductId) }))
+  // Drop events without a product page (dormant/draft, or not yet created) so every
+  // card links directly to a real page.
+  .filter((e) => !e.draft && e.href)
   .sort((a, b) => a.startDate.getTime() - b.startDate.getTime());
 
 // Default type filter: Events & Nights. Default date filter: This week.
@@ -138,7 +149,7 @@ const venues = [
   { name: 'Holiday Inn MediaCity', tagline: 'Hotel', distance: '5 min walk' },
 ];
 
-const SITE = 'https://www.manchesterrivercruises.com';
+const SITE = site.url;
 const pageTitle = "What's On — Manchester River Cruises";
 const pageDescription =
   'Upcoming departures and events on the Manchester Ship Canal — City River Tour sightseeing cruises, live music and party nights, and Boat to Old Trafford matchday ferries. Book direct.';
@@ -165,22 +176,16 @@ const structuredData = {
       location: {
         '@type': 'Place',
         name: 'Millennium Footbridge, Salford Quays',
-        address: {
-          '@type': 'PostalAddress',
-          streetAddress: 'Millennium Footbridge, The Quays',
-          addressLocality: 'Salford',
-          postalCode: 'M50 3RB',
-          addressCountry: 'GB',
-        },
+        address: { '@type': 'PostalAddress', ...site.address },
       },
-      url: `${SITE}${hrefForKey(typeKey(e.ventrataProductId))}`,
+      url: `${SITE}${e.href}`,
       ...(e.priceFrom != null && {
         offers: {
           '@type': 'Offer',
           price: e.priceFrom,
           priceCurrency: 'GBP',
           availability: 'https://schema.org/InStock',
-          url: `${SITE}${hrefForKey(typeKey(e.ventrataProductId))}`,
+          url: `${SITE}${e.href}`,
         },
       }),
     },
@@ -251,7 +256,7 @@ const structuredData = {
                   description={e.description}
                   dateLabel={dateFmt.format(e.startDate)}
                   priceFrom={e.priceFrom}
-                  href={hrefForKey(key)}
+                  href={e.href!}
                   image={e.heroImage}
                   imageAlt={e.heroImageAlt}
                   availability={e.availability}

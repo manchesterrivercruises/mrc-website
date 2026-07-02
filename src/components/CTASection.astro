@@ -1,0 +1,27 @@
+---
+import CTAButton from './CTAButton.astro';
+
+// Shared closing CTA band — heading, a line of copy, a primary CTA and an
+// optional secondary (outline) CTA. Full-width dark-navy section.
+interface Props {
+  heading: string;
+  text?: string;
+  primaryHref: string;
+  primaryLabel: string;
+  secondaryHref?: string;
+  secondaryLabel?: string;
+}
+const { heading, text, primaryHref, primaryLabel, secondaryHref, secondaryLabel } = Astro.props;
+const hasSecondary = secondaryHref && secondaryLabel;
+---
+
+<section class="bg-dark text-white">
+  <div class="mx-auto max-w-6xl px-4 py-16 text-center sm:px-6 md:py-20 lg:px-8">
+    <h2 class="text-2xl font-bold tracking-tight sm:text-3xl">{heading}</h2>
+    {text && <p class="mx-auto mt-3 max-w-2xl text-lg leading-relaxed text-white/80">{text}</p>}
+    <div class="mt-8 flex flex-wrap items-center justify-center gap-4">
+      <CTAButton href={primaryHref}>{primaryLabel}</CTAButton>
+      {hasSecondary && <CTAButton href={secondaryHref} variant="outline">{secondaryLabel}</CTAButton>}
+    </div>
+  </div>
+</section>

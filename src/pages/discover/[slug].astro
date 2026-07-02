@@ -1,6 +1,7 @@
 ---
 import { getCollection, render } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
+import { site } from '../../data/site';
 import SectionHeading from '../../components/SectionHeading.astro';
 import ProductCard from '../../components/ProductCard.astro';
 
@@ -15,7 +16,7 @@ const { entry } = Astro.props;
 const { Content } = await render(entry);
 const { title, description, heroImageAlt, publishDate } = entry.data;
 
-const SITE = 'https://www.manchesterrivercruises.com';
+const SITE = site.url;
 const pageTitle = `${title} — Manchester River Cruises`;
 
 const structuredData = {

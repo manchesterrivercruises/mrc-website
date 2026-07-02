@@ -1,10 +1,11 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+import { site } from '../data/site';
 import SectionHeading from '../components/SectionHeading.astro';
 import CTAButton from '../components/CTAButton.astro';
 import FAQSection from '../components/FAQSection.astro';
 
-const SITE = 'https://www.manchesterrivercruises.com';
+const SITE = site.url;
 const pageTitle = 'Gift Vouchers — Manchester River Cruises';
 const pageDescription =
   'Gift vouchers for Manchester River Cruises — give the gift of a cruise. Redeemable against the City River Tour, events or any amount. Buy online.';
