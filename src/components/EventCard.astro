@@ -1,6 +1,11 @@
 ---
 // A single "What's On" event/departure card. `data-type` drives the CSS/JS filter.
 // `availability` drives the status badge + CTA (in step 9 this comes from live OCTO data).
+//
+// The ENTIRE card is a single wrapping <a>, so the whole surface — image included — is
+// the hit area. (A ::after stretched-link proved unreliable on the live build: it depends
+// on paint order sitting above the positioned image wrapper / availability badges. Wrapping
+// the media + content in the anchor removes that dependency entirely.)
 interface Props {
   type: string; // "City River Tour" | "Events & Nights" | "MUFC Ferry"
   title: string;
@@ -30,55 +35,57 @@ const soldOut = availability === 'soldout';
 ---
 
 <article
-  class="event-card group relative flex flex-col overflow-hidden rounded-card bg-white shadow-sm ring-1 ring-black/5 transition hover:-translate-y-0.5 hover:shadow-md hover:ring-black/10"
+  class="event-card group flex flex-col overflow-hidden rounded-card bg-white shadow-sm ring-1 ring-black/5 transition hover:-translate-y-0.5 hover:shadow-md hover:ring-black/10"
   data-type={type}
   data-availability={availability}
 >
-  <div class="relative">
-    {
-      image ? (
-        <img
-          src={image}
-          alt={imageAlt ?? title}
-          width="800"
-          height="450"
-          loading="lazy"
-          class="aspect-[16/9] w-full object-cover"
-        />
-      ) : (
-        <div class="flex aspect-[16/9] items-center justify-center bg-panel text-xs text-subtle">{imageLabel}</div>
-      )
-    }
-    {
-      availability === 'limited' && (
-        <span class="absolute right-3 top-3 rounded-full bg-amber-400 px-2.5 py-0.5 text-xs font-semibold text-amber-950">
-          Limited availability
-        </span>
-      )
-    }
-    {
-      soldOut && (
-        <span class="absolute right-3 top-3 rounded-full bg-red-600 px-2.5 py-0.5 text-xs font-semibold text-white">
-          Sold out
-        </span>
-      )
-    }
-  </div>
-  <div class="flex flex-1 flex-col p-4">
-    <p class="text-xs font-semibold uppercase tracking-wider text-subtle">{dateLabel}</p>
-    <h3 class="mt-1 font-semibold text-ink">{title}</h3>
-    <p class="mt-1 flex-1 text-sm leading-relaxed text-subtle">{description}</p>
-    <div class="mt-3 flex items-center justify-between">
-      {priceFrom != null && <span class="text-sm font-bold text-ink">From £{priceFrom}</span>}
-      <a
-        href={href}
-        target={external ? '_blank' : undefined}
-        rel={external ? 'noopener' : undefined}
-        aria-label={`${title} — ${soldOut ? 'join waitlist' : 'view & book'}`}
-        class="stretched-link text-sm font-medium text-primary hover:underline"
-      >
-        {soldOut ? 'Join waitlist' : 'View & book'}
-      </a>
+  <a
+    href={href}
+    target={external ? '_blank' : undefined}
+    rel={external ? 'noopener' : undefined}
+    aria-label={`${title} — ${soldOut ? 'join waitlist' : 'view & book'}`}
+    class="flex flex-1 flex-col focus-visible:outline focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-primary"
+  >
+    <div class="relative">
+      {
+        image ? (
+          <img
+            src={image}
+            alt={imageAlt ?? title}
+            width="800"
+            height="450"
+            loading="lazy"
+            class="aspect-[16/9] w-full object-cover"
+          />
+        ) : (
+          <div class="flex aspect-[16/9] items-center justify-center bg-panel text-xs text-subtle">{imageLabel}</div>
+        )
+      }
+      {
+        availability === 'limited' && (
+          <span class="absolute right-3 top-3 rounded-full bg-amber-400 px-2.5 py-0.5 text-xs font-semibold text-amber-950">
+            Limited availability
+          </span>
+        )
+      }
+      {
+        soldOut && (
+          <span class="absolute right-3 top-3 rounded-full bg-red-600 px-2.5 py-0.5 text-xs font-semibold text-white">
+            Sold out
+          </span>
+        )
+      }
     </div>
-  </div>
+    <div class="flex flex-1 flex-col p-4">
+      <p class="text-xs font-semibold uppercase tracking-wider text-subtle">{dateLabel}</p>
+      <h3 class="mt-1 font-semibold text-ink">{title}</h3>
+      <p class="mt-1 flex-1 text-sm leading-relaxed text-subtle">{description}</p>
+      <div class="mt-3 flex items-center justify-between">
+        {priceFrom != null && <span class="text-sm font-bold text-ink">From £{priceFrom}</span>}
+        <span class="text-sm font-medium text-primary group-hover:underline">
+          {soldOut ? 'Join waitlist' : 'View & book'}
+        </span>
+      </div>
+    </div>
+  </a>
 </article>
