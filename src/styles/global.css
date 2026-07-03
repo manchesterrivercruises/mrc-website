@@ -104,20 +104,20 @@
 
 /* ---------------------------------------------------------------------------
    Ventrata checkout pop-up — let the widget own the screen when open.
-   The `ventrata-open` class is toggled on <html> by the observer in BaseLayout
-   when Ventrata injects its full-screen overlay. Ventrata's overlay uses a low/
-   auto z-index, so our sticky header (z-50) and mobile CTA (z-40) otherwise sit
-   ON TOP of it — the fix is to get them out of the way while it's open.
+   The `ventrata-open` class is toggled on <html> by the observer/trigger in
+   BaseLayout when the Ventrata checkout opens. The pop-up is a centred panel
+   narrower than the viewport, so lowering z-index isn't enough (the header would
+   still show in the side gutters) — hide the chrome outright instead.
 --------------------------------------------------------------------------- */
 
-/* Drop the sticky header below the Ventrata overlay (was z-50). */
+/* Hide the sticky header entirely while the checkout is open. */
 html.ventrata-open header {
-  z-index: 0;
+  display: none;
 }
 
 /* Hide the mobile sticky "Book Now" bars (position:fixed; bottom-0; mobile-only) —
    redundant mid-checkout. These carry Tailwind's `fixed`/`bottom-0` classes; the
-   Ventrata overlay does not, so it is never matched here. */
+   Ventrata pop-up does not, so it is never matched here. */
 html.ventrata-open .fixed.bottom-0 {
   display: none !important;
 }
