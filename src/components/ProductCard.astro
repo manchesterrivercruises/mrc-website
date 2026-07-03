@@ -22,7 +22,7 @@ const {
 const external = href.startsWith('http');
 ---
 
-<article class={className} {...rest}>
+<article class={`relative ${className}`} {...rest}>
   <div class="flex aspect-[16/9] items-center justify-center rounded-card bg-panel text-xs text-subtle">
     {imageLabel}
   </div>
@@ -32,7 +32,8 @@ const external = href.startsWith('http');
     href={href}
     target={external ? '_blank' : undefined}
     rel={external ? 'noopener' : undefined}
-    class="mt-2 inline-block text-sm font-medium text-primary hover:underline"
+    aria-label={name}
+    class="stretched-link mt-2 inline-block text-sm font-medium text-primary hover:underline"
   >
     {linkText}
   </a>

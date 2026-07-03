@@ -30,7 +30,7 @@ const soldOut = availability === 'soldout';
 ---
 
 <article
-  class="event-card group flex flex-col overflow-hidden rounded-card bg-white shadow-sm ring-1 ring-black/5 transition hover:-translate-y-0.5 hover:shadow-md hover:ring-black/10"
+  class="event-card group relative flex flex-col overflow-hidden rounded-card bg-white shadow-sm ring-1 ring-black/5 transition hover:-translate-y-0.5 hover:shadow-md hover:ring-black/10"
   data-type={type}
   data-availability={availability}
 >
@@ -74,7 +74,8 @@ const soldOut = availability === 'soldout';
         href={href}
         target={external ? '_blank' : undefined}
         rel={external ? 'noopener' : undefined}
-        class="text-sm font-medium text-primary hover:underline"
+        aria-label={`${title} — ${soldOut ? 'join waitlist' : 'view & book'}`}
+        class="stretched-link text-sm font-medium text-primary hover:underline"
       >
         {soldOut ? 'Join waitlist' : 'View & book'}
       </a>

@@ -127,3 +127,19 @@ html.ventrata-open,
 html.ventrata-open body {
   overflow: hidden;
 }
+
+/* ---------------------------------------------------------------------------
+   Stretched link — make an entire card clickable through its primary anchor.
+   Usage: add `relative` to the card container and `stretched-link` to the anchor.
+   The invisible ::after covers the card's padding box (inset:0 relative to the
+   nearest positioned ancestor = the card). Because the anchor is the LAST
+   positioned element in the card, its ::after paints above earlier positioned
+   siblings (image wrapper, availability badges) via tree order — no z-index or
+   stacking-context juggling needed — so the whole surface, image included, is the
+   hit area. The card's overflow:hidden does not clip it (inset:0 never overflows).
+--------------------------------------------------------------------------- */
+.stretched-link::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+}
