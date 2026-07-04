@@ -61,28 +61,26 @@ const faqItems = faqs.map((f) => ({ q: f.question, a: f.answer }));
 const SITE = site.url;
 const pageTitle = `${title} — Manchester River Cruises`;
 
+// Product (NOT Event): specific departure dates deliberately live in Ventrata, not in
+// our markup, so we must not claim a schema.org Event (which requires/expects a
+// startDate we cannot honestly provide from static content). Product needs no date and
+// represents "a bookable cruise" accurately. Offers carry the fallback "from" price
+// only; live availability is confirmed in the checkout widget.
 const structuredData = {
   '@context': 'https://schema.org',
-  '@type': 'Event',
+  '@type': 'Product',
   name: title,
   description,
   url: `${SITE}/cruises/${entry.id}`,
-  eventAttendanceMode: 'https://schema.org/OfflineEventAttendanceMode',
-  location: {
-    '@type': 'Place',
-    name: 'Manchester River Cruises, Millennium Footbridge',
-    address: { '@type': 'PostalAddress', ...site.address },
-    geo: { '@type': 'GeoCoordinates', ...site.geo },
-  },
+  brand: { '@type': 'Brand', name: 'Manchester River Cruises' },
   ...(priceFrom != null
     ? { offers: { '@type': 'Offer', price: priceFrom, priceCurrency: 'GBP', availability: 'https://schema.org/InStock', url: `${SITE}/cruises/${entry.id}` } }
     : {}),
-  organizer: { '@type': 'Organization', name: 'Manchester River Cruises', url: SITE },
 };
 ---
 
 <BaseLayout title={pageTitle} description={description}>
-  {/* Schema.org structured data (Event) */}
+  {/* Schema.org structured data (Product — dates live in Ventrata, so not an Event) */}
   <script type="application/ld+json" is:inline set:html={JSON.stringify(structuredData)} />
 
   <div class="pb-24 md:pb-0">

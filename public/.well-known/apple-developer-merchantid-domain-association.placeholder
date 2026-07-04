@@ -1,0 +1,22 @@
+PLACEHOLDER — NOT THE REAL APPLE PAY DOMAIN ASSOCIATION FILE.
+
+Apple Pay in the Ventrata checkout requires a domain association file served, byte
+for byte, at:
+
+    /.well-known/apple-developer-merchantid-domain-association   (no file extension)
+
+This ".placeholder" file only reserves the location and documents the requirement.
+It is NOT valid and Apple Pay will NOT work until it is replaced.
+
+Before launch:
+  1. Obtain the real association file from Ventrata / the payment provider.
+  2. Save it in this folder as:
+         apple-developer-merchantid-domain-association   (exactly, no extension)
+     alongside — or in place of — this placeholder. Astro copies public/ to the
+     site root at build, so it will be served from the path above.
+  3. After DNS cutover, verify it returns HTTP 200 with the raw contents:
+         curl -i https://manchesterrivercruises.com/.well-known/apple-developer-merchantid-domain-association
+
+If the file is missing or wrong, Apple Pay silently does not offer at checkout.
+See docs/ventrata-integration.md ("Apple Pay domain association file") and the
+launch checklist.

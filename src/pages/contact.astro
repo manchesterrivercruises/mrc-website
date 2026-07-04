@@ -10,9 +10,12 @@ const pageDescription =
   'Contact Manchester River Cruises — get in touch with our team by email, phone or using our enquiry form. Departing from Millennium Footbridge, Salford Quays.';
 
 const subjects = ['General Enquiry', 'Booking Help', 'Group Travel', 'Private Hire', 'Press/Media', 'Other'];
+// Real social profiles from site.ts (single source of truth) — same set the footer uses.
 const social = [
-  { label: 'Facebook', href: '#' },
-  { label: 'Instagram', href: '#' },
+  { label: 'Facebook', href: site.socials.facebook },
+  { label: 'Instagram', href: site.socials.instagram },
+  { label: 'TikTok', href: site.socials.tiktok },
+  { label: 'Tripadvisor', href: site.socials.tripadvisor },
 ];
 
 const inputClass =
@@ -76,7 +79,13 @@ const structuredData = {
               {
                 social.map((s) => (
                   <li>
-                    <a href={s.href} class="font-medium text-primary hover:underline" aria-label={`${s.label} (link TBC)`}>
+                    <a
+                      href={s.href}
+                      target="_blank"
+                      rel="noopener"
+                      class="font-medium text-primary hover:underline"
+                      aria-label={s.label}
+                    >
                       {s.label}
                     </a>
                   </li>

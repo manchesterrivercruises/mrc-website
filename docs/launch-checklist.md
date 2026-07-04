@@ -23,6 +23,7 @@ Complete every item before switching the domain to the new site.
 - [ ] Staging environment confirmed as noindex before sharing externally
 - [ ] Manage My Booking page live and linked from footer
 - [ ] **Re-enforce Content-Security-Policy (LAUNCH BLOCKER)** — see section below
+- [ ] **Apple Pay domain association file (LAUNCH BLOCKER)** — replace `public/.well-known/apple-developer-merchantid-domain-association.placeholder` with the real file (exact name, no extension) from Ventrata/the payment provider, then verify it returns HTTP 200 post-cutover. See `public/.well-known/README.md` and `docs/ventrata-integration.md`.
 
 ---
 
