@@ -3,6 +3,7 @@ import '../styles/global.css';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 import { buildBreadcrumbs, type Crumb } from '../lib/breadcrumbs';
+import { site } from '../data/site';
 
 interface Props {
   title?: string;
@@ -43,6 +44,18 @@ const breadcrumbSchema =
 const siteURL = Astro.site ?? new URL('/', Astro.url);
 const canonicalURL = canonical ?? new URL(Astro.url.pathname, siteURL).href;
 const ogImage = new URL(image, siteURL).href;
+
+// Site-wide business entity carrying the social profiles (schema.org sameAs).
+// Emitted on every page so search engines can associate our socials site-wide.
+const businessSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'LocalBusiness',
+  '@id': `${site.url}#business`,
+  name: site.name,
+  url: site.url,
+  image: new URL('/images/logo-colour.png', siteURL).href,
+  sameAs: Object.values(site.socials),
+};
 
 // Google Tag Manager — only rendered when GTM_CONTAINER_ID is set (build-time env var).
 const gtmId = process.env.GTM_CONTAINER_ID;
@@ -97,6 +110,9 @@ const gtmId = process.env.GTM_CONTAINER_ID;
       href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
       rel="stylesheet"
     />
+
+    {/* Site-wide business entity + social profiles (sameAs) */}
+    <script type="application/ld+json" is:inline set:html={JSON.stringify(businessSchema)} />
 
     {/* BreadcrumbList structured data (auto-derived; omitted on the homepage) */}
     {breadcrumbSchema && <script type="application/ld+json" is:inline set:html={JSON.stringify(breadcrumbSchema)} />}
