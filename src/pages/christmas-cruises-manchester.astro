@@ -65,7 +65,11 @@ const pageTitle = 'Christmas Cruises Manchester — Manchester River Cruises';
 const pageDescription =
   'Festive Christmas cruises on the Manchester Ship Canal from Salford Quays — Cruise with Father Christmas, sensory-friendly Santa SEN cruises and Christmas party nights. From £13. Book direct.';
 
-// Schema.org — TouristAttraction + Event. (Event startDate is a representative TBC date.)
+// Schema.org — TouristAttraction + Product. We do NOT claim an Event: specific festive
+// departure dates live in Ventrata, not in our markup, so a schema.org Event (which
+// expects a real startDate) would be dishonest. Product needs no date and describes the
+// bookable cruise accurately; the offer carries the static "from" price only. Real Event
+// schema with real dates returns in step 9 when Ventrata data drives it.
 const structuredData = {
   '@context': 'https://schema.org',
   '@graph': [
@@ -80,18 +84,11 @@ const structuredData = {
       geo: { '@type': 'GeoCoordinates', ...site.geo },
     },
     {
-      '@type': 'Event',
+      '@type': 'Product',
       name: 'Cruise with Father Christmas',
       description: 'A magical festive cruise with a visit from Santa on the Manchester Ship Canal.',
-      startDate: '2026-12-06T15:00:00',
-      eventStatus: 'https://schema.org/EventScheduled',
-      eventAttendanceMode: 'https://schema.org/OfflineEventAttendanceMode',
-      location: {
-        '@type': 'Place',
-        name: 'Millennium Footbridge, Salford Quays',
-        address: { '@type': 'PostalAddress', ...site.address },
-      },
       url: `${SITE}/santa-cruise-manchester`,
+      brand: { '@type': 'Brand', name: 'Manchester River Cruises' },
       offers: {
         '@type': 'Offer',
         price: 13,
@@ -105,7 +102,7 @@ const structuredData = {
 ---
 
 <BaseLayout title={pageTitle} description={pageDescription}>
-  {/* Schema.org structured data (TouristAttraction + Event) */}
+  {/* Schema.org structured data (TouristAttraction + Product — dates live in Ventrata) */}
   <script type="application/ld+json" is:inline set:html={JSON.stringify(structuredData)} />
 
   <div class="pb-24 md:pb-0">

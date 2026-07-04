@@ -114,7 +114,7 @@ const structuredData = {
 
 // Page-local style token for the gallery placeholder tiles.
 const galleryTile =
-  'flex h-full w-full items-center justify-center rounded-card bg-panel text-sm text-subtle ring-1 ring-black/5 transition hover:brightness-95';
+  'flex h-full w-full items-center justify-center rounded-card bg-panel text-sm text-subtle ring-1 ring-black/5';
 ---
 
 <BaseLayout title={pageTitle}>
@@ -183,17 +183,14 @@ const galleryTile =
   <div class="pb-24 md:pb-0">
     {/* 1. Photo gallery mosaic — full width, before the title */}
     <section aria-label="Photo gallery" class="mx-auto max-w-6xl px-4 pt-6 sm:px-6 lg:px-8">
+      {/* Static placeholder tiles — real gallery photos TBD. (A prior lightbox
+          viewer was removed: it was a non-functional placeholder with a dead close
+          link and no real images.) */}
       <div class="grid grid-cols-1 gap-2 sm:grid-cols-5 sm:items-start">
-        <a href="#lightbox" class="block sm:col-span-3" aria-label="Open gallery">
-          <div class={`aspect-[4/3] ${galleryTile}`}>Main photo (TBC)</div>
-        </a>
+        <div class={`aspect-[4/3] sm:col-span-3 ${galleryTile}`}>Main photo (TBC)</div>
         <div class="flex flex-col gap-2 sm:col-span-2">
-          <a href="#lightbox" class="block" aria-label="Open gallery">
-            <div class={`aspect-[16/9] ${galleryTile}`}>Photo 2 (TBC)</div>
-          </a>
-          <a href="#lightbox" class="block" aria-label="Open gallery">
-            <div class={`aspect-[16/9] ${galleryTile}`}>Photo 3 (TBC)</div>
-          </a>
+          <div class={`aspect-[16/9] ${galleryTile}`}>Photo 2 (TBC)</div>
+          <div class={`aspect-[16/9] ${galleryTile}`}>Photo 3 (TBC)</div>
         </div>
       </div>
     </section>
@@ -369,18 +366,6 @@ const galleryTile =
         </div>
       </div>
     </section>
-  </div>
-
-  {/* Lightbox placeholder — pure CSS via :target, no JavaScript */}
-  <div id="lightbox" class="fixed inset-0 z-[60] hidden items-center justify-center bg-black/80 p-4 target:flex">
-    <div class="relative w-full max-w-3xl">
-      <a href="#" class="absolute -top-9 right-0 text-sm font-medium text-white/80 hover:text-white" aria-label="Close gallery">
-        ✕ Close
-      </a>
-      <div class="flex aspect-[16/10] items-center justify-center rounded-card bg-white/10 text-sm text-white/80 ring-1 ring-white/20">
-        Lightbox gallery viewer (TBC)
-      </div>
-    </div>
   </div>
 
   {/* Mobile sticky Book Now — pure CSS, no JavaScript */}
