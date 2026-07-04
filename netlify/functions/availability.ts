@@ -10,6 +10,7 @@
 // inside the Ventrata checkout widget.
 
 import { withGuard, jsonError } from '../lib/guard';
+import { readAvailabilityInput } from '../lib/validate';
 
 const OCTO_BASE = process.env.VENTRATA_OCTO_BASE ?? 'https://api.ventrata.com/octo';
 
@@ -20,22 +21,18 @@ export default withGuard(async (request: Request): Promise<Response> => {
 
   const key = process.env.VENTRATA_OCTO_KEY;
   if (!key) {
-    return jsonError('VENTRATA_OCTO_KEY is not configured', 500);
+    // Log detail server-side; never name the env var in the client response.
+    console.error('availability: VENTRATA_OCTO_KEY is not configured');
+    return jsonError('Service temporarily unavailable', 503);
   }
 
-  let input: { productId?: string; optionId?: string; localDateStart?: string; localDateEnd?: string };
-  try {
-    input = await request.json();
-  } catch {
-    return jsonError('Invalid JSON body', 400);
+  // Validate size + every field BEFORE any upstream call. Failures return a 4xx with
+  // a generic message.
+  const parsed = await readAvailabilityInput(request);
+  if (!parsed.ok) {
+    return jsonError(parsed.message, parsed.status);
   }
-
-  const { productId, localDateStart, localDateEnd } = input ?? {};
-  const optionId = input?.optionId ?? 'DEFAULT';
-
-  if (!productId || !localDateStart || !localDateEnd) {
-    return jsonError('productId, localDateStart and localDateEnd are required', 400);
-  }
+  const { productId, optionId, localDateStart, localDateEnd } = parsed.value;
 
   try {
     const upstream = await fetch(`${OCTO_BASE}/availability`, {
@@ -49,7 +46,9 @@ export default withGuard(async (request: Request): Promise<Response> => {
 
     const body = await upstream.text();
     if (!upstream.ok) {
-      return jsonError(`OCTO /availability request failed (${upstream.status})`, upstream.status);
+      // Log the real upstream status server-side; return a generic message.
+      console.error(`availability: OCTO /availability upstream error ${upstream.status}`);
+      return jsonError('Upstream service error', 502);
     }
 
     return new Response(body, {
@@ -62,6 +61,7 @@ export default withGuard(async (request: Request): Promise<Response> => {
       },
     });
   } catch {
-    return jsonError('Failed to reach the OCTO API', 502);
+    console.error('availability: failed to reach the OCTO API');
+    return jsonError('Upstream service error', 502);
   }
 });

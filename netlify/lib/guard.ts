@@ -1,5 +1,5 @@
 // Shared guard for the OCTO proxy functions:
-//   - CORS locked to our own origins (production domain + *.netlify.app staging)
+//   - CORS locked to an EXACT-match origin allowlist (no wildcards / suffix matching)
 //   - a simple in-memory per-IP rate limiter (~30 req/min) returning 429.
 //
 // The rate-limit state is in-memory and therefore PER WARM INSTANCE — it resets on
@@ -7,16 +7,22 @@
 // basic abuse throttle in front of already-cached, read-only proxies, not a hard quota.
 // For durable limiting use a shared store (e.g. Netlify Blobs / Upstash).
 
-const ALLOWED_ORIGINS = ['https://www.manchesterrivercruises.com', 'https://manchesterrivercruises.com'];
+// Exact origins only. The previous `*.netlify.app` suffix match was too broad — ANY
+// Netlify site (including attacker-controlled ones) matched it — so it is removed.
+// One optional extra exact origin can be supplied via the STAGING_ORIGIN env var
+// (documented in .env.example) for deploy previews or the dress-rehearsal subdomain,
+// without a code change. It must be a full exact origin; wildcards are not honoured.
+const ALLOWED_ORIGINS = new Set(
+  [
+    'https://www.manchesterrivercruises.com',
+    'https://manchesterrivercruises.com',
+    'https://exquisite-gnome-3ca601.netlify.app', // current Netlify staging site
+    process.env.STAGING_ORIGIN, // optional extra exact origin (may be undefined)
+  ].filter((o): o is string => typeof o === 'string' && o.length > 0),
+);
 
 function originAllowed(origin: string): boolean {
-  if (ALLOWED_ORIGINS.includes(origin)) return true;
-  try {
-    // Staging: Netlify deploy previews / branch deploys are served from *.netlify.app.
-    return new URL(origin).hostname.endsWith('.netlify.app');
-  } catch {
-    return false;
-  }
+  return ALLOWED_ORIGINS.has(origin);
 }
 
 const WINDOW_MS = 60_000;
