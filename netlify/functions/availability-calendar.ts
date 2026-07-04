@@ -7,9 +7,11 @@
 // The OCTO connection key (VENTRATA_OCTO_KEY) is server-side only — never in the DOM.
 // Cache: micro-cache 1 minute with stale-while-revalidate up to 3 minutes.
 
+import { withGuard, jsonError } from '../lib/guard';
+
 const OCTO_BASE = process.env.VENTRATA_OCTO_BASE ?? 'https://api.ventrata.com/octo';
 
-export default async (request: Request): Promise<Response> => {
+export default withGuard(async (request: Request): Promise<Response> => {
   if (request.method !== 'POST') {
     return jsonError('Method not allowed', 405);
   }
@@ -60,11 +62,4 @@ export default async (request: Request): Promise<Response> => {
   } catch {
     return jsonError('Failed to reach the OCTO API', 502);
   }
-};
-
-function jsonError(message: string, status: number): Response {
-  return new Response(JSON.stringify({ error: message }), {
-    status,
-    headers: { 'Content-Type': 'application/json' },
-  });
-}
+});

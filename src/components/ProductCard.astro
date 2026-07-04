@@ -1,6 +1,7 @@
 ---
 // Compact product card (image, name, description, link) — used for the cross-sell.
 // Accepts a class / extra attributes so the parent can attach rotator behaviour.
+// The ENTIRE card is a single wrapping <a> so the whole surface is the hit area.
 interface Props {
   name: string;
   desc: string;
@@ -23,17 +24,20 @@ const external = href.startsWith('http');
 ---
 
 <article class={className} {...rest}>
-  <div class="flex aspect-[16/9] items-center justify-center rounded-card bg-panel text-xs text-subtle">
-    {imageLabel}
-  </div>
-  <strong class="mt-3 block text-ink">{name}</strong>
-  <p class="mt-1 text-sm leading-relaxed text-subtle">{desc}</p>
   <a
     href={href}
     target={external ? '_blank' : undefined}
     rel={external ? 'noopener' : undefined}
-    class="mt-2 inline-block text-sm font-medium text-primary hover:underline"
+    aria-label={name}
+    class="group block rounded-card focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
   >
-    {linkText}
+    <div class="flex aspect-[16/9] items-center justify-center rounded-card bg-panel text-xs text-subtle">
+      {imageLabel}
+    </div>
+    <strong class="mt-3 block text-ink">{name}</strong>
+    <p class="mt-1 text-sm leading-relaxed text-subtle">{desc}</p>
+    <span class="mt-2 inline-block text-sm font-medium text-primary group-hover:underline">
+      {linkText}
+    </span>
   </a>
 </article>
