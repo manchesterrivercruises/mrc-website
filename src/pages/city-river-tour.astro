@@ -2,8 +2,8 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import { site } from '../data/site';
 import SectionHeading from '../components/SectionHeading.astro';
-import CTAButton from '../components/CTAButton.astro';
 import BookingPanel from '../components/BookingPanel.astro';
+import VentrataWidget from '../components/VentrataWidget.astro';
 import ProductCard from '../components/ProductCard.astro';
 import AttractionCard from '../components/AttractionCard.astro';
 import FAQSection from '../components/FAQSection.astro';
@@ -118,16 +118,9 @@ const galleryTile =
 ---
 
 <BaseLayout title={pageTitle}>
-  {/* Ventrata checkout script — loaded ONLY on this page (booking page), never globally.
-      Change "env":"test" to "live" before launch. Checkout API key is DOM-safe (not the OCTO key). */}
-  <Fragment slot="head">
-    <script
-      is:inline
-      type="module"
-      src="https://cdn.checkout.ventrata.com/v3/production/ventrata-checkout.min.js"
-      data-config='{"apiKey":"29b8b50a-26b8-4dae-bf0e-995708d2f372", "env": "test"}'
-    ></script>
-  </Fragment>
+  {/* Ventrata page-level setup (checkout script + modal observer + skeleton hide) —
+      loaded ONLY on this booking page, never globally (AGENTS rule 9). */}
+  <VentrataWidget mode="loader" slot="head" env="test" />
 
   {/* Schema.org structured data (JSON-LD) */}
   <script type="application/ld+json" is:inline set:html={JSON.stringify(structuredData)} />
@@ -147,13 +140,6 @@ const galleryTile =
       #route-map {
         height: 450px;
       }
-    }
-
-    /* Hide the Ventrata loading skeleton once the embedded widget injects its own
-       content (any child other than the skeleton). :has() is within the project's
-       modern-browser baseline (same as Tailwind v4). */
-    aside[ventrata-embedded-widget]:has(> :not(.widget-loading)) > .widget-loading {
-      display: none;
     }
   </style>
   <style>
@@ -261,14 +247,7 @@ const galleryTile =
       <aside id="book" class="mb-10 lg:order-2 lg:mb-0 lg:sticky lg:top-20">
         <BookingPanel price="£13" priceNote="Adults £13 · Seniors £11">
           {/* Ventrata embedded checkout widget (desktop) — City River Tour product. */}
-          <aside
-            slot="widget"
-            class="min-h-[50rem] h-auto w-full"
-            ventrata-embedded-widget
-            data-config='{"productID": "ef45d8bd-529c-4dae-9c35-cd1b8e4e0a75", "embedded": true}'
-          >
-            <div class="widget-loading">Loading availability...</div>
-          </aside>
+          <VentrataWidget mode="embedded" productID="ef45d8bd-529c-4dae-9c35-cd1b8e4e0a75" slot="widget" />
         </BookingPanel>
 
         {/* MRC cross-sell — hidden on mobile. TODO (step 9): replace with live Ventrata product data. */}
@@ -368,12 +347,9 @@ const galleryTile =
     </section>
   </div>
 
-  {/* Mobile sticky Book Now — pure CSS, no JavaScript */}
+  {/* Mobile sticky Book Now — Ventrata pop-up checkout (City River Tour product) */}
   <div class="fixed inset-x-0 bottom-0 z-40 border-t border-black/10 bg-white/95 p-3 backdrop-blur md:hidden">
-    {/* Ventrata pop-up checkout (mobile) — City River Tour product. */}
-    <CTAButton class="w-full" ventrata-checkout="" data-config='{"productID": "ef45d8bd-529c-4dae-9c35-cd1b8e4e0a75"}'>
-      Book Now
-    </CTAButton>
+    <VentrataWidget mode="popup" productID="ef45d8bd-529c-4dae-9c35-cd1b8e4e0a75" label="Book Now" class="w-full" />
   </div>
 
   {/* Leaflet — CSS is loaded above (before this JS). Markers only, no route line. */}

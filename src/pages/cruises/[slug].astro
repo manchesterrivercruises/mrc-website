@@ -6,6 +6,7 @@ import CTAButton from '../../components/CTAButton.astro';
 import KeyFacts from '../../components/KeyFacts.astro';
 import FAQSection from '../../components/FAQSection.astro';
 import BookingPanel from '../../components/BookingPanel.astro';
+import VentrataWidget from '../../components/VentrataWidget.astro';
 import ProductCard from '../../components/ProductCard.astro';
 import GettingHere from '../../components/GettingHere.astro';
 import { site } from '../../data/site';
@@ -80,6 +81,10 @@ const structuredData = {
 ---
 
 <BaseLayout title={pageTitle} description={description}>
+  {/* Ventrata page-level setup (checkout script + modal observer + skeleton hide) —
+      loaded ONLY on this booking page, never globally (AGENTS rule 9). */}
+  <VentrataWidget mode="loader" slot="head" env="test" />
+
   {/* Schema.org structured data (Product — dates live in Ventrata, so not an Event) */}
   <script type="application/ld+json" is:inline set:html={JSON.stringify(structuredData)} />
 
@@ -140,23 +145,8 @@ const structuredData = {
         {/* Right — sticky booking panel */}
         <aside id="book" class="lg:sticky lg:top-6 lg:self-start scroll-mt-6">
           <BookingPanel price={priceFrom != null ? `£${priceFrom}` : 'TBC'}>
-            <Fragment slot="widget">
-              {/*
-                STEP 6/9: Ventrata embedded checkout for this event.
-                Load the checkout script on this page (see docs/ventrata-integration.md —
-                do NOT load it globally) and uncomment the embedded widget below. The
-                productID is the event's ventrataProductId (safe to appear in the DOM).
-
-                <aside class="min-h-[50rem] h-auto w-full" ventrata-embedded-widget
-                  data-config={`{"productID":"${ventrataProductId}","embedded":true}`}></aside>
-              */}
-              <div
-                class="flex min-h-44 items-center justify-center rounded-card border border-dashed border-black/15 bg-panel p-6 text-center text-sm text-subtle"
-                data-ventrata-product-id={ventrataProductId}
-              >
-                Live availability &amp; booking widget will appear here.
-              </div>
-            </Fragment>
+            {/* Ventrata embedded checkout — this event's product (id safe in the DOM). */}
+            <VentrataWidget mode="embedded" productID={ventrataProductId} slot="widget" />
           </BookingPanel>
         </aside>
       </div>

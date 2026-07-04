@@ -5,6 +5,7 @@ import SectionHeading from '../../components/SectionHeading.astro';
 import CTAButton from '../../components/CTAButton.astro';
 import KeyFacts from '../../components/KeyFacts.astro';
 import BookingPanel from '../../components/BookingPanel.astro';
+import VentrataWidget from '../../components/VentrataWidget.astro';
 import { site } from '../../data/site';
 import { departurePoints, otherDeparturePoint } from '../../data/mufcFerry';
 
@@ -54,6 +55,10 @@ const structuredData = {
 ---
 
 <BaseLayout title={pageTitle} description={pageDescription}>
+  {/* Ventrata page-level setup — ONLY when this departure has a real product (AGENTS
+      rule 9). Stephenson's Bridge (productReady === false) loads no checkout script. */}
+  {point.productReady && <VentrataWidget mode="loader" slot="head" env="test" />}
+
   {/* Schema.org structured data (BoatTrip) */}
   <script type="application/ld+json" is:inline set:html={JSON.stringify(structuredData)} />
 
@@ -144,27 +149,20 @@ const structuredData = {
         {/* Right — sticky booking panel */}
         <aside id="book" class="lg:sticky lg:top-6 lg:self-start scroll-mt-6">
           <BookingPanel price={`£${PRICE_FROM}`} priceSuffix="per person" priceNote="Matchday service · price TBC">
-            <Fragment slot="widget">
-              {/*
-                STEP 6/9: Ventrata embedded checkout for this ferry departure.
-                Load the checkout script on this page (see docs/ventrata-integration.md —
-                do NOT load it globally) and uncomment the embedded widget below.
-                productID is this departure's ventrataProductId (safe in the DOM).
-                NOTE: Stephenson's Bridge uses a PLACEHOLDER id until Simon creates the
-                product in Ventrata (point.productReady === false).
-
-                <aside class="min-h-[50rem] h-auto w-full" ventrata-embedded-widget
-                  data-config={`{"productID":"${point.ventrataProductId}","embedded":true}`}></aside>
-              */}
-              <div
-                class="flex min-h-44 items-center justify-center rounded-card border border-dashed border-black/15 bg-panel p-6 text-center text-sm text-subtle"
-                data-ventrata-product-id={point.ventrataProductId}
-              >
-                {point.productReady
-                  ? 'Live availability & booking widget will appear here.'
-                  : 'Booking opens once this departure is set up in Ventrata (TBC).'}
-              </div>
-            </Fragment>
+            {
+              /* Ralli Quay → live embedded checkout. Stephenson's Bridge (no product
+                 yet) → keep the "opens soon" panel and load no checkout script. */
+              point.productReady ? (
+                <VentrataWidget mode="embedded" productID={point.ventrataProductId} slot="widget" />
+              ) : (
+                <div
+                  slot="widget"
+                  class="flex min-h-44 items-center justify-center rounded-card border border-dashed border-black/15 bg-panel p-6 text-center text-sm text-subtle"
+                >
+                  Booking opens once this departure is set up in Ventrata (TBC).
+                </div>
+              )
+            }
           </BookingPanel>
         </aside>
       </div>
