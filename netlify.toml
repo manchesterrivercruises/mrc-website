@@ -84,18 +84,33 @@
 #   style-src  : 'unsafe-inline' is required — inline style="" attributes and
 #                Leaflet's JS-injected marker styles can't be hashed (low risk for
 #                styles). fonts.googleapis.com serves the Google Fonts stylesheet.
+#                unpkg.com serves Leaflet's stylesheet (leaflet.css) — without it the
+#                map tiles render scattered/unpositioned.
 #   img-src    : self; data: (Leaflet controls); tile.openstreetmap.org (map tiles);
 #                optimise2.assets-servd.host (TEMP hotlinked What's On images — drop
 #                when self-hosted); ventrata + GTM/GA beacons.
 #   font-src   : fonts.gstatic.com (Google Fonts files).
 #   connect-src: self (/.netlify/functions proxies); api.ventrata.com +
-#                cdn.checkout.ventrata.com (widget); GTM/GA (later).
-#   frame-src  : Ventrata checkout iframes; GTM noscript iframe.
+#                cdn.checkout.ventrata.com + *.ventrata.com (the checkout widget
+#                XHRs to further checkout.ventrata.com sub-origins beyond the CDN —
+#                the wildcard covers them so the widget doesn't hang on its spinner);
+#                GTM/GA (later).
+#   frame-src  : Ventrata checkout iframes (cdn.checkout + *.ventrata.com for the
+#                checkout/payment frames); GTM noscript iframe.
 #   object-src 'none'; base-uri 'self'; form-action 'self' (Netlify Forms are
 #   same-origin); frame-ancestors 'none' (mirrors X-Frame-Options).
 # ⚠ The LIVE Ventrata checkout (currently test/placeholder) may need payment-
 #   processor origins (Stripe, Apple Pay, 3-D Secure frames/workers). Re-validate
 #   this CSP during live-checkout QA — consider Report-Only mode while testing.
+#
+# Report-Only until live-checkout QA; collect real violations, complete the origin
+# list, then re-enforce — see launch checklist. The policy is emitted as
+# Content-Security-Policy-Report-Only so it NEVER blocks a resource: the browser
+# reports what WOULD have been blocked (to the console / any report-uri) but loads
+# it anyway. This unblocks staging QA (the widget spinner and Leaflet map were
+# being broken by an over-strict enforced policy) while we gather the true origin
+# list from real checkout/payment traffic. Re-enforcement is a launch blocker —
+# see docs/launch-checklist.md → "Re-enforce Content-Security-Policy".
 [[headers]]
   for = "/*"
   [headers.values]
@@ -104,7 +119,7 @@
     Referrer-Policy = "strict-origin-when-cross-origin"
     Permissions-Policy = "camera=(), microphone=(), geolocation=()"
     Strict-Transport-Security = "max-age=31536000; includeSubDomains"
-    Content-Security-Policy = "default-src 'self'; script-src 'self' https://cdn.checkout.ventrata.com https://unpkg.com https://www.googletagmanager.com 'sha256-Cj3srLBQY5lfMIkYVWwpCIdsVAU0CIrHEOoAp1t6rGI=' 'sha256-OEdWaK1xkzztypcSbAY6orLcxm0Shn5ZdtweyF8ndMc=' 'sha256-a6M7W2m2norr1ec6Pe3NGcHfQn+geKiKpToxIbslI4M=' 'sha256-f5yfxw++p/treber8qTOWs/piZsTEauvxWyZXXlj5Uw=' 'sha256-nDg10GKA5OMDMIPPaD0f2NoUEnsHrAPdhcRFr8MFk0Q=' 'sha256-xsxCcGvieqKvl/XM4KtLiO5nSu97ySvf7LRYnG3bIi0='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: https://tile.openstreetmap.org https://optimise2.assets-servd.host https://cdn.checkout.ventrata.com https://www.googletagmanager.com https://www.google-analytics.com; font-src 'self' https://fonts.gstatic.com; connect-src 'self' https://api.ventrata.com https://cdn.checkout.ventrata.com https://www.googletagmanager.com https://www.google-analytics.com; frame-src 'self' https://cdn.checkout.ventrata.com https://www.googletagmanager.com; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'; upgrade-insecure-requests"
+    Content-Security-Policy-Report-Only = "default-src 'self'; script-src 'self' https://cdn.checkout.ventrata.com https://unpkg.com https://www.googletagmanager.com 'sha256-Cj3srLBQY5lfMIkYVWwpCIdsVAU0CIrHEOoAp1t6rGI=' 'sha256-OEdWaK1xkzztypcSbAY6orLcxm0Shn5ZdtweyF8ndMc=' 'sha256-a6M7W2m2norr1ec6Pe3NGcHfQn+geKiKpToxIbslI4M=' 'sha256-f5yfxw++p/treber8qTOWs/piZsTEauvxWyZXXlj5Uw=' 'sha256-nDg10GKA5OMDMIPPaD0f2NoUEnsHrAPdhcRFr8MFk0Q=' 'sha256-xsxCcGvieqKvl/XM4KtLiO5nSu97ySvf7LRYnG3bIi0='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://unpkg.com; img-src 'self' data: https://tile.openstreetmap.org https://optimise2.assets-servd.host https://cdn.checkout.ventrata.com https://www.googletagmanager.com https://www.google-analytics.com; font-src 'self' https://fonts.gstatic.com; connect-src 'self' https://api.ventrata.com https://cdn.checkout.ventrata.com https://*.ventrata.com https://www.googletagmanager.com https://www.google-analytics.com; frame-src 'self' https://cdn.checkout.ventrata.com https://*.ventrata.com https://www.googletagmanager.com; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'; upgrade-insecure-requests"
 
 # --- Staging / non-production: keep crawlers out -------------------------------
 # Netlify's [[headers]] cannot be scoped per deploy context, so instead we append

@@ -22,6 +22,39 @@ Complete every item before switching the domain to the new site.
 - [ ] All images in WebP format at appropriate sizes
 - [ ] Staging environment confirmed as noindex before sharing externally
 - [ ] Manage My Booking page live and linked from footer
+- [ ] **Re-enforce Content-Security-Policy (LAUNCH BLOCKER)** — see section below
+
+---
+
+## Re-enforce Content-Security-Policy
+
+**Launch blocker.** The CSP in `netlify.toml` is currently emitted as
+`Content-Security-Policy-Report-Only` (not enforced). This was done during staging
+because an over-strict enforced policy was breaking the Ventrata checkout widget
+(blocked connect/frame calls — spinner hung) and the Leaflet maps (blocked
+stylesheet — tiles rendered scattered). Report-Only lets the browser report what
+*would* be blocked without actually blocking it, so QA can proceed while we learn
+the true origin list — particularly from the **live** Ventrata checkout, which may
+pull in payment-processor origins (Stripe, Apple Pay, 3-D Secure frames/workers)
+that the test/placeholder checkout does not.
+
+All other security headers (HSTS, X-Frame-Options, X-Content-Type-Options,
+Referrer-Policy, Permissions-Policy) remain **enforced** — only the CSP is
+report-only.
+
+Before cutover:
+
+- [ ] Run live-checkout QA (real Ventrata `env: "live"`) and collect every CSP
+      violation report — from the browser console and/or a `report-uri`/`report-to`
+      collector.
+- [ ] Add any legitimate missing origins (payment processors, additional Ventrata
+      sub-origins, etc.) to the relevant directives in `netlify.toml`.
+- [ ] Confirm zero violations remain for a full booking flow (browse → add to cart
+      → checkout → payment) and for both maps (City River Tour + boat-to-old-trafford).
+- [ ] Rename the header back from `Content-Security-Policy-Report-Only` to
+      `Content-Security-Policy` in `netlify.toml` (enforce).
+- [ ] Re-verify the full booking + payment flow and maps work with the policy
+      **enforced** on a deploy preview before promoting to production.
 
 ---
 
