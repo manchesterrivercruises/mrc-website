@@ -45,11 +45,11 @@ const structuredData = {
   '@type': 'BoatTrip',
   name: `MUFC Matchday Ferry — ${point.name} to Trafford Wharf`,
   description: pageDescription,
-  url: `${site.url}/mufc-ferry/${point.slug}`,
+  url: `${site.url}/boat-to-old-trafford/${point.slug}`,
   departureBoatTerminal: { '@type': 'BoatTerminal', name: point.name },
   arrivalBoatTerminal: { '@type': 'BoatTerminal', name: 'Trafford Wharf' },
   provider: { '@type': 'LocalBusiness', name: site.name, url: site.url },
-  offers: { '@type': 'Offer', price: PRICE_FROM, priceCurrency: 'GBP', availability: 'https://schema.org/InStock', url: `${site.url}/mufc-ferry/${point.slug}` },
+  offers: { '@type': 'Offer', price: PRICE_FROM, priceCurrency: 'GBP', availability: 'https://schema.org/InStock', url: `${site.url}/boat-to-old-trafford/${point.slug}` },
 };
 ---
 
@@ -133,7 +133,7 @@ const structuredData = {
                     </p>
                   </div>
                   <div class="mt-4 shrink-0 sm:mt-0">
-                    <CTAButton href={`/mufc-ferry/${other.slug}`} variant="outline">Depart from {other.name}</CTAButton>
+                    <CTAButton href={`/boat-to-old-trafford/${other.slug}`} variant="outline">Depart from {other.name}</CTAButton>
                   </div>
                 </div>
               </section>

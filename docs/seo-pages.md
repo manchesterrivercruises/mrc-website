@@ -64,7 +64,7 @@ Read this when working on SEO metadata, title tags, or schema markup.
 - **Schema:** Event, TouristAttraction
 - **Primary keywords:** party boat Manchester, boat party Manchester, Manchester Ship Canal party
 
-### MUFC Ferry `/mufc-ferry`
+### Boat to Old Trafford `/boat-to-old-trafford`
 - **Title:** Manchester United Ferry | Boat to Old Trafford | Matchday Ferry Service
 - **Description:** Travel to Old Trafford by boat. Matchday ferry service from Salford Quays direct to Old Trafford — the best way to arrive on matchday.
 - **Schema:** TouristAttraction, Service

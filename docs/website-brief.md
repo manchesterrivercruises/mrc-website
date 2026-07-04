@@ -38,7 +38,7 @@ City River Tour is ~65% of revenue. It dominates the site.
 /santa-cruise-manchester                   Santa Cruise (SEO page)
 /music-cruises-manchester                  Music Cruises (SEO page)
 /party-boat-manchester                     Party Boat (SEO page)
-/mufc-ferry                                MUFC Ferry Service
+/boat-to-old-trafford                      Boat to Old Trafford (matchday ferry)
 /private-hire                              Private Hire
 /private-boat-hire-manchester              Private Boat Hire (SEO page)
 /cruises/[slug]                            New Tour TBC (dynamic — under /cruises/ not root)

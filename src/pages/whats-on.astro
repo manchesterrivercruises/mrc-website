@@ -93,7 +93,7 @@ const eventPages = await getCollection('events', ({ data }) => !data.draft);
 const slugByProductId = new Map(eventPages.map((e) => [e.data.ventrataProductId, e.id]));
 function hrefForEvent(productId: string): string | null {
   if (productId === CITY_RIVER_TOUR_ID) return '/city-river-tour';
-  if (productId === MUFC_FERRY_ID) return '/mufc-ferry';
+  if (productId === MUFC_FERRY_ID) return '/boat-to-old-trafford';
   const slug = slugByProductId.get(productId);
   return slug ? `/cruises/${slug}` : null;
 }

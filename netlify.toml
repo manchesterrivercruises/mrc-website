@@ -33,12 +33,11 @@
   to = "/city-river-tour"
   status = 301
 
-# "Boat to Old Trafford" now lives on the MUFC ferry landing page.
-# NOTE: the brief listed the target as /boat-to-old-trafford, but no such page
-# exists — the live page is /mufc-ferry, so we point there (avoids a 301 → 404).
+# Points directly at the live /boat-to-old-trafford page (NOT via /mufc-ferry) so
+# there is no redirect chain.
 [[redirects]]
   from = "/tour/boat-to-old-trafford"
-  to = "/mufc-ferry"
+  to = "/boat-to-old-trafford"
   status = 301
 
 [[redirects]]
@@ -49,6 +48,26 @@
 [[redirects]]
   from = "/our-events"
   to = "/events"
+  status = 301
+
+# --- Ferry section rename (301): /mufc-ferry → /boat-to-old-trafford ----------
+# The matchday ferry section was renamed to the keyword-exact, trademark-free
+# slug. These point straight at the NEW pages (no chains) and are trailing-slash
+# tolerant. (The legacy /tour/boat-to-old-trafford rule above also targets the new
+# page directly, so it doesn't chain through here.)
+[[redirects]]
+  from = "/mufc-ferry"
+  to = "/boat-to-old-trafford"
+  status = 301
+
+[[redirects]]
+  from = "/mufc-ferry/ralli-quay"
+  to = "/boat-to-old-trafford/ralli-quay"
+  status = 301
+
+[[redirects]]
+  from = "/mufc-ferry/stephensons-bridge"
+  to = "/boat-to-old-trafford/stephensons-bridge"
   status = 301
 
 # --- Security headers (all paths) ---------------------------------------------

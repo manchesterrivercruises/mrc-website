@@ -42,7 +42,7 @@ function inDays(days: number, hour: number, minute: number): Date {
 const upcoming = [
   { type: 'City River Tour', title: 'City River Tour', description: 'Our signature 60-minute sightseeing cruise along the Ship Canal.', startDate: inDays(2, 14, 0), priceFrom: 13, href: '/city-river-tour', draft: false },
   { type: 'Events & Nights', title: 'ABBA Cruise', description: 'Dance the night away to the greatest ABBA hits.', startDate: inDays(4, 19, 30), priceFrom: 30, href: '/cruises/abba-tribute-cruise', draft: false },
-  { type: 'MUFC Ferry', title: 'Boat to Old Trafford', description: 'Beat the traffic — arrive at the match by boat.', startDate: inDays(6, 13, 0), priceFrom: 12, href: '/mufc-ferry', draft: false },
+  { type: 'Boat to Old Trafford', title: 'Boat to Old Trafford', description: 'Beat the traffic — arrive at the match by boat.', startDate: inDays(6, 13, 0), priceFrom: 12, href: '/boat-to-old-trafford', draft: false },
   { type: 'Events & Nights', title: 'Boat Tropicana', description: 'An 80s party night on the canal — neon, spandex and floor-fillers.', startDate: inDays(9, 20, 0), priceFrom: 28, href: '/cruises/boat-tropicana', draft: false },
 ];
 const dateFmt = new Intl.DateTimeFormat('en-GB', { weekday: 'short', day: 'numeric', month: 'short' });
@@ -205,7 +205,7 @@ const structuredData = {
         </p>
       </div>
       <div class="shrink-0">
-        <CTAButton href="/mufc-ferry">MUFC Ferry</CTAButton>
+        <CTAButton href="/boat-to-old-trafford">Boat to Old Trafford</CTAButton>
       </div>
     </div>
   </section>
