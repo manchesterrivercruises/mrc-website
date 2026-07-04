@@ -9,6 +9,48 @@
 [functions]
   directory = "netlify/functions"
 
+# --- Legacy Craft URL redirects (301) -----------------------------------------
+# Map old Craft CMS URLs to their new homes so inbound links and Search Console
+# equity are preserved. All permanent (301). `force` is intentionally OMITTED
+# (defaults to false) so a redirect NEVER shadows a real page — if a file exists
+# at the `from` path, Netlify serves it instead of redirecting. Netlify matches
+# redirects trailing-slash-insensitively, so each rule covers both `/path` and
+# `/path/`.
+#
+# ⚠ THIS MAP IS INCOMPLETE — it will be completed from Simon's Google Search
+#   Console export (top legacy URLs by traffic/impressions) BEFORE launch. Known
+#   categories still to map:
+#     - Event pages under /tour/ or /event/ (ABBA, Elvis, Dolly, Diana Ross,
+#       Rollin'/Tina, Soul, Swinging, party nights, kids events, seasonal specials,
+#       Christmas/Santa variants …) → their /cruises/[slug] or SEO pages
+#     - Blog / news / editorial posts, if the old site had any → /discover or events
+#     - Info / utility pages under old Craft paths (about, contact, FAQ, gift
+#       vouchers, private hire, accessibility, plan-your-visit, vessels, gallery …)
+#   See docs/launch-checklist.md → "URL redirect map".
+
+[[redirects]]
+  from = "/tour/city-river-tours"
+  to = "/city-river-tour"
+  status = 301
+
+# "Boat to Old Trafford" now lives on the MUFC ferry landing page.
+# NOTE: the brief listed the target as /boat-to-old-trafford, but no such page
+# exists — the live page is /mufc-ferry, so we point there (avoids a 301 → 404).
+[[redirects]]
+  from = "/tour/boat-to-old-trafford"
+  to = "/mufc-ferry"
+  status = 301
+
+[[redirects]]
+  from = "/tour/father-christmas-cruise"
+  to = "/cruises/santa-cruise"
+  status = 301
+
+[[redirects]]
+  from = "/our-events"
+  to = "/events"
+  status = 301
+
 # --- Security headers (all paths) ---------------------------------------------
 # The Content-Security-Policy is built from what the site actually loads (audited
 # from the built HTML). Each allowance:
