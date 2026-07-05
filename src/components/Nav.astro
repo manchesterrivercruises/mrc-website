@@ -4,8 +4,8 @@
 // sit at the top level. Discover lives in the footer only. No link is duplicated.
 const cruises = [
   { label: 'City River Tour', href: '/city-river-tour' },
-  { label: 'Live Music Nights', href: '/music-cruises-manchester' },
-  { label: 'Boat to Old Trafford', href: '/mufc-ferry' },
+  { label: 'Party Nights', href: '/music-cruises-manchester' },
+  { label: 'Boat to Old Trafford', href: '/boat-to-old-trafford' },
 ];
 
 const links = [
@@ -21,8 +21,9 @@ const itemClass =
 ---
 
 <nav
+  id="primary-nav"
   aria-label="Primary"
-  class="absolute left-0 top-16 z-40 hidden w-full flex-col gap-1 border-t border-white/10 bg-dark p-4 shadow-xl peer-checked:flex md:static md:top-auto md:z-auto md:flex md:w-auto md:flex-row md:items-center md:gap-1 md:border-0 md:bg-transparent md:p-0 md:shadow-none"
+  class="absolute left-0 top-16 z-40 hidden w-full flex-col gap-1 border-t border-white/10 bg-dark p-4 shadow-xl md:static md:top-auto md:z-auto md:flex md:w-auto md:flex-row md:items-center md:gap-1 md:border-0 md:bg-transparent md:p-0 md:shadow-none"
 >
   {/* Cruises dropdown — native <details>, no JS, links present in static HTML */}
   <details class="group md:relative">

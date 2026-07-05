@@ -15,14 +15,14 @@ export interface Crumb {
 const SECTION_MAP: Record<string, { name: string; url: string }> = {
   cruises: { name: 'Events', url: '/events' },
   discover: { name: 'Discover', url: '/discover' },
-  'mufc-ferry': { name: 'MUFC Ferry', url: '/mufc-ferry' },
+  'boat-to-old-trafford': { name: 'Boat to Old Trafford', url: '/boat-to-old-trafford' },
 };
 
 // Whole-slug label overrides (apostrophes / acronyms a word map can't cover cleanly).
 const LABEL_OVERRIDES: Record<string, string> = {
   'whats-on': "What's On",
   'manage-booking': 'Manage My Booking',
-  'mufc-ferry': 'MUFC Ferry',
+  'boat-to-old-trafford': 'Boat to Old Trafford',
   'stephensons-bridge': "Stephenson's Bridge",
 };
 

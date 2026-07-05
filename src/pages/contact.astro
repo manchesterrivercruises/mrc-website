@@ -10,9 +10,12 @@ const pageDescription =
   'Contact Manchester River Cruises — get in touch with our team by email, phone or using our enquiry form. Departing from Millennium Footbridge, Salford Quays.';
 
 const subjects = ['General Enquiry', 'Booking Help', 'Group Travel', 'Private Hire', 'Press/Media', 'Other'];
+// Real social profiles from site.ts (single source of truth) — same set the footer uses.
 const social = [
-  { label: 'Facebook', href: '#' },
-  { label: 'Instagram', href: '#' },
+  { label: 'Facebook', href: site.socials.facebook },
+  { label: 'Instagram', href: site.socials.instagram },
+  { label: 'TikTok', href: site.socials.tiktok },
+  { label: 'Tripadvisor', href: site.socials.tripadvisor },
 ];
 
 const inputClass =
@@ -40,12 +43,24 @@ const structuredData = {
   {/* Schema.org structured data (ContactPage + LocalBusiness) */}
   <script type="application/ld+json" is:inline set:html={JSON.stringify(structuredData)} />
 
+  <style is:global>
+    /* Success confirmation is revealed by CSS (:target) when the URL carries the
+       #contact-success fragment — no JS required for the message itself. */
+    #contact-success { display: none; }
+    #contact-success:target { display: block; }
+    /* Smooth-scroll to it only when the user hasn't asked to reduce motion. */
+    @media (prefers-reduced-motion: no-preference) {
+      html { scroll-behavior: smooth; }
+    }
+  </style>
+
   <div class="mx-auto max-w-6xl px-4 py-16 sm:px-6 md:py-20 lg:px-8">
     <h1 class="text-3xl font-bold tracking-tight text-ink sm:text-4xl">Contact Us</h1>
     <p class="mt-4 text-lg leading-relaxed text-body">Get in touch with the Manchester River Cruises team.</p>
 
-    {/* Success message — revealed by the script below when ?success=true is in the URL */}
-    <div id="contact-success" hidden class="mt-6 rounded-card bg-panel p-4 text-body ring-1 ring-black/5">
+    {/* Success message — hidden by CSS until #contact-success is the :target (see the
+        style block above). Static markup: perceivable without JS when the fragment is set. */}
+    <div id="contact-success" class="mt-6 rounded-card bg-panel p-4 text-body ring-1 ring-black/5">
       <p class="font-medium text-ink">Thanks for getting in touch. We'll get back to you within 24 hours.</p>
     </div>
 
@@ -76,7 +91,13 @@ const structuredData = {
               {
                 social.map((s) => (
                   <li>
-                    <a href={s.href} class="font-medium text-primary hover:underline" aria-label={`${s.label} (link TBC)`}>
+                    <a
+                      href={s.href}
+                      target="_blank"
+                      rel="noopener"
+                      class="font-medium text-primary hover:underline"
+                      aria-label={s.label}
+                    >
                       {s.label}
                     </a>
                   </li>
@@ -93,7 +114,7 @@ const structuredData = {
         <form
           name="contact"
           method="POST"
-          action="/contact?success=true"
+          action="/contact?success=true#contact-success"
           data-netlify="true"
           data-netlify-honeypot="bot-field"
           class="mt-6 space-y-4"
@@ -143,14 +164,14 @@ const structuredData = {
     </div>
   </div>
 
-  {/* Reveal the success message after a Netlify Forms redirect to ?success=true */}
+  {/* Progressive enhancement ONLY: the message is revealed by CSS :target (above).
+      Netlify's form redirect drops the URL #fragment, so if we land on ?success=true
+      without it, set the hash to trigger :target. Scroll behaviour (smooth only under
+      prefers-reduced-motion: no-preference) is handled in CSS, not here. */}
   <script>
-    if (new URLSearchParams(window.location.search).get('success') === 'true') {
-      const el = document.getElementById('contact-success');
-      if (el) {
-        el.hidden = false;
-        el.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      }
+    if (new URLSearchParams(window.location.search).get('success') === 'true'
+        && window.location.hash !== '#contact-success') {
+      window.location.hash = 'contact-success';
     }
   </script>
 </BaseLayout>

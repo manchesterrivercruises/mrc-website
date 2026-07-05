@@ -17,14 +17,6 @@ import Nav from './Nav.astro';
       />
     </a>
 
-    {/* Mobile nav toggle — pure CSS, no JavaScript. Peer of <Nav> below. */}
-    <input
-      id="nav-toggle"
-      type="checkbox"
-      class="peer hidden"
-      aria-label="Toggle navigation menu"
-    />
-
     {/* Primary navigation */}
     <Nav />
 
@@ -37,23 +29,65 @@ import Nav from './Nav.astro';
         Book Now
       </a>
 
-      {/* Hamburger — toggles the mobile menu via the checkbox above */}
-      <label
-        for="nav-toggle"
-        class="inline-flex cursor-pointer items-center rounded-md p-2 text-white/80 transition-colors hover:bg-white/10 hover:text-white md:hidden"
+      {/* Hamburger — real button toggling the mobile menu (aria-expanded/aria-controls) */}
+      <button
+        id="nav-toggle-btn"
+        type="button"
+        aria-controls="primary-nav"
+        aria-expanded="false"
+        class="inline-flex items-center rounded-md p-2 text-white/80 transition-colors hover:bg-white/10 hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary md:hidden"
       >
-        <span class="sr-only">Open main menu</span>
-        <svg
-          class="h-6 w-6"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke-width="1.5"
-          stroke="currentColor"
-          aria-hidden="true"
-        >
+        <span class="sr-only nav-label-open">Open main menu</span>
+        <span class="sr-only nav-label-close">Close main menu</span>
+        <svg class="nav-icon-open h-6 w-6" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
           <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
         </svg>
-      </label>
+        <svg class="nav-icon-close h-6 w-6" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
+        </svg>
+      </button>
     </div>
   </div>
 </header>
+
+<style>
+  /* Icon + sr-only label swap driven by the button's own aria-expanded state. */
+  #nav-toggle-btn .nav-icon-close,
+  #nav-toggle-btn .nav-label-close { display: none; }
+  #nav-toggle-btn[aria-expanded='true'] .nav-icon-open,
+  #nav-toggle-btn[aria-expanded='true'] .nav-label-open { display: none; }
+  #nav-toggle-btn[aria-expanded='true'] .nav-icon-close { display: block; }
+</style>
+
+<script>
+  // Mobile nav toggle: real button semantics (aria-expanded), Escape to close, and the
+  // menu drops out of the tab order when closed (display:none on the mobile panel).
+  const btn = document.getElementById('nav-toggle-btn');
+  const nav = document.getElementById('primary-nav');
+  if (btn && nav) {
+    const open = () => {
+      btn.setAttribute('aria-expanded', 'true');
+      nav.classList.remove('hidden');
+      nav.classList.add('flex');
+    };
+    const close = () => {
+      btn.setAttribute('aria-expanded', 'false');
+      nav.classList.remove('flex');
+      nav.classList.add('hidden');
+    };
+    btn.addEventListener('click', () => {
+      btn.getAttribute('aria-expanded') === 'true' ? close() : open();
+    });
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && btn.getAttribute('aria-expanded') === 'true') {
+        close();
+        btn.focus();
+      }
+    });
+    // Reset to a clean closed state when crossing to desktop, so the desktop nav (md:flex)
+    // shows and returning to mobile starts collapsed.
+    const desktop = window.matchMedia('(min-width: 768px)');
+    const syncToDesktop = (e) => { if (e.matches) close(); };
+    desktop.addEventListener('change', syncToDesktop);
+  }
+</script>

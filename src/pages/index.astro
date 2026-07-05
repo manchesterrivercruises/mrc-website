@@ -6,6 +6,8 @@ import CTAButton from '../components/CTAButton.astro';
 import EventCard from '../components/EventCard.astro';
 import ProductCard from '../components/ProductCard.astro';
 import StarRating from '../components/StarRating.astro';
+import VentrataWidget from '../components/VentrataWidget.astro';
+import SocialBand from '../components/SocialBand.astro';
 import { site } from '../data/site';
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -42,7 +44,7 @@ function inDays(days: number, hour: number, minute: number): Date {
 const upcoming = [
   { type: 'City River Tour', title: 'City River Tour', description: 'Our signature 60-minute sightseeing cruise along the Ship Canal.', startDate: inDays(2, 14, 0), priceFrom: 13, href: '/city-river-tour', draft: false },
   { type: 'Events & Nights', title: 'ABBA Cruise', description: 'Dance the night away to the greatest ABBA hits.', startDate: inDays(4, 19, 30), priceFrom: 30, href: '/cruises/abba-tribute-cruise', draft: false },
-  { type: 'MUFC Ferry', title: 'Boat to Old Trafford', description: 'Beat the traffic — arrive at the match by boat.', startDate: inDays(6, 13, 0), priceFrom: 12, href: '/mufc-ferry', draft: false },
+  { type: 'Boat to Old Trafford', title: 'Boat to Old Trafford', description: 'Beat the traffic — arrive at the match by boat.', startDate: inDays(6, 13, 0), priceFrom: 12, href: '/boat-to-old-trafford', draft: false },
   { type: 'Events & Nights', title: 'Boat Tropicana', description: 'An 80s party night on the canal — neon, spandex and floor-fillers.', startDate: inDays(9, 20, 0), priceFrom: 28, href: '/cruises/boat-tropicana', draft: false },
 ];
 const dateFmt = new Intl.DateTimeFormat('en-GB', { weekday: 'short', day: 'numeric', month: 'short' });
@@ -102,6 +104,11 @@ const structuredData = {
 ---
 
 <BaseLayout title={pageTitle} description={pageDescription}>
+  {/* Ventrata page-level setup (checkout script + modal observer + skeleton hide) —
+      the homepage is now a booking page because of the "Find your date" entry below, so
+      the loader ships here too. Still never loaded globally (AGENTS rule 9). */}
+  <VentrataWidget mode="loader" slot="head" env="test" />
+
   {/* Schema.org structured data (WebSite + TouristAttraction/LocalBusiness w/ aggregateRating) */}
   <script type="application/ld+json" is:inline set:html={JSON.stringify(structuredData)} />
 
@@ -158,6 +165,34 @@ const structuredData = {
     </div>
   </section>
 
+  {/* 2b. FIND YOUR DATE — calendar-first booking entry ─────────────────────── */}
+  <section aria-labelledby="find-date" class="mx-auto max-w-6xl px-4 py-12 sm:px-6 md:py-16 lg:px-8">
+    <div class="rounded-card bg-dark px-6 py-10 text-center text-white sm:px-10">
+      <h2 id="find-date" class="text-2xl font-bold tracking-tight sm:text-3xl">Find your date</h2>
+      <p class="mx-auto mt-3 max-w-xl text-lg leading-relaxed text-white/80">
+        Tell us when you're free — see everything sailing that day.
+      </p>
+      <div class="mt-8 flex justify-center">
+        {/*
+          Calendar-first Ventrata checkout: opens the widget on the date step so customers
+          browse by date. Implemented via the shared VentrataWidget pop-up trigger with
+          calendarFirst per docs/ventrata-integration.md → "Calendar First mode".
+          ⚠ CONFIRM WITH THE VENTRATA ACCOUNT MANAGER before launch (tracked in the
+             account-manager email thread):
+               - the exact data-config key for calendar-first (calendarFirst vs a versioned alias)
+               - which product(s) to surface on the date step and their ordering
+          Anchored to the City River Tour product for now.
+        */}
+        <VentrataWidget
+          mode="popup"
+          productID="ef45d8bd-529c-4dae-9c35-cd1b8e4e0a75"
+          calendarFirst
+          label="Find your date"
+        />
+      </div>
+    </div>
+  </section>
+
   {/* 3. WHAT'S ON STRIP ───────────────────────────────────────────────────── */}
   <section aria-labelledby="coming-up" class="bg-panel">
     <div class="mx-auto max-w-6xl px-4 py-16 sm:px-6 md:py-20 lg:px-8">
@@ -205,7 +240,7 @@ const structuredData = {
         </p>
       </div>
       <div class="shrink-0">
-        <CTAButton href="/mufc-ferry">MUFC Ferry</CTAButton>
+        <CTAButton href="/boat-to-old-trafford">Boat to Old Trafford</CTAButton>
       </div>
     </div>
   </section>
@@ -269,4 +304,7 @@ const structuredData = {
       }
     </div>
   </section>
+
+  {/* SOCIAL BAND — slim strip directly above the footer */}
+  <SocialBand />
 </BaseLayout>

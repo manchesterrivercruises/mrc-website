@@ -93,7 +93,7 @@ const eventPages = await getCollection('events', ({ data }) => !data.draft);
 const slugByProductId = new Map(eventPages.map((e) => [e.data.ventrataProductId, e.id]));
 function hrefForEvent(productId: string): string | null {
   if (productId === CITY_RIVER_TOUR_ID) return '/city-river-tour';
-  if (productId === MUFC_FERRY_ID) return '/mufc-ferry';
+  if (productId === MUFC_FERRY_ID) return '/boat-to-old-trafford';
   const slug = slugByProductId.get(productId);
   return slug ? `/cruises/${slug}` : null;
 }
@@ -107,19 +107,12 @@ const dateFmt = new Intl.DateTimeFormat('en-GB', {
   hour12: true,
 });
 
-// `availability` ('available' | 'limited' | 'soldout') is a MOCK stand-in — in STEP 9 the
-// badge + CTA state will be driven by LIVE OCTO availability data, not this hardcoded spread.
-// Values are spread across all three states (aligned to mockEvents order) so every badge is
-// visible for review — including in the default "Events & Nights / This week" view.
-const availabilityStates = [
-  'available', 'limited', 'available', 'soldout', 'available', 'limited', // this week
-  'available', 'limited', 'soldout', 'available', 'limited', // rest of this month
-  'available', 'available', 'limited', 'soldout', // next month
-  'available', 'limited', 'available', 'available', 'soldout', 'available', 'limited', 'available', // months 3-6
-] as const;
-
+// NO availability badges from mock data: sold-out / limited / waitlist states must be
+// driven by LIVE OCTO availability, never fabricated. Until STEP 9 wires real data, the
+// cards render plain (EventCard defaults to no badge). In step 9, resolve each event's
+// real availability here and pass it through to EventCard.
 const upcoming = mockEvents
-  .map((e, i) => ({ ...e, availability: availabilityStates[i] ?? 'available', href: hrefForEvent(e.ventrataProductId) }))
+  .map((e) => ({ ...e, href: hrefForEvent(e.ventrataProductId) }))
   // Drop events without a product page (dormant/draft, or not yet created) so every
   // card links directly to a real page.
   .filter((e) => !e.draft && e.href)
@@ -155,47 +148,58 @@ const pageDescription =
   'Upcoming departures and events on the Manchester Ship Canal — City River Tour sightseeing cruises, live music and party nights, and Boat to Old Trafford matchday ferries. Book direct.';
 
 const pillClass =
-  'inline-block rounded-full border border-black/15 px-4 py-1.5 text-sm font-medium text-body transition hover:border-primary/50 peer-checked:border-primary peer-checked:bg-primary peer-checked:text-white';
+  'inline-block rounded-full border border-black/15 px-4 py-1.5 text-sm font-medium text-body transition hover:border-primary/50 peer-checked:border-primary peer-checked:bg-primary peer-checked:text-white peer-focus-visible:outline peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-primary peer-disabled:opacity-40 peer-disabled:cursor-not-allowed';
 const dateInputClass =
   'rounded-md border border-black/15 bg-white px-3 py-1.5 text-sm text-ink focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary';
 
-// Basic schema: an ItemList of scheduled Events.
-const structuredData = {
-  '@context': 'https://schema.org',
-  '@type': 'ItemList',
-  name: pageTitle,
-  itemListElement: upcoming.map((e, i) => ({
-    '@type': 'ListItem',
-    position: i + 1,
-    item: {
-      '@type': 'Event',
-      name: e.title,
-      startDate: e.startDate.toISOString(),
-      eventStatus: 'https://schema.org/EventScheduled',
-      eventAttendanceMode: 'https://schema.org/OfflineEventAttendanceMode',
-      location: {
-        '@type': 'Place',
-        name: 'Millennium Footbridge, Salford Quays',
-        address: { '@type': 'PostalAddress', ...site.address },
-      },
-      url: `${SITE}${e.href}`,
-      ...(e.priceFrom != null && {
-        offers: {
-          '@type': 'Offer',
-          price: e.priceFrom,
-          priceCurrency: 'GBP',
-          availability: 'https://schema.org/InStock',
+// ─────────────────────────────────────────────────────────────────────────────
+// Structured data is DELIBERATELY WITHHELD while this page runs on mock data.
+// Emitting an ItemList of Event nodes with fabricated startDate / price / InStock
+// values would be dishonest structured data (and a Google rich-results violation).
+// STEP 9: when `upcoming` is fed by real OCTO/collection data, flip USING_MOCK_DATA
+// to false — the ItemList/Event schema below then emits from the real values.
+// ─────────────────────────────────────────────────────────────────────────────
+const USING_MOCK_DATA = true;
+
+const structuredData = USING_MOCK_DATA
+  ? null
+  : {
+      '@context': 'https://schema.org',
+      '@type': 'ItemList',
+      name: pageTitle,
+      itemListElement: upcoming.map((e, i) => ({
+        '@type': 'ListItem',
+        position: i + 1,
+        item: {
+          '@type': 'Event',
+          name: e.title,
+          startDate: e.startDate.toISOString(),
+          eventStatus: 'https://schema.org/EventScheduled',
+          eventAttendanceMode: 'https://schema.org/OfflineEventAttendanceMode',
+          location: {
+            '@type': 'Place',
+            name: 'Millennium Footbridge, Salford Quays',
+            address: { '@type': 'PostalAddress', ...site.address },
+          },
           url: `${SITE}${e.href}`,
+          ...(e.priceFrom != null && {
+            offers: {
+              '@type': 'Offer',
+              price: e.priceFrom,
+              priceCurrency: 'GBP',
+              availability: 'https://schema.org/InStock',
+              url: `${SITE}${e.href}`,
+            },
+          }),
         },
-      }),
-    },
-  })),
-};
+      })),
+    };
 ---
 
 <BaseLayout title={pageTitle} description={pageDescription}>
-  {/* Basic Schema.org structured data (ItemList of Events) */}
-  <script type="application/ld+json" is:inline set:html={JSON.stringify(structuredData)} />
+  {/* Schema.org ItemList of Events — emitted only once real availability data lands
+      (step 9); withheld while the listing runs on mock data. */}
+  {structuredData && <script type="application/ld+json" is:inline set:html={JSON.stringify(structuredData)} />}
 
   <section class="mx-auto max-w-6xl px-4 py-12 sm:px-6 md:py-16 lg:px-8">
     <h1 class="text-3xl font-bold tracking-tight text-ink sm:text-4xl md:text-5xl">What's On</h1>
@@ -259,7 +263,6 @@ const structuredData = {
                   href={e.href!}
                   image={e.heroImage}
                   imageAlt={e.heroImageAlt}
-                  availability={e.availability}
                 />
               </div>
             );
@@ -329,12 +332,12 @@ const structuredData = {
         if (show) visible++;
       });
 
-      // A set range overrides the quick-filters — dim + disable them to make that clear.
-      const dateFilters = document.getElementById('wo-date-filters');
-      if (dateFilters) {
-        dateFilters.classList.toggle('opacity-40', rangeActive);
-        dateFilters.classList.toggle('pointer-events-none', rangeActive);
-      }
+      // A set range overrides the quick-filters — genuinely DISABLE the radios (not just
+      // pointer-events) so they leave the tab order and expose disabled state to AT. The
+      // pills dim via peer-disabled.
+      document.querySelectorAll<HTMLInputElement>('input[name="wo-date"]').forEach((el) => {
+        el.disabled = rangeActive;
+      });
 
       const empty = document.querySelector('.wo-empty') as HTMLElement | null;
       if (empty) empty.hidden = visible > 0;

@@ -1,0 +1,238 @@
+---
+// ─────────────────────────────────────────────────────────────────────────────
+// Shared Ventrata checkout widget — the SINGLE owner of all Ventrata client wiring.
+// Used only on bookable pages (AGENTS rule 9: the checkout script must never load
+// globally). Three modes:
+//
+//   mode="loader"   Page-level setup: the checkout <script>, the modal open/close
+//                   observer, and the loading-skeleton hide. Render ONCE per booking
+//                   page, placed in BaseLayout's head slot:
+//                       <VentrataWidget mode="loader" slot="head" env="test" />
+//                   (A nested component cannot forward slot="head" itself — the PAGE
+//                   must assign slot="head" to this instance — so `loader` is a page-
+//                   level placement by design.)
+//
+//   mode="embedded" Desktop embedded widget for a product. Fills a BookingPanel's
+//                   "widget" slot: <VentrataWidget mode="embedded" productID={id} slot="widget" />
+//
+//   mode="popup"    A pop-up trigger button (mobile sticky CTA, inline CTAs):
+//                       <VentrataWidget mode="popup" productID={id} label="Book Now" class="w-full" />
+//
+// The checkout API key below is the DOM-SAFE checkout widget key (confirmed by
+// Ventrata) — NOT the OCTO connection key, which must never reach the client
+// (AGENTS rules 1–2). Keep env="test" until launch, then switch to "live".
+// ─────────────────────────────────────────────────────────────────────────────
+import CTAButton from './CTAButton.astro';
+
+interface Props {
+  mode: 'loader' | 'embedded' | 'popup';
+  productID?: string;
+  env?: 'test' | 'live';
+  /** popup: button text */
+  label?: string;
+  /** popup: extra classes forwarded to the trigger button */
+  class?: string;
+  /** popup: open the checkout on the date/calendar step (date-led browsing). See the
+      calendarFirst caveat below — the exact data-config key is TBC with Ventrata. */
+  calendarFirst?: boolean;
+  /** embedded: min-height utility (widget must be able to grow — never a fixed height) */
+  minHeightClass?: string;
+}
+
+const {
+  mode,
+  productID,
+  env = 'test',
+  label = 'Book Now',
+  class: className = '',
+  calendarFirst = false,
+  minHeightClass = 'min-h-[50rem]',
+} = Astro.props;
+
+const CHECKOUT_SRC = 'https://cdn.checkout.ventrata.com/v3/production/ventrata-checkout.min.js';
+// DOM-safe checkout widget API key (NOT the OCTO connection key).
+const CHECKOUT_API_KEY = '29b8b50a-26b8-4dae-bf0e-995708d2f372';
+
+if ((mode === 'embedded' || mode === 'popup') && !productID) {
+  throw new Error(`VentrataWidget mode="${mode}" requires a productID`);
+}
+
+const checkoutConfig = JSON.stringify({ apiKey: CHECKOUT_API_KEY, env });
+const embeddedConfig = JSON.stringify({ productID, embedded: true });
+// `calendarFirst: true` opens the pop-up on the date step (date-led browsing) per
+// docs/ventrata-integration.md → "Calendar First mode". ⚠ The exact key name
+// (calendarFirst vs a versioned alias) and which product(s) to surface / their ordering
+// must be confirmed with the Ventrata account manager before launch.
+const popupConfig = JSON.stringify({ productID, ...(calendarFirst ? { calendarFirst: true } : {}) });
+---
+
+{
+  mode === 'loader' && (
+    <Fragment>
+      {/* Checkout script — loaded only on this page, never globally (AGENTS rule 9).
+          type="module" so it defers; is:inline so Astro keeps the external src +
+          data-config intact instead of trying to bundle it. */}
+      <script is:inline type="module" src={CHECKOUT_SRC} data-config={checkoutConfig} />
+
+      {/* Hide the loading skeleton once the embedded widget renders. Ventrata mounts its
+          checkout in an IFRAME, but not always as a direct child of the aside (it can nest
+          it in a wrapper) — so match the iframe ANYWHERE in the subtree (:has(iframe)) and
+          hide the skeleton as a DESCENDANT, never assuming a direct-child relationship. The
+          old `:has(> :not(.widget-loading)) > .widget-loading` only fired when the injected
+          node landed as a direct sibling of the skeleton, which is why the skeleton stuck on
+          some products. The script below is the belt-and-suspenders fallback for the (rare)
+          case where the widget renders without an iframe. :has() is within our baseline. */}
+      <style is:global>
+        {`aside[ventrata-embedded-widget]:has(iframe) .widget-loading { display: none; }`}
+      </style>
+
+      {/* Ventrata checkout pop-up observer — MOVED OUT OF BaseLayout so it ships ONLY on
+          booking pages. Toggles `ventrata-open` on <html> so the pop-up owns the screen
+          (styling in global.css). Detection is IDENTITY-based, not size-based: the live
+          pop-up is a centred ~80%-wide panel, so old size thresholds never matched.
+          is:inline + DOMContentLoaded-guarded because it now lives in <head>. */}
+      <script is:inline>
+        {`
+        (function () {
+          function init() {
+            var root = document.documentElement;
+            var KEY = 'ventrata-open';
+            var body = document.body;
+            if (!body) return;
+
+            // Body children present at load — anything added later is the third-party
+            // pop-up. Our own triggers/embeds live deep in the page, never as new body
+            // children, so they are excluded automatically.
+            var initial = new Set(Array.prototype.slice.call(body.children));
+
+            function looksVentrata(el) {
+              var hit = function (n) {
+                if (!n || n.nodeType !== 1) return false;
+                if (/ventrata|checkout/i.test(n.id || '')) return true;
+                var c = typeof n.className === 'string' ? n.className : '';
+                if (/ventrata|checkout/i.test(c)) return true;
+                var at = n.attributes;
+                if (at) for (var i = 0; i < at.length; i++) if (/ventrata|checkout/i.test(at[i].name)) return true;
+                return false;
+              };
+              if (hit(el)) return true;
+              var all = el.querySelectorAll ? el.querySelectorAll('*') : [];
+              for (var i = 0; i < all.length; i++) if (hit(all[i])) return true;
+              return false;
+            }
+
+            function shown(el) {
+              var cs = getComputedStyle(el);
+              if (cs.display === 'none' || cs.visibility === 'hidden') return false;
+              return el.getBoundingClientRect().width > 0;
+            }
+
+            var armed = false;   // a checkout opened via our trigger
+            var saw = false;     // the pop-up DOM appeared this session
+            var failsafe = 0;
+
+            // The pop-up = a visible, post-load direct body child. Prefer one carrying
+            // ventrata identity; during a trigger session accept ANY new visible body
+            // child (no size threshold) so the narrow centred panel still registers.
+            function overlayPresent() {
+              var kids = body.children;
+              var fallback = false;
+              for (var i = 0; i < kids.length; i++) {
+                var el = kids[i];
+                if (initial.has(el) || !shown(el)) continue;
+                if (looksVentrata(el)) return true;
+                if (armed) fallback = true;
+              }
+              return fallback;
+            }
+
+            function evaluate() {
+              var present = overlayPresent();
+              if (present) saw = true;
+              if (armed && saw && !present) { armed = false; saw = false; } // opened then closed
+              root.classList.toggle(KEY, armed || present);
+            }
+
+            var raf = 0;
+            function schedule() {
+              if (!raf) raf = requestAnimationFrame(function () { raf = 0; evaluate(); });
+            }
+
+            // (1) TRIGGER — a click on any [ventrata-checkout] element opens immediately,
+            //     before the widget injects its DOM, so chrome hides with no flicker.
+            document.addEventListener('click', function (e) {
+              var t = e.target;
+              if (t && t.closest && t.closest('[ventrata-checkout]')) {
+                armed = true;
+                saw = false;
+                root.classList.add(KEY);
+                clearTimeout(failsafe);
+                // If the pop-up never opens, disarm so the chrome isn't hidden forever.
+                failsafe = window.setTimeout(function () { if (armed && !saw) { armed = false; evaluate(); } }, 5000);
+              }
+            }, true);
+
+            // Skeleton fallback: remove the "Loading…" node as soon as ANY real content
+            // appears ANYWHERE inside an embedded aside (not only as a direct child). Covers
+            // the case the CSS :has(iframe) rule can't — a widget rendered without an iframe.
+            function hideLoadedSkeletons() {
+              var asides = document.querySelectorAll('aside[ventrata-embedded-widget]');
+              for (var i = 0; i < asides.length; i++) {
+                var aside = asides[i];
+                var skeleton = aside.querySelector('.widget-loading');
+                if (!skeleton) continue;
+                var nodes = aside.querySelectorAll('*');
+                for (var j = 0; j < nodes.length; j++) {
+                  var el = nodes[j];
+                  if (el === skeleton || skeleton.contains(el)) continue; // skip the skeleton itself
+                  skeleton.remove();
+                  break;
+                }
+              }
+            }
+
+            // (2) CLOSE (and any non-trigger auto-open, e.g. ?openWidget=true) — watch the
+            //     body for the pop-up DOM being added/removed, AND drive the skeleton
+            //     fallback above. No size thresholds. ONE shared observer for both jobs.
+            new MutationObserver(function () {
+              schedule();
+              hideLoadedSkeletons();
+            }).observe(body, {
+              childList: true,
+              subtree: true,
+              attributes: true,
+              attributeFilter: ['style', 'class', 'hidden'],
+            });
+
+            hideLoadedSkeletons();
+            evaluate();
+          }
+
+          if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
+          else init();
+        })();
+        `}
+      </script>
+    </Fragment>
+  )
+}
+
+{
+  mode === 'embedded' && (
+    <aside
+      class={`${minHeightClass} h-auto w-full`}
+      ventrata-embedded-widget
+      data-config={embeddedConfig}
+    >
+      <div class="widget-loading">Loading availability&hellip;</div>
+    </aside>
+  )
+}
+
+{
+  mode === 'popup' && (
+    <CTAButton class={className} ventrata-checkout="" data-config={popupConfig}>
+      {label}
+    </CTAButton>
+  )
+}

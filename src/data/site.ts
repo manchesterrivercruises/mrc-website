@@ -32,6 +32,16 @@ export const site = {
 
   // Google rating — confirm against the live Google listing before launch (TBC).
   rating: { value: 4.5, count: 518 },
+
+  // Social profiles — used for the footer links and the schema.org `sameAs` array
+  // (Object.values(site.socials)).
+  socials: {
+    facebook: 'https://www.facebook.com/ManchesterRiverCruises/',
+    instagram: 'https://www.instagram.com/manchesterrivercruises/',
+    tiktok: 'https://www.tiktok.com/@manchesterrivercr',
+    tripadvisor:
+      'https://www.tripadvisor.co.uk/Attraction_Review-g503819-d10553649-Reviews-Manchester_River_Cruises-Salford_Greater_Manchester_England.html',
+  },
 } as const;
 
 export type Site = typeof site;

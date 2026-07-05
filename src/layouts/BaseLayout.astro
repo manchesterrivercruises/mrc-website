@@ -3,6 +3,7 @@ import '../styles/global.css';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 import { buildBreadcrumbs, type Crumb } from '../lib/breadcrumbs';
+import { site } from '../data/site';
 
 interface Props {
   title?: string;
@@ -43,6 +44,18 @@ const breadcrumbSchema =
 const siteURL = Astro.site ?? new URL('/', Astro.url);
 const canonicalURL = canonical ?? new URL(Astro.url.pathname, siteURL).href;
 const ogImage = new URL(image, siteURL).href;
+
+// Site-wide business entity carrying the social profiles (schema.org sameAs).
+// Emitted on every page so search engines can associate our socials site-wide.
+const businessSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'LocalBusiness',
+  '@id': `${site.url}#business`,
+  name: site.name,
+  url: site.url,
+  image: new URL('/images/logo-colour.png', siteURL).href,
+  sameAs: Object.values(site.socials),
+};
 
 // Google Tag Manager — only rendered when GTM_CONTAINER_ID is set (build-time env var).
 const gtmId = process.env.GTM_CONTAINER_ID;
@@ -98,6 +111,9 @@ const gtmId = process.env.GTM_CONTAINER_ID;
       rel="stylesheet"
     />
 
+    {/* Site-wide business entity + social profiles (sameAs) */}
+    <script type="application/ld+json" is:inline set:html={JSON.stringify(businessSchema)} />
+
     {/* BreadcrumbList structured data (auto-derived; omitted on the homepage) */}
     {breadcrumbSchema && <script type="application/ld+json" is:inline set:html={JSON.stringify(breadcrumbSchema)} />}
 
@@ -132,106 +148,9 @@ const gtmId = process.env.GTM_CONTAINER_ID;
     </main>
     <Footer />
 
-    {/* Ventrata checkout pop-up: let the widget own the screen (global — affects every
-        page with a widget: City River Tour, event pages, ferry pages). Toggles the
-        `ventrata-open` class on <html>; the styling lives in global.css. */}
-    <script>
-      // Ventrata checkout pop-up: let the widget own the screen. Toggles `ventrata-open`
-      // on <html> (styling in global.css). Detection is IDENTITY-based, not size-based:
-      // on the live build the pop-up is a centred panel ~80% wide with page gutters, so
-      // the old 90%×70% size thresholds never matched and the chrome stayed visible.
-      (() => {
-        const root = document.documentElement;
-        const KEY = 'ventrata-open';
-        const body = document.body;
-        if (!body) return;
-
-        // Body children present at load — anything added later is third-party (the pop-up).
-        // Our own trigger buttons ([ventrata-checkout]) and embedded widgets live deep in
-        // the page, never as NEW body children, so they are excluded automatically.
-        const initial = new Set(Array.from(body.children));
-
-        // Identity: does the element or its subtree carry a ventrata/checkout id, class,
-        // or attribute name?
-        function looksVentrata(el: Element): boolean {
-          const hit = (n: Element) => {
-            if (!n || n.nodeType !== 1) return false;
-            if (/ventrata|checkout/i.test(n.id || '')) return true;
-            const c = typeof n.className === 'string' ? n.className : '';
-            if (/ventrata|checkout/i.test(c)) return true;
-            const at = n.attributes;
-            if (at) for (let i = 0; i < at.length; i++) if (/ventrata|checkout/i.test(at[i].name)) return true;
-            return false;
-          };
-          if (hit(el)) return true;
-          const all = el.querySelectorAll ? el.querySelectorAll('*') : [];
-          for (let i = 0; i < all.length; i++) if (hit(all[i])) return true;
-          return false;
-        }
-
-        function shown(el: Element): boolean {
-          const cs = getComputedStyle(el);
-          if (cs.display === 'none' || cs.visibility === 'hidden') return false;
-          return el.getBoundingClientRect().width > 0;
-        }
-
-        // The pop-up = a visible, post-load direct body child. Prefer one carrying ventrata
-        // identity; during a trigger session accept ANY new visible body child (no size
-        // threshold) so the narrow centred panel still registers.
-        function overlayPresent(): boolean {
-          const kids = body.children;
-          let fallback = false;
-          for (let i = 0; i < kids.length; i++) {
-            const el = kids[i];
-            if (initial.has(el) || !shown(el)) continue;
-            if (looksVentrata(el)) return true;
-            if (armed) fallback = true;
-          }
-          return fallback;
-        }
-
-        let armed = false; // a checkout opened via our trigger
-        let saw = false; // the pop-up DOM has appeared this session
-        let failsafe = 0;
-
-        function evaluate() {
-          const present = overlayPresent();
-          if (present) saw = true;
-          if (armed && saw && !present) { armed = false; saw = false; } // appeared then closed
-          root.classList.toggle(KEY, armed || present);
-        }
-
-        let raf = 0;
-        function schedule() {
-          if (!raf) raf = requestAnimationFrame(() => { raf = 0; evaluate(); });
-        }
-
-        // (1) TRIGGER — a click on any [ventrata-checkout] element opens immediately, before
-        //     the widget injects its DOM, so the header/CTA hide with no flicker. Delegated
-        //     + capture so it also covers trigger buttons wired in later (step 6/9).
-        document.addEventListener('click', (e) => {
-          const t = e.target as Element | null;
-          if (t && t.closest && t.closest('[ventrata-checkout]')) {
-            armed = true;
-            saw = false;
-            root.classList.add(KEY);
-            clearTimeout(failsafe);
-            // If the pop-up never actually opens, disarm so the chrome isn't hidden forever.
-            failsafe = window.setTimeout(() => { if (armed && !saw) { armed = false; evaluate(); } }, 5000);
-          }
-        }, true);
-
-        // (2) CLOSE (and any non-trigger auto-open, e.g. ?openWidget=true) — watch the body
-        //     for the pop-up DOM being added/removed. No size thresholds.
-        new MutationObserver(schedule).observe(body, {
-          childList: true,
-          subtree: true,
-          attributes: true,
-          attributeFilter: ['style', 'class', 'hidden'],
-        });
-
-        evaluate();
-      })();
-    </script>
+    {/* NOTE: the Ventrata checkout pop-up observer used to live here and shipped on
+        EVERY page. It now lives in src/components/VentrataWidget.astro (mode="loader")
+        so it ships ONLY on bookable pages (AGENTS rule 9). The `ventrata-open` styling
+        stays in global.css. */}
   </body>
 </html>

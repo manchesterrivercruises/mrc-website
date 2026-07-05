@@ -2,8 +2,8 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import { site } from '../data/site';
 import SectionHeading from '../components/SectionHeading.astro';
-import CTAButton from '../components/CTAButton.astro';
 import BookingPanel from '../components/BookingPanel.astro';
+import VentrataWidget from '../components/VentrataWidget.astro';
 import ProductCard from '../components/ProductCard.astro';
 import AttractionCard from '../components/AttractionCard.astro';
 import FAQSection from '../components/FAQSection.astro';
@@ -57,7 +57,7 @@ const dayOut = [
 const crossSell = [
   { name: 'Cruise with Father Christmas', desc: 'A magical festive cruise the whole family will love', href: '/santa-cruise-manchester' },
   { name: 'ABBA Cruise', desc: 'Dance the night away on the water to the greatest ABBA hits', href: '/cruises/abba' },
-  { name: 'Boat to Old Trafford', desc: 'The best way to arrive on matchday', href: '/mufc-ferry' },
+  { name: 'Boat to Old Trafford', desc: 'The best way to arrive on matchday', href: '/boat-to-old-trafford' },
 ];
 
 const faqs = [
@@ -114,20 +114,18 @@ const structuredData = {
 
 // Page-local style token for the gallery placeholder tiles.
 const galleryTile =
-  'flex h-full w-full items-center justify-center rounded-card bg-panel text-sm text-subtle ring-1 ring-black/5 transition hover:brightness-95';
+  'flex h-full w-full items-center justify-center rounded-card bg-panel text-sm text-subtle ring-1 ring-black/5';
+
+// Route stops in order — rendered as a real <ol> beside the map so the itinerary is
+// crawlable static content and available without JavaScript (seeds the future full
+// 43-stop itinerary). The Leaflet map reads the same source (tour-stops.json).
+const orderedStops = [...tourStops].sort((a, b) => a.id - b.id);
 ---
 
 <BaseLayout title={pageTitle}>
-  {/* Ventrata checkout script — loaded ONLY on this page (booking page), never globally.
-      Change "env":"test" to "live" before launch. Checkout API key is DOM-safe (not the OCTO key). */}
-  <Fragment slot="head">
-    <script
-      is:inline
-      type="module"
-      src="https://cdn.checkout.ventrata.com/v3/production/ventrata-checkout.min.js"
-      data-config='{"apiKey":"29b8b50a-26b8-4dae-bf0e-995708d2f372", "env": "test"}'
-    ></script>
-  </Fragment>
+  {/* Ventrata page-level setup (checkout script + modal observer + skeleton hide) —
+      loaded ONLY on this booking page, never globally (AGENTS rule 9). */}
+  <VentrataWidget mode="loader" slot="head" env="test" />
 
   {/* Schema.org structured data (JSON-LD) */}
   <script type="application/ld+json" is:inline set:html={JSON.stringify(structuredData)} />
@@ -148,13 +146,6 @@ const galleryTile =
         height: 450px;
       }
     }
-
-    /* Hide the Ventrata loading skeleton once the embedded widget injects its own
-       content (any child other than the skeleton). :has() is within the project's
-       modern-browser baseline (same as Tailwind v4). */
-    aside[ventrata-embedded-widget]:has(> :not(.widget-loading)) > .widget-loading {
-      display: none;
-    }
   </style>
   <style>
     /* Cross-sell rotator: stack the items and fade through them (5s each, 15s loop). */
@@ -164,36 +155,41 @@ const galleryTile =
     .cross-sell-item {
       grid-area: 1 / 1;
       opacity: 0;
-      pointer-events: none;
+      /* visibility:hidden (not just opacity:0) so an inactive slide's link is removed
+         from the tab order — invisible links must not be keyboard-focusable. The base
+         hidden state also covers each item's animation-delay window before it starts. */
+      visibility: hidden;
       animation: crossSellFade 15s infinite;
     }
     @keyframes crossSellFade {
-      0% { opacity: 0; pointer-events: none; }
-      2% { opacity: 1; pointer-events: auto; }
-      31% { opacity: 1; pointer-events: auto; }
-      33% { opacity: 0; pointer-events: none; }
-      100% { opacity: 0; pointer-events: none; }
+      0% { opacity: 0; visibility: visible; }
+      2% { opacity: 1; visibility: visible; }
+      31% { opacity: 1; visibility: visible; }
+      33% { opacity: 0; visibility: hidden; }
+      100% { opacity: 0; visibility: hidden; }
+    }
+    /* Pause the rotation while the reader hovers or keyboard-focuses within it. */
+    .cross-sell:hover .cross-sell-item,
+    .cross-sell:focus-within .cross-sell-item {
+      animation-play-state: paused;
     }
     @media (prefers-reduced-motion: reduce) {
-      .cross-sell-item { animation: none; }
-      .cross-sell-item:first-child { opacity: 1; pointer-events: auto; }
+      .cross-sell-item { animation: none; opacity: 0; visibility: hidden; }
+      .cross-sell-item:first-child { opacity: 1; visibility: visible; }
     }
   </style>
 
   <div class="pb-24 md:pb-0">
     {/* 1. Photo gallery mosaic — full width, before the title */}
     <section aria-label="Photo gallery" class="mx-auto max-w-6xl px-4 pt-6 sm:px-6 lg:px-8">
+      {/* Static placeholder tiles — real gallery photos TBD. (A prior lightbox
+          viewer was removed: it was a non-functional placeholder with a dead close
+          link and no real images.) */}
       <div class="grid grid-cols-1 gap-2 sm:grid-cols-5 sm:items-start">
-        <a href="#lightbox" class="block sm:col-span-3" aria-label="Open gallery">
-          <div class={`aspect-[4/3] ${galleryTile}`}>Main photo (TBC)</div>
-        </a>
+        <div class={`aspect-[4/3] sm:col-span-3 ${galleryTile}`}>Main photo (TBC)</div>
         <div class="flex flex-col gap-2 sm:col-span-2">
-          <a href="#lightbox" class="block" aria-label="Open gallery">
-            <div class={`aspect-[16/9] ${galleryTile}`}>Photo 2 (TBC)</div>
-          </a>
-          <a href="#lightbox" class="block" aria-label="Open gallery">
-            <div class={`aspect-[16/9] ${galleryTile}`}>Photo 3 (TBC)</div>
-          </a>
+          <div class={`aspect-[16/9] ${galleryTile}`}>Photo 2 (TBC)</div>
+          <div class={`aspect-[16/9] ${galleryTile}`}>Photo 3 (TBC)</div>
         </div>
       </div>
     </section>
@@ -249,12 +245,36 @@ const galleryTile =
     <section aria-labelledby="route-map-heading" class="mx-auto max-w-6xl px-4 pt-10 sm:px-6 lg:px-8">
       <SectionHeading id="route-map-heading">Explore the route</SectionHeading>
       <p class="mt-4 max-w-3xl text-body">
-        Follow the full Manchester Ship Canal route — tap a numbered stop for details.
+        Follow the full Manchester Ship Canal route — tap a numbered stop for details, or read
+        the stops in order below.
       </p>
-      <div id="route-map" class="mt-6 w-full overflow-hidden rounded-card ring-1 ring-black/5"></div>
+      <div
+        id="route-map"
+        class="mt-6 w-full overflow-hidden rounded-card ring-1 ring-black/5"
+        aria-label="Interactive map of the City River Tour route along the Manchester Ship Canal"
+      ></div>
       <noscript>
-        <p class="mt-2 text-sm text-subtle">Enable JavaScript to view the interactive route map.</p>
+        <p class="mt-2 text-sm text-subtle">
+          Enable JavaScript to view the interactive route map. The full list of stops is below.
+        </p>
       </noscript>
+
+      {/* Real ordered list of stops — crawlable, works without JS, and the accessible
+          equivalent of the interactive map. */}
+      <h3 class="mt-8 text-sm font-semibold uppercase tracking-wider text-subtle">Route stops in order</h3>
+      <ol class="mt-4 grid gap-3 sm:grid-cols-2">
+        {
+          orderedStops.map((s) => (
+            <li class="flex gap-3 rounded-card bg-panel p-4 ring-1 ring-black/5">
+              <span class="text-xl leading-none" aria-hidden="true">{s.emoji}</span>
+              <div>
+                <h4 class="font-semibold text-ink">{s.name}</h4>
+                <p class="mt-1 text-sm leading-relaxed text-subtle">{s.description}</p>
+              </div>
+            </li>
+          ))
+        }
+      </ol>
     </section>
 
     {/* 4. Two-column: main content (left 58%) + sticky booking panel (right 38%, 4% gap).
@@ -264,14 +284,7 @@ const galleryTile =
       <aside id="book" class="mb-10 lg:order-2 lg:mb-0 lg:sticky lg:top-20">
         <BookingPanel price="£13" priceNote="Adults £13 · Seniors £11">
           {/* Ventrata embedded checkout widget (desktop) — City River Tour product. */}
-          <aside
-            slot="widget"
-            class="min-h-[50rem] h-auto w-full"
-            ventrata-embedded-widget
-            data-config='{"productID": "ef45d8bd-529c-4dae-9c35-cd1b8e4e0a75", "embedded": true}'
-          >
-            <div class="widget-loading">Loading availability...</div>
-          </aside>
+          <VentrataWidget mode="embedded" productID="ef45d8bd-529c-4dae-9c35-cd1b8e4e0a75" slot="widget" />
         </BookingPanel>
 
         {/* MRC cross-sell — hidden on mobile. TODO (step 9): replace with live Ventrata product data. */}
@@ -371,24 +384,9 @@ const galleryTile =
     </section>
   </div>
 
-  {/* Lightbox placeholder — pure CSS via :target, no JavaScript */}
-  <div id="lightbox" class="fixed inset-0 z-[60] hidden items-center justify-center bg-black/80 p-4 target:flex">
-    <div class="relative w-full max-w-3xl">
-      <a href="#" class="absolute -top-9 right-0 text-sm font-medium text-white/80 hover:text-white" aria-label="Close gallery">
-        ✕ Close
-      </a>
-      <div class="flex aspect-[16/10] items-center justify-center rounded-card bg-white/10 text-sm text-white/80 ring-1 ring-white/20">
-        Lightbox gallery viewer (TBC)
-      </div>
-    </div>
-  </div>
-
-  {/* Mobile sticky Book Now — pure CSS, no JavaScript */}
+  {/* Mobile sticky Book Now — Ventrata pop-up checkout (City River Tour product) */}
   <div class="fixed inset-x-0 bottom-0 z-40 border-t border-black/10 bg-white/95 p-3 backdrop-blur md:hidden">
-    {/* Ventrata pop-up checkout (mobile) — City River Tour product. */}
-    <CTAButton class="w-full" ventrata-checkout="" data-config='{"productID": "ef45d8bd-529c-4dae-9c35-cd1b8e4e0a75"}'>
-      Book Now
-    </CTAButton>
+    <VentrataWidget mode="popup" productID="ef45d8bd-529c-4dae-9c35-cd1b8e4e0a75" label="Book Now" class="w-full" />
   </div>
 
   {/* Leaflet — CSS is loaded above (before this JS). Markers only, no route line. */}
@@ -422,13 +420,19 @@ const galleryTile =
             'border-radius:9999px;background:#fff;font-size:16px;line-height:1;' +
             'box-shadow:0 1px 4px rgba(0,0,0,.3);">' + s.emoji + '</div>',
         });
-        L.marker([s.lat, s.lng], { icon: icon })
-          .addTo(map)
-          .bindPopup(
-            '<div style="font:13px/1.4 sans-serif;color:#1a1a1a">' +
-              '<strong>' + s.emoji + ' ' + s.name + '</strong><br>' + s.description +
-            '</div>'
-          );
+        // Build the popup as real DOM nodes with textContent (never string
+        // concatenation) so stop data can never be interpreted as markup.
+        var popup = document.createElement('div');
+        popup.style.font = '13px/1.4 sans-serif';
+        popup.style.color = '#1a1a1a';
+        var title = document.createElement('strong');
+        title.textContent = s.emoji + ' ' + s.name;
+        var desc = document.createElement('p');
+        desc.style.margin = '4px 0 0';
+        desc.textContent = s.description;
+        popup.appendChild(title);
+        popup.appendChild(desc);
+        L.marker([s.lat, s.lng], { icon: icon }).addTo(map).bindPopup(popup);
       });
 
       map.fitBounds(latlngs, { padding: [40, 40] });

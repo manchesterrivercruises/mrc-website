@@ -5,6 +5,7 @@
 // Cache: products change rarely, so cache for 1 hour.
 
 import { withGuard, jsonError } from '../lib/guard';
+import { filterProductsResponse } from '../lib/products';
 
 const OCTO_BASE = process.env.VENTRATA_OCTO_BASE ?? 'https://api.ventrata.com/octo';
 
@@ -15,7 +16,9 @@ export default withGuard(async (request: Request): Promise<Response> => {
 
   const key = process.env.VENTRATA_OCTO_KEY;
   if (!key) {
-    return jsonError('VENTRATA_OCTO_KEY is not configured', 500);
+    // Log detail server-side; never name the env var in the client response.
+    console.error('products: VENTRATA_OCTO_KEY is not configured');
+    return jsonError('Service temporarily unavailable', 503);
   }
 
   try {
@@ -28,10 +31,23 @@ export default withGuard(async (request: Request): Promise<Response> => {
 
     const body = await upstream.text();
     if (!upstream.ok) {
-      return jsonError(`OCTO /products request failed (${upstream.status})`, upstream.status);
+      // Log the real upstream status server-side; return a generic message.
+      console.error(`products: OCTO /products upstream error ${upstream.status}`);
+      return jsonError('Upstream service error', 502);
     }
 
-    return new Response(body, {
+    let parsed: unknown;
+    try {
+      parsed = JSON.parse(body);
+    } catch {
+      console.error('products: OCTO /products returned non-JSON body');
+      return jsonError('Upstream service error', 502);
+    }
+
+    // Drop every upstream field the frontend does not use before it leaves the proxy.
+    const filtered = filterProductsResponse(parsed);
+
+    return new Response(JSON.stringify(filtered), {
       status: 200,
       headers: {
         'Content-Type': 'application/json',
@@ -41,6 +57,7 @@ export default withGuard(async (request: Request): Promise<Response> => {
       },
     });
   } catch {
-    return jsonError('Failed to reach the OCTO API', 502);
+    console.error('products: failed to reach the OCTO API');
+    return jsonError('Upstream service error', 502);
   }
 });

@@ -13,14 +13,17 @@ interface Props {
 const {
   rating,
   reviewCount,
-  reviewsHref = '#',
+  reviewsHref,
   id = 'reviews',
   title = 'Reviews',
-  reviews = [
-    { quote: '"Sample review placeholder — to be replaced with a real Google review."', author: 'Guest review 1 (TBC)' },
-    { quote: '"Sample review placeholder — to be replaced with a real Google review."', author: 'Guest review 2 (TBC)' },
-  ],
+  // No placeholder quotes: the quote cards render ONLY when real reviews are passed in.
+  // Until then we show just the honest Google aggregate (rating + review count).
+  reviews = [],
 } = Astro.props;
+
+// Only link the aggregate count out when we have a real destination URL — otherwise
+// render it as plain text rather than a dead "#" link.
+const hasReviewsLink = typeof reviewsHref === 'string' && reviewsHref !== '' && reviewsHref !== '#';
 
 // heroicons solid star path
 const STAR =
@@ -55,20 +58,29 @@ const emptyCount = 5 - fullCount - (hasHalf ? 1 : 0);
           <svg class="h-5 w-5" viewBox="0 0 24 24" fill="rgb(0 0 0 / 0.12)"><path d={STAR} /></svg>
         ))}
       </div>
-      <a href={reviewsHref} class="mt-1 inline-block text-sm font-medium text-primary hover:underline">
-        {reviewCount} Google reviews
-      </a>
+      {
+        hasReviewsLink ? (
+          <a href={reviewsHref} class="mt-1 inline-block text-sm font-medium text-primary hover:underline">
+            {reviewCount} Google reviews
+          </a>
+        ) : (
+          <p class="mt-1 text-sm font-medium text-subtle">{reviewCount} Google reviews</p>
+        )
+      }
     </div>
   </div>
 
-  <div class="mt-6 grid gap-4 sm:grid-cols-2">
-    {
-      reviews.map((r) => (
-        <figure class="rounded-card bg-panel p-6 shadow-sm ring-1 ring-black/5">
-          <blockquote class="leading-relaxed text-body">{r.quote}</blockquote>
-          <figcaption class="mt-4 text-sm text-subtle">{r.author}</figcaption>
-        </figure>
-      ))
-    }
-  </div>
+  {/* Individual review quote cards — shown only when real reviews are supplied. */}
+  {
+    reviews.length > 0 && (
+      <div class="mt-6 grid gap-4 sm:grid-cols-2">
+        {reviews.map((r) => (
+          <figure class="rounded-card bg-panel p-6 shadow-sm ring-1 ring-black/5">
+            <blockquote class="leading-relaxed text-body">{r.quote}</blockquote>
+            <figcaption class="mt-4 text-sm text-subtle">{r.author}</figcaption>
+          </figure>
+        ))}
+      </div>
+    )
+  }
 </section>

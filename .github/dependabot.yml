@@ -12,6 +12,14 @@ updates:
     commit-message:
       prefix: "chore(deps)"
       prefix-development: "chore(deps-dev)"
+    # Defer MAJOR framework upgrades (astro 5→7, @astrojs/netlify 6→8, etc.) to a
+    # planned post-launch upgrade — these are breaking and intentionally held back.
+    # Weekly minor/patch version-update PRs and security updates still flow through.
+    ignore:
+      - dependency-name: "astro"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "@astrojs/*"
+        update-types: ["version-update:semver-major"]
 
   # Keep GitHub Actions pinned/patched too (harmless if no workflows yet).
   - package-ecosystem: "github-actions"
