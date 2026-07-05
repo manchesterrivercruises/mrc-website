@@ -172,22 +172,36 @@ const structuredData = {
       <p class="mx-auto mt-3 max-w-xl text-lg leading-relaxed text-white/80">
         Tell us when you're free — see everything sailing that day.
       </p>
-      <div class="mt-8 flex justify-center">
-        {/*
-          Calendar-first Ventrata checkout: opens the widget on the date step so customers
-          browse by date. Implemented via the shared VentrataWidget pop-up trigger with
-          calendarFirst per docs/ventrata-integration.md → "Calendar First mode".
-          ⚠ CONFIRM WITH THE VENTRATA ACCOUNT MANAGER before launch (tracked in the
-             account-manager email thread):
-               - the exact data-config key for calendar-first (calendarFirst vs a versioned alias)
-               - which product(s) to surface on the date step and their ordering
-          Anchored to the City River Tour product for now.
-        */}
+      {/*
+        Calendar-first Ventrata checkout: opens the widget on the date step so customers
+        browse by date. Per docs/ventrata-integration.md → "Calendar First mode".
+        ⚠ CONFIRM WITH THE VENTRATA ACCOUNT MANAGER before launch (tracked in the
+           account-manager email thread):
+             - the exact data-config key for calendar-first (calendarFirst vs a versioned alias)
+             - which product(s) to surface on the date step and their ordering
+        Anchored to the City River Tour product for now.
+
+        Desktop gets the embedded date-led widget; mobile keeps the gold pop-up trigger
+        (a min-h-[50rem] embed would dominate a phone homepage).
+      */}
+
+      {/* Mobile (< md): pop-up trigger */}
+      <div class="mt-8 flex justify-center md:hidden">
         <VentrataWidget
           mode="popup"
           productID="ef45d8bd-529c-4dae-9c35-cd1b8e4e0a75"
           calendarFirst
           label="Find your date"
+        />
+      </div>
+
+      {/* Desktop (md+): embedded calendar-first widget, capped + centred. The widget owns
+          its min-h-[50rem] h-auto sizing and loading skeleton (VentrataWidget embedded). */}
+      <div class="mx-auto mt-8 hidden max-w-3xl md:block">
+        <VentrataWidget
+          mode="embedded"
+          productID="ef45d8bd-529c-4dae-9c35-cd1b8e4e0a75"
+          calendarFirst
         />
       </div>
     </div>
