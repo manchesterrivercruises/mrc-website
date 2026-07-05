@@ -1,0 +1,50 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { site } from '../../data/site';
+import GalleryWall from '../../components/GalleryWall.astro';
+import { getAlbums } from '../../lib/gallery';
+
+// Gallery hub — the masonry wall of all album covers with the category filter.
+const albums = await getAlbums();
+
+const SITE = site.url;
+const pageTitle = 'Gallery — Manchester River Cruises';
+const pageDescription =
+  'Photo galleries from Manchester River Cruises — music and party nights, the City River Tour, Christmas cruises, private hire, our boats and the Manchester Ship Canal.';
+
+const structuredData = {
+  '@context': 'https://schema.org',
+  '@type': 'CollectionPage',
+  name: 'Gallery',
+  description: pageDescription,
+  url: `${SITE}/gallery`,
+  hasPart: albums.map((a) => ({
+    '@type': 'ImageGallery',
+    name: a.data.title,
+    url: `${SITE}/gallery/${a.data.slug}`,
+  })),
+};
+---
+
+<BaseLayout title={pageTitle} description={pageDescription}>
+  {/* Schema.org structured data (CollectionPage listing the ImageGalleries) */}
+  <script type="application/ld+json" is:inline set:html={JSON.stringify(structuredData)} />
+
+  <div>
+    {/* Hero — dark navy, gold accents */}
+    <section class="bg-dark text-white">
+      <div class="mx-auto max-w-6xl px-4 py-20 sm:px-6 md:py-24 lg:px-8">
+        <p class="text-sm font-semibold uppercase tracking-[0.2em] text-accent">Life on the water</p>
+        <h1 class="mt-3 text-4xl font-bold tracking-tight text-white sm:text-5xl md:text-6xl">Gallery</h1>
+        <p class="mt-5 max-w-2xl text-lg leading-relaxed text-white/80">
+          Photos from our cruises, events and the Manchester Ship Canal. Pick an album to take a look.
+        </p>
+      </div>
+    </section>
+
+    {/* Wall */}
+    <div class="mx-auto max-w-6xl px-4 py-12 sm:px-6 md:py-16 lg:px-8">
+      <GalleryWall albums={albums} />
+    </div>
+  </div>
+</BaseLayout>

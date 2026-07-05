@@ -1,0 +1,49 @@
+---
+// PhotoSwipe lightbox for the #gallery-album grid. Rendered only on album pages, so
+// PhotoSwipe's JS + CSS are bundled ONLY on those pages (verify: absent from the wall
+// and every non-album page). Progressive enhancement: without JS the grid links open the
+// full-size image directly; this script intercepts the click to open the lightbox.
+---
+
+<script>
+  import PhotoSwipeLightbox from 'photoswipe/lightbox';
+  import 'photoswipe/style.css';
+
+  const el = document.getElementById('gallery-album');
+  if (el) {
+    const lightbox = new PhotoSwipeLightbox({
+      gallery: '#gallery-album',
+      children: 'a',
+      pswpModule: () => import('photoswipe'),
+    });
+
+    // Minimal caption from each link's data-pswp-caption — no extra plugin dependency.
+    lightbox.on('uiRegister', () => {
+      lightbox.pswp.ui.registerElement({
+        name: 'mrc-caption',
+        appendTo: 'root',
+        onInit: (elc) => {
+          Object.assign(elc.style, {
+            position: 'absolute',
+            left: '0',
+            right: '0',
+            bottom: '0',
+            padding: '14px 20px',
+            textAlign: 'center',
+            color: '#fff',
+            background: 'rgba(0,0,0,.5)',
+            font: '14px/1.5 system-ui, sans-serif',
+          });
+          lightbox.pswp.on('change', () => {
+            const a = lightbox.pswp.currSlide?.data?.element;
+            const cap = (a && a.getAttribute('data-pswp-caption')) || '';
+            elc.textContent = cap;
+            elc.style.display = cap ? 'block' : 'none';
+          });
+        },
+      });
+    });
+
+    lightbox.init();
+  }
+</script>

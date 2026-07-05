@@ -1,0 +1,69 @@
+---
+import type { Album } from '../lib/gallery';
+import { imageDims } from '../lib/gallery';
+
+// Album image grid — THUMBNAILS ONLY. Each thumbnail is a link to the full-size image
+// (data-pswp-width/height for PhotoSwipe). Progressive enhancement: with JS off the link
+// opens the full image directly; PhotoSwipe (GalleryLightbox) intercepts the click.
+//
+// The #gallery-album id is the PhotoSwipe gallery selector — keep it in sync with
+// GalleryLightbox. Thumbnails are placeholder tiles today; swap for <Image src={img.src}
+// alt={img.alt} loading="lazy"> when real assets land (the href already points at the
+// full image, so lightbox + no-JS keep working).
+interface Props {
+  album: Album;
+}
+const { album } = Astro.props;
+const { images } = album.data;
+
+const PHOTO_ICON =
+  'm2.25 15.75 5.159-5.159a2.25 2.25 0 0 1 3.182 0l5.159 5.159m-1.5-1.5 1.409-1.409a2.25 2.25 0 0 1 3.182 0l2.909 2.909M3.75 21h16.5a1.5 1.5 0 0 0 1.5-1.5V6a1.5 1.5 0 0 0-1.5-1.5H3.75A1.5 1.5 0 0 0 2.25 6v13.5A1.5 1.5 0 0 0 3.75 21Zm10.5-11.25h.008v.008h-.008V9.75Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Z';
+
+function aspectClass(orientation?: 'landscape' | 'portrait' | 'square'): string {
+  if (orientation === 'portrait') return 'aspect-[2/3]';
+  if (orientation === 'square') return 'aspect-square';
+  return 'aspect-[3/2]';
+}
+
+function caption(img: (typeof images)[number]): string {
+  if (img.caption && img.credit) return `${img.caption} — ${img.credit}`;
+  return img.caption ?? img.credit ?? '';
+}
+---
+
+<div id="gallery-album" class="pswp-gallery gap-4 [column-fill:_balance] sm:columns-2 lg:columns-3">
+  {
+    images.map((img) => {
+      // Real pixel dims when known (hotlinked/real assets), else orientation-nominal.
+      const w = img.width ?? imageDims(img.orientation).w;
+      const h = img.height ?? imageDims(img.orientation).h;
+      // A real, loadable image (http URL) vs a placeholder path that doesn't exist yet.
+      const isReal = /^https?:\/\//.test(img.src);
+      return (
+        <a
+          href={img.src}
+          data-pswp-width={w}
+          data-pswp-height={h}
+          data-pswp-caption={caption(img)}
+          aria-label={img.alt}
+          class="mb-4 block break-inside-avoid overflow-hidden rounded-card ring-1 ring-black/5 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+        >
+          {
+            isReal ? (
+              // TEMP hotlinked review image — swap for <Image src={img.src} alt={img.alt}
+              // loading="lazy" /> once owned assets land (docs/image-conventions.md).
+              <img src={img.src} alt={img.alt} width={w} height={h} loading="lazy" class="w-full" />
+            ) : (
+              // Placeholder tile — no asset yet.
+              <div class={`flex items-center justify-center bg-gradient-to-br from-panel to-black/10 text-subtle ${aspectClass(img.orientation)}`}>
+                <svg class="h-8 w-8 opacity-40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+                  <path stroke-linecap="round" stroke-linejoin="round" d={PHOTO_ICON} />
+                </svg>
+              </div>
+            )
+          }
+        </a>
+      );
+    })
+  }
+</div>

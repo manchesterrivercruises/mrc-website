@@ -7,6 +7,11 @@ Status: **infrastructure/convention only.** Most images are placeholder tiles to
 real assets are TBC from Simon (see `content-checklist.md`). Follow these rules as assets
 land so we get WebP, correct sizing and proper alt text from day one.
 
+> **Gathering real photography?** Track it in `docs/photo-inventory.md` — the shared visual
+> asset library for the whole site (subjects, minimum counts, hero-grade/OG/OTA
+> suitability, alt/caption/usage-rights status), not just the gallery. Jeff owns gathering
+> against that list.
+
 ---
 
 ## Use Astro's `<Image />` component

@@ -10,6 +10,7 @@ import VentrataWidget from '../../components/VentrataWidget.astro';
 import ProductCard from '../../components/ProductCard.astro';
 import GettingHere from '../../components/GettingHere.astro';
 import { site } from '../../data/site';
+import { getAlbums, findAlbumForProduct } from '../../lib/gallery';
 
 // One page per event, generated from the `events` content collection.
 // Content lives in src/content/events/*.md — layout stays here in the template.
@@ -19,6 +20,10 @@ export async function getStaticPaths() {
 }
 
 const { entry } = Astro.props;
+
+// "View photos" cross-link when a gallery album relates to this event — either its
+// relatedProduct is this page path, or its slug matches the event slug.
+const galleryAlbum = findAlbumForProduct(await getAlbums(), `/cruises/${entry.id}`, entry.id);
 const { Content } = await render(entry);
 const {
   title,
@@ -95,8 +100,18 @@ const structuredData = {
         <p class="text-sm font-semibold uppercase tracking-[0.2em] text-accent">{eyebrow}</p>
         <h1 class="mt-3 text-4xl font-bold tracking-tight text-white sm:text-5xl md:text-6xl">{title}</h1>
         {shortTagline && <p class="mt-5 max-w-2xl text-lg leading-relaxed text-white/80">{shortTagline}</p>}
-        <div class="mt-8">
+        <div class="mt-8 flex flex-wrap items-center gap-x-6 gap-y-3">
           <CTAButton href="#book">Book now</CTAButton>
+          {
+            galleryAlbum && (
+              <a
+                href={`/gallery/${galleryAlbum.data.slug}`}
+                class="text-sm font-medium text-white/90 underline-offset-4 hover:underline"
+              >
+                View photos →
+              </a>
+            )
+          }
         </div>
       </div>
     </section>
