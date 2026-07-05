@@ -259,22 +259,33 @@ const orderedStops = [...tourStops].sort((a, b) => a.id - b.id);
         </p>
       </noscript>
 
-      {/* Real ordered list of stops — crawlable, works without JS, and the accessible
-          equivalent of the interactive map. */}
-      <h3 class="mt-8 text-sm font-semibold uppercase tracking-wider text-subtle">Route stops in order</h3>
-      <ol class="mt-4 grid gap-3 sm:grid-cols-2">
-        {
-          orderedStops.map((s) => (
-            <li class="flex gap-3 rounded-card bg-panel p-4 ring-1 ring-black/5">
-              <span class="text-xl leading-none" aria-hidden="true">{s.emoji}</span>
-              <div>
-                <h4 class="font-semibold text-ink">{s.name}</h4>
-                <p class="mt-1 text-sm leading-relaxed text-subtle">{s.description}</p>
-              </div>
-            </li>
-          ))
-        }
-      </ol>
+      {/* Full route stops — the crawlable, screen-reader-accessible equivalent of the map.
+          Collapsed by default in a native <details> (styled like the FAQ accordions). The
+          list stays in the HTML whether open or closed — no duplicate bulky card grid. */}
+      <div class="mt-8 max-w-3xl overflow-hidden rounded-card ring-1 ring-black/5">
+        <details class="group bg-panel">
+          <summary class="flex cursor-pointer list-none items-center justify-between gap-4 p-5 font-medium text-ink">
+            View all {orderedStops.length} stops as a list
+            <span
+              aria-hidden="true"
+              class="flex-none text-xl text-primary transition-transform group-open:rotate-45"
+            >
+              +
+            </span>
+          </summary>
+          <ol class="list-none space-y-1.5 border-t border-black/10 px-5 py-4">
+            {
+              orderedStops.map((s) => (
+                <li class="flex items-baseline gap-2">
+                  <span aria-hidden="true" class="flex-none">{s.emoji}</span>
+                  <span class="flex-none font-semibold text-ink">{s.name}</span>
+                  <span class="min-w-0 flex-1 truncate text-sm text-subtle">{s.description}</span>
+                </li>
+              ))
+            }
+          </ol>
+        </details>
+      </div>
     </section>
 
     {/* 4. Two-column: main content (left 58%) + sticky booking panel (right 38%, 4% gap).
