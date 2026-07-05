@@ -135,29 +135,46 @@ const emptyCount = 5 - fullCount - (hasHalf ? 1 : 0);
             fetch('/.netlify/functions/reviews', { headers: { Accept: 'application/json' } })
               .then(function (res) { if (!res.ok) throw 0; return res.json(); })
               .then(function (data) {
-                if (!data || typeof data !== 'object') return;
+                if (!data || typeof data !== 'object') {
+                  console.debug('ReviewStrip: unexpected payload', data);
+                  return;
+                }
 
-                // Swap in the live aggregate when present.
-                if (ratingEl && typeof data.rating === 'number') {
-                  ratingEl.textContent = String(Math.round(data.rating * 10) / 10);
-                }
-                if (countEl && typeof data.count === 'number') {
-                  countEl.textContent = data.count.toLocaleString() + ' Google reviews';
-                }
+                // Drive the aggregate from the fetched values (so it shows the live count,
+                // not the hardcoded fallback). Accept the trimmed shape ({rating,count}) or
+                // raw Google field names, so a shape drift can't silently blank it.
+                var rating = typeof data.rating === 'number' ? data.rating
+                  : (typeof data.averageRating === 'number' ? data.averageRating : null);
+                var count = typeof data.count === 'number' ? data.count
+                  : (typeof data.userRatingCount === 'number' ? data.userRatingCount
+                    : (typeof data.reviewCount === 'number' ? data.reviewCount : null));
+                if (ratingEl && rating !== null) ratingEl.textContent = String(Math.round(rating * 10) / 10);
+                if (countEl && count !== null) countEl.textContent = count.toLocaleString() + ' Google reviews';
 
                 var reviews = Array.isArray(data.reviews) ? data.reviews : [];
-                if (!reviews.length) return;
+                if (!reviews.length) {
+                  console.debug('ReviewStrip: payload had no reviews array', data);
+                  return;
+                }
 
                 var reduce = window.matchMedia
                   && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
                 var slides = [];
                 reviews.forEach(function (r) {
-                  if (!r || !r.text) return;
+                  if (!r) return;
+                  // Normalise each review — trimmed shape (text/author/time) or raw Google
+                  // fields (text.text / authorAttribution.displayName / relativePublishTime…).
+                  var text = typeof r.text === 'string' ? r.text : (r.text && r.text.text) || '';
+                  if (!text) return;
+                  var author = r.author || (r.authorAttribution && r.authorAttribution.displayName) || 'Guest';
+                  var time = r.time || r.relativePublishTimeDescription || '';
+                  var ratingN = typeof r.rating === 'number' ? r.rating : 5;
+
                   var fig = document.createElement('figure');
                   fig.className = 'rs-slide rounded-card bg-panel p-6 shadow-sm ring-1 ring-black/5';
 
-                  var n = Math.max(1, Math.min(5, Math.round(r.rating || 5)));
+                  var n = Math.max(1, Math.min(5, Math.round(ratingN)));
                   var stars = document.createElement('div');
                   stars.className = 'text-amber-400';
                   stars.setAttribute('aria-label', 'Rated ' + n + ' out of 5');
@@ -165,11 +182,11 @@ const emptyCount = 5 - fullCount - (hasHalf ? 1 : 0);
 
                   var q = document.createElement('blockquote');
                   q.className = 'mt-2 leading-relaxed text-body';
-                  q.textContent = r.text;
+                  q.textContent = text;
 
                   var cap = document.createElement('figcaption');
                   cap.className = 'mt-4 text-sm text-subtle';
-                  cap.textContent = (r.author || 'Guest') + (r.time ? ' · ' + r.time : '');
+                  cap.textContent = author + (time ? ' · ' + time : '');
 
                   fig.appendChild(stars);
                   fig.appendChild(q);
@@ -207,7 +224,11 @@ const emptyCount = 5 - fullCount - (hasHalf ? 1 : 0);
                 root.addEventListener('focusin', function () { paused = true; });
                 root.addEventListener('focusout', function () { paused = false; });
               })
-              .catch(function () { /* silent: keep the static aggregate, no console noise */ });
+              .catch(function (err) {
+                // Not user-visible — the static server-rendered aggregate stays. Log the
+                // reason (fetch/network/CORS/shape) so a silent failure is diagnosable.
+                if (window.console && console.debug) console.debug('ReviewStrip: live reviews unavailable —', err);
+              });
           })();
           `}
         </script>
