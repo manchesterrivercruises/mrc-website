@@ -3,47 +3,127 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 import { site } from '../data/site';
 import SectionHeading from '../components/SectionHeading.astro';
 import CTAButton from '../components/CTAButton.astro';
+import CTASection from '../components/CTASection.astro';
 import FAQSection from '../components/FAQSection.astro';
 import GettingHere from '../components/GettingHere.astro';
 import KeyFacts from '../components/KeyFacts.astro';
 import ProductCard from '../components/ProductCard.astro';
 import { getCollection } from 'astro:content';
 
-// This SEO landing sells ALL nights: every live-music + DJ event from the collection
-// (drafts excluded), each linking to its own product page.
-const allNights = (
-  await getCollection('events', ({ data }) => !data.draft && (data.category === 'live-music' || data.category === 'dj-night'))
-).sort((a, b) => a.data.title.localeCompare(b.data.title));
+// Occasion-led landing page. It does NOT re-list the full events catalogue (that's
+// /music-cruises-manchester) — the only shared block is a small teaser grid below.
+// Party-relevant events = live-music + DJ nights (drafts excluded).
+const partyEvents = await getCollection(
+  'events',
+  ({ data }) => !data.draft && (data.category === 'dj-night' || data.category === 'live-music'),
+);
+// "Soonest-relevant": prefer events with a real startDate (soonest first); undated
+// events fall back to a stable alphabetical order. No event carries a date yet (dates
+// live in Ventrata), so today this surfaces a representative sample — it becomes a true
+// soonest-first teaser automatically once dates are added.
+const teaserEvents = partyEvents
+  .sort((a, b) => {
+    const da = a.data.startDate?.getTime();
+    const db = b.data.startDate?.getTime();
+    if (da != null && db != null) return da - db;
+    if (da != null) return -1;
+    if (db != null) return 1;
+    return a.data.title.localeCompare(b.data.title);
+  })
+  .slice(0, 6);
 
 const icons = {
   calendar:
     '<path d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5" />',
-  tag: '<path d="M9.568 3H5.25A2.25 2.25 0 0 0 3 5.25v4.318c0 .597.237 1.17.659 1.591l9.581 9.581c.699.699 1.78.872 2.607.33a18.095 18.095 0 0 0 5.223-5.223c.542-.827.369-1.908-.33-2.607L11.16 3.66A2.25 2.25 0 0 0 9.568 3Z" /><path d="M6 6h.008v.008H6V6Z" />',
   users:
     '<path d="M15 19.128a9.38 9.38 0 0 0 2.625.372 9.337 9.337 0 0 0 4.121-.952 4.125 4.125 0 0 0-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 0 1 8.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0 1 11.964-3.07M12 6.375a3.375 3.375 0 1 1-6.75 0 3.375 3.375 0 0 1 6.75 0Zm8.25 2.25a2.625 2.625 0 1 1-5.25 0 2.625 2.625 0 0 1 5.25 0Z" />',
   sparkles:
     '<path d="M9.813 15.904 9 18.75l-.813-2.846a4.5 4.5 0 0 0-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 0 0 3.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 0 0 3.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 0 0-3.09 3.09Z" /><path d="M18.259 8.715 18 9.75l-.259-1.035a3.375 3.375 0 0 0-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 0 0 2.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 0 0 2.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 0 0-2.456 2.456Z" />',
+  pin: '<path d="M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" /><path d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1 1 15 0Z" />',
 };
 
 const keyFacts = [
-  { text: 'Birthdays, hen dos & work dos', icon: icons.users },
-  { text: 'From £28 per person', icon: icons.tag },
+  { text: 'Birthdays, hens, stags & work dos', icon: icons.users },
+  { text: 'Scheduled nights or private hire', icon: icons.calendar },
   { text: 'Licensed bar onboard', icon: icons.sparkles },
-  { text: 'Private hire available', icon: icons.calendar },
+  { text: 'Salford Quays departure', icon: icons.pin },
+];
+
+// Occasion-led content — the heart of this page, and the main thing that sets it apart
+// from the music-cruises catalogue.
+const occasions = [
+  {
+    id: 'birthdays',
+    title: 'Birthday boat parties',
+    copy: [
+      "Turn another year older into a night nobody forgets. Get your friends together on deck, raise a glass at the licensed bar and watch Manchester's floodlit waterfront slide past as you celebrate. It beats the same old bar — there's a dancefloor, a skyline and none of the end-of-night scramble for taxis home from a venue miles away.",
+      'From low-key gatherings to milestone bashes, a birthday afloat gives your group a space of its own for the evening.',
+    ],
+    highlights: [
+      'Space reserved for your group',
+      '18th, 21st, 30th, 40th & milestone birthdays',
+      'Bring a cake, balloons & banners (see FAQs)',
+      'Scheduled nights or the whole boat',
+    ],
+  },
+  {
+    id: 'hen-stag',
+    title: 'Hen & stag parties',
+    copy: [
+      "Give the bride- or groom-to-be a send-off with a difference. A boat party keeps the whole group together in one place — no splitting across bars, no queues, no cover charges — just your crew, the music and the river.",
+      'Start the celebration on the water and roll straight into the city when you dock, or take the whole boat for a private send-off entirely your own.',
+    ],
+    highlights: [
+      'Keep the whole group together all night',
+      'Unbeatable deck photos',
+      'Pre-drinks cruise through to full private hire',
+      'Central Salford Quays departure',
+    ],
+  },
+  {
+    id: 'work',
+    title: 'Work nights out & team socials',
+    copy: [
+      "Christmas do, summer social or a thank-you for the team — a boat party is the easy win that people actually turn up to. It's a shared experience that gets everyone talking (and dancing) well away from the usual restaurant table.",
+      'Join a scheduled party cruise for smaller teams, or hire a whole vessel for the department with optional catering.',
+    ],
+    highlights: [
+      'Great for team socials & Christmas dos',
+      'Scheduled nights or exclusive hire',
+      'Optional catering on private hire',
+      'Group bookings & invoicing — just ask',
+    ],
+  },
 ];
 
 const faqs = [
-  { q: 'Can I hire a boat exclusively (private hire)?', a: 'Yes — you can hire a boat just for your group. See our private hire page for details. (TBC)' },
-  { q: 'What group sizes can you accommodate?', a: 'From small groups to large parties — exact vessel capacities TBC.' },
-  { q: "What's included?", a: 'Your cruise and access to the onboard licensed bar (drinks not included). (TBC)' },
-  { q: 'Are there age restrictions?', a: 'Evening party cruises are usually over-18s; family-friendly options are also available. (TBC)' },
-  { q: 'Can we bring our own drinks?', a: 'There is a fully licensed bar onboard; outside drinks are not usually permitted. (TBC)' },
+  {
+    q: 'Can we bring balloons, banners and decorations?',
+    a: 'Small decorations for your group are usually welcome — balloons, banners and a birthday cake are no problem. We just ask no confetti, glitter or anything that could blow into the canal. Confirm the details when you book. (TBC)',
+  },
+  {
+    q: 'Do you take group bookings?',
+    a: 'Yes — party and music cruises are ideal for groups and we can reserve space for you together. For larger numbers, exclusive private hire of the whole boat is often the better fit. Group booking and invoicing details TBC.',
+  },
+  {
+    q: 'Can we bring our own drinks?',
+    a: 'There is a fully licensed bar onboard, so outside drinks are not usually permitted on scheduled party cruises. Drinks packages can be arranged for private hire. (TBC)',
+  },
+  {
+    q: "What's the difference between a scheduled party night and private hire?",
+    a: 'On a scheduled party night you book seats on a set date and share the boat with other guests — perfect for smaller groups. Private hire gives you the whole vessel exclusively, with your own guest list, music and timings. See our private hire page to enquire.',
+  },
+  {
+    q: 'Are there age restrictions?',
+    a: 'Evening party cruises are usually over-18s. Family-friendly daytime and seasonal events are also available. Exact restrictions vary by event. (TBC)',
+  },
 ];
 
 const SITE = site.url;
+// Title/meta stay targeted on "party boat Manchester".
 const pageTitle = 'Party Boat Manchester — Boat Parties on the Ship Canal';
 const pageDescription =
-  'Party boat hire and boat parties in Manchester on the Ship Canal — birthdays, hen dos and work nights out. Join a scheduled party cruise or hire a boat exclusively. Licensed bar onboard. Book direct.';
+  'Party boat hire and boat parties in Manchester on the Ship Canal — birthdays, hen and stag dos and work nights out. Take the whole boat with private hire, or join a scheduled party cruise. Licensed bar onboard. Book direct.';
 
 const structuredData = {
   '@context': 'https://schema.org',
@@ -63,18 +143,19 @@ const structuredData = {
   <script type="application/ld+json" is:inline set:html={JSON.stringify(structuredData)} />
 
   <div class="pb-24 md:pb-0">
-    {/* Hero — dark navy, gold accents */}
+    {/* Hero — dark navy, gold accents; occasion-led */}
     <section class="bg-dark text-white">
       <div class="mx-auto max-w-6xl px-4 py-20 sm:px-6 md:py-28 lg:px-8">
-        <p class="text-sm font-semibold uppercase tracking-[0.2em] text-accent">Boat parties on the water</p>
+        <p class="text-sm font-semibold uppercase tracking-[0.2em] text-accent">Celebrations on the water</p>
         <h1 class="mt-3 text-4xl font-bold tracking-tight text-white sm:text-5xl md:text-6xl">Party Boat Manchester</h1>
         <p class="mt-5 max-w-2xl text-lg leading-relaxed text-white/80">
-          Birthdays, hen dos and work nights out on the Manchester Ship Canal.
+          Birthdays, hen and stag dos and work nights out on the Manchester Ship Canal. Take the whole
+          boat with private hire, or join a scheduled party cruise.
         </p>
         <div class="mt-8 flex flex-wrap items-center gap-x-6 gap-y-3">
-          <CTAButton href="/whats-on">See party cruises</CTAButton>
-          <a href="/private-hire" class="text-sm font-medium text-white/90 underline-offset-4 hover:underline">
-            Or enquire about private hire →
+          <CTAButton href="/private-hire">Take the whole boat</CTAButton>
+          <a href="#party-nights" class="text-sm font-medium text-white/90 underline-offset-4 hover:underline">
+            Or join a scheduled party night →
           </a>
         </div>
       </div>
@@ -86,70 +167,97 @@ const structuredData = {
     {/* Content (single column) */}
     <div class="mx-auto max-w-6xl px-4 py-10 sm:px-6 md:py-12 lg:px-8">
       <div class="space-y-12 md:space-y-14">
+        {/* Occasion overview intro */}
         <section aria-labelledby="about">
-          <SectionHeading id="about">Celebrate on the water</SectionHeading>
+          <SectionHeading id="about">Whatever you're celebrating</SectionHeading>
           <div class="mt-6 max-w-3xl space-y-4 text-lg leading-relaxed text-body">
             <p>
-              Looking for something a bit different? A boat party on the Manchester Ship Canal is a
-              brilliant way to mark a birthday, hen do or work night out — dancing, a licensed bar and
-              the city's waterfront skyline as your backdrop. Join a scheduled party cruise, or hire a
-              boat exclusively for your group.
+              A boat party on the Manchester Ship Canal turns any occasion into a proper night out —
+              dancing, a licensed bar and the city's floodlit waterfront gliding past your window.
+              There are two ways to do it: <strong>take the whole boat</strong> for your group with
+              private hire, or <strong>join a scheduled party night</strong> and share the dancefloor.
             </p>
             <p class="text-base text-subtle">Full details and packages — TBC from Simon (content-checklist.md).</p>
           </div>
-          <div class="mt-6">
-            <CTAButton href="/whats-on">See party cruises</CTAButton>
-          </div>
         </section>
+      </div>
+    </div>
 
-        {/* All our nights — live music + DJ, from the events collection, each linking to its product page. */}
-        <section aria-labelledby="nights">
-          <SectionHeading id="nights">Our party & music nights</SectionHeading>
+    {/* Private hire — equal billing, high on the page (not a footer callout) */}
+    <CTASection
+      heading="Take the whole boat"
+      text="For bigger groups and private celebrations, hire a vessel exclusively — your guest list, your music, your timings, with optional catering. The whole boat, entirely yours for the evening."
+      primaryHref="/private-hire"
+      primaryLabel="Enquire about private hire"
+      secondaryHref="#party-nights"
+      secondaryLabel="Or join a scheduled night"
+    />
+
+    <div class="mx-auto max-w-6xl px-4 py-10 sm:px-6 md:py-12 lg:px-8">
+      <div class="space-y-12 md:space-y-16">
+        {/* Occasion sections — the differentiator vs the music-cruises catalogue */}
+        {
+          occasions.map((o) => (
+            <section aria-labelledby={o.id}>
+              <div class="grid gap-8 lg:grid-cols-[1.4fr_1fr] lg:items-start lg:gap-12">
+                <div>
+                  <SectionHeading id={o.id}>{o.title}</SectionHeading>
+                  <div class="mt-6 space-y-4 text-lg leading-relaxed text-body">
+                    {o.copy.map((p) => (
+                      <p>{p}</p>
+                    ))}
+                  </div>
+                </div>
+                <div class="rounded-card bg-panel p-6 ring-1 ring-black/5">
+                  <h3 class="text-sm font-semibold uppercase tracking-wider text-subtle">Perfect for</h3>
+                  <ul class="mt-4 space-y-3">
+                    {o.highlights.map((h) => (
+                      <li class="flex gap-3 text-body">
+                        <span aria-hidden="true" class="mt-0.5 flex-none text-primary">✓</span>
+                        <span>{h}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
+            </section>
+          ))
+        }
+
+        {/* Teaser grid — the ONLY block shared with /music-cruises-manchester. A small
+            sample of party nights; the full categorised catalogue lives on that page. */}
+        <section id="party-nights" aria-labelledby="party-nights-heading">
+          <SectionHeading id="party-nights-heading">Or join a scheduled party night</SectionHeading>
           <p class="mt-6 max-w-3xl text-body">
-            From DJ-led party cruises to live tribute acts, here's what's sailing on the Ship Canal —
-            pick a night and book direct.
+            Not the whole boat? Hop aboard one of our scheduled party and music cruises — the same
+            licensed bar and dancefloor, open to all. Here are a few coming up.
           </p>
           <div class="mt-8 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {
-              allNights.map((e) => (
-                <ProductCard name={e.data.title} desc={e.data.shortTagline ?? e.data.description} href={`/cruises/${e.id}`} linkText="View & book" />
+              teaserEvents.map((e) => (
+                <ProductCard
+                  name={e.data.title}
+                  desc={e.data.shortTagline ?? e.data.description}
+                  href={`/cruises/${e.id}`}
+                  linkText="View & book"
+                />
               ))
             }
           </div>
-        </section>
-
-        {/* Private hire callout */}
-        <section aria-labelledby="private-hire">
-          <div class="rounded-card bg-panel p-6 ring-1 ring-black/5 sm:flex sm:items-center sm:justify-between sm:gap-6">
-            <div>
-              <h2 id="private-hire" class="text-lg font-semibold text-ink">Want the whole boat?</h2>
-              <p class="mt-1 text-sm leading-relaxed text-body">
-                Hire a boat exclusively for your celebration — ideal for larger groups and private events.
-              </p>
-            </div>
-            <div class="mt-4 shrink-0 sm:mt-0">
-              <CTAButton href="/private-hire" variant="outline">Private hire</CTAButton>
-            </div>
+          <div class="mt-8">
+            <CTAButton href="/music-cruises-manchester" variant="outline">See all party & music nights</CTAButton>
           </div>
         </section>
 
         <FAQSection faqs={faqs} title="Party boat FAQs" />
-
-        {/* Cross-sell to City River Tour */}
-        <section aria-labelledby="also">
-          <SectionHeading id="also">Prefer a daytime cruise?</SectionHeading>
-          <div class="mt-8 sm:max-w-sm">
-            <ProductCard name="City River Tour" desc="Our signature 60-minute sightseeing cruise along the Manchester Ship Canal." href="/city-river-tour" />
-          </div>
-        </section>
 
         <GettingHere />
       </div>
     </div>
   </div>
 
-  {/* Mobile sticky CTA — link to the events listing (no product widget). */}
+  {/* Mobile sticky CTA — lead with the differentiating action (private hire enquiry). */}
   <div class="fixed inset-x-0 bottom-0 z-40 border-t border-black/10 bg-white/95 p-3 backdrop-blur md:hidden">
-    <CTAButton href="/whats-on" class="w-full">See party cruises</CTAButton>
+    <CTAButton href="/private-hire" class="w-full">Take the whole boat</CTAButton>
   </div>
 </BaseLayout>
