@@ -2,6 +2,12 @@
 import SectionHeading from './SectionHeading.astro';
 
 // Star rating summary + review cards.
+//
+// `live` turns on progressive enhancement: a small client script fetches
+// /.netlify/functions/reviews, swaps in the live aggregate rating/count and rotates the
+// returned quote cards one at a time. The server-rendered aggregate below is the SEO
+// baseline and the silent fallback — on ANY fetch failure nothing changes. NO schema.org
+// markup is emitted for fetched reviews (Google prohibits marking up Google reviews).
 interface Props {
   rating: number;
   reviewCount: number;
@@ -9,6 +15,8 @@ interface Props {
   id?: string;
   title?: string;
   reviews?: { quote: string; author: string }[];
+  /** Fetch + rotate live Google reviews as an enhancement (see /.netlify/functions/reviews). */
+  live?: boolean;
 }
 const {
   rating,
@@ -16,9 +24,10 @@ const {
   reviewsHref,
   id = 'reviews',
   title = 'Reviews',
-  // No placeholder quotes: the quote cards render ONLY when real reviews are passed in.
-  // Until then we show just the honest Google aggregate (rating + review count).
+  // No placeholder quotes: static quote cards render ONLY when real reviews are passed in
+  // (non-live callers). Live callers get JS-rendered rotating cards instead.
   reviews = [],
+  live = false,
 } = Astro.props;
 
 // Only link the aggregate count out when we have a real destination URL — otherwise
@@ -37,7 +46,7 @@ const emptyCount = 5 - fullCount - (hasHalf ? 1 : 0);
   <SectionHeading id={id}>{title}</SectionHeading>
 
   <div class="mt-6 flex flex-wrap items-center gap-4 rounded-card bg-panel p-5 ring-1 ring-black/5">
-    <div class="text-4xl font-bold text-ink">{rating}</div>
+    <div class="text-4xl font-bold text-ink" data-review-rating>{rating}</div>
     <div>
       <div class="flex items-center text-amber-400" aria-hidden="true">
         {Array.from({ length: fullCount }).map(() => (
@@ -60,19 +69,19 @@ const emptyCount = 5 - fullCount - (hasHalf ? 1 : 0);
       </div>
       {
         hasReviewsLink ? (
-          <a href={reviewsHref} class="mt-1 inline-block text-sm font-medium text-primary hover:underline">
+          <a href={reviewsHref} class="mt-1 inline-block text-sm font-medium text-primary hover:underline" data-review-count>
             {reviewCount} Google reviews
           </a>
         ) : (
-          <p class="mt-1 text-sm font-medium text-subtle">{reviewCount} Google reviews</p>
+          <p class="mt-1 text-sm font-medium text-subtle" data-review-count>{reviewCount} Google reviews</p>
         )
       }
     </div>
   </div>
 
-  {/* Individual review quote cards — shown only when real reviews are supplied. */}
+  {/* Static quote cards — non-live callers only, shown when real reviews are supplied. */}
   {
-    reviews.length > 0 && (
+    !live && reviews.length > 0 && (
       <div class="mt-6 grid gap-4 sm:grid-cols-2">
         {reviews.map((r) => (
           <figure class="rounded-card bg-panel p-6 shadow-sm ring-1 ring-black/5">
@@ -81,6 +90,128 @@ const emptyCount = 5 - fullCount - (hasHalf ? 1 : 0);
           </figure>
         ))}
       </div>
+    )
+  }
+
+  {/* Live reviews rotator — populated by the script below on a successful fetch. Empty +
+      hidden until then, so the static aggregate above is the SEO/no-JS baseline. */}
+  {
+    live && (
+      <>
+        <div class="rs-rotator mt-6" data-review-rotator hidden />
+
+        <style is:global>
+          {`
+          .rs-rotator:not([hidden]) { display: grid; }
+          .rs-slide {
+            grid-area: 1 / 1;
+            opacity: 0;
+            visibility: hidden;
+            /* Crossfade: fade opacity, then flip visibility AFTER the fade so the
+               outgoing slide stays visible during the transition and inactive slides
+               end up out of the tab order. */
+            transition: opacity 0.6s ease, visibility 0s 0.6s;
+          }
+          .rs-slide.rs-active {
+            opacity: 1;
+            visibility: visible;
+            transition: opacity 0.6s ease, visibility 0s 0s;
+          }
+          @media (prefers-reduced-motion: reduce) {
+            .rs-slide { transition: none; }
+          }
+          `}
+        </style>
+
+        <script is:inline>
+          {`
+          (function () {
+            var root = document.querySelector('[data-review-rotator]');
+            if (!root) return;
+            var scope = root.closest('section') || document;
+            var ratingEl = scope.querySelector('[data-review-rating]');
+            var countEl = scope.querySelector('[data-review-count]');
+
+            fetch('/.netlify/functions/reviews', { headers: { Accept: 'application/json' } })
+              .then(function (res) { if (!res.ok) throw 0; return res.json(); })
+              .then(function (data) {
+                if (!data || typeof data !== 'object') return;
+
+                // Swap in the live aggregate when present.
+                if (ratingEl && typeof data.rating === 'number') {
+                  ratingEl.textContent = String(Math.round(data.rating * 10) / 10);
+                }
+                if (countEl && typeof data.count === 'number') {
+                  countEl.textContent = data.count.toLocaleString() + ' Google reviews';
+                }
+
+                var reviews = Array.isArray(data.reviews) ? data.reviews : [];
+                if (!reviews.length) return;
+
+                var reduce = window.matchMedia
+                  && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+                var slides = [];
+                reviews.forEach(function (r) {
+                  if (!r || !r.text) return;
+                  var fig = document.createElement('figure');
+                  fig.className = 'rs-slide rounded-card bg-panel p-6 shadow-sm ring-1 ring-black/5';
+
+                  var n = Math.max(1, Math.min(5, Math.round(r.rating || 5)));
+                  var stars = document.createElement('div');
+                  stars.className = 'text-amber-400';
+                  stars.setAttribute('aria-label', 'Rated ' + n + ' out of 5');
+                  stars.textContent = '★★★★★'.slice(0, n);
+
+                  var q = document.createElement('blockquote');
+                  q.className = 'mt-2 leading-relaxed text-body';
+                  q.textContent = r.text;
+
+                  var cap = document.createElement('figcaption');
+                  cap.className = 'mt-4 text-sm text-subtle';
+                  cap.textContent = (r.author || 'Guest') + (r.time ? ' · ' + r.time : '');
+
+                  fig.appendChild(stars);
+                  fig.appendChild(q);
+                  fig.appendChild(cap);
+                  root.appendChild(fig);
+                  slides.push(fig);
+                });
+                if (!slides.length) return;
+
+                root.hidden = false;
+                var idx = 0;
+                function show(i) {
+                  for (var j = 0; j < slides.length; j++) {
+                    var active = j === i;
+                    slides[j].classList.toggle('rs-active', active);
+                    if (active) slides[j].removeAttribute('aria-hidden');
+                    else slides[j].setAttribute('aria-hidden', 'true');
+                  }
+                }
+                show(0);
+
+                // Reduced motion or a single review: show the first, no rotation.
+                if (reduce || slides.length < 2) return;
+
+                var paused = false;
+                window.setInterval(function () {
+                  if (paused) return;
+                  idx = (idx + 1) % slides.length;
+                  show(idx);
+                }, 8000);
+
+                // Pause on hover and keyboard focus within the rotator.
+                root.addEventListener('mouseenter', function () { paused = true; });
+                root.addEventListener('mouseleave', function () { paused = false; });
+                root.addEventListener('focusin', function () { paused = true; });
+                root.addEventListener('focusout', function () { paused = false; });
+              })
+              .catch(function () { /* silent: keep the static aggregate, no console noise */ });
+          })();
+          `}
+        </script>
+      </>
     )
   }
 </section>
