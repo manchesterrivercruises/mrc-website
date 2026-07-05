@@ -148,7 +148,7 @@ const pageDescription =
   'Upcoming departures and events on the Manchester Ship Canal — City River Tour sightseeing cruises, live music and party nights, and Boat to Old Trafford matchday ferries. Book direct.';
 
 const pillClass =
-  'inline-block rounded-full border border-black/15 px-4 py-1.5 text-sm font-medium text-body transition hover:border-primary/50 peer-checked:border-primary peer-checked:bg-primary peer-checked:text-white';
+  'inline-block rounded-full border border-black/15 px-4 py-1.5 text-sm font-medium text-body transition hover:border-primary/50 peer-checked:border-primary peer-checked:bg-primary peer-checked:text-white peer-focus-visible:outline peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-primary peer-disabled:opacity-40 peer-disabled:cursor-not-allowed';
 const dateInputClass =
   'rounded-md border border-black/15 bg-white px-3 py-1.5 text-sm text-ink focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary';
 
@@ -332,12 +332,12 @@ const structuredData = USING_MOCK_DATA
         if (show) visible++;
       });
 
-      // A set range overrides the quick-filters — dim + disable them to make that clear.
-      const dateFilters = document.getElementById('wo-date-filters');
-      if (dateFilters) {
-        dateFilters.classList.toggle('opacity-40', rangeActive);
-        dateFilters.classList.toggle('pointer-events-none', rangeActive);
-      }
+      // A set range overrides the quick-filters — genuinely DISABLE the radios (not just
+      // pointer-events) so they leave the tab order and expose disabled state to AT. The
+      // pills dim via peer-disabled.
+      document.querySelectorAll<HTMLInputElement>('input[name="wo-date"]').forEach((el) => {
+        el.disabled = rangeActive;
+      });
 
       const empty = document.querySelector('.wo-empty') as HTMLElement | null;
       if (empty) empty.hidden = visible > 0;

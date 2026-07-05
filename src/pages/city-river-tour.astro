@@ -115,6 +115,11 @@ const structuredData = {
 // Page-local style token for the gallery placeholder tiles.
 const galleryTile =
   'flex h-full w-full items-center justify-center rounded-card bg-panel text-sm text-subtle ring-1 ring-black/5';
+
+// Route stops in order — rendered as a real <ol> beside the map so the itinerary is
+// crawlable static content and available without JavaScript (seeds the future full
+// 43-stop itinerary). The Leaflet map reads the same source (tour-stops.json).
+const orderedStops = [...tourStops].sort((a, b) => a.id - b.id);
 ---
 
 <BaseLayout title={pageTitle}>
@@ -150,19 +155,27 @@ const galleryTile =
     .cross-sell-item {
       grid-area: 1 / 1;
       opacity: 0;
-      pointer-events: none;
+      /* visibility:hidden (not just opacity:0) so an inactive slide's link is removed
+         from the tab order — invisible links must not be keyboard-focusable. The base
+         hidden state also covers each item's animation-delay window before it starts. */
+      visibility: hidden;
       animation: crossSellFade 15s infinite;
     }
     @keyframes crossSellFade {
-      0% { opacity: 0; pointer-events: none; }
-      2% { opacity: 1; pointer-events: auto; }
-      31% { opacity: 1; pointer-events: auto; }
-      33% { opacity: 0; pointer-events: none; }
-      100% { opacity: 0; pointer-events: none; }
+      0% { opacity: 0; visibility: visible; }
+      2% { opacity: 1; visibility: visible; }
+      31% { opacity: 1; visibility: visible; }
+      33% { opacity: 0; visibility: hidden; }
+      100% { opacity: 0; visibility: hidden; }
+    }
+    /* Pause the rotation while the reader hovers or keyboard-focuses within it. */
+    .cross-sell:hover .cross-sell-item,
+    .cross-sell:focus-within .cross-sell-item {
+      animation-play-state: paused;
     }
     @media (prefers-reduced-motion: reduce) {
-      .cross-sell-item { animation: none; }
-      .cross-sell-item:first-child { opacity: 1; pointer-events: auto; }
+      .cross-sell-item { animation: none; opacity: 0; visibility: hidden; }
+      .cross-sell-item:first-child { opacity: 1; visibility: visible; }
     }
   </style>
 
@@ -232,12 +245,36 @@ const galleryTile =
     <section aria-labelledby="route-map-heading" class="mx-auto max-w-6xl px-4 pt-10 sm:px-6 lg:px-8">
       <SectionHeading id="route-map-heading">Explore the route</SectionHeading>
       <p class="mt-4 max-w-3xl text-body">
-        Follow the full Manchester Ship Canal route — tap a numbered stop for details.
+        Follow the full Manchester Ship Canal route — tap a numbered stop for details, or read
+        the stops in order below.
       </p>
-      <div id="route-map" class="mt-6 w-full overflow-hidden rounded-card ring-1 ring-black/5"></div>
+      <div
+        id="route-map"
+        class="mt-6 w-full overflow-hidden rounded-card ring-1 ring-black/5"
+        aria-label="Interactive map of the City River Tour route along the Manchester Ship Canal"
+      ></div>
       <noscript>
-        <p class="mt-2 text-sm text-subtle">Enable JavaScript to view the interactive route map.</p>
+        <p class="mt-2 text-sm text-subtle">
+          Enable JavaScript to view the interactive route map. The full list of stops is below.
+        </p>
       </noscript>
+
+      {/* Real ordered list of stops — crawlable, works without JS, and the accessible
+          equivalent of the interactive map. */}
+      <h3 class="mt-8 text-sm font-semibold uppercase tracking-wider text-subtle">Route stops in order</h3>
+      <ol class="mt-4 grid gap-3 sm:grid-cols-2">
+        {
+          orderedStops.map((s) => (
+            <li class="flex gap-3 rounded-card bg-panel p-4 ring-1 ring-black/5">
+              <span class="text-xl leading-none" aria-hidden="true">{s.emoji}</span>
+              <div>
+                <h4 class="font-semibold text-ink">{s.name}</h4>
+                <p class="mt-1 text-sm leading-relaxed text-subtle">{s.description}</p>
+              </div>
+            </li>
+          ))
+        }
+      </ol>
     </section>
 
     {/* 4. Two-column: main content (left 58%) + sticky booking panel (right 38%, 4% gap).
@@ -383,13 +420,19 @@ const galleryTile =
             'border-radius:9999px;background:#fff;font-size:16px;line-height:1;' +
             'box-shadow:0 1px 4px rgba(0,0,0,.3);">' + s.emoji + '</div>',
         });
-        L.marker([s.lat, s.lng], { icon: icon })
-          .addTo(map)
-          .bindPopup(
-            '<div style="font:13px/1.4 sans-serif;color:#1a1a1a">' +
-              '<strong>' + s.emoji + ' ' + s.name + '</strong><br>' + s.description +
-            '</div>'
-          );
+        // Build the popup as real DOM nodes with textContent (never string
+        // concatenation) so stop data can never be interpreted as markup.
+        var popup = document.createElement('div');
+        popup.style.font = '13px/1.4 sans-serif';
+        popup.style.color = '#1a1a1a';
+        var title = document.createElement('strong');
+        title.textContent = s.emoji + ' ' + s.name;
+        var desc = document.createElement('p');
+        desc.style.margin = '4px 0 0';
+        desc.textContent = s.description;
+        popup.appendChild(title);
+        popup.appendChild(desc);
+        L.marker([s.lat, s.lng], { icon: icon }).addTo(map).bindPopup(popup);
       });
 
       map.fitBounds(latlngs, { padding: [40, 40] });

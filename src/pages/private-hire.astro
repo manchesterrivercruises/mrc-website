@@ -96,6 +96,17 @@ const structuredData = {
   {/* Schema.org structured data (Service + LocalBusiness) */}
   <script type="application/ld+json" is:inline set:html={JSON.stringify(structuredData)} />
 
+  <style is:global>
+    /* Enquiry confirmation is revealed by CSS (:target) when the URL carries the
+       #ph-success fragment — no JS required for the message itself. */
+    #ph-success { display: none; }
+    #ph-success:target { display: block; }
+    /* Smooth-scroll to it only when the user hasn't asked to reduce motion. */
+    @media (prefers-reduced-motion: no-preference) {
+      html { scroll-behavior: smooth; }
+    }
+  </style>
+
   <div>
     {/* Hero — dark navy, gold accents, premium tone */}
     <section class="bg-dark text-white">
@@ -162,15 +173,16 @@ const structuredData = {
         <section id="enquire" aria-labelledby="enquire-heading">
           <SectionHeading id="enquire-heading">Enquire about private hire</SectionHeading>
 
-          {/* Success message — revealed by the script below when ?success=true is in the URL */}
-          <div id="ph-success" hidden class="mt-6 rounded-card bg-panel p-4 text-body ring-1 ring-black/5">
+          {/* Success message — hidden by CSS until #ph-success is the :target (see the
+              style block above). Static markup: perceivable without JS when the fragment is set. */}
+          <div id="ph-success" class="mt-6 rounded-card bg-panel p-4 text-body ring-1 ring-black/5">
             <p class="font-medium text-ink">Thanks for your enquiry. We'll get back to you within 24 hours.</p>
           </div>
 
           <form
             name="private-hire-enquiry"
             method="POST"
-            action="/private-hire?success=true"
+            action="/private-hire?success=true#ph-success"
             data-netlify="true"
             data-netlify-honeypot="bot-field"
             class="mt-6 max-w-3xl"
@@ -238,14 +250,14 @@ const structuredData = {
     </div>
   </div>
 
-  {/* Reveal the success message after a Netlify Forms redirect to ?success=true */}
+  {/* Progressive enhancement ONLY: the message is revealed by CSS :target (above).
+      Netlify's form redirect drops the URL #fragment, so if we land on ?success=true
+      without it, set the hash to trigger :target. Scroll behaviour (smooth only under
+      prefers-reduced-motion: no-preference) is handled in CSS, not here. */}
   <script>
-    if (new URLSearchParams(window.location.search).get('success') === 'true') {
-      const el = document.getElementById('ph-success');
-      if (el) {
-        el.hidden = false;
-        el.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      }
+    if (new URLSearchParams(window.location.search).get('success') === 'true'
+        && window.location.hash !== '#ph-success') {
+      window.location.hash = 'ph-success';
     }
   </script>
 </BaseLayout>
