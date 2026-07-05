@@ -11,6 +11,9 @@ images:
     caption: Passing MediaCityUK on the outbound leg.
     orientation: landscape
     tags: [boat, mediacity]
+    # Example: a hero-grade landscape cleared for reuse across the whole site.
+    isFeatured: true
+    usage: [gallery, product-page, homepage, og-image, ota-listing]
   - src: /images/gallery/city-river-tour/02.webp
     alt: Passengers on the open deck taking photos of the passing skyline
     orientation: landscape

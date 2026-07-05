@@ -95,6 +95,24 @@ const gallery = defineCollection({
           credit: z.string().optional(),
           orientation: z.enum(['landscape', 'portrait', 'square']).optional(),
           tags: z.array(z.string()).optional(),
+          // A hero-grade shot — a candidate for product-page heroes, homepage cards, etc.
+          isFeatured: z.boolean().optional(),
+          // Where this asset is cleared/intended to be used across the whole site — this is
+          // the shared visual library, not gallery-only (see docs/photo-inventory.md).
+          usage: z
+            .array(
+              z.enum([
+                'gallery',
+                'product-page',
+                'homepage',
+                'og-image',
+                'ota-listing',
+                'event-card',
+                'private-hire',
+                'press',
+              ]),
+            )
+            .optional(),
         }),
       )
       .min(1),

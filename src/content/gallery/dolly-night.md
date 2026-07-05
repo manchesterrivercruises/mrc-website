@@ -11,6 +11,9 @@ images:
     caption: Our Dolly takes to the deck as the sun goes down.
     orientation: landscape
     tags: [performer, tribute]
+    # Example: a featured performer shot used on the event card + product page too.
+    isFeatured: true
+    usage: [gallery, event-card, product-page]
   - src: /images/gallery/dolly-night/02.webp
     alt: Guests dancing and singing along together on the top deck at dusk
     orientation: landscape

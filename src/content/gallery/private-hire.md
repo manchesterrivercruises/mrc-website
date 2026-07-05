@@ -11,6 +11,9 @@ images:
     caption: A private charter set up for a summer celebration.
     orientation: landscape
     tags: [event, deck]
+    # Example: a hero-grade shot cleared for the private-hire page and OTA listings.
+    isFeatured: true
+    usage: [gallery, private-hire, product-page, ota-listing]
   - src: /images/gallery/private-hire/02.webp
     alt: Tables laid with flowers and place settings inside the cabin for a private dinner
     orientation: landscape

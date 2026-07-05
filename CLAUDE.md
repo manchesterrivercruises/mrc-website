@@ -37,6 +37,7 @@ Full brief: `/docs/website-brief.md`
 | SEO / metadata / schema | `/docs/seo-pages.md` |
 | Missing content / assets | `/docs/content-checklist.md` |
 | Images / alt text / WebP | `/docs/image-conventions.md` |
+| Photography / gallery assets | `/docs/photo-inventory.md` |
 | Launch / redirects / DNS | `/docs/launch-checklist.md` |
 | General architecture | `/docs/website-brief.md` |
 
