@@ -1,0 +1,19 @@
+---
+import CTASection from './CTASection.astro';
+
+// Commercial cross-link at the foot of an album — wraps the shared CTASection with the
+// album's own booking CTA (label + url from the gallery collection).
+interface Props {
+  label: string;
+  url: string;
+  albumTitle: string;
+}
+const { label, url, albumTitle } = Astro.props;
+---
+
+<CTASection
+  heading="Like what you see?"
+  text={`Photos only tell half the story — experience ${albumTitle} for yourself on the water.`}
+  primaryHref={url}
+  primaryLabel={label}
+/>

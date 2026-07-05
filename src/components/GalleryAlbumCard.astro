@@ -1,0 +1,37 @@
+---
+import type { Album } from '../lib/gallery';
+import { CATEGORY_LABELS } from '../lib/gallery';
+
+// Album cover tile for the gallery wall / related-albums rows: cover, category badge,
+// title and image count. Cover is a placeholder tile today — swap for <Image
+// src={coverImage} alt={coverAlt}> when real assets land (docs/image-conventions.md).
+interface Props {
+  album: Album;
+  class?: string;
+}
+const { album, class: className = '' } = Astro.props;
+const { slug, title, category, images } = album.data;
+
+const PHOTO_ICON =
+  'm2.25 15.75 5.159-5.159a2.25 2.25 0 0 1 3.182 0l5.159 5.159m-1.5-1.5 1.409-1.409a2.25 2.25 0 0 1 3.182 0l2.909 2.909M3.75 21h16.5a1.5 1.5 0 0 0 1.5-1.5V6a1.5 1.5 0 0 0-1.5-1.5H3.75A1.5 1.5 0 0 0 2.25 6v13.5A1.5 1.5 0 0 0 3.75 21Zm10.5-11.25h.008v.008h-.008V9.75Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Z';
+---
+
+<a
+  href={`/gallery/${slug}`}
+  aria-label={`${title} — ${images.length} photos`}
+  class={`group block overflow-hidden rounded-card bg-white shadow-sm ring-1 ring-black/5 transition hover:-translate-y-0.5 hover:shadow-md focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary ${className}`}
+>
+  {/* Placeholder cover — replace with <Image src={coverImage} alt={coverAlt} loading="lazy"> */}
+  <div class="relative flex aspect-[4/3] items-center justify-center bg-gradient-to-br from-panel to-black/10 text-subtle">
+    <svg class="h-10 w-10 opacity-40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+      <path stroke-linecap="round" stroke-linejoin="round" d={PHOTO_ICON} />
+    </svg>
+    <span class="absolute left-3 top-3 rounded-full bg-white/90 px-2.5 py-0.5 text-xs font-semibold text-ink">
+      {CATEGORY_LABELS[category]}
+    </span>
+  </div>
+  <div class="p-4">
+    <h3 class="font-semibold text-ink group-hover:underline">{title}</h3>
+    <p class="mt-1 text-sm text-subtle">{images.length} photos</p>
+  </div>
+</a>
