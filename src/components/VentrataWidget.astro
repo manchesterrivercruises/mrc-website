@@ -66,10 +66,16 @@ const popupConfig = JSON.stringify({ productID });
           data-config intact instead of trying to bundle it. */}
       <script is:inline type="module" src={CHECKOUT_SRC} data-config={checkoutConfig} />
 
-      {/* Hide the loading skeleton once the embedded widget injects its own content
-          (any child other than the skeleton). :has() is within our browser baseline. */}
+      {/* Hide the loading skeleton once the embedded widget renders. Ventrata mounts its
+          checkout in an IFRAME, but not always as a direct child of the aside (it can nest
+          it in a wrapper) — so match the iframe ANYWHERE in the subtree (:has(iframe)) and
+          hide the skeleton as a DESCENDANT, never assuming a direct-child relationship. The
+          old `:has(> :not(.widget-loading)) > .widget-loading` only fired when the injected
+          node landed as a direct sibling of the skeleton, which is why the skeleton stuck on
+          some products. The script below is the belt-and-suspenders fallback for the (rare)
+          case where the widget renders without an iframe. :has() is within our baseline. */}
       <style is:global>
-        {`aside[ventrata-embedded-widget]:has(> :not(.widget-loading)) > .widget-loading { display: none; }`}
+        {`aside[ventrata-embedded-widget]:has(iframe) .widget-loading { display: none; }`}
       </style>
 
       {/* Ventrata checkout pop-up observer — MOVED OUT OF BaseLayout so it ships ONLY on
@@ -158,15 +164,39 @@ const popupConfig = JSON.stringify({ productID });
               }
             }, true);
 
+            // Skeleton fallback: remove the "Loading…" node as soon as ANY real content
+            // appears ANYWHERE inside an embedded aside (not only as a direct child). Covers
+            // the case the CSS :has(iframe) rule can't — a widget rendered without an iframe.
+            function hideLoadedSkeletons() {
+              var asides = document.querySelectorAll('aside[ventrata-embedded-widget]');
+              for (var i = 0; i < asides.length; i++) {
+                var aside = asides[i];
+                var skeleton = aside.querySelector('.widget-loading');
+                if (!skeleton) continue;
+                var nodes = aside.querySelectorAll('*');
+                for (var j = 0; j < nodes.length; j++) {
+                  var el = nodes[j];
+                  if (el === skeleton || skeleton.contains(el)) continue; // skip the skeleton itself
+                  skeleton.remove();
+                  break;
+                }
+              }
+            }
+
             // (2) CLOSE (and any non-trigger auto-open, e.g. ?openWidget=true) — watch the
-            //     body for the pop-up DOM being added/removed. No size thresholds.
-            new MutationObserver(schedule).observe(body, {
+            //     body for the pop-up DOM being added/removed, AND drive the skeleton
+            //     fallback above. No size thresholds. ONE shared observer for both jobs.
+            new MutationObserver(function () {
+              schedule();
+              hideLoadedSkeletons();
+            }).observe(body, {
               childList: true,
               subtree: true,
               attributes: true,
               attributeFilter: ['style', 'class', 'hidden'],
             });
 
+            hideLoadedSkeletons();
             evaluate();
           }
 
