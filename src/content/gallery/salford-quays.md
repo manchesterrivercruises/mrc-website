@@ -3,10 +3,14 @@ title: Salford Quays
 slug: salford-quays
 summary: Where every cruise begins — the MediaCity waterfront, The Lowry and the Millennium Footbridge boarding point.
 category: route
-coverImage: /images/gallery/salford-quays/cover.webp
+# TEMP: hotlinked cover from the live site for review — not an owned asset.
+coverImage: "https://optimise2.assets-servd.host/river-cruises/production/images/Night-View-SQ.jpg?w=1200&h=900&q=80&fm=webp&fit=crop&crop=focalpoint&fp-x=0.5&fp-y=0.5&dm=1682426555&s=616a45e1a64654d630be36db96743617"
 coverAlt: The Salford Quays waterfront with MediaCity buildings and the Millennium Footbridge reflected in the water
 images:
-  - src: /images/gallery/salford-quays/01.webp
+  # TEMP: hotlinked from the live manchesterrivercruises.com for review — not an owned asset.
+  - src: "https://optimise2.assets-servd.host/river-cruises/production/images/Night-View-SQ.jpg?w=1200&h=900&q=80&fm=webp&fit=crop&crop=focalpoint&fp-x=0.5&fp-y=0.5&dm=1682426555&s=616a45e1a64654d630be36db96743617"
+    width: 1200
+    height: 900
     alt: The Salford Quays waterfront with MediaCity buildings reflected in the calm water
     caption: The MediaCityUK waterfront on a still morning.
     orientation: landscape

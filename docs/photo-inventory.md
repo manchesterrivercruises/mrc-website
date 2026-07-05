@@ -4,11 +4,19 @@
 > library for the whole site (gallery, product heroes, homepage cards, OG images, event
 > cards, Discover, private hire, vessels, OTA listings) — not gallery-only.**
 
-This tracks real photography as it is gathered against each album/subject. Today the site
-runs on **placeholder tiles** — every `images[].src` in the `gallery` collection is a
-placeholder path and no real assets exist yet (see `docs/image-conventions.md`). As real
-photos land, they replace the placeholders, the collection switches to Astro's
-`image()`/`<Image>` pipeline, and this table is updated.
+This tracks real photography as it is gathered against each album/subject.
+
+> **⚠ Current gallery images are TEMPORARY HOTLINKS, not owned assets.** For review only,
+> some album images are hotlinked straight from the current live manchesterrivercruises.com
+> (marked `# TEMP` in each album's frontmatter, served from `optimise2.assets-servd.host`).
+> They are **not owned/licensed for the new site**, are low-resolution thumbnails, and
+> **must be replaced with owned photography before launch**. The "current image count"
+> column below includes these temporaries — **the inventory targets remain UNMET**; the
+> count of real, owned, hero-grade assets is effectively **zero**.
+
+The rest of each album is still **placeholder tiles**. As owned photos land, they replace
+both the hotlinks and the placeholders, the collection switches to Astro's
+`image()`/`<Image>` pipeline, and this table is updated (see `docs/image-conventions.md`).
 
 Each image in the `gallery` collection also carries optional **`isFeatured`** (hero-grade
 candidate) and **`usage`** (`gallery` | `product-page` | `homepage` | `og-image` |
@@ -22,15 +30,15 @@ when you add or reclassify assets.
 
 | Album / category | Current image count | Minimum needed | Hero-grade landscape selected? | 1200×630 crop suitable? | Product-page hero suitable? | OG suitable? | OTA suitable? | Alt text done? | Caption done? | Usage rights confirmed? | Notes / gaps |
 |---|---|---|---|---|---|---|---|---|---|---|---|
-| City River Tour · route | 8 (placeholder) | 10+ (2–3 hero-grade landscapes) | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ✅ (drafted) | ◑ | ⬜ | **PRIORITY 1.** Signature product — needs 2–3 hero-grade landscapes to drive the product hero, homepage card and OG image. |
-| Christmas Cruises · seasonal | 8 (placeholder) | 10+ (2–3 hero-grade landscapes) | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ✅ (drafted) | ◑ | ⬜ | **PRIORITY 2.** Seasonal campaign — needs 2–3 hero-grade festive landscapes (boat lit at night, Santa visit, party night). Time-sensitive: shoot in season. |
-| Dolly Night · live-music | 8 (placeholder) | 8–10 (1 hero-grade) | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ✅ (drafted) | ◑ | ⬜ | TBC. 1 hero-grade performer landscape for the event card + product page. |
-| ABBA Night · live-music | 8 (placeholder) | 8–10 (1 hero-grade) | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ✅ (drafted) | ◑ | ⬜ | TBC. 1 hero-grade performer landscape (tribute act mid-song, packed deck). |
-| Private Hire · private-hire | 8 (placeholder) | 8–10 (1 hero-grade) | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ✅ (drafted) | ◑ | ⬜ | TBC. 1 hero-grade landscape (celebration set-up / guests on deck). Get model/guest consent for usage rights. |
-| Manchester Ship Canal · route | 8 (placeholder) | 8–10 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ✅ (drafted) | ◑ | ⬜ | TBC. Locks, bridges, heritage, changing light — scenery library, reusable across pages. |
-| Our Boats · boats | 8 (placeholder) | 8–10 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ✅ (drafted) | ◑ | ⬜ | TBC. Cover each vessel plus cabin, open deck, bar and boarding — feeds the Vessels pages too. |
-| Old Trafford Ferry · route | 8 (placeholder) | 8–10 (1 hero-grade) | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ✅ (drafted) | ◑ | ⬜ | TBC. 1 hero-grade (supporters boarding / stadium approach). Matchday access-dependent; avoid club trademarks in framing. |
-| Salford Quays · route | 8 (placeholder) | 8–10 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ✅ (drafted) | ◑ | ⬜ | TBC. MediaCity waterfront, The Lowry, the Millennium Footbridge boarding point. |
+| City River Tour · route | 8 (3 TEMP hotlink, rest placeholder) | 10+ (2–3 hero-grade landscapes) | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ✅ (drafted) | ◑ | ⬜ | **PRIORITY 1.** Signature product — needs 2–3 hero-grade landscapes to drive the product hero, homepage card and OG image. |
+| Christmas Cruises · seasonal | 8 (1 TEMP hotlink, rest placeholder) | 10+ (2–3 hero-grade landscapes) | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ✅ (drafted) | ◑ | ⬜ | **PRIORITY 2.** Seasonal campaign — needs 2–3 hero-grade festive landscapes (boat lit at night, Santa visit, party night). Time-sensitive: shoot in season. |
+| Dolly Night · live-music | 8 (2 TEMP hotlink, rest placeholder) | 8–10 (1 hero-grade) | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ✅ (drafted) | ◑ | ⬜ | TBC. 1 hero-grade performer landscape for the event card + product page. |
+| ABBA Night · live-music | 8 (1 TEMP hotlink, rest placeholder) | 8–10 (1 hero-grade) | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ✅ (drafted) | ◑ | ⬜ | TBC. 1 hero-grade performer landscape (tribute act mid-song, packed deck). |
+| Private Hire · private-hire | 8 (2 TEMP hotlink, rest placeholder) | 8–10 (1 hero-grade) | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ✅ (drafted) | ◑ | ⬜ | TBC. 1 hero-grade landscape (celebration set-up / guests on deck). Get model/guest consent for usage rights. |
+| Manchester Ship Canal · route | 8 (all placeholder) | 8–10 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ✅ (drafted) | ◑ | ⬜ | TBC. Locks, bridges, heritage, changing light — scenery library, reusable across pages. |
+| Our Boats · boats | 8 (3 TEMP hotlink, rest placeholder) | 8–10 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ✅ (drafted) | ◑ | ⬜ | TBC. Cover each vessel plus cabin, open deck, bar and boarding — feeds the Vessels pages too. |
+| Old Trafford Ferry · route | 8 (2 TEMP hotlink, rest placeholder) | 8–10 (1 hero-grade) | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ✅ (drafted) | ◑ | ⬜ | TBC. 1 hero-grade (supporters boarding / stadium approach). Matchday access-dependent; avoid club trademarks in framing. |
+| Salford Quays · route | 8 (1 TEMP hotlink, rest placeholder) | 8–10 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ✅ (drafted) | ◑ | ⬜ | TBC. MediaCity waterfront, The Lowry, the Millennium Footbridge boarding point. |
 
 ## How to use this tracker
 

@@ -3,10 +3,14 @@ title: Private Hire
 slug: private-hire
 summary: The whole boat, exclusively yours — celebrations, corporate events and weddings hosted on the water.
 category: private-hire
-coverImage: /images/gallery/private-hire/cover.webp
+# TEMP: hotlinked cover from the live site for review — not an owned asset.
+coverImage: "https://optimise2.assets-servd.host/river-cruises/production/images/drinks.jpg?w=800&h=543&q=80&fm=webp&fit=crop&crop=focalpoint&fp-x=0.5&fp-y=0.5&dm=1682426551&s=0dbe00033afc521262060f0489af39c6"
 coverAlt: A privately hired boat dressed for a celebration with guests mingling on the deck at golden hour
 images:
-  - src: /images/gallery/private-hire/01.webp
+  # TEMP: hotlinked from the live manchesterrivercruises.com for review — not an owned asset.
+  - src: "https://optimise2.assets-servd.host/river-cruises/production/images/drinks.jpg?w=800&h=543&q=80&fm=webp&fit=crop&crop=focalpoint&fp-x=0.5&fp-y=0.5&dm=1682426551&s=0dbe00033afc521262060f0489af39c6"
+    width: 800
+    height: 543
     alt: Guests mingling with drinks on the deck of a privately hired boat at golden hour
     caption: A private charter set up for a summer celebration.
     orientation: landscape
@@ -14,7 +18,10 @@ images:
     # Example: a hero-grade shot cleared for the private-hire page and OTA listings.
     isFeatured: true
     usage: [gallery, private-hire, product-page, ota-listing]
-  - src: /images/gallery/private-hire/02.webp
+  # TEMP: hotlinked from the live manchesterrivercruises.com for review — not an owned asset.
+  - src: "https://optimise2.assets-servd.host/river-cruises/production/images/party.jpg?w=1200&h=900&q=80&fm=webp&fit=crop&crop=focalpoint&fp-x=0.5&fp-y=0.5&dm=1682426547&s=287285d3882fe6c4e0234a60457d517b"
+    width: 1200
+    height: 900
     alt: Tables laid with flowers and place settings inside the cabin for a private dinner
     orientation: landscape
     tags: [catering, decor]

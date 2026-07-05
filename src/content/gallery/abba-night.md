@@ -3,10 +3,14 @@ title: ABBA Cruise
 slug: abba-night
 summary: Sequins, singalongs and Dancing Queen on the water — snapshots from our ABBA tribute nights on the Ship Canal.
 category: live-music
-coverImage: /images/gallery/abba-night/cover.webp
+# TEMP: hotlinked cover from the live site for review — not an owned asset.
+coverImage: "https://optimise2.assets-servd.host/river-cruises/production/images/ABBA/ABBA-thumbnail-500-x-350-px.webp?w=800&h=543&q=80&auto=format&fit=crop&crop=focalpoint&fp-x=0.5&fp-y=0.5&dm=1778759103&s=33c6b6fbc0e8a8f4db94ea04848115e5"
 coverAlt: Two ABBA tribute singers in white flared costumes performing on the boat's deck under coloured lights
 images:
-  - src: /images/gallery/abba-night/01.webp
+  # TEMP: hotlinked from the live manchesterrivercruises.com for review — not an owned asset.
+  - src: "https://optimise2.assets-servd.host/river-cruises/production/images/ABBA/ABBA-thumbnail-500-x-350-px.webp?w=800&h=543&q=80&auto=format&fit=crop&crop=focalpoint&fp-x=0.5&fp-y=0.5&dm=1778759103&s=33c6b6fbc0e8a8f4db94ea04848115e5"
+    width: 800
+    height: 543
     alt: Two ABBA tribute singers in white flared costumes performing under coloured stage lights
     caption: Take a chance on us — the ABBA tribute in full swing.
     orientation: landscape

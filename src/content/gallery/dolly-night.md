@@ -3,10 +3,14 @@ title: Dolly Cruise
 slug: dolly-night
 summary: Big hair, big hits and a boat full of fans — highlights from our Dolly Parton tribute nights on the Manchester Ship Canal.
 category: live-music
-coverImage: /images/gallery/dolly-night/cover.webp
+# TEMP: hotlinked cover from the live site for review — not an owned asset.
+coverImage: "https://optimise2.assets-servd.host/river-cruises/production/images/Dolly-Cruise-Thumbnail.png?w=1200&h=560&q=100&auto=format&fit=crop&crop=focalpoint&fp-x=0.5&fp-y=0.5&dm=1715004148&s=e702b31d1f77dcf458b765c604761eef"
 coverAlt: A Dolly Parton tribute singer in a sparkling gown performing on the boat's deck beneath warm string lights
 images:
-  - src: /images/gallery/dolly-night/01.webp
+  # TEMP: hotlinked from the live manchesterrivercruises.com for review — not an owned asset.
+  - src: "https://optimise2.assets-servd.host/river-cruises/production/images/Dolly-Cruise-Thumbnail.png?w=1200&h=560&q=100&auto=format&fit=crop&crop=focalpoint&fp-x=0.5&fp-y=0.5&dm=1715004148&s=e702b31d1f77dcf458b765c604761eef"
+    width: 1200
+    height: 560
     alt: A Dolly Parton tribute singer in a rhinestone gown belting out a song on the covered deck
     caption: Our Dolly takes to the deck as the sun goes down.
     orientation: landscape
@@ -14,7 +18,10 @@ images:
     # Example: a featured performer shot used on the event card + product page too.
     isFeatured: true
     usage: [gallery, event-card, product-page]
-  - src: /images/gallery/dolly-night/02.webp
+  # TEMP: hotlinked from the live manchesterrivercruises.com for review — not an owned asset.
+  - src: "https://optimise2.assets-servd.host/river-cruises/production/images/Dolly-Cruise-Thumbnail-500-x-350.webp?w=800&h=543&q=80&auto=format&fit=crop&crop=focalpoint&fp-x=0.5&fp-y=0.5&dm=1778759311&s=b7677b3f2a99be76303ed51e86901e8b"
+    width: 800
+    height: 543
     alt: Guests dancing and singing along together on the top deck at dusk
     orientation: landscape
     tags: [crowd, dancing]

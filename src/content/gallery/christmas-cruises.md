@@ -3,10 +3,14 @@ title: Christmas Cruises
 slug: christmas-cruises
 summary: Festive nights on the water — twinkling lights, party cruises and a visit from Father Christmas along the Manchester Ship Canal.
 category: seasonal
-coverImage: /images/gallery/christmas-cruises/cover.webp
+# TEMP: hotlinked cover from the live site for review — not an owned asset.
+coverImage: "https://optimise2.assets-servd.host/river-cruises/production/images/Santa-Cruise-thumbnail-500-x-350-px.png?w=800&h=543&q=100&auto=format&fit=crop&crop=focalpoint&fp-x=0.5&fp-y=0.5&dm=1726383358&s=99fd00569fdcddcc4d5e3d8dff4c7ba9"
 coverAlt: The boat decorated with Christmas lights and a wreath cruising past the winter waterfront at night
 images:
-  - src: /images/gallery/christmas-cruises/01.webp
+  # TEMP: hotlinked from the live manchesterrivercruises.com for review — not an owned asset.
+  - src: "https://optimise2.assets-servd.host/river-cruises/production/images/Santa-Cruise-thumbnail-500-x-350-px.png?w=800&h=543&q=100&auto=format&fit=crop&crop=focalpoint&fp-x=0.5&fp-y=0.5&dm=1726383358&s=99fd00569fdcddcc4d5e3d8dff4c7ba9"
+    width: 800
+    height: 543
     alt: The boat strung with warm Christmas lights and a wreath cruising the canal at night
     caption: All wrapped up for the festive season.
     orientation: landscape

@@ -34,7 +34,11 @@ function caption(img: (typeof images)[number]): string {
 <div id="gallery-album" class="pswp-gallery gap-4 [column-fill:_balance] sm:columns-2 lg:columns-3">
   {
     images.map((img) => {
-      const { w, h } = imageDims(img.orientation);
+      // Real pixel dims when known (hotlinked/real assets), else orientation-nominal.
+      const w = img.width ?? imageDims(img.orientation).w;
+      const h = img.height ?? imageDims(img.orientation).h;
+      // A real, loadable image (http URL) vs a placeholder path that doesn't exist yet.
+      const isReal = /^https?:\/\//.test(img.src);
       return (
         <a
           href={img.src}
@@ -44,12 +48,20 @@ function caption(img: (typeof images)[number]): string {
           aria-label={img.alt}
           class="mb-4 block break-inside-avoid overflow-hidden rounded-card ring-1 ring-black/5 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
         >
-          {/* Placeholder thumbnail — replace with <Image src={img.src} alt={img.alt} loading="lazy" /> */}
-          <div class={`flex items-center justify-center bg-gradient-to-br from-panel to-black/10 text-subtle ${aspectClass(img.orientation)}`}>
-            <svg class="h-8 w-8 opacity-40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
-              <path stroke-linecap="round" stroke-linejoin="round" d={PHOTO_ICON} />
-            </svg>
-          </div>
+          {
+            isReal ? (
+              // TEMP hotlinked review image — swap for <Image src={img.src} alt={img.alt}
+              // loading="lazy" /> once owned assets land (docs/image-conventions.md).
+              <img src={img.src} alt={img.alt} width={w} height={h} loading="lazy" class="w-full" />
+            ) : (
+              // Placeholder tile — no asset yet.
+              <div class={`flex items-center justify-center bg-gradient-to-br from-panel to-black/10 text-subtle ${aspectClass(img.orientation)}`}>
+                <svg class="h-8 w-8 opacity-40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+                  <path stroke-linecap="round" stroke-linejoin="round" d={PHOTO_ICON} />
+                </svg>
+              </div>
+            )
+          }
         </a>
       );
     })

@@ -91,6 +91,11 @@ const gallery = defineCollection({
         z.object({
           src: z.string(),
           alt: z.string(),
+          // Real pixel dimensions of the served image. Set for real/hotlinked images so
+          // PhotoSwipe's data-pswp-width/height are exact; placeholders omit these and
+          // fall back to orientation-nominal dims (src/lib/gallery.ts → imageDims).
+          width: z.number().optional(),
+          height: z.number().optional(),
           caption: z.string().optional(),
           credit: z.string().optional(),
           orientation: z.enum(['landscape', 'portrait', 'square']).optional(),

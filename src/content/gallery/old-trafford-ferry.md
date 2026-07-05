@@ -3,15 +3,22 @@ title: Old Trafford Ferry
 slug: old-trafford-ferry
 summary: Matchday by boat — supporters cruising to Trafford Wharf and the walk-up to Old Trafford along the water.
 category: route
-coverImage: /images/gallery/old-trafford-ferry/cover.webp
+# TEMP: hotlinked cover from the live site for review — not an owned asset.
+coverImage: "https://optimise2.assets-servd.host/river-cruises/production/images/Boat-to-Old-Trafford-Thumbnail_2024-05-08-110748_gsti.png?w=1200&h=560&q=100&auto=format&fit=crop&crop=focalpoint&fp-x=0.5&fp-y=0.5&dm=1715166468&s=35e28c8ffd3b619da9697c84c8984dde"
 coverAlt: Football supporters in shirts and scarves boarding the matchday ferry on a bright afternoon
 images:
-  - src: /images/gallery/old-trafford-ferry/01.webp
+  # TEMP: hotlinked from the live manchesterrivercruises.com for review — not an owned asset.
+  - src: "https://optimise2.assets-servd.host/river-cruises/production/images/Boat-to-Old-Trafford-Thumbnail_2024-05-08-110748_gsti.png?w=1200&h=560&q=100&auto=format&fit=crop&crop=focalpoint&fp-x=0.5&fp-y=0.5&dm=1715166468&s=35e28c8ffd3b619da9697c84c8984dde"
+    width: 1200
+    height: 560
     alt: Football supporters in shirts and scarves boarding the matchday ferry on a bright afternoon
     caption: Beating the traffic on the way to the match.
     orientation: landscape
     tags: [supporters, boarding]
-  - src: /images/gallery/old-trafford-ferry/02.webp
+  # TEMP: hotlinked from the live manchesterrivercruises.com for review — not an owned asset.
+  - src: "https://optimise2.assets-servd.host/river-cruises/production/images/Boat-to-Old-Trafford-Thumbnail-500-350.png?w=800&h=543&q=100&auto=format&fit=crop&crop=focalpoint&fp-x=0.5&fp-y=0.5&dm=1715166524&s=25df2fdee83d247ea7a46eed5f270aef"
+    width: 800
+    height: 543
     alt: The ferry cruising along the ship canal with the stadium coming into view
     orientation: landscape
     tags: [boat, stadium]
