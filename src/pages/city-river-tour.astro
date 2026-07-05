@@ -366,8 +366,9 @@ const orderedStops = [...tourStops].sort((a, b) => a.id - b.id);
         {/* FAQ */}
         <FAQSection faqs={faqs} />
 
-        {/* Reviews */}
-        <ReviewStrip rating={site.rating.value} reviewCount={site.rating.count} />
+        {/* Reviews — static aggregate for SEO; live Google reviews rotate in as an
+            enhancement (silent fallback to the static line on any failure). */}
+        <ReviewStrip rating={site.rating.value} reviewCount={site.rating.count} live />
       </div>
     </div>
 
