@@ -32,6 +32,9 @@ interface Props {
   label?: string;
   /** popup: extra classes forwarded to the trigger button */
   class?: string;
+  /** popup: open the checkout on the date/calendar step (date-led browsing). See the
+      calendarFirst caveat below — the exact data-config key is TBC with Ventrata. */
+  calendarFirst?: boolean;
   /** embedded: min-height utility (widget must be able to grow — never a fixed height) */
   minHeightClass?: string;
 }
@@ -42,6 +45,7 @@ const {
   env = 'test',
   label = 'Book Now',
   class: className = '',
+  calendarFirst = false,
   minHeightClass = 'min-h-[50rem]',
 } = Astro.props;
 
@@ -55,7 +59,11 @@ if ((mode === 'embedded' || mode === 'popup') && !productID) {
 
 const checkoutConfig = JSON.stringify({ apiKey: CHECKOUT_API_KEY, env });
 const embeddedConfig = JSON.stringify({ productID, embedded: true });
-const popupConfig = JSON.stringify({ productID });
+// `calendarFirst: true` opens the pop-up on the date step (date-led browsing) per
+// docs/ventrata-integration.md → "Calendar First mode". ⚠ The exact key name
+// (calendarFirst vs a versioned alias) and which product(s) to surface / their ordering
+// must be confirmed with the Ventrata account manager before launch.
+const popupConfig = JSON.stringify({ productID, ...(calendarFirst ? { calendarFirst: true } : {}) });
 ---
 
 {

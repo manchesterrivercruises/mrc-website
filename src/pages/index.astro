@@ -6,6 +6,8 @@ import CTAButton from '../components/CTAButton.astro';
 import EventCard from '../components/EventCard.astro';
 import ProductCard from '../components/ProductCard.astro';
 import StarRating from '../components/StarRating.astro';
+import VentrataWidget from '../components/VentrataWidget.astro';
+import SocialBand from '../components/SocialBand.astro';
 import { site } from '../data/site';
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -102,6 +104,11 @@ const structuredData = {
 ---
 
 <BaseLayout title={pageTitle} description={pageDescription}>
+  {/* Ventrata page-level setup (checkout script + modal observer + skeleton hide) —
+      the homepage is now a booking page because of the "Find your date" entry below, so
+      the loader ships here too. Still never loaded globally (AGENTS rule 9). */}
+  <VentrataWidget mode="loader" slot="head" env="test" />
+
   {/* Schema.org structured data (WebSite + TouristAttraction/LocalBusiness w/ aggregateRating) */}
   <script type="application/ld+json" is:inline set:html={JSON.stringify(structuredData)} />
 
@@ -154,6 +161,34 @@ const structuredData = {
         <div class="mt-8">
           <CTAButton href="/city-river-tour">Book the City River Tour</CTAButton>
         </div>
+      </div>
+    </div>
+  </section>
+
+  {/* 2b. FIND YOUR DATE — calendar-first booking entry ─────────────────────── */}
+  <section aria-labelledby="find-date" class="mx-auto max-w-6xl px-4 py-12 sm:px-6 md:py-16 lg:px-8">
+    <div class="rounded-card bg-dark px-6 py-10 text-center text-white sm:px-10">
+      <h2 id="find-date" class="text-2xl font-bold tracking-tight sm:text-3xl">Find your date</h2>
+      <p class="mx-auto mt-3 max-w-xl text-lg leading-relaxed text-white/80">
+        Tell us when you're free — see everything sailing that day.
+      </p>
+      <div class="mt-8 flex justify-center">
+        {/*
+          Calendar-first Ventrata checkout: opens the widget on the date step so customers
+          browse by date. Implemented via the shared VentrataWidget pop-up trigger with
+          calendarFirst per docs/ventrata-integration.md → "Calendar First mode".
+          ⚠ CONFIRM WITH THE VENTRATA ACCOUNT MANAGER before launch (tracked in the
+             account-manager email thread):
+               - the exact data-config key for calendar-first (calendarFirst vs a versioned alias)
+               - which product(s) to surface on the date step and their ordering
+          Anchored to the City River Tour product for now.
+        */}
+        <VentrataWidget
+          mode="popup"
+          productID="ef45d8bd-529c-4dae-9c35-cd1b8e4e0a75"
+          calendarFirst
+          label="Find your date"
+        />
       </div>
     </div>
   </section>
@@ -269,4 +304,7 @@ const structuredData = {
       }
     </div>
   </section>
+
+  {/* SOCIAL BAND — slim strip directly above the footer */}
+  <SocialBand />
 </BaseLayout>
