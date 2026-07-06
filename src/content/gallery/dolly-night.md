@@ -1,6 +1,7 @@
 ---
 title: Dolly Cruise
 slug: dolly-night
+order: 3
 summary: Big hair, big hits and a boat full of fans — highlights from our Dolly Parton tribute nights on the Manchester Ship Canal.
 category: live-music
 # TEMP: hotlinked cover from the live site for review — not an owned asset.

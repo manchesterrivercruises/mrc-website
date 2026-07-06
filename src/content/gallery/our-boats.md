@@ -1,6 +1,7 @@
 ---
 title: Our Boats
 slug: our-boats
+order: 6
 summary: Meet the fleet — the vessels that carry our cruises, from the heated cabins to the open decks.
 category: boats
 # TEMP: hotlinked cover from the live site for review — not an owned asset.

@@ -1,6 +1,7 @@
 ---
 title: Old Trafford Ferry
 slug: old-trafford-ferry
+order: 7
 summary: Matchday by boat — supporters cruising to Trafford Wharf and the walk-up to Old Trafford along the water.
 category: route
 # TEMP: hotlinked cover from the live site for review — not an owned asset.

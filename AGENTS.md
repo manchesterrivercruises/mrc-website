@@ -36,8 +36,8 @@ They are non-negotiable. Do not deviate from them without explicit written appro
     - `/docs/seo-pages.md` for metadata/schema work
     - `/docs/content-checklist.md` for missing copy and assets
     - `/docs/launch-checklist.md` for redirects, DNS, and launch steps
-    - `/docs/content-management.md` for Content Collections and the CMS workflow (coming soon — file to be added)
-    - `/docs/integrations.md` for third-party integrations: Mapbox/Leaflet, Google Tag Manager, Ventrata OCTO (coming soon — file to be added)
+    - `/docs/content-management.md` for Content Collections and the CMS workflow
+    - `/docs/integrations.md` for third-party integrations: Mapbox/Leaflet, Google Tag Manager, Ventrata OCTO
 
 14. **Dynamic tour pages must be scoped under `/cruises/[slug]`**, not at the top level. A top-level `src/pages/[slug].astro` catch-all in Astro intercepts valid static routes like `/about`, `/contact`, and `/vessels`. Never create top-level dynamic route files.
 

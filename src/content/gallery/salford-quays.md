@@ -1,6 +1,7 @@
 ---
 title: Salford Quays
 slug: salford-quays
+order: 9
 summary: Where every cruise begins — the MediaCity waterfront, The Lowry and the Millennium Footbridge boarding point.
 category: route
 # TEMP: hotlinked cover from the live site for review — not an owned asset.

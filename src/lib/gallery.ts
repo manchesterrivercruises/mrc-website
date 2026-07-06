@@ -16,11 +16,39 @@ export const CATEGORY_LABELS: Record<Album['data']['category'], string> = {
   'private-hire': 'Private Hire',
 };
 
-// All published albums, sorted by title.
+// True for a real, loadable image src: an http(s) URL today, and (in future) owned assets
+// under /images/gallery/ once they exist. Placeholder paths that don't resolve yet are
+// excluded — used for the ImageGallery schema, OG image and cover/thumb rendering.
+// NOTE: extend this predicate when owned gallery assets land (docs/image-conventions.md).
+export function isRealImage(src: string): boolean {
+  return /^https?:\/\//.test(src);
+}
+
+// Build-time guard: each album's frontmatter `slug` must match its FILENAME, since the album
+// route (/gallery/[slug]) and relatedAlbums both key off `slug`. Drift silently 404s cross-
+// links. Fail the build loudly instead. (Jeff review option B; the eventual cleanup — option
+// A — is to DROP the slug field and derive it from the filename, since the glob loader already
+// uses the `slug` frontmatter as the entry id — hence we compare filePath, not entry.id.)
+function assertSlugsMatchFilenames(albums: Album[]): void {
+  for (const a of albums) {
+    const filename = (a.filePath ?? '').split('/').pop()?.replace(/\.md$/, '') ?? '';
+    if (filename && filename !== a.data.slug) {
+      throw new Error(
+        `Gallery slug drift: src/content/gallery/${filename}.md declares slug "${a.data.slug}", ` +
+          `but the filename is "${filename}". Rename the file or fix the slug so they match.`,
+      );
+    }
+  }
+}
+
+// All published albums, ordered by explicit `order` (absent → 999) then title.
 export async function getAlbums(): Promise<Album[]> {
-  return (await getCollection('gallery', ({ data }) => !data.draft)).sort((a, b) =>
-    a.data.title.localeCompare(b.data.title),
-  );
+  const albums = await getCollection('gallery', ({ data }) => !data.draft);
+  assertSlugsMatchFilenames(albums);
+  return albums.sort((a, b) => {
+    const byOrder = (a.data.order ?? 999) - (b.data.order ?? 999);
+    return byOrder !== 0 ? byOrder : a.data.title.localeCompare(b.data.title);
+  });
 }
 
 // Related albums: explicit relatedAlbums slugs first; if none resolve, fall back to

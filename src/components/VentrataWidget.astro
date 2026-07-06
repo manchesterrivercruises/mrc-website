@@ -107,59 +107,118 @@ const OBSERVER_SCRIPT = `
       return el.getBoundingClientRect().width > 0;
     }
 
-    var armed = false;         // a checkout opened via our trigger
-    var saw = false;           // the pop-up DOM appeared this session
-    var currentOverlay = null; // the identified overlay node (so the watchdog can re-check it)
+    var armedTrigger = false;  // opened via a [ventrata-checkout] click → lock immediately
+    var armedEmbedded = false; // interacting with an embedded aside → sensitise, lock on takeover
+    var saw = false;           // an overlay appeared this session
+    var currentOverlay = null; // the identified overlay node (watchdog + scroll-containment target)
+    var contained = null;      // element we've set overscroll-behavior:contain on
     var failsafe = 0;
     var watchdog = 0;
 
-    // The pop-up = a visible, post-load direct body child. Prefer one carrying ventrata
-    // identity; during a trigger session accept ANY new visible body child. Returns the
-    // NODE (or null) so the watchdog can re-check the same element.
+    function armedAny() { return armedTrigger || armedEmbedded; }
+
+    // Geometry helpers for reveal detection.
+    function vw() { return window.innerWidth || root.clientWidth || 0; }
+    function vh() { return window.innerHeight || root.clientHeight || 0; }
+    function coversViewport(el) {
+      var w = vw(), h = vh(); if (!w || !h) return false;
+      var r = el.getBoundingClientRect();
+      return r.width >= w * 0.85 && r.height >= h * 0.85; // >85% width AND >85% height
+    }
+    function fixedAncestor(el) {
+      var n = el;
+      while (n && n.nodeType === 1 && n !== body) {
+        if (getComputedStyle(n).position === 'fixed') return n;
+        n = n.parentElement;
+      }
+      return null;
+    }
+    function isVentrataIframe(el) {
+      return el.tagName === 'IFRAME' && /ventrata/i.test(el.getAttribute('src') || el.src || '');
+    }
+
+    // DETECTION arm (1) — INSERTION: a visible, post-load direct body child. Prefer ventrata
+    // identity; during an active session accept ANY new visible body child.
     function overlayNode() {
       var kids = body.children, fallback = null;
       for (var i = 0; i < kids.length; i++) {
         var el = kids[i];
         if (initial.has(el) || !shown(el)) continue;
         if (looksVentrata(el)) return el;
-        if (armed && !fallback) fallback = el;
+        if (armedAny() && !fallback) fallback = el;
       }
       return fallback;
     }
 
+    // DETECTION arm (2) — REVEAL: a ventrata element (or ventrata-origin iframe) that has become
+    // fixed AND full-viewport. The embedded-widget fullscreen takeover restyles/reveals an
+    // EXISTING element rather than injecting a body child, so overlayNode() alone misses it.
+    function fullscreenOverlay() {
+      var ifr = document.getElementsByTagName ? document.getElementsByTagName('iframe') : [];
+      for (var i = 0; i < ifr.length; i++) {
+        var f = ifr[i];
+        if (!isVentrataIframe(f) || !shown(f) || !coversViewport(f)) continue;
+        var fa = fixedAncestor(f); if (fa) return fa; // the fixed takeover container
+      }
+      var asides = document.querySelectorAll('[ventrata-embedded-widget]');
+      for (var j = 0; j < asides.length; j++) {
+        var a = asides[j];
+        if (shown(a) && coversViewport(a) && fixedAncestor(a)) return a; // aside itself expanded
+      }
+      var kids = body.children;
+      for (var k = 0; k < kids.length; k++) {
+        var el = kids[k];
+        if (!shown(el)) continue;
+        if (looksVentrata(el) && coversViewport(el) && fixedAncestor(el)) return el;
+      }
+      return null;
+    }
+
+    // The overlay = an inserted pop-up OR a revealed fullscreen takeover.
+    function findOverlay() { return overlayNode() || fullscreenOverlay(); }
+
+    // (3) Contain scroll chaining on the addressable overlay container so widget scrolling
+    //     never drags the page behind. (The embedded aside also carries this in CSS.)
+    function applyContain(el) {
+      if (contained && contained !== el) { try { contained.style.overscrollBehavior = ''; } catch (e) {} }
+      contained = el || null;
+      if (el) { try { el.style.overscrollBehavior = 'contain'; } catch (e) {} }
+    }
+
     function stopWatchdog() { if (watchdog) { clearInterval(watchdog); watchdog = 0; } }
 
-    // BELT-AND-BRACES: while locked, poll ~1s. If the identified overlay has left the DOM or
-    // become hidden AND no other overlay is present, release — regardless of whether the
-    // MutationObserver ever saw Ventrata's teardown. This is the real fix for the stranded
-    // scroll-lock: some closes don't produce a body childList mutation we catch.
+    // BELT-AND-BRACES: while locked, poll ~1s and RE-RUN detection. If no overlay qualifies any
+    // more (removed, hidden, OR shrunk below full-viewport — a takeover collapsing back inline),
+    // release — regardless of whether the MutationObserver saw the teardown.
     function startWatchdog() {
       if (watchdog) return;
       watchdog = window.setInterval(function () {
-        if (!saw) return; // not opened yet — the click failsafe covers that window
-        var alive = currentOverlay && body.contains(currentOverlay) && shown(currentOverlay);
-        if (alive) return;
-        var n = overlayNode();
-        if (n) { currentOverlay = n; return; } // a different overlay is present — stay locked
+        if (!saw) return; // nothing opened yet — the failsafe covers that window
+        var still = findOverlay();
+        if (still) { currentOverlay = still; applyContain(still); return; }
         forceClose();
       }, 1000);
     }
 
     // Unconditionally release the lock and reset state.
     function forceClose() {
-      armed = false; saw = false; currentOverlay = null;
+      armedTrigger = false; armedEmbedded = false; saw = false; currentOverlay = null;
       clearTimeout(failsafe);
       stopWatchdog();
+      applyContain(null);
       root.classList.remove(KEY);
     }
 
     function evaluate() {
-      var node = overlayNode();
-      if (node) { saw = true; currentOverlay = node; }
-      var present = !!node;
-      if (armed && saw && !present) { armed = false; saw = false; currentOverlay = null; } // opened then closed
-      var open = armed || present;
+      var overlay = findOverlay();
+      if (overlay) { saw = true; currentOverlay = overlay; }
+      var present = !!overlay;
+      if (saw && !present) { armedTrigger = false; armedEmbedded = false; saw = false; currentOverlay = null; } // closed
+      // Embedded arming does NOT lock on its own (inline desktop use must keep its chrome) —
+      // only a trigger click or an actual overlay locks.
+      var open = armedTrigger || present;
       root.classList.toggle(KEY, open);
+      applyContain(open ? currentOverlay : null);
       if (open) startWatchdog(); else stopWatchdog();
     }
 
@@ -168,19 +227,38 @@ const OBSERVER_SCRIPT = `
       if (!raf) raf = requestAnimationFrame(function () { raf = 0; evaluate(); });
     }
 
-    // (1) TRIGGER — a click on any [ventrata-checkout] element opens immediately, before
-    //     the widget injects its DOM, so chrome hides with no flicker.
+    // ARM (a) — TRIGGER: a click on any [ventrata-checkout] element opens a pop-up immediately,
+    // before the widget injects its DOM, so chrome hides with no flicker.
     document.addEventListener('click', function (e) {
       var t = e.target;
       if (t && t.closest && t.closest('[ventrata-checkout]')) {
-        armed = true;
+        armedTrigger = true;
         saw = false;
         currentOverlay = null;
         root.classList.add(KEY);
         startWatchdog();
         clearTimeout(failsafe);
         // If the pop-up never opens, release so the chrome isn't hidden forever.
-        failsafe = window.setTimeout(function () { if (armed && !saw) forceClose(); }, 5000);
+        failsafe = window.setTimeout(function () { if (armedTrigger && !saw) forceClose(); }, 5000);
+      }
+    }, true);
+
+    // ARM (b) — EMBEDDED: interacting with an embedded aside can expand it to a fullscreen
+    // takeover with NO trigger click, and may restyle an existing element rather than inject a
+    // body child (evading both old arms). Sensitise detection here (do NOT lock yet — an inline
+    // desktop widget must keep its chrome), then nudge evaluate so the takeover is caught the
+    // instant it appears; the MutationObserver + reveal detection do the actual locking.
+    document.addEventListener('pointerdown', function (e) {
+      var t = e.target;
+      if (t && t.closest && t.closest('[ventrata-embedded-widget]')) {
+        armedEmbedded = true;
+        clearTimeout(failsafe);
+        failsafe = window.setTimeout(function () {
+          if (!saw) { armedEmbedded = false; if (!root.classList.contains(KEY)) stopWatchdog(); }
+        }, 5000);
+        setTimeout(evaluate, 60);
+        setTimeout(evaluate, 300);
+        setTimeout(evaluate, 900);
       }
     }, true);
 
@@ -202,12 +280,14 @@ const OBSERVER_SCRIPT = `
       }
     }
 
-    // (2) CLOSE (and any non-trigger auto-open, e.g. ?openWidget=true) — watch the body for
-    //     the pop-up DOM being added/removed, AND drive the skeleton fallback. ONE observer.
+    // OBSERVE: body childList + attribute (style/class/hidden/size) mutations drive open/close
+    // detection — crucially, the REVEAL arm needs attribute mutations, since the takeover locks
+    // by restyling an element (inline style → position:fixed / full-viewport) with no insertion.
+    // Same observer also drives the skeleton fallback.
     new MutationObserver(function () {
       schedule();
       hideLoadedSkeletons();
-    }).observe(body, { childList: true, subtree: true, attributes: true, attributeFilter: ['style', 'class', 'hidden'] });
+    }).observe(body, { childList: true, subtree: true, attributes: true, attributeFilter: ['style', 'class', 'hidden', 'width', 'height'] });
 
     // (3) Extra removal hints — Ventrata's teardown isn't always a body childList mutation.
     //     Escape usually closes the pop-up; re-check just after it tears down.

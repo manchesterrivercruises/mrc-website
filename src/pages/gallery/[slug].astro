@@ -5,7 +5,7 @@ import GalleryAlbumGrid from '../../components/GalleryAlbumGrid.astro';
 import GalleryLightbox from '../../components/GalleryLightbox.astro';
 import GalleryBookingCTA from '../../components/GalleryBookingCTA.astro';
 import RelatedAlbums from '../../components/RelatedAlbums.astro';
-import { getAlbums, resolveRelated } from '../../lib/gallery';
+import { getAlbums, resolveRelated, isRealImage } from '../../lib/gallery';
 
 // One page per album, generated from the `gallery` collection (routed by data.slug).
 export async function getStaticPaths() {
@@ -33,19 +33,26 @@ const breadcrumbs = [
   { name: d.title, url: abs(`/gallery/${d.slug}`) },
 ];
 
+// ImageGallery schema must reference only REAL, resolvable images — placeholder paths that
+// 404 would be dishonest structured data. Filter to real srcs (empty until owned assets land).
+const schemaImages = d.images.filter((img) => isRealImage(img.src)).map((img) => abs(img.src));
+
 const structuredData = {
   '@context': 'https://schema.org',
   '@type': 'ImageGallery',
   name: d.title,
   description: d.summary,
   url: abs(`/gallery/${d.slug}`),
-  // Image srcs are placeholder paths until the image() pipeline lands; they resolve to
-  // real files then (docs/image-conventions.md).
-  image: d.images.map((img) => abs(img.src)),
+  ...(schemaImages.length ? { image: schemaImages } : {}),
 };
+
+// OG image: pass the cover ONLY when it's a real image, so BaseLayout falls back to the
+// brand logo for placeholder covers (never a 404 OG). Real covers must be 1200x630-croppable
+// (docs/image-conventions.md) — the hotlinked temp covers are wider crops, acceptable for now.
+const ogImage = isRealImage(d.coverImage) ? d.coverImage : undefined;
 ---
 
-<BaseLayout title={pageTitle} description={pageDescription} breadcrumbs={breadcrumbs}>
+<BaseLayout title={pageTitle} description={pageDescription} image={ogImage} breadcrumbs={breadcrumbs}>
   {/* Schema.org structured data (ImageGallery) */}
   <script type="application/ld+json" is:inline set:html={JSON.stringify(structuredData)} />
 

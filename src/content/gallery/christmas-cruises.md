@@ -1,6 +1,7 @@
 ---
 title: Christmas Cruises
 slug: christmas-cruises
+order: 2
 summary: Festive nights on the water — twinkling lights, party cruises and a visit from Father Christmas along the Manchester Ship Canal.
 category: seasonal
 # TEMP: hotlinked cover from the live site for review — not an owned asset.
