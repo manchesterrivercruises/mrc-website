@@ -1,0 +1,13 @@
+Inter — self-hosted web font files (woff2, latin subset, weights 400/500/600/700)
+
+Copyright (c) The Inter Project Authors.
+Inter is licensed under the SIL Open Font License, Version 1.1.
+
+Project: https://github.com/rsms/inter
+Full licence text (SIL OFL 1.1): https://openfontlicense.org
+(also distributed in the Inter project's OFL.txt)
+
+The OFL permits these font files to be bundled, embedded and self-hosted, including
+on this website, provided the fonts are not sold on their own and this licence
+notice is retained. These files were obtained as the latin-subset woff2 build via
+the Fontsource distribution of Inter.
