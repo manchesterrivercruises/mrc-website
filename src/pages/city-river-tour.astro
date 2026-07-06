@@ -122,10 +122,8 @@ const galleryTile =
 const orderedStops = [...tourStops].sort((a, b) => a.id - b.id);
 ---
 
-<BaseLayout title={pageTitle}>
-  {/* Ventrata page-level setup (checkout script + modal observer + skeleton hide) —
-      loaded ONLY on this booking page, never globally (AGENTS rule 9). */}
-  <VentrataWidget mode="loader" slot="head" env="test" />
+<BaseLayout title={pageTitle} bookProductID="ef45d8bd-529c-4dae-9c35-cd1b8e4e0a75">
+  {/* Ventrata checkout loader now ships site-wide via <Header> (AGENTS rule 9). */}
 
   {/* Schema.org structured data (JSON-LD) */}
   <script type="application/ld+json" is:inline set:html={JSON.stringify(structuredData)} />

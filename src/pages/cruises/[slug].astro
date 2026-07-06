@@ -85,10 +85,8 @@ const structuredData = {
 };
 ---
 
-<BaseLayout title={pageTitle} description={description}>
-  {/* Ventrata page-level setup (checkout script + modal observer + skeleton hide) —
-      loaded ONLY on this booking page, never globally (AGENTS rule 9). */}
-  <VentrataWidget mode="loader" slot="head" env="test" />
+<BaseLayout title={pageTitle} description={description} bookProductID={ventrataProductId}>
+  {/* Ventrata checkout loader now ships site-wide via <Header> (AGENTS rule 9). */}
 
   {/* Schema.org structured data (Product — dates live in Ventrata, so not an Event) */}
   <script type="application/ld+json" is:inline set:html={JSON.stringify(structuredData)} />

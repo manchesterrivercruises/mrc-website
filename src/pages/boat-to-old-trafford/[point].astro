@@ -54,10 +54,13 @@ const structuredData = {
 };
 ---
 
-<BaseLayout title={pageTitle} description={pageDescription}>
-  {/* Ventrata page-level setup — ONLY when this departure has a real product (AGENTS
-      rule 9). Stephenson's Bridge (productReady === false) loads no checkout script. */}
-  {point.productReady && <VentrataWidget mode="loader" slot="head" env="test" />}
+<BaseLayout
+  title={pageTitle}
+  description={pageDescription}
+  bookProductID={point.productReady ? point.ventrataProductId : undefined}
+>
+  {/* Ventrata checkout loader now ships site-wide via <Header> (AGENTS rule 9). The header
+      Book Now opens this point's product where it has one, else the all-products chooser. */}
 
   {/* Schema.org structured data (BoatTrip) */}
   <script type="application/ld+json" is:inline set:html={JSON.stringify(structuredData)} />

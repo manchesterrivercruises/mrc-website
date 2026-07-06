@@ -12,6 +12,7 @@ interface Props {
   canonical?: string; // override the computed canonical URL
   ogType?: string; // og:type, e.g. "website" | "article"
   breadcrumbs?: Crumb[]; // override the auto-derived breadcrumb trail
+  bookProductID?: string; // page primary product → header Book Now opens it (else the chooser)
 }
 
 const {
@@ -21,6 +22,7 @@ const {
   canonical,
   ogType = 'website',
   breadcrumbs,
+  bookProductID,
 } = Astro.props;
 
 // BreadcrumbList — auto-derived from the pathname (Home > section > page) unless a
@@ -145,15 +147,16 @@ const gtmId = process.env.GTM_CONTAINER_ID;
     >
       Skip to content
     </a>
-    <Header />
+    <Header bookProductID={bookProductID} />
     <main id="main" class="flex-grow bg-white">
       <slot />
     </main>
     <Footer />
 
-    {/* NOTE: the Ventrata checkout pop-up observer used to live here and shipped on
-        EVERY page. It now lives in src/components/VentrataWidget.astro (mode="loader")
-        so it ships ONLY on bookable pages (AGENTS rule 9). The `ventrata-open` styling
-        stays in global.css. */}
+    {/* NOTE: the Ventrata checkout loader (script + pop-up observer) is rendered ONCE by
+        <Header>, so it — and the Book Now trigger — ship site-wide, making every page
+        booking-capable (AGENTS rule 9, updated). Pages pass bookProductID to open their
+        own product; others get the all-products chooser. `ventrata-open` styling is in
+        global.css. */}
   </body>
 </html>
