@@ -40,6 +40,121 @@ const STAR =
 const fullCount = Math.floor(rating);
 const hasHalf = rating - fullCount >= 0.5;
 const emptyCount = 5 - fullCount - (hasHalf ? 1 : 0);
+
+// Client script + rotator CSS injected via set:html. IMPORTANT: Astro does NOT evaluate
+// `{...}` expressions inside <script>/<style> tag bodies — writing `<script>{`…`}</script>`
+// emits the backticks + code LITERALLY, so the IIFE never runs (it becomes a template
+// string). set:html evaluates the expression and sets it as the element's content, the
+// same proven pattern the JSON-LD blocks use.
+const ROTATOR_CSS = `
+  .rs-rotator:not([hidden]) { display: grid; }
+  .rs-slide {
+    grid-area: 1 / 1;
+    opacity: 0;
+    visibility: hidden;
+    /* Crossfade: fade opacity, then flip visibility AFTER the fade so the outgoing slide
+       stays visible during the transition and inactive slides leave the tab order. */
+    transition: opacity 0.6s ease, visibility 0s 0.6s;
+  }
+  .rs-slide.rs-active {
+    opacity: 1;
+    visibility: visible;
+    transition: opacity 0.6s ease, visibility 0s 0s;
+  }
+  @media (prefers-reduced-motion: reduce) { .rs-slide { transition: none; } }
+`;
+
+const REVIEWS_SCRIPT = `
+(function () {
+  var root = document.querySelector('[data-review-rotator]');
+  if (!root) return;
+  var scope = root.closest('section') || document;
+  var ratingEl = scope.querySelector('[data-review-rating]');
+  var countEl = scope.querySelector('[data-review-count]');
+
+  fetch('/.netlify/functions/reviews', { headers: { Accept: 'application/json' } })
+    .then(function (res) { if (!res.ok) throw new Error('HTTP ' + res.status); return res.json(); })
+    .then(function (data) {
+      if (!data || typeof data !== 'object') { console.debug('ReviewStrip: unexpected payload', data); return; }
+
+      // Drive the aggregate from the fetched values (live count, not the hardcoded fallback).
+      // Accept the trimmed shape ({rating,count}) or raw Google field names.
+      var rating = typeof data.rating === 'number' ? data.rating
+        : (typeof data.averageRating === 'number' ? data.averageRating : null);
+      var count = typeof data.count === 'number' ? data.count
+        : (typeof data.userRatingCount === 'number' ? data.userRatingCount
+          : (typeof data.reviewCount === 'number' ? data.reviewCount : null));
+      if (ratingEl && rating !== null) ratingEl.textContent = String(Math.round(rating * 10) / 10);
+      if (countEl && count !== null) countEl.textContent = count.toLocaleString() + ' Google reviews';
+
+      var reviews = Array.isArray(data.reviews) ? data.reviews : [];
+      if (!reviews.length) { console.debug('ReviewStrip: payload had no reviews array', data); return; }
+
+      var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+      var slides = [];
+      reviews.forEach(function (r) {
+        if (!r) return;
+        // Normalise each review — trimmed (text/author/time) or raw Google fields.
+        var text = typeof r.text === 'string' ? r.text : (r.text && r.text.text) || '';
+        if (!text) return;
+        var author = r.author || (r.authorAttribution && r.authorAttribution.displayName) || 'Guest';
+        var time = r.time || r.relativePublishTimeDescription || '';
+        var ratingN = typeof r.rating === 'number' ? r.rating : 5;
+
+        var fig = document.createElement('figure');
+        fig.className = 'rs-slide rounded-card bg-panel p-6 shadow-sm ring-1 ring-black/5';
+
+        var n = Math.max(1, Math.min(5, Math.round(ratingN)));
+        var stars = document.createElement('div');
+        stars.className = 'text-amber-400';
+        stars.setAttribute('aria-label', 'Rated ' + n + ' out of 5');
+        stars.textContent = '★★★★★'.slice(0, n);
+
+        var q = document.createElement('blockquote');
+        q.className = 'mt-2 leading-relaxed text-body';
+        q.textContent = text;
+
+        var cap = document.createElement('figcaption');
+        cap.className = 'mt-4 text-sm text-subtle';
+        cap.textContent = author + (time ? ' · ' + time : '');
+
+        fig.appendChild(stars);
+        fig.appendChild(q);
+        fig.appendChild(cap);
+        root.appendChild(fig);
+        slides.push(fig);
+      });
+      if (!slides.length) return;
+
+      root.hidden = false;
+      var idx = 0;
+      function show(i) {
+        for (var j = 0; j < slides.length; j++) {
+          var active = j === i;
+          slides[j].classList.toggle('rs-active', active);
+          if (active) slides[j].removeAttribute('aria-hidden');
+          else slides[j].setAttribute('aria-hidden', 'true');
+        }
+      }
+      show(0);
+
+      if (reduce || slides.length < 2) return; // reduced motion or a single review: static
+
+      var paused = false;
+      window.setInterval(function () { if (paused) return; idx = (idx + 1) % slides.length; show(idx); }, 8000);
+      root.addEventListener('mouseenter', function () { paused = true; });
+      root.addEventListener('mouseleave', function () { paused = false; });
+      root.addEventListener('focusin', function () { paused = true; });
+      root.addEventListener('focusout', function () { paused = false; });
+    })
+    .catch(function (err) {
+      // Not user-visible — the static server-rendered aggregate stays. Log the reason
+      // (fetch/network/CORS/shape) so a silent failure is diagnosable.
+      if (window.console && console.debug) console.debug('ReviewStrip: live reviews unavailable —', err);
+    });
+})();
+`;
 ---
 
 <section aria-labelledby={id}>
@@ -100,138 +215,11 @@ const emptyCount = 5 - fullCount - (hasHalf ? 1 : 0);
       <>
         <div class="rs-rotator mt-6" data-review-rotator hidden />
 
-        <style is:global>
-          {`
-          .rs-rotator:not([hidden]) { display: grid; }
-          .rs-slide {
-            grid-area: 1 / 1;
-            opacity: 0;
-            visibility: hidden;
-            /* Crossfade: fade opacity, then flip visibility AFTER the fade so the
-               outgoing slide stays visible during the transition and inactive slides
-               end up out of the tab order. */
-            transition: opacity 0.6s ease, visibility 0s 0.6s;
-          }
-          .rs-slide.rs-active {
-            opacity: 1;
-            visibility: visible;
-            transition: opacity 0.6s ease, visibility 0s 0s;
-          }
-          @media (prefers-reduced-motion: reduce) {
-            .rs-slide { transition: none; }
-          }
-          `}
-        </style>
-
-        <script is:inline>
-          {`
-          (function () {
-            var root = document.querySelector('[data-review-rotator]');
-            if (!root) return;
-            var scope = root.closest('section') || document;
-            var ratingEl = scope.querySelector('[data-review-rating]');
-            var countEl = scope.querySelector('[data-review-count]');
-
-            fetch('/.netlify/functions/reviews', { headers: { Accept: 'application/json' } })
-              .then(function (res) { if (!res.ok) throw 0; return res.json(); })
-              .then(function (data) {
-                if (!data || typeof data !== 'object') {
-                  console.debug('ReviewStrip: unexpected payload', data);
-                  return;
-                }
-
-                // Drive the aggregate from the fetched values (so it shows the live count,
-                // not the hardcoded fallback). Accept the trimmed shape ({rating,count}) or
-                // raw Google field names, so a shape drift can't silently blank it.
-                var rating = typeof data.rating === 'number' ? data.rating
-                  : (typeof data.averageRating === 'number' ? data.averageRating : null);
-                var count = typeof data.count === 'number' ? data.count
-                  : (typeof data.userRatingCount === 'number' ? data.userRatingCount
-                    : (typeof data.reviewCount === 'number' ? data.reviewCount : null));
-                if (ratingEl && rating !== null) ratingEl.textContent = String(Math.round(rating * 10) / 10);
-                if (countEl && count !== null) countEl.textContent = count.toLocaleString() + ' Google reviews';
-
-                var reviews = Array.isArray(data.reviews) ? data.reviews : [];
-                if (!reviews.length) {
-                  console.debug('ReviewStrip: payload had no reviews array', data);
-                  return;
-                }
-
-                var reduce = window.matchMedia
-                  && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-
-                var slides = [];
-                reviews.forEach(function (r) {
-                  if (!r) return;
-                  // Normalise each review — trimmed shape (text/author/time) or raw Google
-                  // fields (text.text / authorAttribution.displayName / relativePublishTime…).
-                  var text = typeof r.text === 'string' ? r.text : (r.text && r.text.text) || '';
-                  if (!text) return;
-                  var author = r.author || (r.authorAttribution && r.authorAttribution.displayName) || 'Guest';
-                  var time = r.time || r.relativePublishTimeDescription || '';
-                  var ratingN = typeof r.rating === 'number' ? r.rating : 5;
-
-                  var fig = document.createElement('figure');
-                  fig.className = 'rs-slide rounded-card bg-panel p-6 shadow-sm ring-1 ring-black/5';
-
-                  var n = Math.max(1, Math.min(5, Math.round(ratingN)));
-                  var stars = document.createElement('div');
-                  stars.className = 'text-amber-400';
-                  stars.setAttribute('aria-label', 'Rated ' + n + ' out of 5');
-                  stars.textContent = '★★★★★'.slice(0, n);
-
-                  var q = document.createElement('blockquote');
-                  q.className = 'mt-2 leading-relaxed text-body';
-                  q.textContent = text;
-
-                  var cap = document.createElement('figcaption');
-                  cap.className = 'mt-4 text-sm text-subtle';
-                  cap.textContent = author + (time ? ' · ' + time : '');
-
-                  fig.appendChild(stars);
-                  fig.appendChild(q);
-                  fig.appendChild(cap);
-                  root.appendChild(fig);
-                  slides.push(fig);
-                });
-                if (!slides.length) return;
-
-                root.hidden = false;
-                var idx = 0;
-                function show(i) {
-                  for (var j = 0; j < slides.length; j++) {
-                    var active = j === i;
-                    slides[j].classList.toggle('rs-active', active);
-                    if (active) slides[j].removeAttribute('aria-hidden');
-                    else slides[j].setAttribute('aria-hidden', 'true');
-                  }
-                }
-                show(0);
-
-                // Reduced motion or a single review: show the first, no rotation.
-                if (reduce || slides.length < 2) return;
-
-                var paused = false;
-                window.setInterval(function () {
-                  if (paused) return;
-                  idx = (idx + 1) % slides.length;
-                  show(idx);
-                }, 8000);
-
-                // Pause on hover and keyboard focus within the rotator.
-                root.addEventListener('mouseenter', function () { paused = true; });
-                root.addEventListener('mouseleave', function () { paused = false; });
-                root.addEventListener('focusin', function () { paused = true; });
-                root.addEventListener('focusout', function () { paused = false; });
-              })
-              .catch(function (err) {
-                // Not user-visible — the static server-rendered aggregate stays. Log the
-                // reason (fetch/network/CORS/shape) so a silent failure is diagnosable.
-                if (window.console && console.debug) console.debug('ReviewStrip: live reviews unavailable —', err);
-              });
-          })();
-          `}
-        </script>
+        {/* set:html — NOT `<style>{`…`}</style>` / `<script>{`…`}</script>`: Astro emits
+            `{…}` inside script/style tag bodies LITERALLY (the backticks + code become
+            text), so the IIFE never executes. set:html injects the evaluated string. */}
+        <style is:global set:html={ROTATOR_CSS} />
+        <script is:inline set:html={REVIEWS_SCRIPT} />
       </>
     )
   }

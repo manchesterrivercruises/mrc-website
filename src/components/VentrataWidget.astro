@@ -66,6 +66,124 @@ const checkoutConfig = JSON.stringify({ apiKey: CHECKOUT_API_KEY, env });
 const calendarFirstConfig = calendarFirst ? { calendarFirst: true } : {};
 const embeddedConfig = JSON.stringify({ productID, embedded: true, ...calendarFirstConfig });
 const popupConfig = JSON.stringify({ productID, ...calendarFirstConfig });
+
+// Loader CSS + observer JS injected via set:html. IMPORTANT: Astro does NOT evaluate
+// `{...}` inside <script>/<style> tag bodies — `<script>{`…`}</script>` emits the
+// backticks + code LITERALLY, so the IIFE never runs. set:html sets the evaluated string
+// as element content (same pattern as the JSON-LD blocks and the ReviewStrip fix).
+const SKELETON_CSS = `aside[ventrata-embedded-widget]:has(iframe) .widget-loading { display: none; }`;
+
+const OBSERVER_SCRIPT = `
+(function () {
+  function init() {
+    var root = document.documentElement;
+    var KEY = 'ventrata-open';
+    var body = document.body;
+    if (!body) return;
+
+    // Body children present at load — anything added later is the third-party pop-up. Our
+    // own triggers/embeds live deep in the page, never as new body children.
+    var initial = new Set(Array.prototype.slice.call(body.children));
+
+    function looksVentrata(el) {
+      var hit = function (n) {
+        if (!n || n.nodeType !== 1) return false;
+        if (/ventrata|checkout/i.test(n.id || '')) return true;
+        var c = typeof n.className === 'string' ? n.className : '';
+        if (/ventrata|checkout/i.test(c)) return true;
+        var at = n.attributes;
+        if (at) for (var i = 0; i < at.length; i++) if (/ventrata|checkout/i.test(at[i].name)) return true;
+        return false;
+      };
+      if (hit(el)) return true;
+      var all = el.querySelectorAll ? el.querySelectorAll('*') : [];
+      for (var i = 0; i < all.length; i++) if (hit(all[i])) return true;
+      return false;
+    }
+
+    function shown(el) {
+      var cs = getComputedStyle(el);
+      if (cs.display === 'none' || cs.visibility === 'hidden') return false;
+      return el.getBoundingClientRect().width > 0;
+    }
+
+    var armed = false;   // a checkout opened via our trigger
+    var saw = false;     // the pop-up DOM appeared this session
+    var failsafe = 0;
+
+    // The pop-up = a visible, post-load direct body child. Prefer one carrying ventrata
+    // identity; during a trigger session accept ANY new visible body child.
+    function overlayPresent() {
+      var kids = body.children;
+      var fallback = false;
+      for (var i = 0; i < kids.length; i++) {
+        var el = kids[i];
+        if (initial.has(el) || !shown(el)) continue;
+        if (looksVentrata(el)) return true;
+        if (armed) fallback = true;
+      }
+      return fallback;
+    }
+
+    function evaluate() {
+      var present = overlayPresent();
+      if (present) saw = true;
+      if (armed && saw && !present) { armed = false; saw = false; } // opened then closed
+      root.classList.toggle(KEY, armed || present);
+    }
+
+    var raf = 0;
+    function schedule() {
+      if (!raf) raf = requestAnimationFrame(function () { raf = 0; evaluate(); });
+    }
+
+    // (1) TRIGGER — a click on any [ventrata-checkout] element opens immediately, before
+    //     the widget injects its DOM, so chrome hides with no flicker.
+    document.addEventListener('click', function (e) {
+      var t = e.target;
+      if (t && t.closest && t.closest('[ventrata-checkout]')) {
+        armed = true;
+        saw = false;
+        root.classList.add(KEY);
+        clearTimeout(failsafe);
+        // If the pop-up never opens, disarm so the chrome isn't hidden forever.
+        failsafe = window.setTimeout(function () { if (armed && !saw) { armed = false; evaluate(); } }, 5000);
+      }
+    }, true);
+
+    // Skeleton fallback: remove the "Loading…" node as soon as ANY real content appears
+    // ANYWHERE inside an embedded aside (covers a widget rendered without an iframe).
+    function hideLoadedSkeletons() {
+      var asides = document.querySelectorAll('aside[ventrata-embedded-widget]');
+      for (var i = 0; i < asides.length; i++) {
+        var aside = asides[i];
+        var skeleton = aside.querySelector('.widget-loading');
+        if (!skeleton) continue;
+        var nodes = aside.querySelectorAll('*');
+        for (var j = 0; j < nodes.length; j++) {
+          var el = nodes[j];
+          if (el === skeleton || skeleton.contains(el)) continue; // skip the skeleton itself
+          skeleton.remove();
+          break;
+        }
+      }
+    }
+
+    // (2) CLOSE (and any non-trigger auto-open, e.g. ?openWidget=true) — watch the body for
+    //     the pop-up DOM being added/removed, AND drive the skeleton fallback. ONE observer.
+    new MutationObserver(function () {
+      schedule();
+      hideLoadedSkeletons();
+    }).observe(body, { childList: true, subtree: true, attributes: true, attributeFilter: ['style', 'class', 'hidden'] });
+
+    hideLoadedSkeletons();
+    evaluate();
+  }
+
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
+  else init();
+})();
+`;
 ---
 
 {
@@ -84,137 +202,14 @@ const popupConfig = JSON.stringify({ productID, ...calendarFirstConfig });
           node landed as a direct sibling of the skeleton, which is why the skeleton stuck on
           some products. The script below is the belt-and-suspenders fallback for the (rare)
           case where the widget renders without an iframe. :has() is within our baseline. */}
-      <style is:global>
-        {`aside[ventrata-embedded-widget]:has(iframe) .widget-loading { display: none; }`}
-      </style>
+      {/* set:html — NOT `<style>{`…`}</style>` / `<script>{`…`}</script>` (Astro emits
+          those bodies LITERALLY, so nothing runs). Injects the evaluated strings above. */}
+      <style is:global set:html={SKELETON_CSS} />
 
-      {/* Ventrata checkout pop-up observer — MOVED OUT OF BaseLayout so it ships ONLY on
-          booking pages. Toggles `ventrata-open` on <html> so the pop-up owns the screen
-          (styling in global.css). Detection is IDENTITY-based, not size-based: the live
-          pop-up is a centred ~80%-wide panel, so old size thresholds never matched.
-          is:inline + DOMContentLoaded-guarded because it now lives in <head>. */}
-      <script is:inline>
-        {`
-        (function () {
-          function init() {
-            var root = document.documentElement;
-            var KEY = 'ventrata-open';
-            var body = document.body;
-            if (!body) return;
-
-            // Body children present at load — anything added later is the third-party
-            // pop-up. Our own triggers/embeds live deep in the page, never as new body
-            // children, so they are excluded automatically.
-            var initial = new Set(Array.prototype.slice.call(body.children));
-
-            function looksVentrata(el) {
-              var hit = function (n) {
-                if (!n || n.nodeType !== 1) return false;
-                if (/ventrata|checkout/i.test(n.id || '')) return true;
-                var c = typeof n.className === 'string' ? n.className : '';
-                if (/ventrata|checkout/i.test(c)) return true;
-                var at = n.attributes;
-                if (at) for (var i = 0; i < at.length; i++) if (/ventrata|checkout/i.test(at[i].name)) return true;
-                return false;
-              };
-              if (hit(el)) return true;
-              var all = el.querySelectorAll ? el.querySelectorAll('*') : [];
-              for (var i = 0; i < all.length; i++) if (hit(all[i])) return true;
-              return false;
-            }
-
-            function shown(el) {
-              var cs = getComputedStyle(el);
-              if (cs.display === 'none' || cs.visibility === 'hidden') return false;
-              return el.getBoundingClientRect().width > 0;
-            }
-
-            var armed = false;   // a checkout opened via our trigger
-            var saw = false;     // the pop-up DOM appeared this session
-            var failsafe = 0;
-
-            // The pop-up = a visible, post-load direct body child. Prefer one carrying
-            // ventrata identity; during a trigger session accept ANY new visible body
-            // child (no size threshold) so the narrow centred panel still registers.
-            function overlayPresent() {
-              var kids = body.children;
-              var fallback = false;
-              for (var i = 0; i < kids.length; i++) {
-                var el = kids[i];
-                if (initial.has(el) || !shown(el)) continue;
-                if (looksVentrata(el)) return true;
-                if (armed) fallback = true;
-              }
-              return fallback;
-            }
-
-            function evaluate() {
-              var present = overlayPresent();
-              if (present) saw = true;
-              if (armed && saw && !present) { armed = false; saw = false; } // opened then closed
-              root.classList.toggle(KEY, armed || present);
-            }
-
-            var raf = 0;
-            function schedule() {
-              if (!raf) raf = requestAnimationFrame(function () { raf = 0; evaluate(); });
-            }
-
-            // (1) TRIGGER — a click on any [ventrata-checkout] element opens immediately,
-            //     before the widget injects its DOM, so chrome hides with no flicker.
-            document.addEventListener('click', function (e) {
-              var t = e.target;
-              if (t && t.closest && t.closest('[ventrata-checkout]')) {
-                armed = true;
-                saw = false;
-                root.classList.add(KEY);
-                clearTimeout(failsafe);
-                // If the pop-up never opens, disarm so the chrome isn't hidden forever.
-                failsafe = window.setTimeout(function () { if (armed && !saw) { armed = false; evaluate(); } }, 5000);
-              }
-            }, true);
-
-            // Skeleton fallback: remove the "Loading…" node as soon as ANY real content
-            // appears ANYWHERE inside an embedded aside (not only as a direct child). Covers
-            // the case the CSS :has(iframe) rule can't — a widget rendered without an iframe.
-            function hideLoadedSkeletons() {
-              var asides = document.querySelectorAll('aside[ventrata-embedded-widget]');
-              for (var i = 0; i < asides.length; i++) {
-                var aside = asides[i];
-                var skeleton = aside.querySelector('.widget-loading');
-                if (!skeleton) continue;
-                var nodes = aside.querySelectorAll('*');
-                for (var j = 0; j < nodes.length; j++) {
-                  var el = nodes[j];
-                  if (el === skeleton || skeleton.contains(el)) continue; // skip the skeleton itself
-                  skeleton.remove();
-                  break;
-                }
-              }
-            }
-
-            // (2) CLOSE (and any non-trigger auto-open, e.g. ?openWidget=true) — watch the
-            //     body for the pop-up DOM being added/removed, AND drive the skeleton
-            //     fallback above. No size thresholds. ONE shared observer for both jobs.
-            new MutationObserver(function () {
-              schedule();
-              hideLoadedSkeletons();
-            }).observe(body, {
-              childList: true,
-              subtree: true,
-              attributes: true,
-              attributeFilter: ['style', 'class', 'hidden'],
-            });
-
-            hideLoadedSkeletons();
-            evaluate();
-          }
-
-          if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
-          else init();
-        })();
-        `}
-      </script>
+      {/* Ventrata checkout pop-up observer — ships ONLY on booking pages. Toggles
+          `ventrata-open` on <html> so the pop-up owns the screen (styling in global.css).
+          Identity-based detection; DOMContentLoaded-guarded because it lives in <head>. */}
+      <script is:inline set:html={OBSERVER_SCRIPT} />
     </Fragment>
   )
 }
