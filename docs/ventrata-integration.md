@@ -295,7 +295,13 @@ Note: the correct calendar endpoint is `/octo/availability/calendar` — not `/o
 ### Product options
 
 - Every availability request needs both `productId` and `optionId`
-- Where a product has no options, use `DEFAULT` as the optionId
+- Where a product has no options, the OCTO spec allows `DEFAULT` as the optionId — **but
+  MRC's products reject it.** Confirmed against the live MRC key (2026-07-06): both
+  `/octo/availability` and `/octo/availability/calendar` return `400 INVALID_OPTION_ID`
+  ("The optionId was missing or invalid") for `optionId: "DEFAULT"`. **Callers MUST supply
+  each product's REAL optionId**, resolved from `/octo/products` (`options[].id`, preferring
+  the option with `default: true`). See `netlify/functions/day-finder.ts`, which builds a
+  productId → optionId map from `/products` before fanning availability.
 - Adult/child ticket types are **units**, not options — handle separately for pricing context
 
 ---

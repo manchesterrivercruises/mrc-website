@@ -32,6 +32,9 @@ export default withGuard(async (request: Request): Promise<Response> => {
   if (!parsed.ok) {
     return jsonError(parsed.message, parsed.status);
   }
+  // NOTE: optionId must be a REAL option id (resolve via /octo/products → options[].id).
+  // Validation still accepts "DEFAULT" for OCTO-spec compliance, but MRC's products REJECT
+  // it upstream (400 INVALID_OPTION_ID). See docs/ventrata-integration.md → Product options.
   const { productId, optionId, localDateStart, localDateEnd } = parsed.value;
 
   try {
