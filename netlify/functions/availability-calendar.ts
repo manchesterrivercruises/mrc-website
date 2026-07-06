@@ -30,6 +30,9 @@ export default withGuard(async (request: Request): Promise<Response> => {
   if (!parsed.ok) {
     return jsonError(parsed.message, parsed.status);
   }
+  // NOTE: optionId must be a REAL option id (resolve via /octo/products → options[].id).
+  // Validation still accepts "DEFAULT" for OCTO-spec compliance, but MRC's products REJECT
+  // it upstream (400 INVALID_OPTION_ID). See docs/ventrata-integration.md → Product options.
   const { productId, optionId, localDateStart, localDateEnd } = parsed.value;
 
   try {
@@ -38,7 +41,12 @@ export default withGuard(async (request: Request): Promise<Response> => {
       headers: {
         Authorization: `Bearer ${key}`,
         'Content-Type': 'application/json',
+        // MANDATORY on every OCTO request — without it the API returns 400 CAPABILITIES.
+        // Confirmed against the live test API 2026-07-06 (see docs/ventrata-integration.md).
+        'Octo-Capabilities': 'octo/pricing',
       },
+      // Request fields are localDateStart / localDateEnd, DATE-ONLY (YYYY-MM-DD) —
+      // empirically confirmed; the API rejects localDateTimeStart/localDateTimeEnd.
       body: JSON.stringify({ productId, optionId, localDateStart, localDateEnd }),
     });
 

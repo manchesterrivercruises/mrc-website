@@ -7,6 +7,7 @@ import EventCard from '../components/EventCard.astro';
 import ProductCard from '../components/ProductCard.astro';
 import StarRating from '../components/StarRating.astro';
 import VentrataWidget from '../components/VentrataWidget.astro';
+import DateFinder from '../components/DateFinder.astro';
 import SocialBand from '../components/SocialBand.astro';
 import { site } from '../data/site';
 
@@ -172,20 +173,13 @@ const structuredData = {
       <p class="mx-auto mt-3 max-w-xl text-lg leading-relaxed text-white/80">
         Tell us when you're free — see everything sailing that day.
       </p>
-      {/*
-        Calendar-first Ventrata checkout: opens the widget on the date step so customers
-        browse by date. Per docs/ventrata-integration.md → "Calendar First mode".
-        ⚠ CONFIRM WITH THE VENTRATA ACCOUNT MANAGER before launch (tracked in the
-           account-manager email thread):
-             - the exact data-config key for calendar-first (calendarFirst vs a versioned alias)
-             - which product(s) to surface on the date step and their ordering
-        Anchored to the City River Tour product for now.
+      {/* Desktop gets the OCTO-powered date finder (month calendar + selected day's live
+          departures/pricing). Mobile keeps the gold pop-up trigger — a full calendar +
+          departures panel would dominate a phone homepage. Both rely on the VentrataWidget
+          loader already on this page (checkout script + observer) for the pop-up. */}
 
-        Desktop gets the embedded date-led widget; mobile keeps the gold pop-up trigger
-        (a min-h-[50rem] embed would dominate a phone homepage).
-      */}
-
-      {/* Mobile (< md): pop-up trigger */}
+      {/* Mobile (< md): pop-up trigger (calendar-first Ventrata checkout).
+          ⚠ calendarFirst data-config key still pending Ventrata account-manager confirmation. */}
       <div class="mt-8 flex justify-center md:hidden">
         <VentrataWidget
           mode="popup"
@@ -195,14 +189,9 @@ const structuredData = {
         />
       </div>
 
-      {/* Desktop (md+): embedded calendar-first widget, capped + centred. The widget owns
-          its min-h-[50rem] h-auto sizing and loading skeleton (VentrataWidget embedded). */}
-      <div class="mx-auto mt-8 hidden max-w-3xl md:block">
-        <VentrataWidget
-          mode="embedded"
-          productID="ef45d8bd-529c-4dae-9c35-cd1b8e4e0a75"
-          calendarFirst
-        />
+      {/* Desktop (md+): OCTO-powered date finder — calendar left, departures right. */}
+      <div class="mt-8 hidden text-left md:block">
+        <DateFinder />
       </div>
     </div>
   </section>

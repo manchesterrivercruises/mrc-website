@@ -41,27 +41,59 @@ const fullCount = Math.floor(rating);
 const hasHalf = rating - fullCount >= 0.5;
 const emptyCount = 5 - fullCount - (hasHalf ? 1 : 0);
 
-// Client script + rotator CSS injected via set:html. IMPORTANT: Astro does NOT evaluate
+// Carousel CSS + client script injected via set:html. IMPORTANT: Astro does NOT evaluate
 // `{...}` expressions inside <script>/<style> tag bodies — writing `<script>{`…`}</script>`
 // emits the backticks + code LITERALLY, so the IIFE never runs (it becomes a template
 // string). set:html evaluates the expression and sets it as the element's content, the
 // same proven pattern the JSON-LD blocks use.
-const ROTATOR_CSS = `
-  .rs-rotator:not([hidden]) { display: grid; }
-  .rs-slide {
-    grid-area: 1 / 1;
-    opacity: 0;
-    visibility: hidden;
-    /* Crossfade: fade opacity, then flip visibility AFTER the fade so the outgoing slide
-       stays visible during the transition and inactive slides leave the tab order. */
-    transition: opacity 0.6s ease, visibility 0s 0.6s;
+//
+// User-controlled swipeable carousel: a horizontal scroll-snap track (native touch swipe),
+// prev/next arrows (desktop), and dot indicators. ALL cards stay in the DOM and reachable
+// via scroll — no hidden/inert dance. 8s auto-advance stops permanently on first user
+// interaction; reduced-motion disables auto-advance entirely.
+const CAROUSEL_CSS = `
+  .rs-track {
+    display: flex;
+    gap: 1rem;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scroll-behavior: smooth;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    padding-bottom: 0.25rem;
   }
-  .rs-slide.rs-active {
-    opacity: 1;
-    visibility: visible;
-    transition: opacity 0.6s ease, visibility 0s 0s;
+  .rs-track::-webkit-scrollbar { display: none; }
+  .rs-slide { scroll-snap-align: center; flex: 0 0 100%; min-width: 0; }
+
+  .rs-controls { display: flex; align-items: center; justify-content: center; gap: 0.75rem; margin-top: 1rem; }
+  .rs-arrow {
+    display: none;
+    align-items: center; justify-content: center;
+    width: 2.5rem; height: 2.5rem; flex: none;
+    border-radius: 9999px;
+    border: 1px solid rgba(0, 0, 0, 0.15);
+    background: #fff;
+    color: var(--color-ink);
+    font-size: 1.5rem; line-height: 1;
+    cursor: pointer;
   }
-  @media (prefers-reduced-motion: reduce) { .rs-slide { transition: none; } }
+  .rs-arrow:hover:not(:disabled) { border-color: var(--color-primary); color: var(--color-primary); }
+  .rs-arrow:disabled { opacity: 0.35; cursor: default; }
+  @media (min-width: 640px) { .rs-arrow { display: inline-flex; } }
+
+  .rs-dots { display: flex; align-items: center; gap: 0.5rem; }
+  .rs-dot {
+    width: 0.5rem; height: 0.5rem; padding: 0; border: none; cursor: pointer;
+    border-radius: 9999px;
+    background: rgba(0, 0, 0, 0.2);
+    transition: width 0.2s ease, background-color 0.2s ease;
+  }
+  .rs-dot[aria-current="true"] { width: 1.25rem; background: var(--color-primary); }
+
+  .rs-arrow:focus-visible, .rs-dot:focus-visible { outline: 2px solid var(--color-primary); outline-offset: 2px; }
+
+  @media (prefers-reduced-motion: reduce) { .rs-track { scroll-behavior: auto; } }
 `;
 
 const REVIEWS_SCRIPT = `
@@ -92,6 +124,10 @@ const REVIEWS_SCRIPT = `
 
       var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
+      // Build the scroll-snap track + slides. All cards stay in the DOM.
+      var track = document.createElement('div');
+      track.className = 'rs-track';
+
       var slides = [];
       reviews.forEach(function (r) {
         if (!r) return;
@@ -104,6 +140,7 @@ const REVIEWS_SCRIPT = `
 
         var fig = document.createElement('figure');
         fig.className = 'rs-slide rounded-card bg-panel p-6 shadow-sm ring-1 ring-black/5';
+        fig.setAttribute('aria-roledescription', 'slide');
 
         var n = Math.max(1, Math.min(5, Math.round(ratingN)));
         var stars = document.createElement('div');
@@ -122,31 +159,85 @@ const REVIEWS_SCRIPT = `
         fig.appendChild(stars);
         fig.appendChild(q);
         fig.appendChild(cap);
-        root.appendChild(fig);
+        track.appendChild(fig);
         slides.push(fig);
       });
       if (!slides.length) return;
 
+      var total = slides.length;
+      slides.forEach(function (s, i) { s.setAttribute('aria-label', 'Review ' + (i + 1) + ' of ' + total); });
+
+      root.appendChild(track);
       root.hidden = false;
-      var idx = 0;
-      function show(i) {
-        for (var j = 0; j < slides.length; j++) {
-          var active = j === i;
-          slides[j].classList.toggle('rs-active', active);
-          if (active) slides[j].removeAttribute('aria-hidden');
-          else slides[j].setAttribute('aria-hidden', 'true');
-        }
+
+      if (total < 2) return; // single review: no controls / auto-advance needed
+
+      // Controls: prev arrow · dots · next arrow.
+      var controls = document.createElement('div');
+      controls.className = 'rs-controls';
+
+      var prev = document.createElement('button');
+      prev.type = 'button'; prev.className = 'rs-arrow rs-prev';
+      prev.setAttribute('aria-label', 'Previous review'); prev.textContent = '‹';
+
+      var next = document.createElement('button');
+      next.type = 'button'; next.className = 'rs-arrow rs-next';
+      next.setAttribute('aria-label', 'Next review'); next.textContent = '›';
+
+      var dotsWrap = document.createElement('div');
+      dotsWrap.className = 'rs-dots';
+      var dots = [];
+      for (var di = 0; di < total; di++) {
+        (function (i) {
+          var d = document.createElement('button');
+          d.type = 'button'; d.className = 'rs-dot';
+          d.setAttribute('aria-label', 'Go to review ' + (i + 1));
+          d.addEventListener('click', function () { goTo(i); });
+          dotsWrap.appendChild(d);
+          dots.push(d);
+        })(di);
       }
-      show(0);
 
-      if (reduce || slides.length < 2) return; // reduced motion or a single review: static
+      controls.appendChild(prev);
+      controls.appendChild(dotsWrap);
+      controls.appendChild(next);
+      root.appendChild(controls);
 
-      var paused = false;
-      window.setInterval(function () { if (paused) return; idx = (idx + 1) % slides.length; show(idx); }, 8000);
-      root.addEventListener('mouseenter', function () { paused = true; });
-      root.addEventListener('mouseleave', function () { paused = false; });
-      root.addEventListener('focusin', function () { paused = true; });
-      root.addEventListener('focusout', function () { paused = false; });
+      var current = 0;
+      function goTo(i) {
+        if (i < 0) i = 0;
+        if (i > total - 1) i = total - 1;
+        slides[i].scrollIntoView({ inline: 'center', block: 'nearest', behavior: reduce ? 'auto' : 'smooth' });
+      }
+      function updateUI(i) {
+        current = i;
+        for (var j = 0; j < total; j++) dots[j].setAttribute('aria-current', j === i ? 'true' : 'false');
+        prev.disabled = i === 0;
+        next.disabled = i === total - 1;
+      }
+      prev.addEventListener('click', function () { goTo(current - 1); });
+      next.addEventListener('click', function () { goTo(current + 1); });
+
+      // Track the centred slide (drives dots + arrow disabled state).
+      var io = new IntersectionObserver(function (entries) {
+        var best = null;
+        entries.forEach(function (e) {
+          if (e.isIntersecting && (!best || e.intersectionRatio > best.intersectionRatio)) best = e;
+        });
+        if (best) { var i = slides.indexOf(best.target); if (i >= 0) updateUI(i); }
+      }, { root: track, threshold: [0.5, 0.75, 1] });
+      slides.forEach(function (s) { io.observe(s); });
+      updateUI(0);
+
+      // Auto-advance (8s) — disabled under reduced motion; pauses PERMANENTLY on the first
+      // user interaction (swipe / arrow / dot / keyboard). Programmatic scrolls don't fire
+      // pointerdown, so auto-advance itself never trips the pause.
+      if (!reduce) {
+        var timer = window.setInterval(function () { goTo((current + 1) % total); }, 8000);
+        var stop = function () { if (timer) { clearInterval(timer); timer = null; } };
+        root.addEventListener('pointerdown', stop, { once: true });
+        root.addEventListener('keydown', stop, { once: true });
+      }
     })
     .catch(function (err) {
       // Not user-visible — the static server-rendered aggregate stays. Log the reason
@@ -208,17 +299,24 @@ const REVIEWS_SCRIPT = `
     )
   }
 
-  {/* Live reviews rotator — populated by the script below on a successful fetch. Empty +
+  {/* Live reviews carousel — populated by the script below on a successful fetch. Empty +
       hidden until then, so the static aggregate above is the SEO/no-JS baseline. */}
   {
     live && (
       <>
-        <div class="rs-rotator mt-6" data-review-rotator hidden />
+        <div
+          class="rs-carousel mt-6"
+          data-review-rotator
+          role="region"
+          aria-roledescription="carousel"
+          aria-label="Customer reviews"
+          hidden
+        />
 
         {/* set:html — NOT `<style>{`…`}</style>` / `<script>{`…`}</script>`: Astro emits
             `{…}` inside script/style tag bodies LITERALLY (the backticks + code become
             text), so the IIFE never executes. set:html injects the evaluated string. */}
-        <style is:global set:html={ROTATOR_CSS} />
+        <style is:global set:html={CAROUSEL_CSS} />
         <script is:inline set:html={REVIEWS_SCRIPT} />
       </>
     )

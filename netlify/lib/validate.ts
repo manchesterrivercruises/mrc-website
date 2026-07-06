@@ -102,3 +102,33 @@ export async function readAvailabilityInput(request: Request): Promise<Validatio
     value: { productId, optionId: resolvedOptionId, localDateStart, localDateEnd },
   };
 }
+
+// ── Day-finder validation ────────────────────────────────────────────────────
+// The day-finder function is a GET with EITHER ?month=YYYY-MM (which dates have any
+// availability) OR ?date=YYYY-MM-DD (that day's departures) — exactly one, never both.
+
+const MONTH_RE = /^\d{4}-\d{2}$/;
+
+export type DayFinderResult =
+  | { ok: true; value: { mode: 'month'; month: string } | { mode: 'day'; date: string } }
+  | { ok: false; status: number; message: string };
+
+export function readDayFinderQuery(url: URL): DayFinderResult {
+  const month = url.searchParams.get('month');
+  const date = url.searchParams.get('date');
+  const bad: DayFinderResult = { ok: false, status: 400, message: 'Invalid request' };
+
+  // Exactly one of month/date.
+  if ((month && date) || (!month && !date)) return bad;
+
+  if (month) {
+    if (!MONTH_RE.test(month)) return bad;
+    const [y, m] = month.split('-').map(Number);
+    if (m < 1 || m > 12 || y < 2024 || y > 2032) return bad;
+    return { ok: true, value: { mode: 'month', month } };
+  }
+
+  // date — reuse the strict ISO-date parser (rejects impossible calendar dates).
+  if (parseIsoDate(date as string) === null) return bad;
+  return { ok: true, value: { mode: 'day', date: date as string } };
+}

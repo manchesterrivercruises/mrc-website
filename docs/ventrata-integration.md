@@ -230,8 +230,57 @@ MRC's account. See `docs/integrations.md` for the full GTM architecture.
 
 Base URL: `https://api.ventrata.com/octo`
 Auth: `Authorization: Bearer <VENTRATA_OCTO_KEY>`
+Capabilities: `Octo-Capabilities: octo/pricing` — **required on every request** (see below).
 
 > **Note:** The current OCTO key in `.env.example` is Ventrata's test key (EdinExplore fictional supplier). It is useful for testing function architecture but will not return real MRC products. The live MRC OCTO key must be obtained from the MRC Ventrata account before launch.
+
+### Mandatory `Octo-Capabilities` header
+
+**Every** OCTO request (products, availability, availability-calendar) MUST send an
+`Octo-Capabilities` header (or `_capabilities` query param) declaring the capabilities it
+needs — otherwise the API returns `400 BAD_REQUEST` / `CAPABILITIES` ("Every request must
+specify what capabilities they require…"). We send `octo/pricing`, which also enriches the
+response with pricing. All three Netlify Functions include this header.
+
+### Request field names — confirmed (2026-07-06)
+
+> **Confirmed empirically against the live test API (EdinExplore key) on 2026-07-06.**
+> Ventrata's dashboard docs show `localDateTimeStart` / `localDateTimeEnd`, but those are
+> **response** fields (each returned slot carries them) — they are **NOT** accepted as
+> request params. The availability request body uses **date-only** fields:
+>
+> - `localDateStart` / `localDateEnd` as `YYYY-MM-DD` → **accepted (200)** on both
+>   `/octo/availability` and `/octo/availability/calendar`.
+> - `localDateTimeStart` / `localDateTimeEnd` (with or without a `T…` time) → **rejected
+>   (400)**: `AVAILABILITY_FIELDS_REQUIRED` / `param … invalid: localDateStart`.
+>
+> So our public function interface stays date-only (`YYYY-MM-DD`) and maps straight through
+> to `localDateStart` / `localDateEnd` — **no server-side time expansion is needed.** (The
+> API does also accept a full `…T00:00:00` value in those same date fields, but date-only
+> is the documented, simplest form.)
+
+### Live MRC key & product allowlist — verified (2026-07-06)
+
+> **The live MRC OCTO key was verified against `/octo/products` (with the
+> `Octo-Capabilities` header) on 2026-07-06.** It authenticates (200) and returns **37**
+> active products.
+>
+> - **Allowlist is correct.** All **19** IDs in `netlify/lib/products.ts`
+>   (`PUBLIC_PRODUCT_IDS`) exist on the live account — no stale/wrong IDs.
+> - The other **18** live products are all intentionally excluded and match the
+>   "Not on public website" list in `.env.example` (Quick Pay Tour, Old Trafford Ferry,
+>   City River - Return, both Private Hires, MUFC Membership discount, Wizards & Fairies,
+>   Halloween, Rugby Old Trafford, Father's Day Cruise, Mother's Day (alt), Mothering
+>   Sunday, Quays Trips, Evening Cruise, Broadway Boat Party, Heritage Cruise, Santa SEN,
+>   Quick Pay Tour 30%). No public product is missing from the allowlist.
+> - **Pricing is provisioned** (`octo/pricing` capability): real prices come back at the
+>   **unit** level as `unit.pricingFrom` — e.g. Adult `{ original: 4500, retail: 4500,
+>   currency: "GBP", currencyPrecision: 2 }` → **£45.00**. Product/option carry
+>   `pricingPer` / `hidePricingFrom` metadata; the numeric price sits on the units.
+>
+> ⚠ Note: our `products` proxy filter (`filterProduct` in `netlify/lib/products.ts`)
+> currently drops `options[].units`, so pricing is **not yet surfaced** to the frontend.
+> Add units/`pricingFrom` to the projection when wiring live pricing (build sequence step 9).
 
 ### Endpoints
 
@@ -246,7 +295,13 @@ Note: the correct calendar endpoint is `/octo/availability/calendar` — not `/o
 ### Product options
 
 - Every availability request needs both `productId` and `optionId`
-- Where a product has no options, use `DEFAULT` as the optionId
+- Where a product has no options, the OCTO spec allows `DEFAULT` as the optionId — **but
+  MRC's products reject it.** Confirmed against the live MRC key (2026-07-06): both
+  `/octo/availability` and `/octo/availability/calendar` return `400 INVALID_OPTION_ID`
+  ("The optionId was missing or invalid") for `optionId: "DEFAULT"`. **Callers MUST supply
+  each product's REAL optionId**, resolved from `/octo/products` (`options[].id`, preferring
+  the option with `default: true`). See `netlify/functions/day-finder.ts`, which builds a
+  productId → optionId map from `/products` before fanning availability.
 - Adult/child ticket types are **units**, not options — handle separately for pricing context
 
 ---
@@ -271,10 +326,13 @@ Three functions proxy all OCTO API calls. The frontend never calls Ventrata dire
 Availability is micro-cached to protect against traffic spikes (matchdays, Christmas booking surges).
 Final booking availability is always confirmed inside the Ventrata checkout widget.
 
+All three send the mandatory `Octo-Capabilities: octo/pricing` header (see above).
+
 ### products function
 
 ```typescript
 // GET /octo/products
+// Header: Octo-Capabilities: octo/pricing (required)
 // Returns all active products with their options
 // Cache: 1 hour
 ```
@@ -283,8 +341,9 @@ Final booking availability is always confirmed inside the Ventrata checkout widg
 
 ```typescript
 // POST /octo/availability
-// Body: { productId, optionId, localDateStart, localDateEnd }
-// Returns: availability slots with capacity
+// Header: Octo-Capabilities: octo/pricing (required)
+// Body: { productId, optionId, localDateStart, localDateEnd }   // dates: YYYY-MM-DD
+// Returns: availability slots with capacity (each slot has localDateTimeStart/End)
 // Cache: 1-3 minutes SWR
 ```
 
@@ -292,8 +351,9 @@ Final booking availability is always confirmed inside the Ventrata checkout widg
 
 ```typescript
 // POST /octo/availability/calendar
-// Body: { productId, optionId, localDateStart, localDateEnd }
-// Returns: month-view date availability
+// Header: Octo-Capabilities: octo/pricing (required)
+// Body: { productId, optionId, localDateStart, localDateEnd }   // dates: YYYY-MM-DD
+// Returns: month-view date availability (per-date localDate + availabilityLocalStartTimes)
 // Cache: 1-3 minutes SWR
 ```
 

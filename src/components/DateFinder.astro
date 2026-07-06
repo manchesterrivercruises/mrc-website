@@ -1,0 +1,251 @@
+---
+import { getCollection } from 'astro:content';
+import CTAButton from './CTAButton.astro';
+import { PRODUCT_IMAGES } from '../data/octoProductImages';
+
+// OCTO-powered "Find your date": month calendar (which dates have availability) + the
+// selected day's departures (time, from-price, links). Progressive enhancement over
+// /.netlify/functions/day-finder — no JS or a function error falls back to a
+// "Browse What's On" CTA (the static default).
+//
+// Astro inline-script rule: script + CSS injected via set:html (Astro emits `{`…`}` inside
+// <script>/<style> bodies literally, so the IIFE would never run). The productId → title /
+// product-page href / temp image map is built at BUILD TIME and interpolated into the script.
+
+const events = await getCollection('events', ({ data }) => !data.draft);
+
+// productId -> { title, href, image? }
+const meta: Record<string, { title: string; href: string; image?: string }> = {};
+meta['ef45d8bd-529c-4dae-9c35-cd1b8e4e0a75'] = { title: 'City River Tour', href: '/city-river-tour' };
+meta['458c8d36-8268-481d-ae47-491b41508b8e'] = { title: 'Boat to Old Trafford', href: '/boat-to-old-trafford' };
+for (const e of events) {
+  const pid = e.data.ventrataProductId;
+  if (pid) meta[pid] = { title: e.data.title, href: `/cruises/${e.id}` };
+}
+for (const [pid, url] of Object.entries(PRODUCT_IMAGES)) {
+  if (meta[pid]) meta[pid].image = url;
+  else meta[pid] = { title: 'Cruise', href: '/whats-on', image: url };
+}
+
+const DATEFINDER_CSS = `
+  .df-cal-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.75rem; }
+  .df-cal-title { font-weight: 700; color: var(--color-ink); }
+  .df-nav { width: 2rem; height: 2rem; flex: none; border-radius: 9999px; border: 1px solid rgba(0,0,0,.15);
+    background: #fff; color: var(--color-ink); font-size: 1.25rem; line-height: 1; cursor: pointer; }
+  .df-nav:hover:not(:disabled) { border-color: var(--color-primary); color: var(--color-primary); }
+  .df-nav:disabled { opacity: .35; cursor: default; }
+  .df-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 0.25rem; }
+  .df-wd { text-align: center; font-size: 0.7rem; text-transform: uppercase; letter-spacing: .04em; color: var(--color-subtle); padding: 0.25rem 0; }
+  .df-blank { aspect-ratio: 1; }
+  .df-day { aspect-ratio: 1; display: flex; align-items: center; justify-content: center; position: relative;
+    border: none; background: transparent; border-radius: 0.5rem; font-size: 0.9rem; color: var(--color-ink); cursor: pointer; }
+  .df-day:disabled { color: rgba(0,0,0,.22); cursor: default; }
+  .df-day.df-avail { background: var(--color-panel); font-weight: 600; }
+  .df-day.df-avail::after { content: ''; position: absolute; bottom: 5px; left: 50%; transform: translateX(-50%);
+    width: 5px; height: 5px; border-radius: 9999px; background: var(--color-primary); }
+  .df-day[aria-pressed="true"] { background: var(--color-primary); color: #fff; }
+  .df-day[aria-pressed="true"]::after { background: #fff; }
+  .df-day:focus-visible, .df-nav:focus-visible { outline: 2px solid var(--color-primary); outline-offset: 2px; }
+
+  .df-panel-title { font-weight: 700; color: var(--color-ink); }
+  .df-dep-list { display: flex; flex-direction: column; gap: 0.75rem; margin-top: 0.75rem; }
+  .df-dep { display: flex; gap: 0.75rem; padding: 0.75rem; border-radius: 0.75rem; background: var(--color-panel); }
+  .df-dep-img { width: 4rem; height: 4rem; flex: none; border-radius: 0.5rem; object-fit: cover; }
+  .df-dep-ph { background: linear-gradient(135deg, var(--color-panel), rgba(0,0,0,.08)); }
+  .df-dep-body { min-width: 0; flex: 1; }
+  .df-dep-title { font-weight: 600; color: var(--color-ink); }
+  .df-dep-meta { margin-top: 0.125rem; font-size: 0.85rem; color: var(--color-subtle); }
+  .df-dep-actions { margin-top: 0.5rem; display: flex; flex-wrap: wrap; align-items: center; gap: 0.75rem; }
+  .df-dep-info { font-size: 0.85rem; font-weight: 500; color: var(--color-primary); text-underline-offset: 2px; }
+  .df-dep-info:hover { text-decoration: underline; }
+  .df-dep-book { font-size: 0.8rem; padding: 0.35rem 0.75rem; }
+
+  .df-skel { display: block; background: linear-gradient(90deg, rgba(0,0,0,.06), rgba(0,0,0,.12), rgba(0,0,0,.06));
+    background-size: 200% 100%; border-radius: 0.375rem; animation: dfShimmer 1.2s ease-in-out infinite; }
+  @keyframes dfShimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+  @media (prefers-reduced-motion: reduce) { .df-skel { animation: none; } }
+`;
+
+const DATEFINDER_SCRIPT = `
+(function () {
+  var META = ${JSON.stringify(meta)};
+  var root = document.querySelector('[data-datefinder]');
+  if (!root) return;
+  var fallback = root.querySelector('[data-df-fallback]');
+  var app = root.querySelector('[data-df-app]');
+  var calEl = root.querySelector('[data-df-calendar]');
+  var panelEl = root.querySelector('[data-df-panel]');
+  if (!app || !calEl || !panelEl) return;
+
+  var WD = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+  var MO = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+  var now = new Date();
+  var minY = now.getFullYear(), minM = now.getMonth();
+  var viewY = minY, viewM = minM, maxMonths = 12;
+  var selectedDate = null;
+  var availByMonth = {};
+
+  function pad(n){ return (n<10?'0':'')+n; }
+  function ym(y,m){ return y+'-'+pad(m+1); }
+  function ds(y,m,d){ return y+'-'+pad(m+1)+'-'+pad(d); }
+  function offset(y,m){ return (y-minY)*12+(m-minM); }
+  function money(v){ return Number.isInteger(v) ? String(v) : v.toFixed(2); }
+
+  function get(qs){
+    return fetch('/.netlify/functions/day-finder?'+qs, { headers: { Accept: 'application/json' } })
+      .then(function(r){ if(!r.ok) throw new Error('HTTP '+r.status); return r.json(); });
+  }
+
+  function calSkeleton(){
+    calEl.innerHTML = '';
+    var head = document.createElement('div'); head.className='df-cal-head';
+    var s = document.createElement('span'); s.className='df-skel'; s.style.width='9rem'; s.style.height='1.4rem'; head.appendChild(s);
+    calEl.appendChild(head);
+    var g = document.createElement('div'); g.className='df-grid';
+    for (var i=0;i<42;i++){ var c=document.createElement('span'); c.className='df-skel'; c.style.aspectRatio='1'; c.style.borderRadius='0.5rem'; g.appendChild(c); }
+    calEl.appendChild(g);
+  }
+
+  function renderCalendar(){
+    var key = ym(viewY,viewM);
+    var avail = availByMonth[key] || {};
+    calEl.innerHTML = '';
+    var head = document.createElement('div'); head.className='df-cal-head';
+    var prev = document.createElement('button'); prev.type='button'; prev.className='df-nav'; prev.setAttribute('aria-label','Previous month'); prev.textContent='\\u2039'; prev.disabled = offset(viewY,viewM) <= 0;
+    var title = document.createElement('div'); title.className='df-cal-title'; title.textContent = MO[viewM]+' '+viewY;
+    var next = document.createElement('button'); next.type='button'; next.className='df-nav'; next.setAttribute('aria-label','Next month'); next.textContent='\\u203a'; next.disabled = offset(viewY,viewM) >= maxMonths;
+    prev.addEventListener('click', function(){ shift(-1); });
+    next.addEventListener('click', function(){ shift(1); });
+    head.appendChild(prev); head.appendChild(title); head.appendChild(next);
+    calEl.appendChild(head);
+    var grid = document.createElement('div'); grid.className='df-grid';
+    for (var w=0; w<7; w++){ var wd=document.createElement('div'); wd.className='df-wd'; wd.setAttribute('aria-hidden','true'); wd.textContent=WD[w]; grid.appendChild(wd); }
+    var startWd = (new Date(Date.UTC(viewY, viewM, 1)).getUTCDay()+6)%7;
+    var days = new Date(Date.UTC(viewY, viewM+1, 0)).getUTCDate();
+    for (var b=0;b<startWd;b++){ var bl=document.createElement('span'); bl.className='df-blank'; grid.appendChild(bl); }
+    var todayStr = ds(now.getFullYear(), now.getMonth(), now.getDate());
+    for (var d=1; d<=days; d++){
+      var cur = ds(viewY, viewM, d);
+      var btn = document.createElement('button'); btn.type='button'; btn.className='df-day'; btn.textContent=String(d);
+      if (avail[cur] && cur >= todayStr){
+        btn.classList.add('df-avail');
+        btn.setAttribute('aria-label', 'Departures on '+cur);
+        (function(cur, btn){ btn.addEventListener('click', function(){ selectDay(cur, btn); }); })(cur, btn);
+      } else {
+        btn.disabled = true;
+      }
+      btn.setAttribute('aria-pressed', cur === selectedDate ? 'true' : 'false');
+      grid.appendChild(btn);
+    }
+    calEl.appendChild(grid);
+  }
+
+  function shift(delta){
+    var o = offset(viewY,viewM)+delta;
+    if (o<0 || o>maxMonths) return;
+    viewM += delta;
+    if (viewM<0){ viewM+=12; viewY--; } else if (viewM>11){ viewM-=12; viewY++; }
+    loadMonth();
+  }
+
+  function loadMonth(){
+    var key = ym(viewY,viewM);
+    if (availByMonth[key]){ renderCalendar(); return; }
+    calSkeleton();
+    get('month='+key).then(function(data){
+      var set = {};
+      (Array.isArray(data.dates)?data.dates:[]).forEach(function(x){ set[x]=1; });
+      availByMonth[key] = set;
+      if (fallback) fallback.hidden = true;
+      app.hidden = false;
+      renderCalendar();
+    }).catch(function(err){
+      if (window.console && console.debug) console.debug('DateFinder: month load failed', err);
+      if (!app.hidden) renderCalendar(); // finder already visible: keep it, this month just empty
+      // else leave the static fallback CTA visible (graceful, silent)
+    });
+  }
+
+  function fmt(cur){ var p=cur.split('-'); var dt=new Date(Date.UTC(+p[0],+p[1]-1,+p[2])); return WD[(dt.getUTCDay()+6)%7]+' '+(+p[2])+' '+MO[+p[1]-1]; }
+
+  function selectDay(cur, btn){
+    selectedDate = cur;
+    var all = calEl.querySelectorAll('.df-day');
+    for (var i=0;i<all.length;i++) all[i].setAttribute('aria-pressed', all[i]===btn ? 'true' : 'false');
+    daySkeleton();
+    get('date='+cur).then(function(data){
+      renderDepartures(cur, Array.isArray(data.departures)?data.departures:[]);
+    }).catch(function(err){
+      if (window.console && console.debug) console.debug('DateFinder: day load failed', err);
+      panelEl.innerHTML='';
+      var p=document.createElement('p'); p.className='text-sm text-subtle'; p.textContent='Sorry, we could not load departures. ';
+      var a=document.createElement('a'); a.href='/whats-on'; a.className='font-medium text-primary hover:underline'; a.textContent="Browse What's On";
+      p.appendChild(a); panelEl.appendChild(p);
+    });
+  }
+
+  function daySkeleton(){
+    panelEl.innerHTML='';
+    var h=document.createElement('span'); h.className='df-skel'; h.style.width='12rem'; h.style.height='1.4rem'; h.style.display='block'; panelEl.appendChild(h);
+    for (var i=0;i<3;i++){ var c=document.createElement('div'); c.className='df-skel'; c.style.height='5rem'; c.style.marginTop='0.75rem'; panelEl.appendChild(c); }
+  }
+
+  function renderDepartures(cur, deps){
+    panelEl.innerHTML='';
+    var h=document.createElement('h3'); h.className='df-panel-title'; h.textContent='Departures \\u00b7 '+fmt(cur);
+    panelEl.appendChild(h);
+    if (!deps.length){
+      var e=document.createElement('p'); e.className='mt-3 text-sm text-subtle'; e.textContent='No departures on this date \\u2014 try another day.';
+      panelEl.appendChild(e); return;
+    }
+    var list=document.createElement('ul'); list.className='df-dep-list';
+    deps.forEach(function(dep){
+      var m = META[dep.productId] || { title: 'Cruise', href: '/whats-on' };
+      var li=document.createElement('li'); li.className='df-dep';
+      if (m.image){ var img=document.createElement('img'); img.src=m.image; img.alt=m.title; img.loading='lazy'; img.width=64; img.height=64; img.className='df-dep-img'; li.appendChild(img); }
+      else { var ph=document.createElement('div'); ph.className='df-dep-img df-dep-ph'; ph.setAttribute('aria-hidden','true'); li.appendChild(ph); }
+      var body=document.createElement('div'); body.className='df-dep-body';
+      var t=document.createElement('div'); t.className='df-dep-title'; t.textContent=m.title; body.appendChild(t);
+      var mt=document.createElement('div'); mt.className='df-dep-meta';
+      mt.textContent = dep.time + (dep.priceFrom != null ? '  \\u00b7  from \\u00a3'+money(dep.priceFrom) : '');
+      body.appendChild(mt);
+      var act=document.createElement('div'); act.className='df-dep-actions';
+      var info=document.createElement('a'); info.href=m.href; info.className='df-dep-info'; info.textContent='More info & tickets'; act.appendChild(info);
+      var book=document.createElement('button'); book.type='button'; book.className='btn btn-primary df-dep-book'; book.setAttribute('ventrata-checkout','');
+      book.setAttribute('data-config', JSON.stringify({ productID: dep.productId, dateToPreselect: cur }));
+      book.textContent='Book this date'; act.appendChild(book);
+      body.appendChild(act);
+      li.appendChild(body);
+      list.appendChild(li);
+    });
+    panelEl.appendChild(list);
+  }
+
+  panelEl.innerHTML = '';
+  var hint = document.createElement('p'); hint.className='text-sm text-subtle'; hint.textContent='Select an available date to see departures.';
+  panelEl.appendChild(hint);
+  loadMonth();
+})();
+`;
+---
+
+<div data-datefinder class="rounded-card bg-white p-4 text-left text-ink shadow-lg ring-1 ring-black/5 sm:p-6">
+  {/* Static default (also the no-JS / function-error state): Browse What's On CTA. */}
+  <div data-df-fallback class="py-6 text-center">
+    <p class="text-body">Pick a date and see everything sailing that day.</p>
+    <div class="mt-4 flex justify-center">
+      <CTAButton href="/whats-on">Browse What's On</CTAButton>
+    </div>
+  </div>
+
+  {/* App — revealed once the month loads. Calendar left, departures right. */}
+  <div data-df-app hidden class="grid gap-6 lg:grid-cols-2">
+    <div data-df-calendar aria-label="Availability calendar"></div>
+    <div data-df-panel aria-live="polite" class="min-h-[16rem] border-t border-black/10 pt-6 lg:border-l lg:border-t-0 lg:pl-6 lg:pt-0"></div>
+  </div>
+
+  {/* set:html — Astro emits `{`…`}` inside <script>/<style> bodies literally; set:html
+      injects the evaluated string so the IIFE actually runs. */}
+  <style is:global set:html={DATEFINDER_CSS} />
+  <script is:inline set:html={DATEFINDER_SCRIPT} />
+</div>
