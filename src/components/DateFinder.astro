@@ -211,8 +211,12 @@ const DATEFINDER_SCRIPT = `
       body.appendChild(mt);
       var act=document.createElement('div'); act.className='df-dep-actions';
       var info=document.createElement('a'); info.href=m.href; info.className='df-dep-info'; info.textContent='More info & tickets'; act.appendChild(info);
-      var book=document.createElement('button'); book.type='button'; book.className='btn btn-primary df-dep-book'; book.setAttribute('ventrata-checkout','');
-      book.setAttribute('data-config', JSON.stringify({ productID: dep.productId, dateToPreselect: cur }));
+      // Robust marketing-link (docs → "Marketing links that auto-open checkout"): a real
+      // link to the product page with ?openWidget=true&date=... — a load-time auto-open there
+      // opens that product's checkout preselecting the date. A client-created ventrata-checkout
+      // button did NOT work on deployed (Ventrata binds triggers at load, not dynamically).
+      var book=document.createElement('a'); book.className='btn btn-primary df-dep-book';
+      book.href = m.href + (m.href.indexOf('?') >= 0 ? '&' : '?') + 'openWidget=true&date=' + encodeURIComponent(cur);
       book.textContent='Book this date'; act.appendChild(book);
       body.appendChild(act);
       li.appendChild(body);

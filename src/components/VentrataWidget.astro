@@ -314,8 +314,36 @@ const OBSERVER_SCRIPT = `
       else evaluate(); // returning to a still-open pop-up re-locks
     });
 
+    // MARKETING-LINK AUTO-OPEN (docs → "Marketing links that auto-open checkout"): the date
+    // finder links departures to a product page with ?openWidget=true&date=YYYY-MM-DD. Open the
+    // checkout for THIS page's product, preselecting that date. productID is read from the page's
+    // own embed/trigger config; dateToPreselect is the documented data-config key. A trigger
+    // element (which Ventrata binds) is used rather than a dynamic ventrata-checkout button.
+    // ⚠ ON-DEVICE QA: confirm the pop-up opens on the preselected date on the live widget.
+    function autoOpenFromUrl() {
+      var q; try { q = new URLSearchParams(window.location.search); } catch (e) { return; }
+      if (!q.get('openWidget')) return;
+      var host = document.querySelector('[ventrata-embedded-widget][data-config], [ventrata-checkout][data-config]');
+      var productID = null;
+      if (host) { try { productID = JSON.parse(host.getAttribute('data-config')).productID; } catch (e) {} }
+      if (!productID) return;
+      var cfg = { productID: productID, calendarFirst: true };
+      var date = q.get('date');
+      if (date && /^[0-9]{4}-[0-9]{2}-[0-9]{2}$/.test(date)) cfg.dateToPreselect = date;
+      var btn = document.createElement('button');
+      btn.type = 'button';
+      btn.setAttribute('ventrata-checkout', '');
+      btn.setAttribute('data-config', JSON.stringify(cfg));
+      btn.style.cssText = 'position:fixed;left:-9999px;width:1px;height:1px;';
+      body.appendChild(btn);
+      // Let the deferred checkout module initialise, then trigger it. The click also propagates
+      // to our own arm(a) handler, so chrome hides even before the pop-up DOM appears.
+      window.setTimeout(function () { btn.click(); }, 400);
+    }
+
     hideLoadedSkeletons();
     evaluate();
+    autoOpenFromUrl();
   }
 
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
