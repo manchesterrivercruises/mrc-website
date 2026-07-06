@@ -207,7 +207,12 @@ const REVIEWS_SCRIPT = `
       function goTo(i) {
         if (i < 0) i = 0;
         if (i > total - 1) i = total - 1;
-        slides[i].scrollIntoView({ inline: 'center', block: 'nearest', behavior: reduce ? 'auto' : 'smooth' });
+        // Scroll the TRACK only — never scrollIntoView, which scrolls every ancestor
+        // including the document (that dragged the whole page down to the reviews on
+        // auto-advance). Slides are full track-width, so aligning the slide's left edge to
+        // the track's left edge centres it. scrollBy on the element stays inside the track.
+        var delta = slides[i].getBoundingClientRect().left - track.getBoundingClientRect().left;
+        track.scrollBy({ left: delta, behavior: reduce ? 'auto' : 'smooth' });
       }
       function updateUI(i) {
         current = i;
