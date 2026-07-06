@@ -4,6 +4,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 import SectionHeading from '../components/SectionHeading.astro';
 import CTAButton from '../components/CTAButton.astro';
 import EventCard from '../components/EventCard.astro';
+import { buildProductMeta, metaMap, CITY_RIVER_TOUR_ID } from '../lib/whatsOn';
 import ProductCard from '../components/ProductCard.astro';
 import StarRating from '../components/StarRating.astro';
 import VentrataWidget from '../components/VentrataWidget.astro';
@@ -29,28 +30,83 @@ const heroProduct = {
 const RATING = site.rating.value;
 const REVIEW_COUNT = site.rating.count;
 
-// ─────────────────────────────────────────────────────────────────────────────
-// WHAT'S ON STRIP — MOCK DATA, shape matches the `events` collection schema.
-// STEP 9: replace `upcoming` with getCollection('events') / live OCTO data of the
-// same shape — the EventCard rendering below does not change.
-// Dates are anchored relative to build time so the strip always shows future dates.
-// ─────────────────────────────────────────────────────────────────────────────
-const now = new Date();
-function inDays(days: number, hour: number, minute: number): Date {
-  const d = new Date(now.getTime() + days * 24 * 60 * 60 * 1000);
-  d.setHours(hour, minute, 0, 0);
-  return d;
-}
-// Each card links DIRECTLY to its product page (/cruises/[slug] or the dedicated page).
-const upcoming = [
-  { type: 'City River Tour', title: 'City River Tour', description: 'Our signature 60-minute sightseeing cruise along the Ship Canal.', startDate: inDays(2, 14, 0), priceFrom: 13, href: '/city-river-tour', draft: false },
-  { type: 'Events & Nights', title: 'ABBA Cruise', description: 'Dance the night away to the greatest ABBA hits.', startDate: inDays(4, 19, 30), priceFrom: 30, href: '/cruises/abba-tribute-cruise', draft: false },
-  { type: 'Boat to Old Trafford', title: 'Boat to Old Trafford', description: 'Beat the traffic — arrive at the match by boat.', startDate: inDays(6, 13, 0), priceFrom: 12, href: '/boat-to-old-trafford', draft: false },
-  { type: 'Events & Nights', title: 'Boat Tropicana', description: 'An 80s party night on the canal — neon, spandex and floor-fillers.', startDate: inDays(9, 20, 0), priceFrom: 28, href: '/cruises/boat-tropicana', draft: false },
-];
-const dateFmt = new Intl.DateTimeFormat('en-GB', { weekday: 'short', day: 'numeric', month: 'short' });
-const timeFmt = new Intl.DateTimeFormat('en-GB', { hour: 'numeric', minute: '2-digit', hour12: true });
-const dateLabel = (d: Date) => `${dateFmt.format(d)} · ${timeFmt.format(d).replace(':00', '')}`;
+// ─── WHAT'S ON STRIP — LIVE OCTO event-day feed ───────────────────────────────
+// Soonest 4 event-days (excluding City River Tour — it has its own section) come from
+// /.netlify/functions/event-days, hydrated client-side. The server-rendered core below is a
+// crawlable fallback of the soonest event products (no fabricated dates); on feed failure it
+// stays — never stale mock data. See src/lib/whatsOn.ts.
+const woEvents = await getCollection('events', ({ data }) => !data.draft);
+const woProducts = buildProductMeta(woEvents);
+const STRIP_META = metaMap(woProducts);
+const stripFallback = woProducts.filter((p) => p.productId !== CITY_RIVER_TOUR_ID).slice(0, 4);
+
+// Client hydration for the strip — soonest 4 non-CRT event-days. set:html (Astro emits
+// `{`…`}` script bodies literally). META injected below.
+const STRIP_SCRIPT = `
+(function () {
+  var META = ${JSON.stringify(STRIP_META)};
+  var CRT = '${CITY_RIVER_TOUR_ID}';
+  var grid = document.querySelector('[data-strip-grid]');
+  if (!grid) return;
+  var fmt = new Intl.DateTimeFormat('en-GB', { weekday: 'short', day: 'numeric', month: 'short' });
+  fetch('/.netlify/functions/event-days', { headers: { Accept: 'application/json' } })
+    .then(function (r) { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
+    .then(function (data) {
+      var days = (data && Array.isArray(data.eventDays) ? data.eventDays : [])
+        .filter(function (d) { return d.productId !== CRT && META[d.productId] && d.date; })
+        .slice(0, 4);
+      if (!days.length) return; // keep crawlable fallback
+      grid.textContent = '';
+      days.forEach(function (d) { grid.appendChild(buildCard(META[d.productId], d)); });
+    })
+    .catch(function () { /* keep server-rendered fallback */ });
+
+  function buildCard(m, d) {
+    var soldout = d.state === 'sold-out', limited = d.state === 'limited';
+    var art = document.createElement('article');
+    art.className = 'event-card group flex flex-col overflow-hidden rounded-card bg-white shadow-sm ring-1 ring-black/5 transition hover:-translate-y-0.5 hover:shadow-md hover:ring-black/10';
+    var a = document.createElement('a');
+    a.href = m.href;
+    a.className = 'flex flex-1 flex-col focus-visible:outline focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-primary';
+    a.setAttribute('aria-label', m.title + ' \\u2014 ' + (soldout ? 'join waitlist' : 'view & book'));
+    var media = document.createElement('div'); media.className = 'relative';
+    if (m.image) {
+      var img = document.createElement('img');
+      img.src = m.image; img.alt = m.imageAlt || m.title; img.width = 800; img.height = 450; img.loading = 'lazy';
+      img.className = 'aspect-[16/9] w-full object-cover';
+      media.appendChild(img);
+    } else {
+      var ph = document.createElement('div');
+      ph.className = 'flex aspect-[16/9] items-center justify-center bg-panel text-xs text-subtle';
+      ph.textContent = 'Image (TBC)'; media.appendChild(ph);
+    }
+    if (soldout || limited) {
+      var b = document.createElement('span');
+      b.className = 'absolute right-3 top-3 rounded-full px-2.5 py-0.5 text-xs font-semibold ' + (soldout ? 'bg-red-600 text-white' : 'bg-amber-400 text-amber-950');
+      b.textContent = soldout ? 'Sold out' : 'Limited availability';
+      media.appendChild(b);
+    }
+    a.appendChild(media);
+    var body = document.createElement('div'); body.className = 'flex flex-1 flex-col p-4';
+    var date = document.createElement('p'); date.className = 'text-xs font-semibold uppercase tracking-wider text-subtle';
+    date.textContent = fmt.format(new Date(d.date + 'T12:00:00'));
+    var h = document.createElement('h3'); h.className = 'mt-1 font-semibold text-ink'; h.textContent = m.title;
+    var desc = document.createElement('p'); desc.className = 'mt-1 flex-1 text-sm leading-relaxed text-subtle'; desc.textContent = m.description;
+    var row = document.createElement('div'); row.className = 'mt-3 flex items-center justify-between';
+    if (d.priceFrom != null) {
+      var price = document.createElement('span'); price.className = 'text-sm font-bold text-ink';
+      price.textContent = 'From \\u00a3' + (Number.isInteger(d.priceFrom) ? d.priceFrom : d.priceFrom.toFixed(2));
+      row.appendChild(price);
+    } else { row.appendChild(document.createElement('span')); }
+    var cta = document.createElement('span'); cta.className = 'text-sm font-medium text-primary group-hover:underline';
+    cta.textContent = soldout ? 'Join waitlist' : 'View & book';
+    row.appendChild(cta);
+    body.appendChild(date); body.appendChild(h); body.appendChild(desc); body.appendChild(row);
+    a.appendChild(body); art.appendChild(a);
+    return art;
+  }
+})();
+`;
 
 // ─────────────────────────────────────────────────────────────────────────────
 // DISCOVER TEASERS — 3 newest guides, live from the collection.
@@ -200,16 +256,19 @@ const structuredData = {
         <SectionHeading id="coming-up">Coming up</SectionHeading>
         <a href="/whats-on" class="text-sm font-medium text-primary hover:underline">See all dates →</a>
       </div>
-      <div class="mt-8 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      {/* Server-rendered crawlable core: soonest event products (no fabricated dates) — the
+          no-JS / feed-failure fallback. Hydrated with the soonest 4 live event-days. */}
+      <div data-strip-grid class="mt-8 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
         {
-          upcoming.map((e) => (
+          stripFallback.map((p) => (
             <EventCard
-              type={e.type}
-              title={e.title}
-              description={e.description}
-              dateLabel={dateLabel(e.startDate)}
-              priceFrom={e.priceFrom}
-              href={e.href}
+              type={p.typeLabel}
+              title={p.title}
+              description={p.description}
+              dateLabel="See upcoming dates"
+              href={p.href}
+              image={p.image}
+              imageAlt={p.imageAlt}
             />
           ))
         }
@@ -217,6 +276,9 @@ const structuredData = {
       <div class="mt-8">
         <CTAButton href="/whats-on" variant="outline">See all dates</CTAButton>
       </div>
+      <script is:inline set:html={STRIP_SCRIPT} />
+
+
     </div>
   </section>
 
