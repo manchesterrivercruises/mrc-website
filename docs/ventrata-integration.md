@@ -259,6 +259,29 @@ response with pricing. All three Netlify Functions include this header.
 > API does also accept a full `…T00:00:00` value in those same date fields, but date-only
 > is the documented, simplest form.)
 
+### Live MRC key & product allowlist — verified (2026-07-06)
+
+> **The live MRC OCTO key was verified against `/octo/products` (with the
+> `Octo-Capabilities` header) on 2026-07-06.** It authenticates (200) and returns **37**
+> active products.
+>
+> - **Allowlist is correct.** All **19** IDs in `netlify/lib/products.ts`
+>   (`PUBLIC_PRODUCT_IDS`) exist on the live account — no stale/wrong IDs.
+> - The other **18** live products are all intentionally excluded and match the
+>   "Not on public website" list in `.env.example` (Quick Pay Tour, Old Trafford Ferry,
+>   City River - Return, both Private Hires, MUFC Membership discount, Wizards & Fairies,
+>   Halloween, Rugby Old Trafford, Father's Day Cruise, Mother's Day (alt), Mothering
+>   Sunday, Quays Trips, Evening Cruise, Broadway Boat Party, Heritage Cruise, Santa SEN,
+>   Quick Pay Tour 30%). No public product is missing from the allowlist.
+> - **Pricing is provisioned** (`octo/pricing` capability): real prices come back at the
+>   **unit** level as `unit.pricingFrom` — e.g. Adult `{ original: 4500, retail: 4500,
+>   currency: "GBP", currencyPrecision: 2 }` → **£45.00**. Product/option carry
+>   `pricingPer` / `hidePricingFrom` metadata; the numeric price sits on the units.
+>
+> ⚠ Note: our `products` proxy filter (`filterProduct` in `netlify/lib/products.ts`)
+> currently drops `options[].units`, so pricing is **not yet surfaced** to the frontend.
+> Add units/`pricingFrom` to the projection when wiring live pricing (build sequence step 9).
+
 ### Endpoints
 
 | Endpoint | Method | Used for |
