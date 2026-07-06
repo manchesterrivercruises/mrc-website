@@ -1,6 +1,12 @@
 ---
 import type { Album } from '../lib/gallery';
-import { imageDims } from '../lib/gallery';
+import { imageDims, isRealImage } from '../lib/gallery';
+
+// Shared branded placeholder (public/images/gallery-placeholder.svg, 1200x900). Placeholder
+// thumbnails keep their tile look, but their href/lightbox point here so no-JS clicks and
+// PhotoSwipe opens never 404 on a not-yet-existent /images/gallery/... path.
+const PLACEHOLDER_SRC = '/images/gallery-placeholder.svg';
+const PLACEHOLDER_DIMS = { w: 1200, h: 900 };
 
 // Album image grid — THUMBNAILS ONLY. Each thumbnail is a link to the full-size image
 // (data-pswp-width/height for PhotoSwipe). Progressive enhancement: with JS off the link
@@ -34,14 +40,15 @@ function caption(img: (typeof images)[number]): string {
 <div id="gallery-album" class="pswp-gallery gap-4 [column-fill:_balance] sm:columns-2 lg:columns-3">
   {
     images.map((img) => {
-      // Real pixel dims when known (hotlinked/real assets), else orientation-nominal.
-      const w = img.width ?? imageDims(img.orientation).w;
-      const h = img.height ?? imageDims(img.orientation).h;
-      // A real, loadable image (http URL) vs a placeholder path that doesn't exist yet.
-      const isReal = /^https?:\/\//.test(img.src);
+      // A real, loadable image (http URL / owned asset) vs a placeholder path that doesn't
+      // exist yet. Placeholders open the shared branded SVG at its real dims.
+      const isReal = isRealImage(img.src);
+      const href = isReal ? img.src : PLACEHOLDER_SRC;
+      const w = isReal ? (img.width ?? imageDims(img.orientation).w) : PLACEHOLDER_DIMS.w;
+      const h = isReal ? (img.height ?? imageDims(img.orientation).h) : PLACEHOLDER_DIMS.h;
       return (
         <a
-          href={img.src}
+          href={href}
           data-pswp-width={w}
           data-pswp-height={h}
           data-pswp-caption={caption(img)}

@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="900" viewBox="0 0 1200 900" role="img" aria-label="Manchester River Cruises — photo coming soon">
+  <rect width="1200" height="900" fill="#1a2744"/>
+  <rect width="1200" height="900" fill="url(#g)"/>
+  <defs>
+    <linearGradient id="g" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#223052"/>
+      <stop offset="1" stop-color="#1a2744"/>
+    </linearGradient>
+  </defs>
+  <g fill="none" stroke="#e8b84b" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" opacity="0.85">
+    <path d="M470 380l120-120a45 45 0 0 1 64 0l120 120"/>
+    <path d="M700 420l40-40a45 45 0 0 1 64 0l66 66"/>
+    <rect x="430" y="330" width="340" height="240" rx="24"/>
+    <circle cx="700" cy="405" r="10" fill="#e8b84b" stroke="none"/>
+  </g>
+  <text x="600" y="640" fill="#ffffff" opacity="0.9" font-family="Inter, system-ui, sans-serif" font-size="52" font-weight="700" text-anchor="middle">Manchester River Cruises</text>
+  <text x="600" y="700" fill="#ffffff" opacity="0.55" font-family="Inter, system-ui, sans-serif" font-size="34" font-weight="500" text-anchor="middle">Photography coming soon</text>
+</svg>

@@ -1,6 +1,7 @@
 ---
 title: Manchester Ship Canal
 slug: manchester-ship-canal
+order: 8
 summary: The waterway itself — locks, bridges, industrial heritage and changing light along the Manchester Ship Canal.
 category: route
 coverImage: /images/gallery/manchester-ship-canal/cover.webp

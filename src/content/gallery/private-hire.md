@@ -1,6 +1,7 @@
 ---
 title: Private Hire
 slug: private-hire
+order: 5
 summary: The whole boat, exclusively yours — celebrations, corporate events and weddings hosted on the water.
 category: private-hire
 # TEMP: hotlinked cover from the live site for review — not an owned asset.

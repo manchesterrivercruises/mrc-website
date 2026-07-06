@@ -1,6 +1,7 @@
 ---
 title: City River Tour
 slug: city-river-tour
+order: 1
 summary: Our signature sightseeing cruise, from Salford Quays to Old Trafford — the landmarks, the commentary and the views along the way.
 category: route
 # TEMP: hotlinked cover from the live site for review — not an owned asset.

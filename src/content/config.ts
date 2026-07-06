@@ -80,6 +80,9 @@ const gallery = defineCollection({
   schema: z.object({
     title: z.string(),
     slug: z.string(),
+    // Explicit gallery-wall ordering; lower sorts first. Albums without an order fall to
+    // the end (999) and then sort by title. See src/lib/gallery.ts → getAlbums.
+    order: z.number().optional(),
     summary: z.string(),
     // Events taxonomy (live-music / dj-night / family / seasonal) + gallery-specific
     // categories. Drives the wall filter pills.

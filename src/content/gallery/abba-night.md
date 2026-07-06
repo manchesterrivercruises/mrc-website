@@ -1,6 +1,7 @@
 ---
 title: ABBA Cruise
 slug: abba-night
+order: 4
 summary: Sequins, singalongs and Dancing Queen on the water — snapshots from our ABBA tribute nights on the Ship Canal.
 category: live-music
 # TEMP: hotlinked cover from the live site for review — not an owned asset.
