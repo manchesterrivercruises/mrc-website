@@ -71,7 +71,14 @@ const popupConfig = JSON.stringify({ productID, ...calendarFirstConfig });
 // `{...}` inside <script>/<style> tag bodies — `<script>{`…`}</script>` emits the
 // backticks + code LITERALLY, so the IIFE never runs. set:html sets the evaluated string
 // as element content (same pattern as the JSON-LD blocks and the ReviewStrip fix).
-const SKELETON_CSS = `aside[ventrata-embedded-widget]:has(iframe) .widget-loading { display: none; }`;
+const SKELETON_CSS = `
+  /* Once the widget's iframe mounts: hide the loading skeleton AND release the min-height
+     floor so the container fits the actual widget — short products (e.g. ABBA) no longer
+     leave a large gap under it. The floor holds ONLY while loading (no iframe yet), so the
+     skeleton never collapses before the widget renders (no load jump/flicker). */
+  aside[ventrata-embedded-widget]:has(iframe) .widget-loading { display: none; }
+  aside[ventrata-embedded-widget]:has(iframe) { min-height: 0; }
+`;
 
 const OBSERVER_SCRIPT = `
 (function () {
@@ -275,6 +282,7 @@ const OBSERVER_SCRIPT = `
           var el = nodes[j];
           if (el === skeleton || skeleton.contains(el)) continue; // skip the skeleton itself
           skeleton.remove();
+          aside.style.minHeight = '0'; // release the floor (fallback for a no-iframe render)
           break;
         }
       }
