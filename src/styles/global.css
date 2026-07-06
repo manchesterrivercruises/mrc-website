@@ -165,4 +165,12 @@ html.ventrata-open .fixed.bottom-0 {
 html.ventrata-open,
 html.ventrata-open body {
   overflow: hidden;
+  /* Belt-and-braces against touch scroll-chaining reaching the page behind the widget. */
+  overscroll-behavior: contain;
+}
+
+/* Contain scroll chaining within the embedded widget itself, so scrolling the widget never
+   drags the page (matters most when the aside expands to Ventrata's fullscreen takeover). */
+aside[ventrata-embedded-widget] {
+  overscroll-behavior: contain;
 }
