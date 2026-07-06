@@ -230,8 +230,34 @@ MRC's account. See `docs/integrations.md` for the full GTM architecture.
 
 Base URL: `https://api.ventrata.com/octo`
 Auth: `Authorization: Bearer <VENTRATA_OCTO_KEY>`
+Capabilities: `Octo-Capabilities: octo/pricing` — **required on every request** (see below).
 
 > **Note:** The current OCTO key in `.env.example` is Ventrata's test key (EdinExplore fictional supplier). It is useful for testing function architecture but will not return real MRC products. The live MRC OCTO key must be obtained from the MRC Ventrata account before launch.
+
+### Mandatory `Octo-Capabilities` header
+
+**Every** OCTO request (products, availability, availability-calendar) MUST send an
+`Octo-Capabilities` header (or `_capabilities` query param) declaring the capabilities it
+needs — otherwise the API returns `400 BAD_REQUEST` / `CAPABILITIES` ("Every request must
+specify what capabilities they require…"). We send `octo/pricing`, which also enriches the
+response with pricing. All three Netlify Functions include this header.
+
+### Request field names — confirmed (2026-07-06)
+
+> **Confirmed empirically against the live test API (EdinExplore key) on 2026-07-06.**
+> Ventrata's dashboard docs show `localDateTimeStart` / `localDateTimeEnd`, but those are
+> **response** fields (each returned slot carries them) — they are **NOT** accepted as
+> request params. The availability request body uses **date-only** fields:
+>
+> - `localDateStart` / `localDateEnd` as `YYYY-MM-DD` → **accepted (200)** on both
+>   `/octo/availability` and `/octo/availability/calendar`.
+> - `localDateTimeStart` / `localDateTimeEnd` (with or without a `T…` time) → **rejected
+>   (400)**: `AVAILABILITY_FIELDS_REQUIRED` / `param … invalid: localDateStart`.
+>
+> So our public function interface stays date-only (`YYYY-MM-DD`) and maps straight through
+> to `localDateStart` / `localDateEnd` — **no server-side time expansion is needed.** (The
+> API does also accept a full `…T00:00:00` value in those same date fields, but date-only
+> is the documented, simplest form.)
 
 ### Endpoints
 
@@ -271,10 +297,13 @@ Three functions proxy all OCTO API calls. The frontend never calls Ventrata dire
 Availability is micro-cached to protect against traffic spikes (matchdays, Christmas booking surges).
 Final booking availability is always confirmed inside the Ventrata checkout widget.
 
+All three send the mandatory `Octo-Capabilities: octo/pricing` header (see above).
+
 ### products function
 
 ```typescript
 // GET /octo/products
+// Header: Octo-Capabilities: octo/pricing (required)
 // Returns all active products with their options
 // Cache: 1 hour
 ```
@@ -283,8 +312,9 @@ Final booking availability is always confirmed inside the Ventrata checkout widg
 
 ```typescript
 // POST /octo/availability
-// Body: { productId, optionId, localDateStart, localDateEnd }
-// Returns: availability slots with capacity
+// Header: Octo-Capabilities: octo/pricing (required)
+// Body: { productId, optionId, localDateStart, localDateEnd }   // dates: YYYY-MM-DD
+// Returns: availability slots with capacity (each slot has localDateTimeStart/End)
 // Cache: 1-3 minutes SWR
 ```
 
@@ -292,8 +322,9 @@ Final booking availability is always confirmed inside the Ventrata checkout widg
 
 ```typescript
 // POST /octo/availability/calendar
-// Body: { productId, optionId, localDateStart, localDateEnd }
-// Returns: month-view date availability
+// Header: Octo-Capabilities: octo/pricing (required)
+// Body: { productId, optionId, localDateStart, localDateEnd }   // dates: YYYY-MM-DD
+// Returns: month-view date availability (per-date localDate + availabilityLocalStartTimes)
 // Cache: 1-3 minutes SWR
 ```
 

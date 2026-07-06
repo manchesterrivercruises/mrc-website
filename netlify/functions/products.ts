@@ -26,6 +26,9 @@ export default withGuard(async (request: Request): Promise<Response> => {
       headers: {
         Authorization: `Bearer ${key}`,
         'Content-Type': 'application/json',
+        // MANDATORY on every OCTO request — without it the API returns 400 CAPABILITIES.
+        // Confirmed against the live test API 2026-07-06 (see docs/ventrata-integration.md).
+        'Octo-Capabilities': 'octo/pricing',
       },
     });
 
