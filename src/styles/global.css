@@ -3,6 +3,45 @@
 @import "tailwindcss";
 
 /* ---------------------------------------------------------------------------
+   Self-hosted Inter (GDPR: no visitor IPs sent to Google's font CDN pre-consent,
+   and one fewer render-blocking third-party origin). woff2 only, latin subset,
+   exactly the weights the site uses (400/500/600/700, no italics).
+   Files live in public/fonts/ (served from /fonts/).
+
+   Inter is licensed under the SIL Open Font License 1.1 — © The Inter Project
+   Authors (https://github.com/rsms/inter). OFL permits bundling & self-hosting.
+   See public/fonts/LICENSE.txt.
+--------------------------------------------------------------------------- */
+@font-face {
+  font-family: "Inter";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("/fonts/inter-latin-400-normal.woff2") format("woff2");
+}
+@font-face {
+  font-family: "Inter";
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url("/fonts/inter-latin-500-normal.woff2") format("woff2");
+}
+@font-face {
+  font-family: "Inter";
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url("/fonts/inter-latin-600-normal.woff2") format("woff2");
+}
+@font-face {
+  font-family: "Inter";
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url("/fonts/inter-latin-700-normal.woff2") format("woff2");
+}
+
+/* ---------------------------------------------------------------------------
    Tailwind theme tokens — MRC brand palette (navy + gold)
    Defining these in @theme generates matching utilities (bg-primary, text-accent,
    text-muted, font-sans, rounded-card …) AND emits them as :root custom properties.
