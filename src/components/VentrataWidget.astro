@@ -107,29 +107,60 @@ const OBSERVER_SCRIPT = `
       return el.getBoundingClientRect().width > 0;
     }
 
-    var armed = false;   // a checkout opened via our trigger
-    var saw = false;     // the pop-up DOM appeared this session
+    var armed = false;         // a checkout opened via our trigger
+    var saw = false;           // the pop-up DOM appeared this session
+    var currentOverlay = null; // the identified overlay node (so the watchdog can re-check it)
     var failsafe = 0;
+    var watchdog = 0;
 
     // The pop-up = a visible, post-load direct body child. Prefer one carrying ventrata
-    // identity; during a trigger session accept ANY new visible body child.
-    function overlayPresent() {
-      var kids = body.children;
-      var fallback = false;
+    // identity; during a trigger session accept ANY new visible body child. Returns the
+    // NODE (or null) so the watchdog can re-check the same element.
+    function overlayNode() {
+      var kids = body.children, fallback = null;
       for (var i = 0; i < kids.length; i++) {
         var el = kids[i];
         if (initial.has(el) || !shown(el)) continue;
-        if (looksVentrata(el)) return true;
-        if (armed) fallback = true;
+        if (looksVentrata(el)) return el;
+        if (armed && !fallback) fallback = el;
       }
       return fallback;
     }
 
+    function stopWatchdog() { if (watchdog) { clearInterval(watchdog); watchdog = 0; } }
+
+    // BELT-AND-BRACES: while locked, poll ~1s. If the identified overlay has left the DOM or
+    // become hidden AND no other overlay is present, release — regardless of whether the
+    // MutationObserver ever saw Ventrata's teardown. This is the real fix for the stranded
+    // scroll-lock: some closes don't produce a body childList mutation we catch.
+    function startWatchdog() {
+      if (watchdog) return;
+      watchdog = window.setInterval(function () {
+        if (!saw) return; // not opened yet — the click failsafe covers that window
+        var alive = currentOverlay && body.contains(currentOverlay) && shown(currentOverlay);
+        if (alive) return;
+        var n = overlayNode();
+        if (n) { currentOverlay = n; return; } // a different overlay is present — stay locked
+        forceClose();
+      }, 1000);
+    }
+
+    // Unconditionally release the lock and reset state.
+    function forceClose() {
+      armed = false; saw = false; currentOverlay = null;
+      clearTimeout(failsafe);
+      stopWatchdog();
+      root.classList.remove(KEY);
+    }
+
     function evaluate() {
-      var present = overlayPresent();
-      if (present) saw = true;
-      if (armed && saw && !present) { armed = false; saw = false; } // opened then closed
-      root.classList.toggle(KEY, armed || present);
+      var node = overlayNode();
+      if (node) { saw = true; currentOverlay = node; }
+      var present = !!node;
+      if (armed && saw && !present) { armed = false; saw = false; currentOverlay = null; } // opened then closed
+      var open = armed || present;
+      root.classList.toggle(KEY, open);
+      if (open) startWatchdog(); else stopWatchdog();
     }
 
     var raf = 0;
@@ -144,10 +175,12 @@ const OBSERVER_SCRIPT = `
       if (t && t.closest && t.closest('[ventrata-checkout]')) {
         armed = true;
         saw = false;
+        currentOverlay = null;
         root.classList.add(KEY);
+        startWatchdog();
         clearTimeout(failsafe);
-        // If the pop-up never opens, disarm so the chrome isn't hidden forever.
-        failsafe = window.setTimeout(function () { if (armed && !saw) { armed = false; evaluate(); } }, 5000);
+        // If the pop-up never opens, release so the chrome isn't hidden forever.
+        failsafe = window.setTimeout(function () { if (armed && !saw) forceClose(); }, 5000);
       }
     }, true);
 
@@ -175,6 +208,23 @@ const OBSERVER_SCRIPT = `
       schedule();
       hideLoadedSkeletons();
     }).observe(body, { childList: true, subtree: true, attributes: true, attributeFilter: ['style', 'class', 'hidden'] });
+
+    // (3) Extra removal hints — Ventrata's teardown isn't always a body childList mutation.
+    //     Escape usually closes the pop-up; re-check just after it tears down.
+    document.addEventListener('keydown', function (e) {
+      if ((e.key === 'Escape' || e.keyCode === 27) && root.classList.contains(KEY)) {
+        setTimeout(evaluate, 250);
+        setTimeout(evaluate, 800);
+      }
+    });
+    // In-page navigation (e.g. a checkout success redirect) can drop the pop-up silently.
+    window.addEventListener('popstate', function () { setTimeout(evaluate, 0); });
+    // Never strand a locked page across back/forward (bfcache) navigation or tab teardown.
+    window.addEventListener('pagehide', forceClose);
+    document.addEventListener('visibilitychange', function () {
+      if (document.visibilityState === 'hidden') forceClose();
+      else evaluate(); // returning to a still-open pop-up re-locks
+    });
 
     hideLoadedSkeletons();
     evaluate();
