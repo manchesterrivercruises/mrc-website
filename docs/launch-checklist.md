@@ -8,7 +8,11 @@ Complete every item before switching the domain to the new site.
 
 - [ ] All pages built and reviewed on mobile and desktop
 - [ ] All Ventrata widget embed codes in place with live product IDs
-- [ ] Ventrata widget env set to "live" (not "test")
+- [x] Ventrata widget env set to "live" (not "test") — `VENTRATA_ENV` in `src/data/ventrata.ts`.
+  > ⚠ **Widget QA now runs against LIVE checkout — real bookings and card charges are
+  > possible.** For any QA booking: use an obviously fake test name (e.g. "TEST TEST"),
+  > then **cancel and refund it in the Ventrata dashboard immediately**, or use a 100%-off
+  > promo code if one exists. Do not leave live test bookings on real availability.
 - [ ] API integration tested — hero, What's On, Events listing pulling live Ventrata data
 - [ ] Private hire enquiry form tested end-to-end — submissions arriving at correct email
 - [ ] All 301 redirects configured and verified on staging
