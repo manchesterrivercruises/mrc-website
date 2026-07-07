@@ -216,7 +216,7 @@ const DATEFINDER_SCRIPT = `
       // opens that product's checkout preselecting the date. A client-created ventrata-checkout
       // button did NOT work on deployed (Ventrata binds triggers at load, not dynamically).
       var book=document.createElement('a'); book.className='btn btn-primary df-dep-book';
-      book.href = m.href + (m.href.indexOf('?') >= 0 ? '&' : '?') + 'openWidget=true&date=' + encodeURIComponent(cur);
+      book.href = m.href + (m.href.indexOf('?') >= 0 ? '&' : '?') + 'openWidget=true&date=' + encodeURIComponent(cur) + (dep.time ? '&time=' + encodeURIComponent(dep.time) : '');
       book.textContent='Book this date'; act.appendChild(book);
       body.appendChild(act);
       li.appendChild(body);
