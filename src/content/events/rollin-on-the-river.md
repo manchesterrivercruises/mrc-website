@@ -3,6 +3,8 @@ title: Rollin' on the River
 description: A high-energy Tina Turner tribute on the Manchester Ship Canal — rock 'n' soul anthems performed live, with a licensed bar and non-stop dancing.
 shortTagline: Simply the best — a powerhouse Tina Turner rock 'n' soul night afloat.
 ventrataProductId: d711f0c0-7939-4d6b-9219-6995de6723c3
+heroImage: /images/events/rollin-on-the-river-card.webp
+heroImageAlt: "'Rollin' on the River' — a Tina Turner tribute singer in a gold sequin dress performing into a microphone with one arm raised, against a shimmering backdrop."
 category: live-music
 duration: Approx. 2 hours (TBC)
 whatToExpect:
@@ -17,7 +19,6 @@ faqs:
     answer: Evening cruises are usually over-18s; age restrictions are confirmed at booking. (TBC)
   - question: Is there a bar onboard?
     answer: Yes — a fully licensed bar is open throughout the cruise.
-heroImageAlt: A Tina Turner tribute performer commanding the stage aboard a Manchester River Cruises boat at night
 draft: false
 ---
 

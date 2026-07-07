@@ -3,6 +3,8 @@ title: Diana Ross Cruise
 description: A glittering tribute to the music of Diana Ross on the Manchester Ship Canal — Motown and disco classics performed live, with a licensed bar and dancefloor.
 shortTagline: Glamour, Motown and disco — a dazzling Diana Ross night afloat.
 ventrataProductId: 19441cae-34e1-440d-b7c1-534a9a2a163e
+heroImage: /images/events/diana-ross-cruise-card.webp
+heroImageAlt: "'Diana Ross — The Supreme Experience' promotional artwork — a gold-glitter silhouette of a singer at a microphone over a warm blurred backdrop."
 category: live-music
 duration: Approx. 2 hours (TBC)
 priceFrom: 30
@@ -18,7 +20,6 @@ faqs:
     answer: No formal dress code, but this is a night to dress up and bring the glamour if you fancy it. (TBC)
   - question: Is there a bar onboard?
     answer: Yes — a fully licensed bar is open throughout.
-heroImageAlt: A Diana Ross tribute performer in a sequined gown entertaining guests aboard a Manchester River Cruises boat
 draft: false
 ---
 

@@ -3,6 +3,8 @@ title: Decks on Deck
 description: A daytime deck party on the Manchester Ship Canal — house and dance DJs, a licensed bar and open-air dancing with the city skyline all around.
 shortTagline: Sun's out, decks out — a daytime DJ party on the water.
 ventrataProductId: cf398297-36a2-4a42-878f-5e409407f059
+heroImage: /images/events/decks-on-deck-card.webp
+heroImageAlt: "'Decks on Deck' promotional artwork — a woman lit in neon pink and blue club lighting in profile, with bold retro lettering."
 category: dj-night
 duration: Approx. 2 hours (TBC)
 priceFrom: 30
@@ -18,7 +20,6 @@ faqs:
     answer: Yes — Decks on Deck is an over-18s party cruise. ID may be required. (TBC)
   - question: Is there a bar onboard?
     answer: Yes — a fully licensed bar is open throughout.
-heroImageAlt: Guests dancing in the open air to a DJ on the deck of a Manchester River Cruises boat by day
 draft: false
 ---
 

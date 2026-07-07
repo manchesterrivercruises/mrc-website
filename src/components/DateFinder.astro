@@ -202,7 +202,7 @@ const DATEFINDER_SCRIPT = `
     deps.forEach(function(dep){
       var m = META[dep.productId] || { title: 'Cruise', href: '/whats-on' };
       var li=document.createElement('li'); li.className='df-dep';
-      if (m.image){ var img=document.createElement('img'); img.src=m.image; img.alt=m.title; img.loading='lazy'; img.width=64; img.height=64; img.className='df-dep-img'; li.appendChild(img); }
+      if (m.image){ var img=document.createElement('img'); img.src=m.image; img.alt=m.title; img.loading='lazy'; img.width=64; img.height=64; img.setAttribute('data-img-fallback',''); img.className='df-dep-img'; li.appendChild(img); }
       else { var ph=document.createElement('div'); ph.className='df-dep-img df-dep-ph'; ph.setAttribute('aria-hidden','true'); li.appendChild(ph); }
       var body=document.createElement('div'); body.className='df-dep-body';
       var t=document.createElement('div'); t.className='df-dep-title'; t.textContent=m.title; body.appendChild(t);
@@ -216,7 +216,7 @@ const DATEFINDER_SCRIPT = `
       // opens that product's checkout preselecting the date. A client-created ventrata-checkout
       // button did NOT work on deployed (Ventrata binds triggers at load, not dynamically).
       var book=document.createElement('a'); book.className='btn btn-primary df-dep-book';
-      book.href = m.href + (m.href.indexOf('?') >= 0 ? '&' : '?') + 'openWidget=true&date=' + encodeURIComponent(cur);
+      book.href = m.href + (m.href.indexOf('?') >= 0 ? '&' : '?') + 'openWidget=true&date=' + encodeURIComponent(cur) + (dep.time ? '&time=' + encodeURIComponent(dep.time) : '');
       book.textContent='Book this date'; act.appendChild(book);
       body.appendChild(act);
       li.appendChild(body);

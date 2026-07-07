@@ -3,6 +3,8 @@ title: Elvis Live
 description: An evening with the King on the Manchester Ship Canal — the ballads, the showstoppers and the Vegas-era classics performed live, with a licensed bar onboard.
 shortTagline: An evening with the King — the crooner, the showman, the legend, live on the water.
 ventrataProductId: 2fe9c519-e00a-4a0d-8067-e7e5c15a023e
+heroImage: /images/events/elvis-live-cruise-card.webp
+heroImageAlt: "'Elvis — Live from the Irwell' promotional artwork — gold lightbulb lettering with a gold silhouette of Elvis mid-dance above an illuminated bridge at dusk."
 category: live-music
 duration: Approx. 2 hours (TBC)
 priceFrom: 28
@@ -18,7 +20,6 @@ faqs:
     answer: Evening cruises are usually over-18s; age restrictions are confirmed at booking. (TBC)
   - question: Is there a bar onboard?
     answer: Yes — a fully licensed bar is open throughout the cruise.
-heroImageAlt: An Elvis tribute performer in a Vegas-style jumpsuit singing to guests aboard a Manchester River Cruises boat
 draft: false
 ---
 

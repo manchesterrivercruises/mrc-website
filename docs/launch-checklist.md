@@ -17,7 +17,8 @@ Complete every item before switching the domain to the new site.
 - [ ] Schema.org structured data validated (Google Rich Results Test)
 - [ ] XML sitemap generated and accessible at /sitemap.xml
 - [ ] robots.txt configured — staging set to noindex, production set to allow
-- [ ] Google Analytics 4 confirmed firing on all pages
+- [ ] Cookie consent (GTM consent mode) live — **and the consent-mode default (`denied`) is set BEFORE the GTM script loads** (the default snippet sits above the GTM container in `<head>`; verify in built HTML the `default … denied` call precedes the GTM `<script>`). See `docs/integrations.md` → Cookie consent.
+- [ ] Google Analytics 4 confirmed firing on all pages (only after consent granted)
 - [ ] Page speed tested — target 90+ on Google PageSpeed Insights
 - [ ] All images in WebP format at appropriate sizes
 - [ ] Staging environment confirmed as noindex before sharing externally

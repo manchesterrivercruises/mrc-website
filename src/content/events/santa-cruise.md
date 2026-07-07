@@ -3,6 +3,8 @@ title: Cruise with Father Christmas
 description: A magical festive cruise on the Manchester Ship Canal where children meet Father Christmas onboard, with a gift for every child and a warm, festive welcome.
 shortTagline: Meet Father Christmas on the water — a magical family cruise.
 ventrataProductId: 6cabf36f-f48f-48c7-83c0-c964983a9dff
+heroImage: /images/events/santa-cruise-card.webp
+heroImageAlt: "Father Christmas seated in a red armchair aboard the Santa Cruise, flanked by two smiling elf helpers beside a decorated Christmas tree and wrapped presents."
 category: family
 duration: Approx. 1.5 hours (TBC)
 priceFrom: 13
@@ -18,7 +20,6 @@ faqs:
     answer: It's designed for families with young children, but all ages are welcome. (TBC)
   - question: Is there a sensory-friendly option?
     answer: We also run a relaxed, sensory-friendly SEN Santa cruise for children with additional needs. (TBC)
-heroImageAlt: A child meeting Father Christmas aboard a festively decorated Manchester River Cruises boat
 draft: false
 ---
 

@@ -56,7 +56,7 @@ const dayOut = [
 // TODO (step 9): replace with live Ventrata product data.
 const crossSell = [
   { name: 'Cruise with Father Christmas', desc: 'A magical festive cruise the whole family will love', href: '/santa-cruise-manchester' },
-  { name: 'ABBA Cruise', desc: 'Dance the night away on the water to the greatest ABBA hits', href: '/cruises/abba' },
+  { name: 'ABBA Cruise', desc: 'Dance the night away on the water to the greatest ABBA hits', href: '/cruises/abba-tribute-cruise' },
   { name: 'Boat to Old Trafford', desc: 'The best way to arrive on matchday', href: '/boat-to-old-trafford' },
 ];
 
@@ -71,6 +71,8 @@ const faqs = [
 ];
 
 const pageTitle = 'City River Tour — Manchester River Cruises';
+const pageDescription =
+  'A 60-minute sightseeing cruise along the Manchester Ship Canal from Salford Quays, with live commentary past MediaCity, IWM North and Old Trafford. From £13 per adult, free cancellation — book direct.';
 
 // Schema.org structured data (JSON-LD). Rendered from the page (BaseLayout owns <head>;
 // JSON-LD is valid in <body> too). validFrom uses the build date.
@@ -122,7 +124,7 @@ const galleryTile =
 const orderedStops = [...tourStops].sort((a, b) => a.id - b.id);
 ---
 
-<BaseLayout title={pageTitle} bookProductID="ef45d8bd-529c-4dae-9c35-cd1b8e4e0a75">
+<BaseLayout title={pageTitle} description={pageDescription} bookProductID="ef45d8bd-529c-4dae-9c35-cd1b8e4e0a75">
   {/* Ventrata checkout loader now ships site-wide via <Header> (AGENTS rule 9). */}
 
   {/* Schema.org structured data (JSON-LD) */}
@@ -184,7 +186,15 @@ const orderedStops = [...tourStops].sort((a, b) => a.id - b.id);
           viewer was removed: it was a non-functional placeholder with a dead close
           link and no real images.) */}
       <div class="grid grid-cols-1 gap-2 sm:grid-cols-5 sm:items-start">
-        <div class={`aspect-[4/3] sm:col-span-3 ${galleryTile}`}>Main photo (TBC)</div>
+        <img
+          src="/images/city-river-tour-hero.webp"
+          alt="The City River Tour boat passing beneath the Millennium Footbridge on a sunny day, with passengers on the open top deck and Old Trafford in the distance."
+          width="1600"
+          height="1200"
+          loading="eager"
+          data-img-fallback
+          class="aspect-[4/3] w-full rounded-card object-cover ring-1 ring-black/5 sm:col-span-3"
+        />
         <div class="flex flex-col gap-2 sm:col-span-2">
           <div class={`aspect-[16/9] ${galleryTile}`}>Photo 2 (TBC)</div>
           <div class={`aspect-[16/9] ${galleryTile}`}>Photo 3 (TBC)</div>

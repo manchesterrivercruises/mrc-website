@@ -59,7 +59,7 @@ function caption(img: (typeof images)[number]): string {
             isReal ? (
               // TEMP hotlinked review image — swap for <Image src={img.src} alt={img.alt}
               // loading="lazy" /> once owned assets land (docs/image-conventions.md).
-              <img src={img.src} alt={img.alt} width={w} height={h} loading="lazy" class="w-full" />
+              <img src={img.src} alt={img.alt} width={w} height={h} loading="lazy" data-img-fallback class="w-full" />
             ) : (
               // Placeholder tile — no asset yet.
               <div class={`flex items-center justify-center bg-gradient-to-br from-panel to-black/10 text-subtle ${aspectClass(img.orientation)}`}>

@@ -1,10 +1,10 @@
 import { defineCollection, z } from 'astro:content';
 import { glob } from 'astro/loaders';
 
-// Astro Content Collections — SCHEMA ONLY.
-// No content has been migrated yet; each collection's folder is currently empty.
-// Image fields are typed as strings (paths) for now; switch to the image() helper
-// once real assets are added.
+// Astro Content Collections — schema definitions.
+// The collections are populated (events, gallery, discover, attractions, vessels).
+// Image fields are typed as strings (paths / hotlinked temp URLs) for now; switch to the
+// image() helper once owned assets are added (docs/image-conventions.md).
 
 // Editorial "Discover" guides (rendered as Article-schema pages).
 const discover = defineCollection({

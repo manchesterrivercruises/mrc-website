@@ -3,6 +3,8 @@ title: ABBA Cruise
 description: Dance the night away to the greatest ABBA hits on the Manchester Ship Canal — a glittering tribute night afloat with a licensed bar onboard.
 shortTagline: Dancing Queen, on the water — the ultimate ABBA tribute night afloat.
 ventrataProductId: 50a5eb12-f9ad-4b1f-9a70-e880bd28152b
+heroImage: /images/events/abba-tribute-cruise-card.webp
+heroImageAlt: "'ABBA Disco' promotional artwork — a giant multicoloured mirrorball above the illuminated Salford Quays waterfront and Millennium Footbridge at night."
 category: live-music
 duration: Approx. 2 hours (TBC)
 priceFrom: 30
@@ -18,7 +20,6 @@ faqs:
     answer: Evening party cruises are usually over-18s. Age restrictions are confirmed at booking. (TBC)
   - question: Can we buy drinks onboard?
     answer: Yes — there's a fully licensed bar onboard throughout the cruise.
-heroImageAlt: Guests dancing to an ABBA tribute act on board a Manchester River Cruises boat at night
 draft: false
 ---
 

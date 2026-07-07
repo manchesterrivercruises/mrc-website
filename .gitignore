@@ -27,3 +27,7 @@ pnpm-debug.log*
 .vscode/
 .idea/
 Thumbs.db
+
+# Claude Code — personal, machine-local settings (permissions allowlist etc.)
+# Shared settings would go in .claude/settings.json (committed); this file must not be.
+.claude/settings.local.json

@@ -50,7 +50,18 @@ const structuredData = {
   departureBoatTerminal: { '@type': 'BoatTerminal', name: point.name },
   arrivalBoatTerminal: { '@type': 'BoatTerminal', name: 'Trafford Wharf' },
   provider: { '@type': 'LocalBusiness', name: site.name, url: site.url },
-  offers: { '@type': 'Offer', price: PRICE_FROM, priceCurrency: 'GBP', availability: 'https://schema.org/InStock', url: `${site.url}/boat-to-old-trafford/${point.slug}` },
+  // Only emit an InStock offer for a departure that is actually bookable — Stephenson's
+  // Bridge (productReady: false) has no Ventrata product, so a priced InStock offer would
+  // be dishonest structured data. Omit offers entirely until it's live.
+  ...(point.productReady && {
+    offers: {
+      '@type': 'Offer',
+      price: PRICE_FROM,
+      priceCurrency: 'GBP',
+      availability: 'https://schema.org/InStock',
+      url: `${site.url}/boat-to-old-trafford/${point.slug}`,
+    },
+  }),
 };
 ---
 
@@ -73,6 +84,19 @@ const structuredData = {
     >
       <CTAButton href="#book">Book now</CTAButton>
     </PageHero>
+
+    {/* Ferry hero image — shared across both departure points. */}
+    <div class="mx-auto max-w-6xl px-4 pt-8 sm:px-6 lg:px-8">
+      <img
+        src="/images/boat-to-old-trafford-hero.webp"
+        alt="A Manchester River Cruises boat on the Manchester Ship Canal carrying passengers on the open top deck, with the Salford Quays skyline and Millennium Footbridge behind."
+        width="1600"
+        height="1067"
+        loading="eager"
+        data-img-fallback
+        class="aspect-[3/2] w-full rounded-card object-cover ring-1 ring-black/5"
+      />
+    </div>
 
     <KeyFacts facts={keyFacts} />
 
@@ -172,8 +196,16 @@ const structuredData = {
     </div>
   </div>
 
-  {/* Mobile sticky Book Now — scrolls to the booking panel */}
+  {/* Mobile sticky bar — a real Book Now CTA only where the departure is bookable.
+      Stephenson's Bridge (productReady: false) shows a non-CTA notice, never a priced
+      "Book now" for something that can't be booked. */}
   <div class="fixed inset-x-0 bottom-0 z-40 border-t border-black/10 bg-white/95 p-3 backdrop-blur md:hidden">
-    <CTAButton href="#book" class="w-full">Book now · from £{PRICE_FROM}</CTAButton>
+    {
+      point.productReady ? (
+        <CTAButton href="#book" class="w-full">Book now · from £{PRICE_FROM}</CTAButton>
+      ) : (
+        <p class="text-center text-sm font-medium text-subtle">Booking opens soon</p>
+      )
+    }
   </div>
 </BaseLayout>

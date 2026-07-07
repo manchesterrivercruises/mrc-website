@@ -3,6 +3,8 @@ title: Boat Tropicana
 description: An 80s party cruise on the Manchester Ship Canal — neon, spandex and the decade's biggest floor-fillers spun by a DJ, with a licensed bar and non-stop dancing.
 shortTagline: Big hair, neon and 80s bangers — the ultimate retro party afloat.
 ventrataProductId: f137c230-50c4-41e0-bc75-5485fccf2668
+heroImage: /images/events/boat-tropicana-card.webp
+heroImageAlt: "A Manchester River Cruises boat moored under a bridge at night with passengers in the lit cabin, and a neon-pink 'Boat Tropicana' logo overlaid."
 category: dj-night
 duration: Approx. 2 hours (TBC)
 priceFrom: 28
@@ -18,7 +20,6 @@ faqs:
     answer: Yes — Boat Tropicana is an over-18s party cruise. ID may be required. (TBC)
   - question: Is there a bar onboard?
     answer: Yes — a fully licensed bar is open throughout.
-heroImageAlt: Guests in 80s fancy dress dancing to a DJ aboard a Manchester River Cruises party boat
 draft: false
 ---
 

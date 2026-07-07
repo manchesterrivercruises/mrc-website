@@ -111,4 +111,4 @@ const bookConfig = bookProductID ? JSON.stringify({ productID: bookProductID }) 
 {/* Ventrata checkout loader — SITE-WIDE via the header so every page's Book Now can open
     the checkout (AGENTS rule 9). The checkout script is type="module" (deferred); the
     observer is DOMContentLoaded-guarded, so body placement is fine. Exactly one per page. */}
-<VentrataWidget mode="loader" env="test" />
+<VentrataWidget mode="loader" />
