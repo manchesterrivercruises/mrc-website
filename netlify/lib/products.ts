@@ -41,8 +41,20 @@ export function isAllowedProductId(id: string): boolean {
   return ALLOWED.has(id);
 }
 
-// The subset of an OCTO option the frontend needs to drive the checkout widget and
-// render departure times.
+// The subset of an OCTO unit the frontend needs for "from £X" pricing. `pricingFrom` is
+// the confirmed unit-level pricing (retail, GBP, currencyPrecision) — see
+// docs/ventrata-integration.md.
+function filterUnit(u: unknown): Record<string, unknown> {
+  const unit = (u ?? {}) as Record<string, unknown>;
+  return {
+    id: unit.id,
+    type: unit.type,
+    pricingFrom: unit.pricingFrom,
+  };
+}
+
+// The subset of an OCTO option the frontend needs to drive the checkout widget, render
+// departure times, and show per-unit from-prices.
 function filterOption(o: unknown): Record<string, unknown> {
   const opt = (o ?? {}) as Record<string, unknown>;
   return {
@@ -50,6 +62,7 @@ function filterOption(o: unknown): Record<string, unknown> {
     internalName: opt.internalName,
     title: opt.title,
     availabilityLocalStartTimes: opt.availabilityLocalStartTimes,
+    units: Array.isArray(opt.units) ? opt.units.map(filterUnit) : [],
   };
 }
 
@@ -73,9 +86,16 @@ export function filterProduct(p: unknown): Record<string, unknown> {
   };
 }
 
-// Map the upstream /products array to the filtered projection. Non-array or malformed
-// upstream shapes collapse to an empty array rather than being passed through raw.
+// Map the upstream /products array to the filtered projection. CRITICAL: only PUBLIC
+// allowlisted products are surfaced — the upstream account also carries internal variants,
+// private hire, discount-code and superseded products that must never reach the public
+// endpoint. Non-array or malformed upstream shapes collapse to an empty array.
 export function filterProductsResponse(products: unknown): Record<string, unknown>[] {
   if (!Array.isArray(products)) return [];
-  return products.map(filterProduct);
+  return products
+    .filter((p) => {
+      const id = (p as Record<string, unknown> | null)?.id;
+      return typeof id === 'string' && isAllowedProductId(id);
+    })
+    .map(filterProduct);
 }
