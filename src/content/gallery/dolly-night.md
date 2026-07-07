@@ -4,9 +4,9 @@ slug: dolly-night
 order: 3
 summary: Big hair, big hits and a boat full of fans — highlights from our Dolly Parton tribute nights on the Manchester Ship Canal.
 category: live-music
-# TEMP: hotlinked cover from the live site for review — not an owned asset.
-coverImage: "https://optimise2.assets-servd.host/river-cruises/production/images/Dolly-Cruise-Thumbnail.png?w=1200&h=560&q=100&auto=format&fit=crop&crop=focalpoint&fp-x=0.5&fp-y=0.5&dm=1715004148&s=e702b31d1f77dcf458b765c604761eef"
-coverAlt: A Dolly Parton tribute singer in a sparkling gown performing on the boat's deck beneath warm string lights
+# OWNED cover asset (processed WebP in public/images/). images[] below are still TEMP hotlink placeholders — Jeff fills the album out.
+coverImage: /images/events/dolly-cruise-card.webp
+coverAlt: "'Dolly Cruise' promotional artwork — a Dolly Parton tribute singer in a white dress with a microphone, over the illuminated Manchester waterfront at night."
 images:
   # TEMP: hotlinked from the live manchesterrivercruises.com for review — not an owned asset.
   - src: "https://optimise2.assets-servd.host/river-cruises/production/images/Dolly-Cruise-Thumbnail.png?w=1200&h=560&q=100&auto=format&fit=crop&crop=focalpoint&fp-x=0.5&fp-y=0.5&dm=1715004148&s=e702b31d1f77dcf458b765c604761eef"

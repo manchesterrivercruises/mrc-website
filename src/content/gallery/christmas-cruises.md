@@ -4,9 +4,9 @@ slug: christmas-cruises
 order: 2
 summary: Festive nights on the water — twinkling lights, party cruises and a visit from Father Christmas along the Manchester Ship Canal.
 category: seasonal
-# TEMP: hotlinked cover from the live site for review — not an owned asset.
-coverImage: "https://optimise2.assets-servd.host/river-cruises/production/images/Santa-Cruise-thumbnail-500-x-350-px.png?w=800&h=543&q=100&auto=format&fit=crop&crop=focalpoint&fp-x=0.5&fp-y=0.5&dm=1726383358&s=99fd00569fdcddcc4d5e3d8dff4c7ba9"
-coverAlt: The boat decorated with Christmas lights and a wreath cruising past the winter waterfront at night
+# OWNED cover asset (processed WebP in public/images/). images[] below are still TEMP hotlink placeholders — Jeff fills the album out.
+coverImage: /images/events/santa-cruise-hero.webp
+coverAlt: "Father Christmas seated in a red armchair aboard the Santa Cruise, flanked by two smiling elf helpers beside a decorated Christmas tree and wrapped presents."
 images:
   # TEMP: hotlinked from the live manchesterrivercruises.com for review — not an owned asset.
   - src: "https://optimise2.assets-servd.host/river-cruises/production/images/Santa-Cruise-thumbnail-500-x-350-px.png?w=800&h=543&q=100&auto=format&fit=crop&crop=focalpoint&fp-x=0.5&fp-y=0.5&dm=1726383358&s=99fd00569fdcddcc4d5e3d8dff4c7ba9"

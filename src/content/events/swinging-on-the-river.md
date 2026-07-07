@@ -3,6 +3,8 @@ title: Swinging on the River
 description: Swing and Rat Pack classics on the Manchester Ship Canal — live music, a licensed bar and a touch of old-school glamour as the city lights drift past.
 shortTagline: Sinatra, swing and a little sparkle — a smooth night out on the water.
 ventrataProductId: ee4143b6-9c32-4db2-9d1f-807c858696fa
+heroImage: /images/events/swinging-on-the-river-card.webp
+heroImageAlt: "'Russell Shaun — Swing & Rat Pack Cruise, Live from the Irwell' promotional artwork — marquee-bulb lettering over the illuminated Manchester waterfront at night."
 category: live-music
 duration: Approx. 2 hours (TBC)
 priceFrom: 28
@@ -18,7 +20,6 @@ faqs:
     answer: No formal dress code, but this is a night that suits a bit of glamour if you fancy dressing up. (TBC)
   - question: Is there a bar onboard?
     answer: Yes — a fully licensed bar is open throughout.
-heroImageAlt: A swing singer performing with a microphone stand aboard a Manchester River Cruises boat at night
 draft: false
 ---
 

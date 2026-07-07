@@ -3,6 +3,8 @@ title: Back to the 90s
 description: A 90s party cruise on the Manchester Ship Canal — dance anthems, indie bangers and pop classics spun by a DJ, with a licensed bar and non-stop dancing.
 shortTagline: Ravers, indie kids and pop lovers unite — the 90s party afloat.
 ventrataProductId: fb15c1fc-84f9-455b-a6d6-e8de0db30b3d
+heroImage: /images/events/back-to-the-90s-card.webp
+heroImageAlt: "'Back to the 90s Boat Party' promotional artwork — bold retro cyan, pink and yellow lettering over a purple night skyline of Salford Quays."
 category: dj-night
 duration: Approx. 2 hours (TBC)
 priceFrom: 28
@@ -18,7 +20,6 @@ faqs:
     answer: Yes — Back to the 90s is an over-18s party cruise. ID may be required. (TBC)
   - question: Is there a bar onboard?
     answer: Yes — a fully licensed bar is open throughout.
-heroImageAlt: A packed dancefloor of guests dancing to 90s music aboard a Manchester River Cruises party boat
 draft: false
 ---
 

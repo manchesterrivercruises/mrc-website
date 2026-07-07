@@ -3,6 +3,8 @@ title: Soul River
 description: A night of soul and Motown classics on the Manchester Ship Canal — live music, a licensed bar and dancing as the city skyline drifts past.
 shortTagline: Soul, Motown and Northern gold — a feel-good night on the water.
 ventrataProductId: 8c425994-25e9-4bc3-bce3-1181951142c8
+heroImage: /images/events/soul-river-cruise-card.webp
+heroImageAlt: "'Soul River — Live from the Irwell' promotional artwork — neon-style lettering over MediaCityUK and the Salford Quays waterfront at dusk."
 category: live-music
 duration: Approx. 2 hours (TBC)
 priceFrom: 30
@@ -18,7 +20,6 @@ faqs:
     answer: Evening cruises are usually over-18s; age restrictions are confirmed at booking. (TBC)
   - question: Is there a bar onboard?
     answer: Yes — a fully licensed bar is open throughout.
-heroImageAlt: Guests dancing to a live soul band aboard a Manchester River Cruises boat at night
 draft: false
 ---
 

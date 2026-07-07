@@ -4,9 +4,9 @@ slug: city-river-tour
 order: 1
 summary: Our signature sightseeing cruise, from Salford Quays to Old Trafford — the landmarks, the commentary and the views along the way.
 category: route
-# TEMP: hotlinked cover from the live site for review — not an owned asset.
-coverImage: "https://optimise2.assets-servd.host/river-cruises/production/images/City-River-Tours-Thumbnail-500-350-1.png?w=800&h=543&q=100&auto=format&fit=crop&crop=focalpoint&fp-x=0.5&fp-y=0.5&dm=1715165712&s=ab2fe6d769864a15794f36a7ad599e16"
-coverAlt: The City River Tour boat cruising along the Manchester Ship Canal past MediaCity on a bright day
+# OWNED cover asset (processed WebP in public/images/). images[] below are still TEMP hotlink placeholders — Jeff fills the album out.
+coverImage: /images/city-river-tour-hero.webp
+coverAlt: "The City River Tour boat passing beneath the Millennium Footbridge on a sunny day, with passengers on the open top deck and Old Trafford in the distance."
 images:
   # TEMP: hotlinked from the live manchesterrivercruises.com for review — not an owned asset.
   - src: "https://optimise2.assets-servd.host/river-cruises/production/images/City-River-Tours-Thumbnail-500-350-1.png?w=800&h=543&q=100&auto=format&fit=crop&crop=focalpoint&fp-x=0.5&fp-y=0.5&dm=1715165712&s=ab2fe6d769864a15794f36a7ad599e16"

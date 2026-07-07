@@ -1,6 +1,6 @@
 import type { CollectionEntry } from 'astro:content';
 import { PRODUCT_IMAGES } from '../data/octoProductImages';
-import { isRealImage } from './gallery';
+import { isRealImage, isOwnedImage } from './gallery';
 
 // Shared What's On metadata: builds the productId → product-card map used by both the
 // /whats-on listing and the homepage strip. The live event-day feed (/.netlify/functions/
@@ -63,7 +63,11 @@ export function buildProductMeta(events: CollectionEntry<'events'>[]): ProductMe
   for (const e of events) {
     const pid = e.data.ventrataProductId;
     if (!pid) continue;
-    const hero = e.data.heroImage && isRealImage(e.data.heroImage) ? e.data.heroImage : undefined;
+    // Prefer an owned local heroImage (or a temp hotlink) — both are displayable.
+    const hero =
+      e.data.heroImage && (isOwnedImage(e.data.heroImage) || isRealImage(e.data.heroImage))
+        ? e.data.heroImage
+        : undefined;
     list.push({
       productId: pid,
       type: 'events',

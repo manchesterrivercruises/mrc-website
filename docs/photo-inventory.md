@@ -11,8 +11,14 @@ This tracks real photography as it is gathered against each album/subject.
 > (marked `# TEMP` in each album's frontmatter, served from `optimise2.assets-servd.host`).
 > They are **not owned/licensed for the new site**, are low-resolution thumbnails, and
 > **must be replaced with owned photography before launch**. The "current image count"
-> column below includes these temporaries — **the inventory targets remain UNMET**; the
-> count of real, owned, hero-grade assets is effectively **zero**.
+> column below includes these temporaries.
+>
+> **Update 2026-07-07:** one **owned** image per event/product has been ingested and wired in
+> as card/cover imagery (see **Owned card imagery** below). This adds one owned cover to five
+> albums, but the inventory targets **remain UNMET** — the albums still need multiple hero-grade
+> landscapes, and genuine owned hero-grade **photography** is only City River Tour, the ferry
+> and the Santa Cruise (the rest are promotional graphics). Several owned images show
+> identifiable customers/staff/performers → **usage rights TBC** (see the flagged table below).
 
 The rest of each album is still **placeholder tiles**. As owned photos land, they replace
 both the hotlinks and the placeholders, the collection switches to Astro's
@@ -30,15 +36,47 @@ when you add or reclassify assets.
 
 | Album / category | Current image count | Minimum needed | Hero-grade landscape selected? | 1200×630 crop suitable? | Product-page hero suitable? | OG suitable? | OTA suitable? | Alt text done? | Caption done? | Usage rights confirmed? | Notes / gaps |
 |---|---|---|---|---|---|---|---|---|---|---|---|
-| City River Tour · route | 8 (3 TEMP hotlink, rest placeholder) | 10+ (2–3 hero-grade landscapes) | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ✅ (drafted) | ◑ | ⬜ | **PRIORITY 1.** Signature product — needs 2–3 hero-grade landscapes to drive the product hero, homepage card and OG image. |
-| Christmas Cruises · seasonal | 8 (1 TEMP hotlink, rest placeholder) | 10+ (2–3 hero-grade landscapes) | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ✅ (drafted) | ◑ | ⬜ | **PRIORITY 2.** Seasonal campaign — needs 2–3 hero-grade festive landscapes (boat lit at night, Santa visit, party night). Time-sensitive: shoot in season. |
-| Dolly Night · live-music | 8 (2 TEMP hotlink, rest placeholder) | 8–10 (1 hero-grade) | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ✅ (drafted) | ◑ | ⬜ | TBC. 1 hero-grade performer landscape for the event card + product page. |
-| ABBA Night · live-music | 8 (1 TEMP hotlink, rest placeholder) | 8–10 (1 hero-grade) | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ✅ (drafted) | ◑ | ⬜ | TBC. 1 hero-grade performer landscape (tribute act mid-song, packed deck). |
+| City River Tour · route | 9 (1 OWNED cover + 3 TEMP hotlink, rest placeholder) | 10+ (2–3 hero-grade landscapes) | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ✅ (drafted) | ◑ | ⬜ | **PRIORITY 1.** Signature product — needs 2–3 hero-grade landscapes to drive the product hero, homepage card and OG image. |
+| Christmas Cruises · seasonal | 9 (1 OWNED cover + 1 TEMP hotlink, rest placeholder) | 10+ (2–3 hero-grade landscapes) | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ✅ (drafted) | ◑ | ⬜ | **PRIORITY 2.** Seasonal campaign — needs 2–3 hero-grade festive landscapes (boat lit at night, Santa visit, party night). Time-sensitive: shoot in season. |
+| Dolly Night · live-music | 9 (1 OWNED cover + 2 TEMP hotlink, rest placeholder) | 8–10 (1 hero-grade) | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ✅ (drafted) | ◑ | ⬜ | TBC. 1 hero-grade performer landscape for the event card + product page. |
+| ABBA Night · live-music | 9 (1 OWNED cover + 1 TEMP hotlink, rest placeholder) | 8–10 (1 hero-grade) | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ✅ (drafted) | ◑ | ⬜ | TBC. 1 hero-grade performer landscape (tribute act mid-song, packed deck). |
 | Private Hire · private-hire | 8 (2 TEMP hotlink, rest placeholder) | 8–10 (1 hero-grade) | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ✅ (drafted) | ◑ | ⬜ | TBC. 1 hero-grade landscape (celebration set-up / guests on deck). Get model/guest consent for usage rights. |
 | Manchester Ship Canal · route | 8 (all placeholder) | 8–10 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ✅ (drafted) | ◑ | ⬜ | TBC. Locks, bridges, heritage, changing light — scenery library, reusable across pages. |
 | Our Boats · boats | 8 (3 TEMP hotlink, rest placeholder) | 8–10 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ✅ (drafted) | ◑ | ⬜ | TBC. Cover each vessel plus cabin, open deck, bar and boarding — feeds the Vessels pages too. |
-| Old Trafford Ferry · route | 8 (2 TEMP hotlink, rest placeholder) | 8–10 (1 hero-grade) | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ✅ (drafted) | ◑ | ⬜ | TBC. 1 hero-grade (supporters boarding / stadium approach). Matchday access-dependent; avoid club trademarks in framing. |
+| Old Trafford Ferry · route | 9 (1 OWNED cover + 2 TEMP hotlink, rest placeholder) | 8–10 (1 hero-grade) | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ✅ (drafted) | ◑ | ⬜ | TBC. 1 hero-grade (supporters boarding / stadium approach). Matchday access-dependent; avoid club trademarks in framing. |
 | Salford Quays · route | 8 (1 TEMP hotlink, rest placeholder) | 8–10 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ✅ (drafted) | ◑ | ⬜ | TBC. MediaCity waterfront, The Lowry, the Millennium Footbridge boarding point. |
+
+## Owned card imagery — ingested 2026-07-07
+
+One owned image per event/product was ingested from Simon's `MRC Website` folder, processed to
+WebP (card ~800px + a ≤1600px hero variant where the source allowed) and wired into the What's
+On live feed, homepage strip, date finder, event `heroImage`, product pages and the matching
+gallery album **covers** (cover only — album galleries are still Jeff's workstream). Events with
+no folder (e.g. Adele) keep a temp hotlink with the branded-placeholder img-error fallback.
+
+**These are card/hero-card images, a mix of real photographs and promotional graphics — they do
+NOT yet meet the gallery albums' need for multiple hero-grade landscapes.** Genuine owned
+photography is still only City River Tour, the ferry and the Santa Cruise (3 shots).
+
+**⚠ Usage rights (identifiable people) — CONFIRM before launch:** the images below show
+identifiable customers, staff or tribute performers/models. Get consent / confirm licensing.
+
+| Product | Owned asset(s) (`public/images/…`) | Content | Identifiable people → **usage rights TBC** | Alt |
+|---|---|---|---|---|
+| City River Tour | `city-river-tour-card/-hero` | **Photo:** boat under the Millennium Footbridge, passengers on deck | **YES — passengers** | ✅ |
+| Boat to Old Trafford (ferry) | `boat-to-old-trafford-card/-hero` | **Photo:** boat with passengers, Salford Quays skyline | **YES — passengers** | ✅ |
+| Santa Cruise | `events/santa-cruise-card/-hero` | **Photo:** Father Christmas + two elf staff | **YES — Santa + staff** | ✅ |
+| Boat Tropicana | `events/boat-tropicana-card` | Photo (night, passengers in cabin) + neon overlay | **YES — passengers (indistinct)** | ✅ |
+| Rollin' on the River | `events/rollin-on-the-river-card/-hero` | Photo: Tina Turner tribute singer + audience | **YES — performer + audience** | ✅ |
+| Decks on Deck | `events/decks-on-deck-card/-hero` | Graphic: neon-lit model in profile | **YES — model** | ✅ |
+| Dolly | `events/dolly-cruise-card` | Graphic: Dolly Parton tribute performer + skyline | **YES — tribute performer** | ✅ |
+| Elvis Rocks | `events/elvis-rocks-cruise-card` | Graphic: Elvis tribute performer + waterfront | **YES — tribute performer** | ✅ |
+| ABBA | `events/abba-tribute-cruise-card` | Graphic: mirrorball + skyline (no person) | — | ✅ |
+| Back to the 90s | `events/back-to-the-90s-card` | Graphic: retro lettering + skyline | — | ✅ |
+| Diana Ross | `events/diana-ross-cruise-card/-hero` | Graphic: gold-glitter singer silhouette | — | ✅ |
+| Elvis Live | `events/elvis-live-cruise-card` | Graphic: gold Elvis silhouette + lettering | — | ✅ |
+| Soul River | `events/soul-river-cruise-card/-hero` | Graphic: neon lettering + MediaCityUK | — | ✅ |
+| Swinging on the River | `events/swinging-on-the-river-card` | Graphic: marquee lettering + waterfront | — | ✅ |
 
 ## How to use this tracker
 

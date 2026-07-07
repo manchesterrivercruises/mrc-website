@@ -59,6 +59,33 @@ const businessSchema = {
   sameAs: Object.values(site.socials),
 };
 
+// Global image-error fallback: any <img data-img-fallback> that fails to load (e.g. a temp
+// hotlink that 404s) swaps to the branded placeholder. One document-level capture listener
+// (error doesn't bubble; capture catches it, including dynamically-created cards) + a scan for
+// images that already failed before the listener attached. set:html, so no inline handler
+// (CSP-safe). Placed in <head> so it's armed before body images load.
+const IMG_FALLBACK_SCRIPT = `
+(function () {
+  var FB = '/images/gallery-placeholder.svg';
+  function apply(img) {
+    if (!img || img.dataset.imgFallbackApplied) return;
+    img.dataset.imgFallbackApplied = '1';
+    if (img.getAttribute('src') !== FB) img.src = FB;
+  }
+  document.addEventListener('error', function (e) {
+    var t = e.target;
+    if (t && t.tagName === 'IMG' && t.hasAttribute('data-img-fallback')) apply(t);
+  }, true);
+  function scan() {
+    document.querySelectorAll('img[data-img-fallback]').forEach(function (img) {
+      if (img.complete && img.naturalWidth === 0) apply(img);
+    });
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', scan);
+  else scan();
+})();
+`;
+
 // Google Tag Manager — only rendered when GTM_CONTAINER_ID is set (build-time env var).
 const gtmId = process.env.GTM_CONTAINER_ID;
 ---
@@ -124,6 +151,9 @@ const gtmId = process.env.GTM_CONTAINER_ID;
 
     {/* Per-page head injection (extra meta, JSON-LD, preloads, etc.) */}
     <slot name="head" />
+
+    {/* Global img-error fallback (see IMG_FALLBACK_SCRIPT). */}
+    <script is:inline set:html={IMG_FALLBACK_SCRIPT} />
   </head>
   <body class="flex min-h-screen flex-col bg-page text-ink">
     {/* Google Tag Manager (noscript) */}
