@@ -169,8 +169,8 @@ html.ventrata-open body {
   overscroll-behavior: contain;
 }
 
-/* Contain scroll chaining within the embedded widget itself, so scrolling the widget never
-   drags the page (matters most when the aside expands to Ventrata's fullscreen takeover). */
-aside[ventrata-embedded-widget] {
-  overscroll-behavior: contain;
-}
+/* NOTE: overscroll-behavior is deliberately NOT set on aside[ventrata-embedded-widget].
+   It was added with the fullscreen-takeover fix, but the INLINE embedded widget grows to
+   its content height (it never scrolls internally), so containment there only risked eating
+   touch scroll on the inline widget. The takeover still gets containment via the
+   html.ventrata-open body rule above + the JS applyContain() on the detected overlay. */

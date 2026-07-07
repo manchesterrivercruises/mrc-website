@@ -48,7 +48,7 @@ const {
   label = 'Book Now',
   class: className = '',
   calendarFirst = false,
-  minHeightClass = 'min-h-[50rem]',
+  minHeightClass = 'min-h-[40rem]',
 } = Astro.props;
 
 if ((mode === 'embedded' || mode === 'popup') && !productID) {
@@ -70,12 +70,20 @@ const popupConfig = JSON.stringify({ productID, ...calendarFirstConfig });
 // backticks + code LITERALLY, so the IIFE never runs. set:html sets the evaluated string
 // as element content (same pattern as the JSON-LD blocks and the ReviewStrip fix).
 const SKELETON_CSS = `
-  /* Once the widget's iframe mounts: hide the loading skeleton AND release the min-height
-     floor so the container fits the actual widget — short products (e.g. ABBA) no longer
-     leave a large gap under it. The floor holds ONLY while loading (no iframe yet), so the
-     skeleton never collapses before the widget renders (no load jump/flicker). */
+  /* Embedded sizing chain. Ventrata's embedded iframe GROWS to its content via height-sync
+     (it does not scroll internally), so the container must wrap it exactly — never clamp it.
+     - While loading (no iframe): the min-h-[40rem] floor on the aside gives the skeleton a
+       height (no pre-render collapse).
+     - Once the iframe mounts: hide the skeleton and RELEASE the aside floor (min-height: 0)
+       so the aside is exactly the iframe's height — no dead space under short products (T2).
+     - The iframe itself: full width, no border, and a MIN-HEIGHT floor (a floor, NOT a cap:
+       it never clamps a taller synced height) so the first step (Select Date) stays visible
+       even if the height-sync underperforms — the previous 150px default clipped it.
+     CRUCIAL: never set a CSS height on the iframe — that overrides Ventrata's own height and
+     collapses it to the 150px default. */
   aside[ventrata-embedded-widget]:has(iframe) .widget-loading { display: none; }
   aside[ventrata-embedded-widget]:has(iframe) { min-height: 0; }
+  aside[ventrata-embedded-widget] iframe { display: block; width: 100%; border: 0; min-height: 40rem; }
 `;
 
 const OBSERVER_SCRIPT = `
