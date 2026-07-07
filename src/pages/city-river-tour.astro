@@ -116,16 +116,14 @@ const structuredData = {
 const galleryTile =
   'flex h-full w-full items-center justify-center rounded-card bg-panel text-sm text-subtle ring-1 ring-black/5';
 
-// Route stops in order — rendered as a real <ol> beside the map so the itinerary is
+// What you'll see along the route, in order — rendered as a real <ol> beside the map so the itinerary is
 // crawlable static content and available without JavaScript (seeds the future full
 // 43-stop itinerary). The Leaflet map reads the same source (tour-stops.json).
 const orderedStops = [...tourStops].sort((a, b) => a.id - b.id);
 ---
 
-<BaseLayout title={pageTitle}>
-  {/* Ventrata page-level setup (checkout script + modal observer + skeleton hide) —
-      loaded ONLY on this booking page, never globally (AGENTS rule 9). */}
-  <VentrataWidget mode="loader" slot="head" env="test" />
+<BaseLayout title={pageTitle} bookProductID="ef45d8bd-529c-4dae-9c35-cd1b8e4e0a75">
+  {/* Ventrata checkout loader now ships site-wide via <Header> (AGENTS rule 9). */}
 
   {/* Schema.org structured data (JSON-LD) */}
   <script type="application/ld+json" is:inline set:html={JSON.stringify(structuredData)} />
@@ -245,8 +243,12 @@ const orderedStops = [...tourStops].sort((a, b) => a.id - b.id);
     <section aria-labelledby="route-map-heading" class="mx-auto max-w-6xl px-4 pt-10 sm:px-6 lg:px-8">
       <SectionHeading id="route-map-heading">Explore the route</SectionHeading>
       <p class="mt-4 max-w-3xl text-body">
-        Follow the full Manchester Ship Canal route — tap a numbered stop for details, or read
-        the stops in order below.
+        This is a non-landing sightseeing cruise — you'll see all of this from the comfort of
+        the boat, with live commentary throughout.
+      </p>
+      <p class="mt-4 max-w-3xl text-body">
+        Follow the full Manchester Ship Canal route — tap a number for details, or read the
+        sights in order below.
       </p>
       <div
         id="route-map"
@@ -255,7 +257,7 @@ const orderedStops = [...tourStops].sort((a, b) => a.id - b.id);
       ></div>
       <noscript>
         <p class="mt-2 text-sm text-subtle">
-          Enable JavaScript to view the interactive route map. The full list of stops is below.
+          Enable JavaScript to view the interactive route map. The full list of sights is below.
         </p>
       </noscript>
 
@@ -265,7 +267,7 @@ const orderedStops = [...tourStops].sort((a, b) => a.id - b.id);
       <div class="mt-8 max-w-3xl overflow-hidden rounded-card ring-1 ring-black/5">
         <details class="group bg-panel">
           <summary class="flex cursor-pointer list-none items-center justify-between gap-4 p-5 font-medium text-ink">
-            View all {orderedStops.length} stops as a list
+            View all {orderedStops.length} sights along the route
             <span
               aria-hidden="true"
               class="flex-none text-xl text-primary transition-transform group-open:rotate-45"
@@ -367,7 +369,7 @@ const orderedStops = [...tourStops].sort((a, b) => a.id - b.id);
             The cruise follows the Manchester Ship Canal with live commentary at each landmark.
           </p>
           <p class="mt-4 text-subtle">
-            Full route itinerary — 43 commentary stops from the GPS commentary app — TBC from Simon.
+            Full route itinerary — 43 points of interest with live commentary from the GPS commentary app — TBC from Simon.
           </p>
         </section>
 

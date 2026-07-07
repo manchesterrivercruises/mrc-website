@@ -23,7 +23,7 @@ They are non-negotiable. Do not deviate from them without explicit written appro
 
 8. **All code must be mobile-first and performance-conscious.** No render-blocking scripts above the fold. Images must be WebP at appropriate sizes.
 
-9. **Ventrata widget scripts must be loaded only on pages that need them.** Implement in line with Ventrata's official embedded/pop-up guidance. Do not globally load the checkout script on every page.
+9. **The Ventrata checkout loader ships site-wide via the header — deliberately.** The persistent Book Now in `<Header>` is a checkout pop-up trigger on every page, so the checkout script + pop-up observer load once site-wide (`<VentrataWidget mode="loader">` rendered once in Header). This is an intentional decision — it makes every page booking-capable and supersedes the earlier "load only on booking pages" rule. Requirements still hold: load the checkout script EXACTLY ONCE per page (never add a second per-page loader), pass a page's primary product via `bookProductID` (else the all-products chooser opens), and never expose the OCTO connection key (rules 1–2). Implement embedded/pop-up widgets per Ventrata's official guidance.
 
 10. **If Netlify Forms is used, the form element must exist in raw Astro/HTML markup at build time**, or include a hidden HTML mirror form with matching field names. Do not implement the private hire enquiry form only as a hydrated client-side component — Netlify's bots scrape at compile time and will miss JS-only forms.
 
