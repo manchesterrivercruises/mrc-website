@@ -1,3 +1,4 @@
+import { existsSync } from 'node:fs';
 import { getCollection, type CollectionEntry } from 'astro:content';
 
 // Shared helpers for the photo gallery: label map, album loading, related-album
@@ -16,12 +17,26 @@ export const CATEGORY_LABELS: Record<Album['data']['category'], string> = {
   'private-hire': 'Private Hire',
 };
 
-// True for a real, loadable image src: an http(s) URL today, and (in future) owned assets
-// under /images/gallery/ once they exist. Placeholder paths that don't resolve yet are
-// excluded — used for the ImageGallery schema, OG image and cover/thumb rendering.
-// NOTE: extend this predicate when owned gallery assets land (docs/image-conventions.md).
+// RENDERABLE image: a src we can actually show an <img> for right now — an http(s) URL
+// (the temp hotlinked review images). Placeholder paths that don't resolve yet render as a
+// tile instead. Used for cover/thumbnail RENDERING only — NOT for schema/OG (see below).
 export function isRealImage(src: string): boolean {
   return /^https?:\/\//.test(src);
+}
+
+// OWNED image: a real asset WE host in public/ — not an external hotlink, not a not-yet-
+// created placeholder path, not the shared placeholder tile. Only owned images are honest
+// to advertise in structured data / OG tags (a hotlinked third-party URL we don't control
+// must never be claimed as our gallery's image). Existence is checked at BUILD time
+// (server-only). When owned photography lands under /images/…, it qualifies automatically.
+export function isOwnedImage(src: string): boolean {
+  if (typeof src !== 'string' || !src.startsWith('/')) return false; // external/hotlink or invalid
+  if (src === '/images/gallery-placeholder.svg') return false; // placeholder tile, not owned photography
+  try {
+    return existsSync(`${process.cwd()}/public${src}`);
+  } catch {
+    return false;
+  }
 }
 
 // Build-time guard: each album's frontmatter `slug` must match its FILENAME, since the album
