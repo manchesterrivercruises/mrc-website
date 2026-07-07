@@ -39,6 +39,15 @@ Already in use. Needs footer newsletter signup (name and email minimum). Ventrat
 
 Required before Facebook Pixel and GA4 go live. Use GTM consent mode with Cookiebot or CookieYes (free tiers). Must be live before go-live. Add to launch checklist.
 
+**Ordering (critical — from review three):** the consent-mode **default state must be set to
+`denied` BEFORE the GTM script loads**, not after. Consent Mode v2 reads the default at tag
+initialisation — if the `gtag('consent', 'default', { ... 'denied' })` call (or the CMP's
+default block) runs after GTM, tags can fire once with consent implicitly granted before the
+banner is answered, defeating the whole purpose (and breaching UK GDPR / PECR pre-consent).
+So in `BaseLayout` the consent-default snippet must sit in `<head>` **above** the GTM
+container snippet. Verify in the built HTML that the `default … denied` call precedes the
+GTM `<script>`.
+
 ## Trengo
 
 Seasonal use (Christmas). Add as GTM tag, enable/disable in dashboard without code changes.
