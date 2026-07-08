@@ -121,6 +121,22 @@
     Strict-Transport-Security = "max-age=31536000; includeSubDomains"
     Content-Security-Policy-Report-Only = "default-src 'self'; script-src 'self' https://cdn.checkout.ventrata.com https://unpkg.com https://www.googletagmanager.com 'sha256-Cj3srLBQY5lfMIkYVWwpCIdsVAU0CIrHEOoAp1t6rGI=' 'sha256-OEdWaK1xkzztypcSbAY6orLcxm0Shn5ZdtweyF8ndMc=' 'sha256-a6M7W2m2norr1ec6Pe3NGcHfQn+geKiKpToxIbslI4M=' 'sha256-f5yfxw++p/treber8qTOWs/piZsTEauvxWyZXXlj5Uw=' 'sha256-nDg10GKA5OMDMIPPaD0f2NoUEnsHrAPdhcRFr8MFk0Q=' 'sha256-xsxCcGvieqKvl/XM4KtLiO5nSu97ySvf7LRYnG3bIi0='; style-src 'self' 'unsafe-inline' https://unpkg.com; img-src 'self' data: https://tile.openstreetmap.org https://optimise2.assets-servd.host https://cdn.checkout.ventrata.com https://www.googletagmanager.com https://www.google-analytics.com; font-src 'self'; connect-src 'self' https://api.ventrata.com https://cdn.checkout.ventrata.com https://*.ventrata.com https://www.googletagmanager.com https://www.google-analytics.com; frame-src 'self' https://cdn.checkout.ventrata.com https://*.ventrata.com https://www.googletagmanager.com; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'; upgrade-insecure-requests"
 
+# --- Keystatic CMS admin: never index -----------------------------------------
+# The admin UI (/keystatic) + API (/api/keystatic) and the /admin redirect are gated by
+# GitHub auth in production. X-Robots-Tag is belt-and-suspenders alongside public/robots.txt
+# and the sitemap filter (astro.config.mjs). NOTE: the site-wide CSP above is Report-Only, so
+# it does NOT block the React admin UI today. When the CSP is enforced at launch, the admin
+# needs its own relaxed policy (it loads React + talks to github.com / api.github.com for
+# OAuth + commits) — see docs/content-management.md → "CSP at enforcement".
+[[headers]]
+  for = "/keystatic/*"
+  [headers.values]
+    X-Robots-Tag = "noindex, nofollow"
+[[headers]]
+  for = "/admin/*"
+  [headers.values]
+    X-Robots-Tag = "noindex, nofollow"
+
 # --- Staging / non-production: keep crawlers out -------------------------------
 # Netlify's [[headers]] cannot be scoped per deploy context, so instead we append
 # a _headers rule (X-Robots-Tag: noindex, applied to every path) ONLY for

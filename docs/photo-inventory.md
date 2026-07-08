@@ -1,123 +1,110 @@
 # Photo Inventory & Gathering Tracker
 
-> **Jeff owns photography gathering against this list; this is the shared visual asset
-> library for the whole site (gallery, product heroes, homepage cards, OG images, event
-> cards, Discover, private hire, vessels, OTA listings) — not gallery-only.**
+> **This is the shared visual asset library for the whole site** (gallery, product heroes,
+> homepage cards, OG images, event cards, Discover, private hire, vessels, OTA listings) —
+> not gallery-only.
 
 This tracks real photography as it is gathered against each album/subject.
 
-> **⚠ Current gallery images are TEMPORARY HOTLINKS, not owned assets.** For review only,
-> some album images are hotlinked straight from the current live manchesterrivercruises.com
-> (marked `# TEMP` in each album's frontmatter, served from `optimise2.assets-servd.host`).
-> They are **not owned/licensed for the new site**, are low-resolution thumbnails, and
-> **must be replaced with owned photography before launch**. The "current image count"
-> column below includes these temporaries.
+> **Update 2026-07-08 — full image sweep.** The entire `C:\MRC Website\` tree was swept
+> (all event shoots + General + Isabella, ~1,370 candidate images). Owned, processed WebP
+> photography now backs most albums, including **six new event albums** (Adele, Elvis Live,
+> Elvis Rocks, Soul River, Rollin on the River, Boat Tropicana). **Usage rights: releases
+> confirmed by Simon across the board** — identifiable guests, staff and tribute performers
+> are cleared for use, so the earlier "usage rights TBC" flags are lifted.
 >
-> **Update 2026-07-07:** one **owned** image per event/product has been ingested and wired in
-> as card/cover imagery (see **Owned card imagery** below). This adds one owned cover to five
-> albums, but the inventory targets **remain UNMET** — the albums still need multiple hero-grade
-> landscapes, and genuine owned hero-grade **photography** is only City River Tour, the ferry
-> and the Santa Cruise (the rest are promotional graphics). Several owned images show
-> identifiable customers/staff/performers → **usage rights TBC** (see the flagged table below).
+> **What this does NOT yet cover:** a few albums still lack owned photography (see
+> **Gaps remaining** below) — most importantly **City River Tour** (signature product) and
+> **ABBA Night**, plus a thin **Private Hire** set. Some events are promotional graphics only.
 
-The rest of each album is still **placeholder tiles**. As owned photos land, they replace
-both the hotlinks and the placeholders, the collection switches to Astro's
-`image()`/`<Image>` pipeline, and this table is updated (see `docs/image-conventions.md`).
+A handful of images remain **TEMP hotlinks** from the live site (marked `# TEMP` in
+frontmatter, served from `optimise2.assets-servd.host`) where no owned photo exists yet —
+these still must be replaced before launch. The collection will switch to Astro's
+`image()`/`<Image>` pipeline once the last owned assets land (see `docs/image-conventions.md`).
 
-Each image in the `gallery` collection also carries optional **`isFeatured`** (hero-grade
-candidate) and **`usage`** (`gallery` | `product-page` | `homepage` | `og-image` |
-`ota-listing` | `event-card` | `private-hire` | `press`) fields — set these per asset so
-the same library feeds the whole site, not just the gallery wall. Keep this table in sync
-when you add or reclassify assets.
+Each `gallery` image carries optional **`isFeatured`** (hero-grade candidate) and **`usage`**
+(`gallery` | `product-page` | `homepage` | `og-image` | `ota-listing` | `event-card` |
+`private-hire` | `press`) fields so the same library feeds the whole site. Keep this table in
+sync when you add or reclassify assets.
 
 **Legend:** ✅ done · ⬜ to do / TBC · ◑ partial · — not applicable
 
 ## Inventory
 
-| Album / category | Current image count | Minimum needed | Hero-grade landscape selected? | 1200×630 crop suitable? | Product-page hero suitable? | OG suitable? | OTA suitable? | Alt text done? | Caption done? | Usage rights confirmed? | Notes / gaps |
-|---|---|---|---|---|---|---|---|---|---|---|---|
-| City River Tour · route | 9 (1 OWNED cover + 3 TEMP hotlink, rest placeholder) | 10+ (2–3 hero-grade landscapes) | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ✅ (drafted) | ◑ | ⬜ | **PRIORITY 1.** Signature product — needs 2–3 hero-grade landscapes to drive the product hero, homepage card and OG image. |
-| Christmas Cruises · seasonal | 9 (1 OWNED cover + 1 TEMP hotlink, rest placeholder) | 10+ (2–3 hero-grade landscapes) | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ✅ (drafted) | ◑ | ⬜ | **PRIORITY 2.** Seasonal campaign — needs 2–3 hero-grade festive landscapes (boat lit at night, Santa visit, party night). Time-sensitive: shoot in season. |
-| Dolly Night · live-music | 9 (1 OWNED cover + 2 TEMP hotlink, rest placeholder) | 8–10 (1 hero-grade) | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ✅ (drafted) | ◑ | ⬜ | TBC. 1 hero-grade performer landscape for the event card + product page. |
-| ABBA Night · live-music | 9 (1 OWNED cover + 1 TEMP hotlink, rest placeholder) | 8–10 (1 hero-grade) | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ✅ (drafted) | ◑ | ⬜ | TBC. 1 hero-grade performer landscape (tribute act mid-song, packed deck). |
-| Private Hire · private-hire | 8 (2 TEMP hotlink, rest placeholder) | 8–10 (1 hero-grade) | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ✅ (drafted) | ◑ | ⬜ | TBC. 1 hero-grade landscape (celebration set-up / guests on deck). Get model/guest consent for usage rights. |
-| Manchester Ship Canal · route | 5 OWNED (real photos) | 8–10 | ✅ | ✅ (sunset-from-bow) | ✅ | ✅ | ◑ | ✅ | ◑ | ◑ | 5 owned route photos wired (sunset-from-bow featured, IWM North, red Irwell bridge, city towers, street art). Reusable across pages. Still want more locks/heritage variety. |
-| Our Boats · boats | 5 OWNED (real photos) | 8–10 | ✅ | ✅ | ✅ | ✅ | ◑ | ✅ | ◑ | ◑ | 5 owned wired (boat at Salford Quays featured, fleet at footbridge, skipper at helm [staff — rights TBC], rosé on deck, dog at window). Vessels collection is empty — no per-vessel cards yet. |
-| Old Trafford Ferry · route | 9 (1 OWNED cover + 2 TEMP hotlink, rest placeholder) | 8–10 (1 hero-grade) | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ✅ (drafted) | ◑ | ⬜ | TBC. 1 hero-grade (supporters boarding / stadium approach). Matchday access-dependent; avoid club trademarks in framing. |
-| Salford Quays · route | 4 OWNED (real photos) | 8–10 | ✅ | ✅ (footbridge-skyline-dusk) | ✅ | ✅ | ◑ | ✅ | ◑ | ✅ | 4 owned wired (footbridge-skyline blue hour featured, purple footbridge, aerial sunset w/ boat, rainbow). No identifiable people. Feeds getting-here + Discover heroes. |
+| Album / category | Owned photos | Minimum needed | Met? | Hero-grade landscape? | Alt done? | Rights confirmed? | Notes / gaps |
+|---|---|---|---|---|---|---|---|
+| City River Tour · route | 0 (1 owned card cover + hotlink/placeholder images) | 10+ (2–3 hero-grade) | ⬜ | ⬜ | ✅ | ✅ | **PRIORITY 1.** Signature product — still needs a real gallery set + 2–3 hero-grade landscapes for the product hero, homepage card and OG. No dedicated shoot folder existed in the sweep. |
+| ABBA Night · live-music | 0 (1 owned card cover + hotlink/placeholder) | 8–10 (1 hero-grade) | ⬜ | ⬜ | ✅ | ✅ | **PRIORITY 2.** No ABBA shoot existed in the source tree — needs a real tribute-night shoot (performer mid-song, packed cabin). |
+| Private Hire · private-hire | 1 (+2 review hotlinks) | 8–10 (1 hero-grade) | ◑ | ◑ | ✅ | ✅ | Owned Valentine's-dressed cabin (Isabella) is the new cover. Needs weddings / corporate / celebration real photos. |
+| Old Trafford Ferry · route | 2 (+ owned cover) | 8–10 | ◑ | ◑ | ✅ | ✅ | Matchday supporters onboard + the ferry on the canal. Could add stadium-approach / arrival + open-deck supporters (matchday-access dependent; avoid club trademarks). |
+| Christmas Cruises · seasonal | 3 (+ owned cover) | 8–10 (2–3 hero-grade) | ◑ | ◑ | ✅ | ✅ | Santa & elf, child steering with Santa, grotto decor. Full Meet-Santa sets (High/Low Res, 2024 + 2025) available for more; want a festive boat-lit-at-night landscape. |
+| Dolly Cruise · live-music | 3 (+ owned cover) | 8–10 (1 hero-grade) | ✅ | ✅ | ✅ | ✅ | Performer-with-crowd (cover), performer portrait, cowboy-hat singalong. 131-photo Oct shoot available for more (Low Res = duplicates). |
+| Adele Cruise · live-music | 4 | 8–10 (1 hero-grade) | ✅ | ✅ | ✅ | ✅ | NEW album. Performer, crowd, crew serving, dancing. 66-photo set — curated to 4. |
+| Elvis Live · live-music | 4 | 8–10 (1 hero-grade) | ✅ | ✅ | ✅ | ✅ | NEW album. Performer to full cabin, guest candids, dressed cabin. 93-photo set. |
+| Elvis Rocks · live-music | 4 | 8–10 (1 hero-grade) | ✅ | ✅ | ✅ | ✅ | NEW album. Jumpsuit + military-uniform sets, aisle crowd work. 139-photo set. |
+| Soul River · live-music | 4 | 8–10 (1 hero-grade) | ✅ | ✅ | ✅ | ✅ | NEW album. Male + female singers, guest candids. 75-photo set. |
+| Rollin on the River · live-music | 4 | 8–10 (1 hero-grade) | ✅ | ✅ | ✅ | ✅ | NEW album (Tina Turner tribute). Performer + guest engagement + dancing. 110-photo set. |
+| Boat Tropicana · dj-night | 4 | 8–10 (1 hero-grade) | ✅ | ✅ | ✅ | ✅ | NEW album (80s party). DJ + dancefloor + neon fancy dress. 101-photo set. |
+| Our Boats · boats | 6 | 8–10 | ✅ | ✅ | ✅ | ✅ | Boat at Salford Quays (cover), fleet at footbridge, skipper at helm, rosé, dog, crew at the bar. Vessels collection still EMPTY — no per-vessel pages. |
+| Manchester Ship Canal · route | 5 | 8–10 | ✅ | ✅ | ✅ | ✅ | Sunset-from-bow (cover), IWM North, red Irwell bridge, city towers, street art. Want more locks / heritage variety. |
+| Salford Quays · route | 5 | 8–10 | ✅ | ✅ | ✅ | ✅ | Footbridge-skyline blue hour (cover), purple footbridge, aerial sunset, rainbow, golden-hour sunset. Feeds getting-here + Discover heroes. |
 
-## Owned card imagery — ingested 2026-07-07
+## Full image sweep — ingested 2026-07-08
 
-One owned image per event/product was ingested from Simon's `MRC Website` folder, processed to
-WebP (card ~800px + a ≤1600px hero variant where the source allowed) and wired into the What's
-On live feed, homepage strip, date finder, event `heroImage`, product pages and the matching
-gallery album **covers** (cover only — album galleries are still Jeff's workstream). Events with
-no folder (e.g. Adele) keep a temp hotlink with the branded-placeholder img-error fallback.
+The whole `C:\MRC Website\` tree was recursed (~1,370 images across every event shoot,
+`General/`, `General/Drone/` and `Isabella/`). Against the ~28 source files already ingested
+in the two earlier passes, the new material was curated hard (professional shoots run
+75–139 photos each, most with a duplicate **Low Res** copy of every **High Res** frame).
+Selected images were viewed, given genuine alt text, kebab-renamed, and processed to WebP
+(800px card + ≤1600px large, real PhotoSwipe dims) into `public/images/gallery/<album>/`.
 
-**These are card/hero-card images, a mix of real photographs and promotional graphics — they do
-NOT yet meet the gallery albums' need for multiple hero-grade landscapes.** Genuine owned
-photography is still only City River Tour, the ferry and the Santa Cruise (3 shots).
+**Six new event albums created** (each event had 4+ decent images and no album): `adele-night`,
+`elvis-live`, `elvis-rocks`, `soul-river`, `rollin-on-the-river`, `boat-tropicana` — all linked
+to their `/cruises/[slug]` product pages and on the gallery wall (15 albums total).
 
-**⚠ Usage rights (identifiable people) — CONFIRM before launch:** the images below show
-identifiable customers, staff or tribute performers/models. Get consent / confirm licensing.
+**Existing albums filled with owned photos** (replacing leftover placeholders/hotlinks): Dolly
+(3, new cover), Christmas (3), Old Trafford Ferry (2), Private Hire (1 + cover), Our Boats
+(+crew at the bar), Salford Quays (+golden-hour sunset).
 
-| Product | Owned asset(s) (`public/images/…`) | Content | Identifiable people → **usage rights TBC** | Alt |
-|---|---|---|---|---|
-| City River Tour | `city-river-tour-card/-hero` | **Photo:** boat under the Millennium Footbridge, passengers on deck | **YES — passengers** | ✅ |
-| Boat to Old Trafford (ferry) | `boat-to-old-trafford-card/-hero` | **Photo:** boat with passengers, Salford Quays skyline | **YES — passengers** | ✅ |
-| Santa Cruise | `events/santa-cruise-card/-hero` | **Photo:** Father Christmas + two elf staff | **YES — Santa + staff** | ✅ |
-| Boat Tropicana | `events/boat-tropicana-card` | Photo (night, passengers in cabin) + neon overlay | **YES — passengers (indistinct)** | ✅ |
-| Rollin' on the River | `events/rollin-on-the-river-card/-hero` | Photo: Tina Turner tribute singer + audience | **YES — performer + audience** | ✅ |
-| Decks on Deck | `events/decks-on-deck-card/-hero` | Graphic: neon-lit model in profile | **YES — model** | ✅ |
-| Dolly | `events/dolly-cruise-card` | Graphic: Dolly Parton tribute performer + skyline | **YES — tribute performer** | ✅ |
-| Elvis Rocks | `events/elvis-rocks-cruise-card` | Graphic: Elvis tribute performer + waterfront | **YES — tribute performer** | ✅ |
-| ABBA | `events/abba-tribute-cruise-card` | Graphic: mirrorball + skyline (no person) | — | ✅ |
-| Back to the 90s | `events/back-to-the-90s-card` | Graphic: retro lettering + skyline | — | ✅ |
-| Diana Ross | `events/diana-ross-cruise-card/-hero` | Graphic: gold-glitter singer silhouette | — | ✅ |
-| Elvis Live | `events/elvis-live-cruise-card` | Graphic: gold Elvis silhouette + lettering | — | ✅ |
-| Soul River | `events/soul-river-cruise-card/-hero` | Graphic: neon lettering + MediaCityUK | — | ✅ |
-| Swinging on the River | `events/swinging-on-the-river-card` | Graphic: marquee lettering + waterfront | — | ✅ |
+**Rights:** Simon has confirmed releases across the board — identifiable guests, crew and
+tribute performers are cleared. The previous `skipper-at-the-helm` "usage rights TBC" credit
+has been removed, and the Adele set (previously held back) is now usable.
 
-## Owned general imagery — ingested 2026-07-08
+**Notable source facts:**
+- `Dolly/October Photography/` files are misnamed "Adele" but are **Dolly** content (verified by viewing).
+- `Boat to Old Trafford/` uses `-N` / `-N(1)` **duplicate pairs**; `Isabella/` is the private-hire vessel (Valentine's interior + on-the-water exterior).
+- **High Res** used throughout; **Low Res** folders skipped as exact duplicates.
+- `._*` files are macOS AppleDouble metadata, not images — skipped.
 
-A large mixed set of owned photography (C:\MRC Website\General, recursed) was curated —
-NOT all of it. 14 hero-grade images were selected, processed to WebP (800px card + <=1600px
-large, real PhotoSwipe dims) into public/images/gallery/<album>/, and wired into the matching
-gallery albums images[] + covers, plus Discover guide heroes (IWM North, ship canal, Salford
-Quays, Old Trafford-by-boat, The Lowry) and the shared getting-here boarding-point image.
-The featured shots (isFeatured) are hero-grade landscapes suitable for 1200x630 OG crops.
+## Gaps remaining — Jeff's shoot / selection list
 
-**Wired (14):** Salford Quays x4 (footbridge-skyline blue hour, purple footbridge, aerial
-sunset w/ boat, rainbow); Ship Canal x5 (sunset-from-the-bow, IWM North, boat under the red
-Irwell bridge, canal between city towers, canalside street art); Our Boats x5 (boat at
-Salford Quays, fleet moored at the footbridge, skipper at the helm, sparkling rose on deck,
-dog at the window).
+**Still needs a real shoot (no owned photography):**
+- **City River Tour** — PRIORITY 1. Signature product; needs a full gallery set + 2–3 hero-grade landscapes.
+- **ABBA Night** — PRIORITY 2. No ABBA shoot existed in the source tree.
+- **Vessels** — the `vessels` content collection is empty; no per-vessel pages exist. The
+  Isabella has photos but no vessel page to hang them on.
 
-**Usage rights (identifiable people) — CONFIRM before launch:**
-- our-boats/skipper-at-the-helm — identifiable CREW member (face). Get staff consent.
-- our-boats/sparkling-rose-on-deck, our-boats/dog-at-the-boat-window — a HAND only (no face).
-- All other 11 wired images are scenery / boats / landmarks with no identifiable people.
+**Owned but thin (top up from existing sets or a light shoot):**
+- **Private Hire** — only 1 owned (Valentine's cabin); needs weddings / corporate / celebration real photos.
+- **Old Trafford Ferry** — 2 owned; add supporters on the open deck + stadium approach/arrival.
+- **Christmas Cruises** — 3 owned; add a festive boat-lit-at-night landscape (time-sensitive).
 
-**Skipped (noted):**
-- Adele event set (66 photos) — party/performance shots full of identifiable guests and the
-  tribute performer. NOT wired (rights liability); available for a future Adele album once
-  consent/licensing is cleared. The Adele event card keeps its temp hotlink.
-- River cruise (15 of 38) — passengers incl. CHILDREN; held pending consent.
-- ~55 further drone frames — sequential near-duplicates of the two aerials selected.
-- ~50 older phone snaps + 18 numbered PNGs — lower grade / redundant for these albums.
-- ._* files — macOS AppleDouble metadata, not images.
+**Graphics-only events (promo card art, no photo album):** Diana Ross, Decks on Deck, Back to
+the 90s, Swinging on the River, Broadway Boat Party, Club Classics, Halloween, Pirates & Mermaids,
+Wizards & Fairies, Mother's/Father's Day. Give these real albums if/when shot.
+
+**Available to expand (already-owned, not yet ingested):** the full High Res event sets
+(hundreds more frames across Adele/Elvis/Soul/Tina/80s/Santa), the 2025 Meet-Santa set, more
+`General/` + `General/Drone/` scenery, and the Adele 66-set. Curated to the best few this pass;
+more can be pulled in without another shoot.
 
 ## How to use this tracker
 
-1. As Jeff gathers a shot, drop the asset into `src/assets/gallery/<slug>/` (kebab-case,
-   descriptive names — see `docs/image-conventions.md`).
-2. Update the matching `images[]` entry in `src/content/gallery/<slug>.md`: replace the
-   placeholder `src`, refine the `alt` to describe the actual photo, and set `isFeatured`
-   / `usage` so the asset is picked up wherever it's cleared to appear.
-3. Flip the relevant cells in the table above to ✅ and clear the note.
-4. When a whole album's real assets are in, switch its collection fields to the `image()`
-   helper and render with `<Image>` (see `docs/image-conventions.md` →
-   "Switching collections to the `image()` helper").
-
-**Alt text note:** the ✅ marks reflect alt text *drafted against the intended shot*.
-Re-check each alt when the real photo lands so it describes what's actually in frame.
+1. Drop new owned assets into `public/images/gallery/<slug>/` (kebab-case, descriptive names)
+   as processed WebP — 800px card + ≤1600px large — per `docs/image-conventions.md`.
+2. Add/replace the matching `images[]` entry in `src/content/gallery/<slug>.md`: real `src`,
+   real `width`/`height` (for PhotoSwipe), genuine `alt`, and `isFeatured` / `usage` so the
+   asset is picked up wherever it's cleared to appear.
+3. Update the table above (owned count, Met?, flip cells to ✅) and clear the gap note.
+4. When a whole album's real assets are in, consider switching its collection fields to the
+   `image()` helper and `<Image>` (see `docs/image-conventions.md`).

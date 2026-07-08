@@ -46,10 +46,10 @@ export function isOwnedImage(src: string): boolean {
 // uses the `slug` frontmatter as the entry id — hence we compare filePath, not entry.id.)
 function assertSlugsMatchFilenames(albums: Album[]): void {
   for (const a of albums) {
-    const filename = (a.filePath ?? '').split('/').pop()?.replace(/\.md$/, '') ?? '';
+    const filename = (a.filePath ?? '').split('/').pop()?.replace(/\.ya?ml$/, '') ?? '';
     if (filename && filename !== a.data.slug) {
       throw new Error(
-        `Gallery slug drift: src/content/gallery/${filename}.md declares slug "${a.data.slug}", ` +
+        `Gallery slug drift: src/content/gallery/${filename}.yaml declares slug "${a.data.slug}", ` +
           `but the filename is "${filename}". Rename the file or fix the slug so they match.`,
       );
     }

@@ -1,0 +1,39 @@
+title: Private Hire
+slug: private-hire
+order: 5
+summary: The whole boat, exclusively yours — celebrations, corporate events and weddings hosted on the water.
+category: private-hire
+# OWNED cover asset (processed WebP, public/images/gallery/private-hire/). Rights confirmed by Simon.
+coverImage: /images/gallery/private-hire/boat-dressed-for-valentines.webp
+coverAlt: "The boat's cabin dressed for a Valentine's charter with red heart balloons and tables laid with heart-themed decorations"
+images:
+  - src: /images/gallery/private-hire/boat-dressed-for-valentines.webp
+    width: 1600
+    height: 1066
+    alt: "The boat's cabin dressed for a Valentine's charter with red heart balloons and tables laid with heart-themed decorations"
+    caption: "Dressed for the occasion."
+    orientation: landscape
+    isFeatured: true
+    usage: [gallery, private-hire, product-page]
+    tags: [private-hire, decor]
+  # TEMP: hotlinked from the live manchesterrivercruises.com for review — not an owned asset.
+  - src: "https://optimise2.assets-servd.host/river-cruises/production/images/drinks.jpg?w=800&h=543&q=80&fm=webp&fit=crop&crop=focalpoint&fp-x=0.5&fp-y=0.5&dm=1682426551&s=0dbe00033afc521262060f0489af39c6"
+    width: 800
+    height: 543
+    alt: Guests mingling with drinks on the deck of a privately hired boat at golden hour
+    caption: A private charter set up for a summer celebration.
+    orientation: landscape
+    tags: [event, deck]
+  # TEMP: hotlinked from the live manchesterrivercruises.com for review — not an owned asset.
+  - src: "https://optimise2.assets-servd.host/river-cruises/production/images/party.jpg?w=1200&h=900&q=80&fm=webp&fit=crop&crop=focalpoint&fp-x=0.5&fp-y=0.5&dm=1682426547&s=287285d3882fe6c4e0234a60457d517b"
+    width: 1200
+    height: 900
+    alt: Tables laid with flowers and place settings inside the cabin for a private dinner
+    orientation: landscape
+    tags: [catering, decor]
+relatedAlbums: [our-boats, city-river-tour]
+relatedProduct: /private-hire
+bookingCtaLabel: Enquire about private hire
+bookingCtaUrl: /private-hire
+seoTitle: Private Hire Photos — Exclusive Boat Hire for Events Manchester
+seoDescription: Photos from private hire charters on the Manchester Ship Canal — weddings, corporate events and celebrations with the whole boat to yourselves. Enquire about private hire.

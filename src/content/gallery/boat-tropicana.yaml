@@ -1,0 +1,46 @@
+title: Boat Tropicana
+slug: boat-tropicana
+order: 15
+summary: An 80s party afloat — neon, fancy dress, a live DJ and a boat full of dancers.
+category: dj-night
+# OWNED assets (processed WebP, public/images/gallery/boat-tropicana/). Rights confirmed by Simon.
+coverImage: /images/gallery/boat-tropicana/dj-and-dancers.webp
+coverAlt: "A DJ in headphones mixes at the decks as guests in neon 80s outfits dance around him under green party lighting"
+images:
+  - src: /images/gallery/boat-tropicana/dj-and-dancers.webp
+    width: 1600
+    height: 1069
+    alt: "A DJ in headphones mixes at the decks as guests in neon 80s outfits dance around him under green party lighting"
+    caption: "The 80s, afloat."
+    orientation: landscape
+    isFeatured: true
+    usage: [gallery, event-card, product-page, homepage]
+    tags: [dj, party, dj-night]
+  - src: /images/gallery/boat-tropicana/dj-and-the-dancefloor.webp
+    width: 1600
+    height: 1069
+    alt: "A smiling DJ raises his arms behind the decks as guests in glow necklaces and 80s fancy dress dance in front, red and teal tinsel behind"
+    caption: "Hands in the air."
+    orientation: landscape
+    tags: [dj, party, guests]
+  - src: /images/gallery/boat-tropicana/guests-dancing-80s-night.webp
+    width: 1600
+    height: 2395
+    alt: "Two guests in bright party outfits laughing and dancing close together under blue lights on the 80s cruise"
+    caption: "Dressed for the decade."
+    orientation: portrait
+    tags: [guests, party]
+  - src: /images/gallery/boat-tropicana/guest-in-80s-fancy-dress.webp
+    width: 1600
+    height: 1069
+    alt: "A guest in a pink tutu and neon leg warmers dances between the tables amid fairy lights and an 80s-themed crowd"
+    caption: "Neon and tutus."
+    orientation: landscape
+    tags: [guests, fancy-dress]
+relatedAlbums: [soul-river, private-hire]
+relatedProduct: /cruises/boat-tropicana
+bookingCtaLabel: Book the Boat Tropicana Cruise
+bookingCtaUrl: /cruises/boat-tropicana
+seoTitle: Boat Tropicana Photos — 80s Party Cruise on the Water in Manchester
+seoDescription: Photos from Boat Tropicana, our 80s party cruise on the Manchester Ship Canal — neon fancy dress, a DJ and a full dancefloor. Book Boat Tropicana.
+draft: false

@@ -1,0 +1,46 @@
+title: Soul River
+slug: soul-river
+order: 13
+summary: Soul and Motown classics on the river — live vocals, dancing and a boat full of good spirits.
+category: live-music
+# OWNED assets (processed WebP, public/images/gallery/soul-river/). Rights confirmed by Simon.
+coverImage: /images/gallery/soul-river/soul-singer-among-the-crowd.webp
+coverAlt: "A soul singer in a gold sequinned dress performs to a lively table of guests with their hands in the air, red-white-and-blue tinsel behind"
+images:
+  - src: /images/gallery/soul-river/soul-singer-among-the-crowd.webp
+    width: 1600
+    height: 1067
+    alt: "A soul singer in a gold sequinned dress performs to a lively table of guests with their hands in the air, red-white-and-blue tinsel behind"
+    caption: "Bringing the soul."
+    orientation: landscape
+    isFeatured: true
+    usage: [gallery, event-card, product-page, homepage]
+    tags: [soul, performer, live-music]
+  - src: /images/gallery/soul-river/soul-singer-performing.webp
+    width: 1600
+    height: 2400
+    alt: "A soul singer in a pale blazer sings into a microphone against a shimmering teal backdrop on the decorated boat"
+    caption: "Live vocals on the water."
+    orientation: portrait
+    tags: [soul, performer]
+  - src: /images/gallery/soul-river/guest-enjoying-the-soul-night.webp
+    width: 1600
+    height: 2400
+    alt: "A guest in a white shirt laughs over a glass of prosecco at a table set with wildflowers on the sunlit boat"
+    caption: "Good spirits all round."
+    orientation: portrait
+    tags: [guests]
+  - src: /images/gallery/soul-river/guests-laughing-over-drinks.webp
+    width: 1600
+    height: 2400
+    alt: "Two women laughing together on the boat's grey banquette, one raising a glass of red wine, fairy lights and the river behind"
+    caption: "Cheers to that."
+    orientation: portrait
+    tags: [guests, party]
+relatedAlbums: [rollin-on-the-river, abba-night]
+relatedProduct: /cruises/soul-river-cruise
+bookingCtaLabel: Book the Soul River Cruise
+bookingCtaUrl: /cruises/soul-river-cruise
+seoTitle: Soul River Cruise Photos — Soul & Motown Night on the Water
+seoDescription: Photos from the Soul River cruise on the Manchester Ship Canal — live soul vocals and the party onboard. Book the Soul River Cruise.
+draft: false

@@ -1,0 +1,46 @@
+title: Rollin on the River
+slug: rollin-on-the-river
+order: 14
+summary: Tina Turner's biggest hits, live on the water — our Rollin on the River tribute cruise.
+category: live-music
+# OWNED assets (processed WebP, public/images/gallery/rollin-on-the-river/). Rights confirmed by Simon.
+coverImage: /images/gallery/rollin-on-the-river/tina-tribute-arm-raised.webp
+coverAlt: "The Tina Turner tribute in a gold fringed dress sings with her arm raised against red, white and blue tinsel, guests watching from a table"
+images:
+  - src: /images/gallery/rollin-on-the-river/tina-tribute-arm-raised.webp
+    width: 1600
+    height: 1069
+    alt: "The Tina Turner tribute in a gold fringed dress sings with her arm raised against red, white and blue tinsel, guests watching from a table"
+    caption: "Simply the best."
+    orientation: landscape
+    isFeatured: true
+    usage: [gallery, event-card, product-page, homepage]
+    tags: [tina, performer, live-music]
+  - src: /images/gallery/rollin-on-the-river/tina-tribute-with-guests.webp
+    width: 1600
+    height: 1069
+    alt: "The Tina Turner tribute sings to a table of laughing guests, leaning in with the microphone amid fairy lights and boat windows"
+    caption: "Right up close."
+    orientation: landscape
+    tags: [tina, performer, guests]
+  - src: /images/gallery/rollin-on-the-river/tina-tribute-and-the-crowd.webp
+    width: 1600
+    height: 1069
+    alt: "The Tina Turner tribute performs in profile as guests cheer with raised arms, colourful tinsel and party lights behind"
+    caption: "The crowd goes with her."
+    orientation: landscape
+    tags: [tina, performer, guests]
+  - src: /images/gallery/rollin-on-the-river/guests-dancing-to-tina.webp
+    width: 1600
+    height: 1069
+    alt: "Guests dance and laugh together on the floor as the Tina Turner tribute performs behind them under blue and red party lights"
+    caption: "Up and dancing."
+    orientation: landscape
+    tags: [guests, party]
+relatedAlbums: [soul-river, abba-night]
+relatedProduct: /cruises/rollin-on-the-river
+bookingCtaLabel: Book the Rollin on the River Cruise
+bookingCtaUrl: /cruises/rollin-on-the-river
+seoTitle: Rollin on the River Photos — Tina Turner Tribute Cruise in Manchester
+seoDescription: Photos from the Rollin on the River Tina Turner tribute cruise on the Manchester Ship Canal — the performance and the party. Book the cruise.
+draft: false

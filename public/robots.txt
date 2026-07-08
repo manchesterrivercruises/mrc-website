@@ -1,2 +1,9 @@
 User-agent: *
 Disallow: /
+
+# Keystatic CMS admin — keep out of search indexes even after launch flips the site
+# indexable (the blanket Disallow above is the pre-launch staging state). The admin UI lives
+# at /keystatic, its API at /api/keystatic, and /admin redirects there.
+Disallow: /keystatic
+Disallow: /admin
+Disallow: /api/keystatic

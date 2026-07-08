@@ -1,0 +1,32 @@
+title: Old Trafford Ferry
+slug: old-trafford-ferry
+order: 7
+summary: Matchday by boat — supporters cruising to Trafford Wharf and the walk-up to Old Trafford along the water.
+category: route
+# OWNED cover + images (processed WebP, public/images/). Rights confirmed by Simon.
+coverImage: /images/boat-to-old-trafford-hero.webp
+coverAlt: "A Manchester River Cruises boat on the Manchester Ship Canal carrying passengers on the open top deck, with the Salford Quays skyline and Millennium Footbridge behind."
+images:
+  - src: /images/gallery/old-trafford-ferry/matchday-fans-onboard.webp
+    width: 1600
+    height: 1067
+    alt: "A group of football supporters in scarves around a table of drinks on the matchday ferry, the bar and canal windows behind"
+    caption: "Matchday spirits onboard."
+    orientation: landscape
+    isFeatured: true
+    usage: [gallery, event-card, product-page]
+    tags: [supporters, matchday]
+  - src: /images/gallery/old-trafford-ferry/ferry-boat-on-the-canal.webp
+    width: 1600
+    height: 1200
+    alt: "A Manchester River Cruises ferry cruising the ship canal past the MediaCityUK waterfront under a bright blue sky"
+    caption: "On the water to the match."
+    orientation: landscape
+    usage: [gallery, product-page]
+    tags: [boat, route]
+relatedAlbums: [manchester-ship-canal, our-boats]
+relatedProduct: /boat-to-old-trafford
+bookingCtaLabel: Book the matchday ferry
+bookingCtaUrl: /boat-to-old-trafford
+seoTitle: Old Trafford Ferry Photos — Matchday Boat to the Stadium
+seoDescription: Photos of the matchday ferry to Old Trafford — supporters boarding at Salford, cruising the ship canal and arriving at Trafford Wharf. Book the matchday ferry.

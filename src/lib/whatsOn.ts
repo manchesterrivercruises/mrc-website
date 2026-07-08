@@ -60,7 +60,12 @@ export function buildProductMeta(events: CollectionEntry<'events'>[]): ProductMe
       imageAlt: 'Matchday ferry to Old Trafford',
     },
   ];
-  for (const e of events) {
+  // Deterministic order (by slug). The events collection's natural order depends on the
+  // loader's file enumeration, which is not guaranteed stable (and shifted when events moved
+  // to .mdoc). Sorting here makes the static listing + JSON-LD ItemList reproducible across
+  // builds; the live client feed re-sorts the visible cards by date at runtime.
+  const sortedEvents = [...events].sort((a, b) => a.id.localeCompare(b.id));
+  for (const e of sortedEvents) {
     const pid = e.data.ventrataProductId;
     if (!pid) continue;
     // Prefer an owned local heroImage (or a temp hotlink) — both are displayable.

@@ -7,8 +7,11 @@ import { glob } from 'astro/loaders';
 // image() helper once owned assets are added (docs/image-conventions.md).
 
 // Editorial "Discover" guides (rendered as Article-schema pages).
+// Markdoc (.mdoc) so Keystatic can manage the body + frontmatter (see keystatic.config.ts);
+// rendered via @astrojs/markdoc — output matches the previous markdown (typographer + heading
+// slugs configured in markdoc.config.mjs).
 const discover = defineCollection({
-  loader: glob({ pattern: '**/*.md', base: './src/content/discover' }),
+  loader: glob({ pattern: '**/*.mdoc', base: './src/content/discover' }),
   schema: z.object({
     title: z.string(),
     description: z.string(),
@@ -21,8 +24,9 @@ const discover = defineCollection({
 });
 
 // Event / special-cruise pages (linked to a Ventrata product).
+// Markdoc (.mdoc) so Keystatic can manage the body + frontmatter (see keystatic.config.ts).
 const events = defineCollection({
-  loader: glob({ pattern: '**/*.md', base: './src/content/events' }),
+  loader: glob({ pattern: '**/*.mdoc', base: './src/content/events' }),
   schema: z.object({
     title: z.string(),
     description: z.string(),
@@ -43,7 +47,8 @@ const events = defineCollection({
 
 // "Make a day of it" attractions.
 const attractions = defineCollection({
-  loader: glob({ pattern: '**/*.md', base: './src/content/attractions' }),
+  // Frontmatter-only YAML (Keystatic-managed data collection).
+  loader: glob({ pattern: '**/*.yaml', base: './src/content/attractions' }),
   schema: z.object({
     name: z.string(),
     description: z.string(),
@@ -56,7 +61,8 @@ const attractions = defineCollection({
 
 // Fleet / vessel pages.
 const vessels = defineCollection({
-  loader: glob({ pattern: '**/*.md', base: './src/content/vessels' }),
+  // Frontmatter-only YAML (Keystatic-managed data collection).
+  loader: glob({ pattern: '**/*.yaml', base: './src/content/vessels' }),
   schema: z.object({
     name: z.string(),
     description: z.string(),
@@ -76,7 +82,9 @@ const vessels = defineCollection({
 // helper and render with <Image>, per docs/image-conventions.md → "Switching collections
 // to the image() helper".
 const gallery = defineCollection({
-  loader: glob({ pattern: '**/*.md', base: './src/content/gallery' }),
+  // Frontmatter-only YAML (no markdown body) so Keystatic can manage albums natively as a
+  // `data` collection (see keystatic.config.ts). Album `id`/`slug` = filename.
+  loader: glob({ pattern: '**/*.yaml', base: './src/content/gallery' }),
   schema: z.object({
     title: z.string(),
     slug: z.string(),

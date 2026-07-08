@@ -1,0 +1,46 @@
+title: Elvis Rocks
+slug: elvis-rocks
+order: 12
+summary: Rock 'n' roll on the water — our Elvis Rocks tribute cruise, from the jumpsuit to the dancefloor.
+category: live-music
+# OWNED assets (processed WebP, public/images/gallery/elvis-rocks/). Rights confirmed by Simon.
+coverImage: /images/gallery/elvis-rocks/elvis-jumpsuit-among-the-tables.webp
+coverAlt: "An Elvis tribute in a studded black jumpsuit and green scarf sings among the tables as guests watch, one filming on a phone, under blue party lighting"
+images:
+  - src: /images/gallery/elvis-rocks/elvis-jumpsuit-among-the-tables.webp
+    width: 1600
+    height: 1069
+    alt: "An Elvis tribute in a studded black jumpsuit and green scarf sings among the tables as guests watch, one filming on a phone, under blue party lighting"
+    caption: "The King among the tables."
+    orientation: landscape
+    isFeatured: true
+    usage: [gallery, event-card, product-page, homepage]
+    tags: [elvis, performer, live-music]
+  - src: /images/gallery/elvis-rocks/elvis-working-the-aisle.webp
+    width: 1600
+    height: 1069
+    alt: "An Elvis tribute in a studded jumpsuit walks down the aisle between tables as seated guests clap, fairy lights and disco sparkle around the cabin"
+    caption: "Working the room."
+    orientation: landscape
+    tags: [elvis, performer, guests]
+  - src: /images/gallery/elvis-rocks/elvis-in-military-uniform.webp
+    width: 1600
+    height: 1069
+    alt: "An Elvis tribute in a military-style uniform sings with an outstretched arm against silver tinsel and fairy lights, guests seated nearby"
+    caption: "A change of costume."
+    orientation: landscape
+    tags: [elvis, performer]
+  - src: /images/gallery/elvis-rocks/elvis-performing-in-blue-light.webp
+    width: 1600
+    height: 1069
+    alt: "An Elvis tribute in uniform performs in blue and pink light with a disco ball glittering in the foreground"
+    caption: "Under the disco lights."
+    orientation: landscape
+    tags: [elvis, performer]
+relatedAlbums: [elvis-live, abba-night]
+relatedProduct: /cruises/elvis-rocks-cruise
+bookingCtaLabel: Book the Elvis Rocks Cruise
+bookingCtaUrl: /cruises/elvis-rocks-cruise
+seoTitle: Elvis Rocks Cruise Photos — Rock 'n' Roll Tribute Night in Manchester
+seoDescription: Photos from the Elvis Rocks tribute cruise on the Manchester Ship Canal — the performance and the party onboard. Book the Elvis Rocks Cruise.
+draft: false
