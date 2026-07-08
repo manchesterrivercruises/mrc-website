@@ -4,6 +4,7 @@ import netlify from '@astrojs/netlify';
 import sitemap from '@astrojs/sitemap';
 import react from '@astrojs/react';
 import keystatic from '@keystatic/astro';
+import markdoc from '@astrojs/markdoc';
 import tailwindcss from '@tailwindcss/vite';
 
 // https://astro.build/config
@@ -15,6 +16,10 @@ export default defineConfig({
   // its API at /api/keystatic (see keystatic.config.ts).
   adapter: netlify(),
   integrations: [
+    // Markdoc renders the events + discover collections (.mdoc). typographer:true reproduces
+    // the smart quotes/ellipsis the previous markdown pipeline emitted; heading slug ids are
+    // restored in markdoc.config.mjs — so the built pages stay content-identical.
+    markdoc({ typographer: true }),
     // react() powers Keystatic's admin UI (React). keystatic() injects /keystatic + /api/keystatic.
     react(),
     keystatic(),

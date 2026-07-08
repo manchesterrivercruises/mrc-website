@@ -137,6 +137,89 @@ export default config({
       },
     }),
 
+    // ---- Events / special-cruise pages ---------------------------------------------------
+    // Stored as Markdoc (.mdoc): frontmatter + a rendered body. DATES ARE NOT EDITABLE HERE —
+    // Ventrata (OCTO) owns event dates, times and live prices; the schema's legacy
+    // start/endDate are intentionally NOT modelled. See the ventrataProductId note below.
+    events: collection({
+      label: 'Events',
+      path: 'src/content/events/*',
+      slugField: 'title',
+      format: { contentField: 'content' },
+      columns: ['title', 'category'],
+      schema: {
+        title: fields.slug({
+          name: {
+            label: 'Title',
+            description: 'Display name. The URL slug (/cruises/<slug>) is the filename — edit it in the Slug field.',
+            validation: { isRequired: true },
+          },
+        }),
+        description: fields.text({ label: 'Description', multiline: true, validation: { isRequired: true } }),
+        shortTagline: fields.text({ label: 'Short tagline' }),
+        ventrataProductId: fields.text({
+          label: 'Ventrata product ID',
+          description:
+            'Links this page to its Ventrata product. IMPORTANT: dates, times and live prices come from Ventrata (OCTO) and are NOT edited in the CMS.',
+        }),
+        category: fields.select({
+          label: 'Category',
+          description: 'Events taxonomy (shared with the gallery filter).',
+          options: [
+            { label: 'Live music', value: 'live-music' },
+            { label: 'DJ night', value: 'dj-night' },
+            { label: 'Family', value: 'family' },
+            { label: 'Seasonal', value: 'seasonal' },
+          ],
+          defaultValue: 'live-music',
+        }),
+        duration: fields.text({ label: 'Duration', description: 'e.g. "Approx. 2 hours (TBC)" — display copy only.' }),
+        priceFrom: fields.integer({ label: 'Price from (£)', description: 'Optional display "from" price. Live prices come from Ventrata.' }),
+        whatToExpect: fields.array(fields.text({ label: 'Point' }), {
+          label: 'What to expect',
+          itemLabel: (p) => p.value,
+        }),
+        faqs: fields.array(
+          fields.object({
+            question: fields.text({ label: 'Question' }),
+            answer: fields.text({ label: 'Answer', multiline: true }),
+          }),
+          { label: 'FAQs', itemLabel: (p) => p.fields.question.value || 'FAQ' },
+        ),
+        heroImage: fields.text({ label: 'Hero image path', description: 'Path to an owned image or a temporary hotlink URL.' }),
+        heroImageAlt: fields.text({ label: 'Hero image alt' }),
+        draft: fields.checkbox({ label: 'Draft', description: 'Hidden from the site until unchecked.' }),
+        content: fields.markdoc({ label: 'Body' }),
+      },
+    }),
+
+    // ---- Discover guides -----------------------------------------------------------------
+    // Markdoc (.mdoc): frontmatter + article body. publishDate/updatedDate ARE editorial dates
+    // (editable) — unlike event dates, these are ours to set.
+    discover: collection({
+      label: 'Discover guides',
+      path: 'src/content/discover/*',
+      slugField: 'title',
+      format: { contentField: 'content' },
+      columns: ['title'],
+      schema: {
+        title: fields.slug({
+          name: {
+            label: 'Title',
+            description: 'Guide title. The URL slug (/discover/<slug>) is the filename — edit it in the Slug field.',
+            validation: { isRequired: true },
+          },
+        }),
+        description: fields.text({ label: 'Description', multiline: true, validation: { isRequired: true } }),
+        heroImage: fields.text({ label: 'Hero image path', description: 'Path to an owned image or a temporary hotlink URL.' }),
+        heroImageAlt: fields.text({ label: 'Hero image alt' }),
+        publishDate: fields.date({ label: 'Publish date' }),
+        updatedDate: fields.date({ label: 'Updated date' }),
+        draft: fields.checkbox({ label: 'Draft', description: 'Hidden from the site until unchecked.' }),
+        content: fields.markdoc({ label: 'Body' }),
+      },
+    }),
+
     // ---- Vessels (fleet pages) -----------------------------------------------------------
     vessels: collection({
       label: 'Vessels',
