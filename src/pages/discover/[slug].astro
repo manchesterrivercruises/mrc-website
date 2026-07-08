@@ -14,7 +14,7 @@ export async function getStaticPaths() {
 
 const { entry } = Astro.props;
 const { Content } = await render(entry);
-const { title, description, heroImageAlt, publishDate } = entry.data;
+const { title, description, heroImage, heroImageAlt, publishDate } = entry.data;
 
 const SITE = site.url;
 const pageTitle = `${title} — Manchester River Cruises`;
@@ -43,10 +43,24 @@ const structuredData = {
       <p class="mt-4 text-lg leading-relaxed text-subtle">{description}</p>
     </header>
 
-    {/* Hero image placeholder — swap for a real asset via the collection's heroImage field */}
-    <div class="mt-8 flex aspect-[16/9] items-center justify-center rounded-card bg-panel text-xs text-subtle">
-      {heroImageAlt ?? 'Image (TBC)'}
-    </div>
+    {/* Hero image — owned asset via the collection's heroImage field, else a placeholder tile. */}
+    {
+      heroImage ? (
+        <img
+          src={heroImage}
+          alt={heroImageAlt ?? title}
+          width="800"
+          height="450"
+          loading="eager"
+          data-img-fallback
+          class="mt-8 aspect-[16/9] w-full rounded-card object-cover ring-1 ring-black/5"
+        />
+      ) : (
+        <div class="mt-8 flex aspect-[16/9] items-center justify-center rounded-card bg-panel text-xs text-subtle">
+          {heroImageAlt ?? 'Image (TBC)'}
+        </div>
+      )
+    }
 
     {/* Markdown body */}
     <div class="article-body mt-10">

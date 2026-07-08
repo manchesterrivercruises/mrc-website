@@ -1,7 +1,8 @@
 ---
 title: A Family Day Out at Salford Quays
 description: A kid-friendly guide to Salford Quays — an easy, fun-packed itinerary with a river cruise, free museums, open space and plenty to keep children happy.
-heroImageAlt: A family with children watching boats from the promenade at Salford Quays on a sunny day
+heroImage: /images/gallery/salford-quays/salford-quays-aerial-sunset-boat-card.webp
+heroImageAlt: An elevated view of a Manchester River Cruises boat cruising Salford Quays at golden sunset
 publishDate: 2025-09-05
 draft: false
 ---

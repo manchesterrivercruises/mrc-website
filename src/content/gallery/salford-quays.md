@@ -4,48 +4,43 @@ slug: salford-quays
 order: 9
 summary: Where every cruise begins — the MediaCity waterfront, The Lowry and the Millennium Footbridge boarding point.
 category: route
-# TEMP: hotlinked cover from the live site for review — not an owned asset.
-coverImage: "https://optimise2.assets-servd.host/river-cruises/production/images/Night-View-SQ.jpg?w=1200&h=900&q=80&fm=webp&fit=crop&crop=focalpoint&fp-x=0.5&fp-y=0.5&dm=1682426555&s=616a45e1a64654d630be36db96743617"
-coverAlt: The Salford Quays waterfront with MediaCity buildings and the Millennium Footbridge reflected in the water
+# OWNED cover asset (processed WebP, public/images/gallery/salford-quays/).
+coverImage: /images/gallery/salford-quays/salford-quays-footbridge-skyline-dusk.webp
+coverAlt: "The illuminated Millennium Footbridge lift bridge mirrored in the still water of Salford Quays at blue hour, with IWM North and the MediaCityUK skyline behind"
 images:
-  # TEMP: hotlinked from the live manchesterrivercruises.com for review — not an owned asset.
-  - src: "https://optimise2.assets-servd.host/river-cruises/production/images/Night-View-SQ.jpg?w=1200&h=900&q=80&fm=webp&fit=crop&crop=focalpoint&fp-x=0.5&fp-y=0.5&dm=1682426555&s=616a45e1a64654d630be36db96743617"
-    width: 1200
-    height: 900
-    alt: The Salford Quays waterfront with MediaCity buildings reflected in the calm water
-    caption: The MediaCityUK waterfront on a still morning.
+  # OWNED assets — processed WebP in public/images/gallery/salford-quays/, real PhotoSwipe dims.
+  - src: /images/gallery/salford-quays/salford-quays-footbridge-skyline-dusk.webp
+    width: 1600
+    height: 1072
+    alt: "The illuminated Millennium Footbridge lift bridge mirrored in the still water of Salford Quays at blue hour, with IWM North and the MediaCityUK skyline behind"
+    caption: "Blue hour over Salford Quays."
     orientation: landscape
-    tags: [skyline, mediacity]
-  - src: /images/gallery/salford-quays/02.webp
-    alt: The curved Millennium Footbridge spanning the quay at the boarding point
+    isFeatured: true
+    usage: [gallery, homepage, og-image, product-page]
+    tags: [skyline, bridge, dusk]
+  - src: /images/gallery/salford-quays/millennium-footbridge-purple-dusk.webp
+    width: 1600
+    height: 1271
+    alt: "The Millennium Footbridge lit purple at dusk, its arch reflected in the calm water with the MediaCityUK towers beyond"
+    caption: "The lift bridge lit up at dusk."
     orientation: landscape
-    tags: [bridge, boarding]
-  - src: /images/gallery/salford-quays/03.webp
-    alt: The Lowry theatre's silver façade catching the afternoon light
-    orientation: portrait
-    tags: [landmark, lowry]
-  - src: /images/gallery/salford-quays/04.webp
-    alt: Waterside restaurants and bars busy with people along the quayside
+    tags: [bridge, dusk]
+  - src: /images/gallery/salford-quays/salford-quays-aerial-sunset-boat.webp
+    width: 1600
+    height: 1200
+    alt: "An elevated view of a Manchester River Cruises boat cruising Salford Quays at golden sunset, passing Pier Eight and the MediaCityUK footbridge"
+    caption: "Golden hour on the Quays from above."
     orientation: landscape
-    tags: [quayside]
-  - src: /images/gallery/salford-quays/05.webp
-    alt: The boarding pontoon with the boat waiting at the Millennium Footbridge
-    caption: Our boarding point beside the footbridge.
+    isFeatured: true
+    usage: [gallery, homepage, og-image]
+    tags: [aerial, sunset, boat]
+  - src: /images/gallery/salford-quays/salford-quays-rainbow-promenade.webp
+    width: 1600
+    height: 1200
+    alt: "A rainbow arcing over Salford Quays, seen from the waterfront promenade with the far-shore skyline under a stormy grey sky"
+    caption: "A rainbow over the water."
     orientation: landscape
-    tags: [boarding, boat]
-  - src: /images/gallery/salford-quays/06.webp
-    alt: Sunset colours over the water with the city skyline in silhouette
-    credit: Photo by MRC crew
-    orientation: landscape
-    tags: [skyline, sunset]
-  - src: /images/gallery/salford-quays/07.webp
-    alt: Public art and seating along the landscaped quayside promenade
-    orientation: portrait
-    tags: [quayside]
-  - src: /images/gallery/salford-quays/08.webp
-    alt: The quays lit up at night with reflections shimmering on the water
-    orientation: landscape
-    tags: [night, skyline]
+    tags: [weather, skyline]
 relatedAlbums: []
 relatedProduct: /city-river-tour
 bookingCtaLabel: Book the City River Tour

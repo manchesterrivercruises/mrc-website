@@ -41,10 +41,10 @@ when you add or reclassify assets.
 | Dolly Night · live-music | 9 (1 OWNED cover + 2 TEMP hotlink, rest placeholder) | 8–10 (1 hero-grade) | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ✅ (drafted) | ◑ | ⬜ | TBC. 1 hero-grade performer landscape for the event card + product page. |
 | ABBA Night · live-music | 9 (1 OWNED cover + 1 TEMP hotlink, rest placeholder) | 8–10 (1 hero-grade) | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ✅ (drafted) | ◑ | ⬜ | TBC. 1 hero-grade performer landscape (tribute act mid-song, packed deck). |
 | Private Hire · private-hire | 8 (2 TEMP hotlink, rest placeholder) | 8–10 (1 hero-grade) | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ✅ (drafted) | ◑ | ⬜ | TBC. 1 hero-grade landscape (celebration set-up / guests on deck). Get model/guest consent for usage rights. |
-| Manchester Ship Canal · route | 8 (all placeholder) | 8–10 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ✅ (drafted) | ◑ | ⬜ | TBC. Locks, bridges, heritage, changing light — scenery library, reusable across pages. |
-| Our Boats · boats | 8 (3 TEMP hotlink, rest placeholder) | 8–10 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ✅ (drafted) | ◑ | ⬜ | TBC. Cover each vessel plus cabin, open deck, bar and boarding — feeds the Vessels pages too. |
+| Manchester Ship Canal · route | 5 OWNED (real photos) | 8–10 | ✅ | ✅ (sunset-from-bow) | ✅ | ✅ | ◑ | ✅ | ◑ | ◑ | 5 owned route photos wired (sunset-from-bow featured, IWM North, red Irwell bridge, city towers, street art). Reusable across pages. Still want more locks/heritage variety. |
+| Our Boats · boats | 5 OWNED (real photos) | 8–10 | ✅ | ✅ | ✅ | ✅ | ◑ | ✅ | ◑ | ◑ | 5 owned wired (boat at Salford Quays featured, fleet at footbridge, skipper at helm [staff — rights TBC], rosé on deck, dog at window). Vessels collection is empty — no per-vessel cards yet. |
 | Old Trafford Ferry · route | 9 (1 OWNED cover + 2 TEMP hotlink, rest placeholder) | 8–10 (1 hero-grade) | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ✅ (drafted) | ◑ | ⬜ | TBC. 1 hero-grade (supporters boarding / stadium approach). Matchday access-dependent; avoid club trademarks in framing. |
-| Salford Quays · route | 8 (1 TEMP hotlink, rest placeholder) | 8–10 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ✅ (drafted) | ◑ | ⬜ | TBC. MediaCity waterfront, The Lowry, the Millennium Footbridge boarding point. |
+| Salford Quays · route | 4 OWNED (real photos) | 8–10 | ✅ | ✅ (footbridge-skyline-dusk) | ✅ | ✅ | ◑ | ✅ | ◑ | ✅ | 4 owned wired (footbridge-skyline blue hour featured, purple footbridge, aerial sunset w/ boat, rainbow). No identifiable people. Feeds getting-here + Discover heroes. |
 
 ## Owned card imagery — ingested 2026-07-07
 
@@ -77,6 +77,35 @@ identifiable customers, staff or tribute performers/models. Get consent / confir
 | Elvis Live | `events/elvis-live-cruise-card` | Graphic: gold Elvis silhouette + lettering | — | ✅ |
 | Soul River | `events/soul-river-cruise-card/-hero` | Graphic: neon lettering + MediaCityUK | — | ✅ |
 | Swinging on the River | `events/swinging-on-the-river-card` | Graphic: marquee lettering + waterfront | — | ✅ |
+
+## Owned general imagery — ingested 2026-07-08
+
+A large mixed set of owned photography (C:\MRC Website\General, recursed) was curated —
+NOT all of it. 14 hero-grade images were selected, processed to WebP (800px card + <=1600px
+large, real PhotoSwipe dims) into public/images/gallery/<album>/, and wired into the matching
+gallery albums images[] + covers, plus Discover guide heroes (IWM North, ship canal, Salford
+Quays, Old Trafford-by-boat, The Lowry) and the shared getting-here boarding-point image.
+The featured shots (isFeatured) are hero-grade landscapes suitable for 1200x630 OG crops.
+
+**Wired (14):** Salford Quays x4 (footbridge-skyline blue hour, purple footbridge, aerial
+sunset w/ boat, rainbow); Ship Canal x5 (sunset-from-the-bow, IWM North, boat under the red
+Irwell bridge, canal between city towers, canalside street art); Our Boats x5 (boat at
+Salford Quays, fleet moored at the footbridge, skipper at the helm, sparkling rose on deck,
+dog at the window).
+
+**Usage rights (identifiable people) — CONFIRM before launch:**
+- our-boats/skipper-at-the-helm — identifiable CREW member (face). Get staff consent.
+- our-boats/sparkling-rose-on-deck, our-boats/dog-at-the-boat-window — a HAND only (no face).
+- All other 11 wired images are scenery / boats / landmarks with no identifiable people.
+
+**Skipped (noted):**
+- Adele event set (66 photos) — party/performance shots full of identifiable guests and the
+  tribute performer. NOT wired (rights liability); available for a future Adele album once
+  consent/licensing is cleared. The Adele event card keeps its temp hotlink.
+- River cruise (15 of 38) — passengers incl. CHILDREN; held pending consent.
+- ~55 further drone frames — sequential near-duplicates of the two aerials selected.
+- ~50 older phone snaps + 18 numbered PNGs — lower grade / redundant for these albums.
+- ._* files — macOS AppleDouble metadata, not images.
 
 ## How to use this tracker
 

@@ -4,44 +4,48 @@ slug: manchester-ship-canal
 order: 8
 summary: The waterway itself — locks, bridges, industrial heritage and changing light along the Manchester Ship Canal.
 category: route
-coverImage: /images/gallery/manchester-ship-canal/cover.webp
-coverAlt: A long view down the Manchester Ship Canal with bridges receding into the distance under a dramatic sky
+# OWNED cover asset (processed WebP, public/images/gallery/manchester-ship-canal/).
+coverImage: /images/gallery/manchester-ship-canal/ship-canal-sunset-from-the-bow.webp
+coverAlt: "The view forward from the bow of a Manchester River Cruises boat at sunset, passing beneath a bridge toward the illuminated Salford Quays skyline"
 images:
-  - src: /images/gallery/manchester-ship-canal/01.webp
-    alt: A long view down the ship canal with bridges receding into the distance under a dramatic sky
-    caption: Looking down the canal towards the city.
+  # OWNED assets — processed WebP in public/images/gallery/manchester-ship-canal/, real PhotoSwipe dims.
+  - src: /images/gallery/manchester-ship-canal/ship-canal-sunset-from-the-bow.webp
+    width: 1600
+    height: 1200
+    alt: "The view forward from the bow of a Manchester River Cruises boat at sunset, passing beneath a bridge toward the illuminated Salford Quays skyline"
+    caption: "Sunset from the bow."
     orientation: landscape
-    tags: [scenery, bridges]
-  - src: /images/gallery/manchester-ship-canal/02.webp
-    alt: The historic Mode Wheel Locks with weathered stone and iron gates
+    isFeatured: true
+    usage: [gallery, homepage, og-image, product-page]
+    tags: [sunset, boat, route]
+  - src: /images/gallery/manchester-ship-canal/imperial-war-museum-north-from-canal.webp
+    width: 1600
+    height: 1067
+    alt: "Imperial War Museum North's angular aluminium-clad building seen from across the Manchester Ship Canal under a cloudy sky"
+    caption: "Passing Imperial War Museum North."
     orientation: landscape
-    tags: [locks, heritage]
-  - src: /images/gallery/manchester-ship-canal/03.webp
-    alt: A swing bridge opening to let the boat pass along the canal
+    tags: [landmark, iwm]
+  - src: /images/gallery/manchester-ship-canal/boat-under-red-irwell-bridge.webp
+    width: 1600
+    height: 1200
+    alt: "A Manchester River Cruises boat passing beneath a red iron truss bridge on the River Irwell, framed by city-centre buildings on a sunny day"
+    caption: "Under the ironwork in the city centre."
     orientation: landscape
-    tags: [bridges]
-  - src: /images/gallery/manchester-ship-canal/04.webp
-    alt: Reflections of waterside apartment towers mirrored in still canal water
-    orientation: portrait
-    tags: [scenery, architecture]
-  - src: /images/gallery/manchester-ship-canal/05.webp
-    alt: A preserved red-brick industrial chimney rising above the towpath
-    caption: A reminder of Salford's industrial past.
-    orientation: portrait
-    tags: [heritage]
-  - src: /images/gallery/manchester-ship-canal/06.webp
-    alt: A stretch of riverside wall covered in colourful street-art murals
+    tags: [bridge, boat, city]
+  - src: /images/gallery/manchester-ship-canal/ship-canal-between-city-towers.webp
+    width: 1600
+    height: 1067
+    alt: "The waterway winding between modern waterside apartment blocks and city towers under a dramatic cloudy sky"
+    caption: "Between the city's new towers."
     orientation: landscape
-    tags: [street-art]
-  - src: /images/gallery/manchester-ship-canal/07.webp
-    alt: Low mist over the water at first light along the canal
-    credit: Photo by MRC crew
+    tags: [skyline, route]
+  - src: /images/gallery/manchester-ship-canal/canalside-street-art-mural.webp
+    width: 1600
+    height: 820
+    alt: "A colourful street-art mural on a canalside brick wall, with bright lettering and cartoon faces above the towpath greenery"
+    caption: "Street art along the route."
     orientation: landscape
-    tags: [scenery, morning]
-  - src: /images/gallery/manchester-ship-canal/08.webp
-    alt: The wake of the boat spreading across the calm canal surface at dusk
-    orientation: landscape
-    tags: [scenery, dusk]
+    tags: [street-art, route]
 relatedAlbums: [city-river-tour, salford-quays]
 relatedProduct: /city-river-tour
 bookingCtaLabel: Book the City River Tour
