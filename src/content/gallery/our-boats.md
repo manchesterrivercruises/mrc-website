@@ -4,54 +4,50 @@ slug: our-boats
 order: 6
 summary: Meet the fleet — the vessels that carry our cruises, from the heated cabins to the open decks.
 category: boats
-# TEMP: hotlinked cover from the live site for review — not an owned asset.
-coverImage: "https://optimise2.assets-servd.host/river-cruises/production/images/Manchester-River-Cruise-Katherine.png?w=1200&h=630&q=82&auto=format&fit=crop&dm=1697472336&s=08f55e55311bfa9c358bddd189928f5d"
-coverAlt: One of the Manchester River Cruises vessels moored at Salford Quays with its name on the hull
+# OWNED cover asset (processed WebP, public/images/gallery/our-boats/).
+coverImage: /images/gallery/our-boats/sightseeing-boat-at-salford-quays.webp
+coverAlt: "A Manchester River Cruises sightseeing boat with open-top red seating cruising Salford Quays past the Lowry Outlet and waterside apartments on a clear day"
 images:
-  # TEMP: hotlinked from the live manchesterrivercruises.com for review — not an owned asset.
-  - src: "https://optimise2.assets-servd.host/river-cruises/production/images/Manchester-River-Cruise-Katherine.png?w=1200&h=630&q=82&auto=format&fit=crop&dm=1697472336&s=08f55e55311bfa9c358bddd189928f5d"
-    width: 1200
-    height: 630
-    alt: One of the Manchester River Cruises vessels moored at Salford Quays on a calm morning
-    caption: Ready for the first cruise of the day.
+  # OWNED assets — processed WebP in public/images/gallery/our-boats/, real PhotoSwipe dims.
+  - src: /images/gallery/our-boats/sightseeing-boat-at-salford-quays.webp
+    width: 1600
+    height: 1041
+    alt: "A Manchester River Cruises sightseeing boat with open-top red seating cruising Salford Quays past the Lowry Outlet and waterside apartments on a clear day"
+    caption: "Out on the water at Salford Quays."
     orientation: landscape
-    tags: [boat, moored]
-  # TEMP: hotlinked from the live manchesterrivercruises.com for review — not an owned asset.
-  - src: "https://optimise2.assets-servd.host/river-cruises/production/images/Manchester-River-Cruise-Katherine_2023-10-16-184356_rtyt.png?w=800&h=543&q=100&auto=format&fit=crop&crop=focalpoint&fp-x=0.5&fp-y=0.5&dm=1697481836&s=1dc2375ad1c811fad47d8af269dbbcfb"
-    width: 800
-    height: 543
-    alt: The heated indoor cabin with rows of seating and large panoramic windows
+    isFeatured: true
+    usage: [gallery, product-page, og-image, homepage]
+    tags: [boat, salford-quays]
+  - src: /images/gallery/our-boats/boats-moored-at-millennium-footbridge.webp
+    width: 1600
+    height: 1200
+    alt: "Two Manchester River Cruises boats moored at the Salford Quays boarding point beside the Millennium Footbridge and The Lowry on a sunny day"
+    caption: "Moored at the boarding point."
     orientation: landscape
-    tags: [cabin, interior]
-  # TEMP: hotlinked from the live manchesterrivercruises.com for review — not an owned asset.
-  - src: "https://optimise2.assets-servd.host/river-cruises/production/images/Drone-and-Exterior-High-Res-2.jpg?w=1200&h=900&q=80&fm=webp&fit=crop&crop=focalpoint&fp-x=0.5&fp-y=0.5&dm=1709653729&s=28dce72a767fdbf440b7c765683a93cc"
-    width: 1200
-    height: 900
-    alt: The open top deck with bench seating and a clear view of the sky
+    usage: [gallery, product-page]
+    tags: [boat, boarding, fleet]
+  - src: /images/gallery/our-boats/skipper-at-the-helm.webp
+    width: 1600
+    height: 1067
+    alt: "A Manchester River Cruises skipper at the boat's helm, looking out over the controls across the water"
+    caption: "At the helm."
+    credit: "Crew member — usage rights TBC"
     orientation: landscape
-    tags: [deck]
-  - src: /images/gallery/our-boats/04.webp
-    alt: The licensed bar area onboard stocked and ready for guests
-    orientation: portrait
-    tags: [bar, interior]
-  - src: /images/gallery/our-boats/05.webp
-    alt: Detail of the polished wheel and controls at the skipper's position
-    credit: Photo by MRC crew
-    orientation: portrait
-    tags: [detail, crew]
-  - src: /images/gallery/our-boats/06.webp
-    alt: The vessel's name and livery painted along the side of the hull
+    tags: [crew, boat]
+  - src: /images/gallery/our-boats/sparkling-rose-on-deck.webp
+    width: 1600
+    height: 1067
+    alt: "A hand holding a glass of sparkling rose with berries on the open deck of a Manchester River Cruises boat, a canal bridge softly blurred behind on a sunny day"
+    caption: "A drink on the open deck."
     orientation: landscape
-    tags: [detail]
-  - src: /images/gallery/our-boats/07.webp
-    alt: Two boats of the fleet passing each other on the canal
-    caption: Two of the fleet crossing paths.
+    tags: [lifestyle, deck]
+  - src: /images/gallery/our-boats/dog-at-the-boat-window.webp
+    width: 1600
+    height: 1067
+    alt: "A small black Pomeranian in a red harness looking out of a Manchester River Cruises boat window at the Salford Quays waterfront"
+    caption: "Dogs welcome onboard."
     orientation: landscape
-    tags: [boat, fleet]
-  - src: /images/gallery/our-boats/08.webp
-    alt: The gangway set out for boarding at the Millennium Footbridge pontoon
-    orientation: landscape
-    tags: [boarding]
+    tags: [lifestyle, dog]
 relatedAlbums: [private-hire, city-river-tour]
 relatedProduct: /vessels
 bookingCtaLabel: Book the City River Tour

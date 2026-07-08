@@ -1,7 +1,8 @@
 ---
 title: "Visiting IWM North: The Complete Guide"
 description: Everything you need to know before visiting IWM North at Salford Quays — the building, the exhibitions, free entry, and how to plan your day.
-heroImageAlt: The angular aluminium-clad exterior of IWM North reflected in the Manchester Ship Canal
+heroImage: /images/gallery/manchester-ship-canal/imperial-war-museum-north-from-canal-card.webp
+heroImageAlt: Imperial War Museum North's angular aluminium-clad building seen from across the Manchester Ship Canal under a cloudy sky
 publishDate: 2025-05-03
 draft: false
 ---

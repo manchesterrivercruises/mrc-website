@@ -1,7 +1,8 @@
 ---
 title: Getting to Old Trafford by Boat
 description: Beat the matchday traffic and travel to Old Trafford by boat along the Manchester Ship Canal — how the ferry works and why it beats the tram.
-heroImageAlt: A passenger ferry on the Manchester Ship Canal approaching Old Trafford on a matchday
+heroImage: /images/gallery/our-boats/boats-moored-at-millennium-footbridge-card.webp
+heroImageAlt: Manchester River Cruises boats moored at the Salford Quays boarding point beside the Millennium Footbridge
 publishDate: 2025-06-18
 draft: false
 ---

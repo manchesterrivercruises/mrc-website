@@ -1,7 +1,8 @@
 ---
 title: Things to Do Near The Lowry
 description: The Lowry is the cultural heart of Salford Quays — here are the best things to do nearby, from theatre and galleries to dining and time on the water.
-heroImageAlt: The silver and orange exterior of The Lowry arts centre lit up beside the water at dusk
+heroImage: /images/gallery/salford-quays/millennium-footbridge-purple-dusk-card.webp
+heroImageAlt: The Millennium Footbridge lit purple at dusk beside The Lowry at Salford Quays
 publishDate: 2025-08-14
 draft: false
 ---

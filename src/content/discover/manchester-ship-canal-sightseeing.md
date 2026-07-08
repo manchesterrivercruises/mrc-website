@@ -1,7 +1,8 @@
 ---
 title: Manchester Ship Canal Sightseeing Guide
 description: A guide to sightseeing on the Manchester Ship Canal — its remarkable history, what you will see along the route, and how to experience it by boat.
-heroImageAlt: A wide view along the Manchester Ship Canal with historic dockside cranes and modern waterfront buildings
+heroImage: /images/gallery/manchester-ship-canal/ship-canal-sunset-from-the-bow-card.webp
+heroImageAlt: The view forward from the bow of a Manchester River Cruises boat at sunset toward the illuminated Salford Quays skyline
 publishDate: 2025-10-01
 draft: false
 ---

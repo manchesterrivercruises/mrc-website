@@ -1,6 +1,6 @@
 ---
 import type { Album } from '../lib/gallery';
-import { imageDims, isRealImage } from '../lib/gallery';
+import { imageDims, isRealImage, isOwnedImage } from '../lib/gallery';
 
 // Shared branded placeholder (public/images/gallery-placeholder.svg, 1200x900). Placeholder
 // thumbnails keep their tile look, but their href/lightbox point here so no-JS clicks and
@@ -40,9 +40,9 @@ function caption(img: (typeof images)[number]): string {
 <div id="gallery-album" class="pswp-gallery gap-4 [column-fill:_balance] sm:columns-2 lg:columns-3">
   {
     images.map((img) => {
-      // A real, loadable image (http URL / owned asset) vs a placeholder path that doesn't
-      // exist yet. Placeholders open the shared branded SVG at its real dims.
-      const isReal = isRealImage(img.src);
+      // A real, loadable image (owned local asset OR http URL) vs a placeholder path that
+      // doesn't exist yet. Placeholders open the shared branded SVG at its real dims.
+      const isReal = isOwnedImage(img.src) || isRealImage(img.src);
       const href = isReal ? img.src : PLACEHOLDER_SRC;
       const w = isReal ? (img.width ?? imageDims(img.orientation).w) : PLACEHOLDER_DIMS.w;
       const h = isReal ? (img.height ?? imageDims(img.orientation).h) : PLACEHOLDER_DIMS.h;

@@ -1,7 +1,8 @@
 ---
 title: A Perfect Day Out at Salford Quays
 description: How to spend a brilliant day at Salford Quays — the best things to do, where to eat, and how a river cruise ties the whole day together.
-heroImageAlt: The waterfront at Salford Quays with MediaCity and the Lowry footbridge reflected in the water
+heroImage: /images/gallery/salford-quays/salford-quays-footbridge-skyline-dusk-card.webp
+heroImageAlt: The illuminated Millennium Footbridge reflected in Salford Quays at blue hour with the MediaCityUK skyline behind
 publishDate: 2025-04-12
 draft: false
 ---
