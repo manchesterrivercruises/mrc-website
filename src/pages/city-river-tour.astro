@@ -10,6 +10,7 @@ import FAQSection from '../components/FAQSection.astro';
 import ReviewStrip from '../components/ReviewStrip.astro';
 import GettingHere from '../components/GettingHere.astro';
 import KeyFacts from '../components/KeyFacts.astro';
+import MapTapActivate from '../components/MapTapActivate.astro';
 import tourStops from '../data/tour-stops.json';
 
 // NOTE: Placeholder content. Items marked (TBC) await Simon's confirmed copy
@@ -415,6 +416,8 @@ const orderedStops = [...tourStops].sort((a, b) => a.id - b.id);
 
   {/* Leaflet — CSS is loaded above (before this JS). Markers only, no route line. */}
   <script is:inline src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  {/* Shared tap-to-activate helper (mobile scroll-trap fix) — defines window.mrcInitTapMap. */}
+  <MapTapActivate />
   <script is:inline define:vars={{ stops: tourStops }}>
     document.addEventListener('DOMContentLoaded', function () {
       if (typeof L === 'undefined') return;
@@ -460,6 +463,10 @@ const orderedStops = [...tourStops].sort((a, b) => a.id - b.id);
       });
 
       map.fitBounds(latlngs, { padding: [40, 40] });
+
+      // Mobile scroll-trap fix: on touch devices the map starts inert behind a tap-to-explore
+      // button so page swipes scroll past it (desktop pointer behaviour unchanged).
+      if (window.mrcInitTapMap) window.mrcInitTapMap(el, map);
     });
   </script>
 </BaseLayout>

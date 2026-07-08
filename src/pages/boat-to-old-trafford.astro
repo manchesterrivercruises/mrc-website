@@ -7,6 +7,7 @@ import ProductCard from '../components/ProductCard.astro';
 import FAQSection from '../components/FAQSection.astro';
 import KeyFacts from '../components/KeyFacts.astro';
 import CTASection from '../components/CTASection.astro';
+import MapTapActivate from '../components/MapTapActivate.astro';
 import { site } from '../data/site';
 import { departurePoints, TRAFFORD_WHARF, OLD_TRAFFORD } from '../data/mufcFerry';
 
@@ -149,6 +150,8 @@ const structuredData = {
 
   {/* Leaflet — CSS is loaded above. Markers only, no route line. */}
   <script is:inline src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  {/* Shared tap-to-activate helper (mobile scroll-trap fix) — defines window.mrcInitTapMap. */}
+  <MapTapActivate />
   <script is:inline define:vars={{ markers: mapMarkers }}>
     document.addEventListener('DOMContentLoaded', function () {
       if (typeof L === 'undefined') return;
@@ -184,6 +187,10 @@ const structuredData = {
       });
 
       map.fitBounds(latlngs, { padding: [40, 40] });
+
+      // Mobile scroll-trap fix: on touch devices the map starts inert behind a tap-to-explore
+      // button so page swipes scroll past it (desktop pointer behaviour unchanged).
+      if (window.mrcInitTapMap) window.mrcInitTapMap(el, map);
     });
   </script>
 </BaseLayout>

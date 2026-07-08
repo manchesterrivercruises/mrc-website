@@ -1,0 +1,102 @@
+---
+// Shared "tap-to-activate" helper for the page-level Leaflet maps (City River Tour route map
+// and the MUFC ferry landing map). Render ONCE on any page that has a Leaflet map, then call
+// window.mrcInitTapMap(container, map) after the map is created.
+//
+// The problem (mobile, screen-recording confirmed): a Leaflet map fills most of the viewport,
+// so a touch swipe over it pans the map instead of scrolling the page — a scroll trap. This
+// disables map dragging/tap/scroll-zoom on touch (coarse-pointer) devices and shows a
+// "Tap to explore the map" button; the first tap enables interaction, and tapping outside the
+// map or scrolling the page past it re-disables so users are never re-trapped.
+//
+// Desktop (fine pointer) is untouched: the helper returns early, no overlay, dragging as before.
+// The overlay is a real <button>, so keyboard users (who were never trapped) are unaffected.
+//
+// Inline-script rules (see VentrataWidget.astro): a plain `<script is:inline>` with literal JS
+// is emitted verbatim — no `{…}` interpolation / define:vars here, so nothing is stripped.
+---
+
+<style is:global>
+  /* Overlay lives INSIDE the Leaflet container (which owns a z-0 stacking context on the map
+     pages), above Leaflet's panes/controls (which top out ~1000). Transparent button + a
+     subtle pill hint, so the map stays visible underneath. Only ever present on touch. */
+  .mrc-map-activate {
+    position: absolute;
+    inset: 0;
+    z-index: 1100;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .mrc-map-activate__hint {
+    padding: 0.5rem 1rem;
+    border-radius: 9999px;
+    background: rgba(17, 24, 39, 0.72);
+    color: #fff;
+    font: 500 0.875rem/1 system-ui, -apple-system, sans-serif;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
+  }
+</style>
+
+<script is:inline>
+  window.mrcInitTapMap = function (container, map) {
+    // Touch/coarse-pointer devices only. Desktop pointer behaviour is unchanged.
+    if (!window.matchMedia || !window.matchMedia('(pointer: coarse)').matches) return;
+    if (!container || !map) return;
+
+    // Exactly the handlers the brief calls out. tap is guarded — Leaflet 1.9 may not define it.
+    var HANDLERS = ['dragging', 'tap', 'scrollWheelZoom'];
+    function setHandlers(on) {
+      for (var i = 0; i < HANDLERS.length; i++) {
+        var h = map[HANDLERS[i]];
+        if (h && h.enable && h.disable) { on ? h.enable() : h.disable(); }
+      }
+    }
+
+    var overlay = document.createElement('button');
+    overlay.type = 'button';
+    overlay.className = 'mrc-map-activate';
+    overlay.setAttribute('aria-label', 'Tap to explore the map');
+    var hint = document.createElement('span');
+    hint.className = 'mrc-map-activate__hint';
+    hint.textContent = 'Tap to explore the map';
+    overlay.appendChild(hint);
+
+    var active = false;
+
+    // LOCKED: map inert, page scrolls straight over it, hint shown. touch-action:auto set inline
+    // beats Leaflet's container touch-action:none (which is the actual scroll trap on touch).
+    function lock() {
+      active = false;
+      setHandlers(false);
+      container.style.touchAction = 'auto';
+      if (!overlay.parentNode) container.appendChild(overlay);
+    }
+    // ACTIVE: hand gestures back to Leaflet, hide the hint.
+    function unlock() {
+      active = true;
+      setHandlers(true);
+      container.style.touchAction = 'none';
+      if (overlay.parentNode) overlay.parentNode.removeChild(overlay);
+    }
+
+    lock();
+    overlay.addEventListener('click', unlock);
+
+    // Never re-trap: a tap anywhere outside the map, or scrolling the page past it, re-locks.
+    document.addEventListener(
+      'pointerdown',
+      function (e) { if (active && !container.contains(e.target)) lock(); },
+      true
+    );
+    window.addEventListener('scroll', function () { if (active) lock(); }, { passive: true });
+  };
+</script>
