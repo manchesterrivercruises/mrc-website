@@ -41,6 +41,15 @@ images:
     caption: "A rainbow over the water."
     orientation: landscape
     tags: [weather, skyline]
+  - src: /images/gallery/salford-quays/golden-sunset-from-the-boat.webp
+    width: 1600
+    height: 2395
+    alt: "A golden sunset over Salford Quays seen from the boat, the Millennium Footbridge and skyline in silhouette above the shimmering water"
+    caption: "Golden hour on the water."
+    orientation: portrait
+    isFeatured: true
+    usage: [gallery, homepage, og-image]
+    tags: [sunset, skyline]
 relatedAlbums: []
 relatedProduct: /city-river-tour
 bookingCtaLabel: Book the City River Tour

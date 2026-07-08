@@ -4,48 +4,33 @@ slug: christmas-cruises
 order: 2
 summary: Festive nights on the water — twinkling lights, party cruises and a visit from Father Christmas along the Manchester Ship Canal.
 category: seasonal
-# OWNED cover asset (processed WebP in public/images/). images[] below are still TEMP hotlink placeholders — Jeff fills the album out.
+# OWNED cover + images (processed WebP, public/images/). Rights confirmed by Simon.
 coverImage: /images/events/santa-cruise-hero.webp
 coverAlt: "Father Christmas seated in a red armchair aboard the Santa Cruise, flanked by two smiling elf helpers beside a decorated Christmas tree and wrapped presents."
 images:
-  # TEMP: hotlinked from the live manchesterrivercruises.com for review — not an owned asset.
-  - src: "https://optimise2.assets-servd.host/river-cruises/production/images/Santa-Cruise-thumbnail-500-x-350-px.png?w=800&h=543&q=100&auto=format&fit=crop&crop=focalpoint&fp-x=0.5&fp-y=0.5&dm=1726383358&s=99fd00569fdcddcc4d5e3d8dff4c7ba9"
-    width: 800
-    height: 543
-    alt: The boat strung with warm Christmas lights and a wreath cruising the canal at night
-    caption: All wrapped up for the festive season.
-    orientation: landscape
-    tags: [boat, christmas, night]
-  - src: /images/gallery/christmas-cruises/02.webp
-    alt: Father Christmas handing a wrapped gift to a delighted child in the cabin
+  - src: /images/gallery/christmas-cruises/santa-and-elf.webp
+    width: 1600
+    height: 2400
+    alt: "Father Christmas and a smiling elf helper wave from their seat in the festively decorated boat cabin"
+    caption: "Father Christmas and his helper."
     orientation: portrait
+    isFeatured: true
+    usage: [gallery, event-card, product-page]
+    tags: [santa, family, seasonal]
+  - src: /images/gallery/christmas-cruises/child-at-the-wheel-with-santa.webp
+    width: 1600
+    height: 1067
+    alt: "A young child sits at the boat's wheel pretending to steer while Father Christmas stands alongside and a parent films the moment"
+    caption: "Steering the boat with Santa."
+    orientation: landscape
     tags: [santa, family]
-  - src: /images/gallery/christmas-cruises/03.webp
-    alt: Guests in Christmas jumpers dancing at a festive party night
+  - src: /images/gallery/christmas-cruises/santa-grotto-decor.webp
+    width: 1600
+    height: 1067
+    alt: "A decorated Christmas tree with candy canes and lights beside wrapped presents and stockings in the boat's festively dressed cabin"
+    caption: "The grotto, all set up."
     orientation: landscape
-    tags: [crowd, party]
-  - src: /images/gallery/christmas-cruises/04.webp
-    alt: Mulled wine and mince pies served at the onboard bar
-    caption: Mulled wine at the bar to warm up.
-    orientation: landscape
-    tags: [bar, food]
-  - src: /images/gallery/christmas-cruises/05.webp
-    alt: A decorated Christmas tree glowing inside the heated cabin
-    orientation: portrait
-    tags: [decor]
-  - src: /images/gallery/christmas-cruises/06.webp
-    alt: Children pressing against the window to wave at the illuminated quayside
-    orientation: landscape
-    tags: [family]
-  - src: /images/gallery/christmas-cruises/07.webp
-    alt: The Salford Quays skyline lit up for winter seen from the deck
-    credit: Photo by MRC crew
-    orientation: landscape
-    tags: [skyline, night]
-  - src: /images/gallery/christmas-cruises/08.webp
-    alt: A couple toasting with prosecco under festive fairy lights on deck
-    orientation: portrait
-    tags: [guests, night]
+    tags: [decor, christmas]
 relatedAlbums: [dolly-night, abba-night]
 relatedProduct: /christmas-cruises-manchester
 bookingCtaLabel: Book a Christmas cruise

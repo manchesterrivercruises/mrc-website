@@ -31,8 +31,8 @@ images:
     height: 1067
     alt: "A Manchester River Cruises skipper at the boat's helm, looking out over the controls across the water"
     caption: "At the helm."
-    credit: "Crew member — usage rights TBC"
     orientation: landscape
+    usage: [gallery, product-page]
     tags: [crew, boat]
   - src: /images/gallery/our-boats/sparkling-rose-on-deck.webp
     width: 1600
@@ -48,6 +48,14 @@ images:
     caption: "Dogs welcome onboard."
     orientation: landscape
     tags: [lifestyle, dog]
+  - src: /images/gallery/our-boats/crew-at-the-onboard-bar.webp
+    width: 1599
+    height: 1600
+    alt: "Two smiling Manchester River Cruises crew members behind the boat's bar, spirits and optics lined up on the wall behind them"
+    caption: "Your crew at the bar."
+    orientation: square
+    usage: [gallery, product-page]
+    tags: [crew, bar]
 relatedAlbums: [private-hire, city-river-tour]
 relatedProduct: /vessels
 bookingCtaLabel: Book the City River Tour
