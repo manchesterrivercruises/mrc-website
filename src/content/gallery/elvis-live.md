@@ -1,0 +1,49 @@
+---
+title: Elvis Live
+slug: elvis-live
+order: 11
+summary: The King returns to the Irwell — snapshots from our Elvis 'Live from the Irwell' tribute cruise, from the performance to the party.
+category: live-music
+# OWNED assets (processed WebP, public/images/gallery/elvis-live/). Rights confirmed by Simon.
+coverImage: /images/gallery/elvis-live/elvis-tribute-performing-to-the-cabin.webp
+coverAlt: "An Elvis tribute performer with his arm outstretched sings to a full, festively decorated boat cabin lit with disco balls and fairy lights"
+images:
+  - src: /images/gallery/elvis-live/elvis-tribute-performing-to-the-cabin.webp
+    width: 1600
+    height: 1067
+    alt: "An Elvis tribute performer with his arm outstretched sings to a full, festively decorated boat cabin lit with disco balls and fairy lights"
+    caption: "The King, live on the Irwell."
+    orientation: landscape
+    isFeatured: true
+    usage: [gallery, event-card, product-page, homepage]
+    tags: [elvis, performer, live-music]
+  - src: /images/gallery/elvis-live/guest-cheering-on-the-cruise.webp
+    width: 1600
+    height: 1067
+    alt: "A guest laughing and waving with arms raised at a table, fairy lights and the night river beyond the boat window behind"
+    caption: "A proper singalong."
+    orientation: landscape
+    tags: [guests, party]
+  - src: /images/gallery/elvis-live/guests-partying-onboard.webp
+    width: 1600
+    height: 1067
+    alt: "Guests reaching up and laughing with glow toys during the party, flowers and drinks on the table"
+    caption: "The party in full swing."
+    orientation: landscape
+    tags: [guests, party]
+  - src: /images/gallery/elvis-live/boat-cabin-set-for-the-evening.webp
+    width: 1600
+    height: 900
+    alt: "The boat's cabin dressed for an evening cruise — white-clothed tables with wildflower posies and snacks, grey banquette seating and fairy lights"
+    caption: "Set and ready before you board."
+    orientation: landscape
+    usage: [gallery, product-page, private-hire]
+    tags: [cabin, interior]
+relatedAlbums: [elvis-rocks, abba-night]
+relatedProduct: /cruises/elvis-live-cruise
+bookingCtaLabel: Book the Elvis Live Cruise
+bookingCtaUrl: /cruises/elvis-live-cruise
+seoTitle: Elvis Live Cruise Photos — Tribute Night on the Manchester Ship Canal
+seoDescription: Photos from the Elvis 'Live from the Irwell' tribute cruise — the performance and the party onboard on the Manchester Ship Canal. Book the Elvis Live Cruise.
+draft: false
+---
