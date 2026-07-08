@@ -43,7 +43,8 @@ const events = defineCollection({
 
 // "Make a day of it" attractions.
 const attractions = defineCollection({
-  loader: glob({ pattern: '**/*.md', base: './src/content/attractions' }),
+  // Frontmatter-only YAML (Keystatic-managed data collection).
+  loader: glob({ pattern: '**/*.yaml', base: './src/content/attractions' }),
   schema: z.object({
     name: z.string(),
     description: z.string(),
@@ -56,7 +57,8 @@ const attractions = defineCollection({
 
 // Fleet / vessel pages.
 const vessels = defineCollection({
-  loader: glob({ pattern: '**/*.md', base: './src/content/vessels' }),
+  // Frontmatter-only YAML (Keystatic-managed data collection).
+  loader: glob({ pattern: '**/*.yaml', base: './src/content/vessels' }),
   schema: z.object({
     name: z.string(),
     description: z.string(),
@@ -76,7 +78,9 @@ const vessels = defineCollection({
 // helper and render with <Image>, per docs/image-conventions.md → "Switching collections
 // to the image() helper".
 const gallery = defineCollection({
-  loader: glob({ pattern: '**/*.md', base: './src/content/gallery' }),
+  // Frontmatter-only YAML (no markdown body) so Keystatic can manage albums natively as a
+  // `data` collection (see keystatic.config.ts). Album `id`/`slug` = filename.
+  loader: glob({ pattern: '**/*.yaml', base: './src/content/gallery' }),
   schema: z.object({
     title: z.string(),
     slug: z.string(),
