@@ -28,7 +28,9 @@ const albums = await getAlbums();
 const heroImages = getHeroCollageImages(albums, 4);
 const showCollage = heroImages.length >= 2;
 
-const featured = selectFeaturedImages(albums, 8);
+// Featured row starts AFTER the hero collage's 4 picks (selection is prefix-stable), so the
+// hero (top 4) and featured row (next 8) never repeat — 12 distinct images as you scroll in.
+const featured = selectFeaturedImages(albums, 12).slice(4);
 const wall = getWallImages(albums);
 const categories = [...new Set(albums.map((a) => a.data.category))];
 
