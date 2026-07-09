@@ -1,0 +1,69 @@
+---
+import type { Album } from '../lib/gallery';
+import { CATEGORY_LABELS } from '../lib/gallery';
+
+// Category filter for the gallery hub — the same accessible peer-checked pill pattern as the
+// What's On / old wall filter. Toggling a pill shows/hides every [.gallery-filterable] item
+// (featured row + wall) within the enclosing [data-gallery-root]; hidden items also drop out
+// of the PhotoSwipe sequence (the lightbox children selector excludes .is-hidden).
+interface Props {
+  categories: Album['data']['category'][];
+}
+const { categories } = Astro.props;
+
+const CATEGORY_ORDER: Album['data']['category'][] = [
+  'live-music',
+  'dj-night',
+  'family',
+  'seasonal',
+  'boats',
+  'route',
+  'private-hire',
+];
+const present = CATEGORY_ORDER.filter((c) => categories.includes(c));
+const filters = [{ value: 'all', label: 'All' }, ...present.map((c) => ({ value: c, label: CATEGORY_LABELS[c] }))];
+
+// Document-wide radio grouping is by name — unique per instance keeps the component reusable.
+const groupName = `gcat-${Math.random().toString(36).slice(2, 8)}`;
+
+const pillClass =
+  'inline-block rounded-full border border-black/15 px-4 py-1.5 text-sm font-medium text-body transition hover:border-primary/50 peer-checked:border-primary peer-checked:bg-primary peer-checked:text-white peer-focus-visible:outline peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-primary';
+---
+
+<fieldset class="m-0 flex flex-wrap gap-2 border-0 p-0" data-gallery-filter>
+  <legend class="sr-only">Filter photos by category</legend>
+  {
+    filters.map((f, i) => (
+      <label class="cursor-pointer">
+        <input type="radio" name={groupName} value={f.value} checked={i === 0} class="peer sr-only" />
+        <span class={pillClass}>{f.label}</span>
+      </label>
+    ))
+  }
+</fieldset>
+
+<style is:global>
+  .gallery-filterable.is-hidden {
+    display: none !important;
+  }
+</style>
+
+<script>
+  function applyGalleryFilter(fs: HTMLElement) {
+    const sel = fs.querySelector('input[type="radio"]:checked') as HTMLInputElement | null;
+    if (!sel) return;
+    const cat = sel.value;
+    const root = (fs.closest('[data-gallery-root]') as HTMLElement | null) ?? document.body;
+    root.querySelectorAll<HTMLElement>('.gallery-filterable').forEach((el) => {
+      const show = cat === 'all' || el.getAttribute('data-category') === cat;
+      el.classList.toggle('is-hidden', !show);
+    });
+  }
+
+  document.querySelectorAll<HTMLElement>('[data-gallery-filter]').forEach((fs) => {
+    fs.querySelectorAll('input[type="radio"]').forEach((el) =>
+      el.addEventListener('change', () => applyGalleryFilter(fs)),
+    );
+    applyGalleryFilter(fs);
+  });
+</script>

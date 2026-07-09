@@ -1,0 +1,73 @@
+---
+import type { GalleryImage } from '../lib/gallery';
+import { imageDims } from '../lib/gallery';
+
+// The wall — a CSS-columns masonry of EVERY owned image across all albums at natural heights
+// (no square cropping). Thumbnails are card-size variants, loading=lazy, and content-
+// visibility:auto so off-screen rows are skipped at first paint. Each tile is a PhotoSwipe
+// link in the page's continuous lightbox sequence, carries data-category for the filter, and
+// reveals its album name on hover (fine pointer) / always on touch.
+interface Props {
+  images: GalleryImage[];
+}
+const { images } = Astro.props;
+
+function dims(img: GalleryImage) {
+  return { w: img.width ?? imageDims(img.orientation).w, h: img.height ?? imageDims(img.orientation).h };
+}
+---
+
+<div class="gap-4 [column-fill:_balance] columns-2 sm:columns-3 lg:columns-4">
+  {
+    images.map((img) => {
+      const { w, h } = dims(img);
+      // Reserve off-screen height (~column width 300px × aspect) so content-visibility:auto
+      // doesn't jump the scrollbar as rows materialise.
+      const intrinsicH = Math.max(120, Math.round((h / w) * 300));
+      return (
+        <a
+          href={img.src}
+          data-pswp-width={w}
+          data-pswp-height={h}
+          data-pswp-caption={img.caption ?? ''}
+          data-album-slug={img.albumSlug}
+          data-album-title={img.albumTitle}
+          data-category={img.category}
+          aria-label={img.alt}
+          class="wall-item gallery-filterable group relative mb-4 block break-inside-avoid overflow-hidden rounded-lg ring-1 ring-black/5 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+          style={`content-visibility:auto;contain-intrinsic-size:300px ${intrinsicH}px`}
+        >
+          <img src={img.cardSrc} alt={img.alt} width={w} height={h} loading="lazy" decoding="async" class="w-full" />
+          <span class="album-tag pointer-events-none absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/70 to-transparent px-3 pb-2 pt-6 text-xs font-medium text-white">
+            {img.albumTitle}
+          </span>
+        </a>
+      );
+    })
+  }
+</div>
+
+<style>
+  /* Album label: hidden by default; revealed on hover/focus for fine pointers, always shown
+     on touch devices (which have no hover). */
+  .album-tag {
+    opacity: 0;
+    transition: opacity 0.2s ease;
+  }
+  @media (hover: hover) {
+    .wall-item:hover .album-tag,
+    .wall-item:focus-within .album-tag {
+      opacity: 1;
+    }
+  }
+  @media (hover: none) {
+    .album-tag {
+      opacity: 1;
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .album-tag {
+      transition: none;
+    }
+  }
+</style>

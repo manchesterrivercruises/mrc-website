@@ -2,11 +2,21 @@
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import { site } from '../../data/site';
 import PageHero from '../../components/PageHero.astro';
+import SectionHeading from '../../components/SectionHeading.astro';
 import GalleryHeroCollage from '../../components/GalleryHeroCollage.astro';
-import GalleryWall from '../../components/GalleryWall.astro';
-import { getAlbums, getHeroCollageImages } from '../../lib/gallery';
+import GalleryFeaturedRow from '../../components/GalleryFeaturedRow.astro';
+import GalleryAlbumStrip from '../../components/GalleryAlbumStrip.astro';
+import GalleryImageWall from '../../components/GalleryImageWall.astro';
+import GalleryFilterBar from '../../components/GalleryFilterBar.astro';
+import GalleryWallLightbox from '../../components/GalleryWallLightbox.astro';
+import { getAlbums, getHeroCollageImages, selectFeaturedImages, getWallImages } from '../../lib/gallery';
 
-// Gallery hub — the masonry wall of all album covers with the category filter.
+// Gallery hub — image-first. Three layers replace the old album-cover grid:
+//   1. Featured row  — the strongest owned images in an editorial layout.
+//   2. Browse by album — a compact strip linking to the /gallery/[slug] pages (unchanged).
+//   3. The wall — a masonry of EVERY owned image, curated-first.
+// A single PhotoSwipe sequence runs across the featured row + wall; the category pills filter
+// both live. Albums remain SEO/CMS destinations but no longer gate the photos.
 const albums = await getAlbums();
 
 // Hero collage: 3–4 owned images picked at build time (isFeatured → covers → other owned;
@@ -17,6 +27,10 @@ const albums = await getAlbums();
 // build time into one optimised image. Parked until the library is large enough to fill it.
 const heroImages = getHeroCollageImages(albums, 4);
 const showCollage = heroImages.length >= 2;
+
+const featured = selectFeaturedImages(albums, 8);
+const wall = getWallImages(albums);
+const categories = [...new Set(albums.map((a) => a.data.category))];
 
 const SITE = site.url;
 const pageTitle = 'Gallery — Manchester River Cruises';
@@ -47,14 +61,42 @@ const structuredData = {
     <PageHero
       eyebrow="Life on the water"
       title="Gallery"
-      subtitle="Photos from our cruises, events and the Manchester Ship Canal. Pick an album to take a look."
+      subtitle="Photos from our cruises, events and the Manchester Ship Canal. Dive into the photos, or browse by album."
     >
       {showCollage && <GalleryHeroCollage slot="media" images={heroImages} />}
     </PageHero>
 
-    {/* Wall */}
     <div class="mx-auto max-w-6xl px-4 py-12 sm:px-6 md:py-16 lg:px-8">
-      <GalleryWall albums={albums} />
+      {/* One PhotoSwipe root across featured row + wall; the filter scopes to this element. */}
+      <div id="gallery-images" data-gallery-root>
+        {/* Featured + filter */}
+        <div class="flex flex-wrap items-center justify-between gap-4">
+          <SectionHeading id="featured">Featured</SectionHeading>
+          <GalleryFilterBar categories={categories} />
+        </div>
+        <div class="mt-8">
+          <GalleryFeaturedRow images={featured} />
+        </div>
+
+        {/* Browse by album — links to the unchanged album pages (not filtered) */}
+        <section class="mt-16" aria-labelledby="browse-albums">
+          <SectionHeading id="browse-albums">Browse by album</SectionHeading>
+          <div class="mt-6">
+            <GalleryAlbumStrip albums={albums} />
+          </div>
+        </section>
+
+        {/* The wall — every owned image */}
+        <section class="mt-16" aria-labelledby="every-photo">
+          <SectionHeading id="every-photo">Every photo</SectionHeading>
+          <div class="mt-6">
+            <GalleryImageWall images={wall} />
+          </div>
+        </section>
+      </div>
+
+      {/* PhotoSwipe — one continuous sequence across the featured row + wall */}
+      <GalleryWallLightbox />
     </div>
   </div>
 </BaseLayout>

@@ -1,0 +1,55 @@
+---
+import type { Album } from '../lib/gallery';
+import { cardVariant, isOwnedImage } from '../lib/gallery';
+
+// Browse-by-album strip — compact album cards (cover thumb + title + count) that scroll
+// sideways on mobile and link to the unchanged /gallery/[slug] pages. Deliberately much
+// smaller than the old wall cards: albums stay SEO/CMS destinations but no longer gate the
+// photos (the featured row + wall show the images directly).
+interface Props {
+  albums: Album[];
+}
+const { albums } = Astro.props;
+
+const PHOTO_ICON =
+  'm2.25 15.75 5.159-5.159a2.25 2.25 0 0 1 3.182 0l5.159 5.159m-1.5-1.5 1.409-1.409a2.25 2.25 0 0 1 3.182 0l2.909 2.909M3.75 21h16.5a1.5 1.5 0 0 0 1.5-1.5V6a1.5 1.5 0 0 0-1.5-1.5H3.75A1.5 1.5 0 0 0 2.25 6v13.5A1.5 1.5 0 0 0 3.75 21Z';
+---
+
+<ul class="-mx-1 flex snap-x gap-3 overflow-x-auto px-1 pb-2 [scrollbar-width:thin]">
+  {
+    albums.map((a) => {
+      const cover = isOwnedImage(a.data.coverImage) ? cardVariant(a.data.coverImage) : null;
+      const count = (a.data.images ?? []).length;
+      return (
+        <li class="snap-start">
+          <a
+            href={`/gallery/${a.data.slug}`}
+            class="group flex w-36 flex-none flex-col overflow-hidden rounded-xl bg-panel ring-1 ring-black/10 transition hover:-translate-y-0.5 hover:shadow-md focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary sm:w-40"
+          >
+            <div class="aspect-[4/3] w-full overflow-hidden bg-black/5">
+              {cover ? (
+                <img
+                  src={cover}
+                  alt={a.data.coverAlt}
+                  loading="lazy"
+                  decoding="async"
+                  class="h-full w-full object-cover transition duration-300 group-hover:scale-105 motion-reduce:transition-none motion-reduce:group-hover:scale-100"
+                />
+              ) : (
+                <div class="flex h-full w-full items-center justify-center text-subtle">
+                  <svg class="h-7 w-7 opacity-40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+                    <path stroke-linecap="round" stroke-linejoin="round" d={PHOTO_ICON} />
+                  </svg>
+                </div>
+              )}
+            </div>
+            <div class="px-3 py-2">
+              <p class="truncate text-sm font-semibold text-ink">{a.data.title}</p>
+              <p class="text-xs text-subtle">{count} photo{count === 1 ? '' : 's'}</p>
+            </div>
+          </a>
+        </li>
+      );
+    })
+  }
+</ul>
