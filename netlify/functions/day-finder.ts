@@ -12,12 +12,50 @@
 // `retail` (falling back to the min non-zero retail across units), in GBP (currencyPrecision
 // 2 → pounds). Confirmed against the live MRC key.
 
+import { getStore } from '@netlify/blobs';
 import { withGuard, jsonError } from '../lib/guard';
 import { isAllowedProductId } from '../lib/products';
 import { readDayFinderQuery } from '../lib/validate';
 import { octoPost, mapConcurrent, priceFromUnits, resolveTargets } from '../lib/octo';
 
 const CONCURRENCY = 6;
+const CACHE_TTL_MS = 600 * 1000; // 10 min — matches the CDN Cache-Control on the response below.
+
+// Netlify Blobs shared cache. The CDN durable cache still fronts this, but on a CDN miss (cold
+// start, new edge node, expired window) the function reads the aggregated result from Blobs —
+// one read — instead of re-paying the ~19-product OCTO fan-out every time. Keyed by month/date,
+// same TTL. Degrades gracefully: if Blobs is unavailable the store is null and we always compute.
+function safeStore(name: string) {
+  try {
+    return getStore(name);
+  } catch {
+    return null;
+  }
+}
+
+async function withBlobCache<T>(
+  store: ReturnType<typeof safeStore>,
+  key: string,
+  producer: () => Promise<T>,
+): Promise<T> {
+  if (store) {
+    try {
+      const hit = (await store.get(key, { type: 'json' })) as { t: number; v: T } | null;
+      if (hit && typeof hit.t === 'number' && Date.now() - hit.t < CACHE_TTL_MS) return hit.v;
+    } catch {
+      /* unreadable/absent — fall through and compute */
+    }
+  }
+  const v = await producer();
+  if (store) {
+    try {
+      await store.setJSON(key, { t: Date.now(), v });
+    } catch {
+      /* best-effort write */
+    }
+  }
+  return v;
+}
 
 function monthRange(month: string): { start: string; end: string } {
   const [y, m] = month.split('-').map(Number);
@@ -53,61 +91,68 @@ export default withGuard(async (request: Request): Promise<Response> => {
   const parsed = readDayFinderQuery(new URL(request.url));
   if (!parsed.ok) return jsonError(parsed.message, parsed.status);
 
-  try {
-    // Resolve each public product's bookable option id (shared OCTO plumbing). Availability
-    // needs a real optionId — 'DEFAULT' is rejected for MRC products.
-    const targets = await resolveTargets(key, isAllowedProductId);
+  const store = safeStore('day-finder');
 
+  try {
+    // resolveTargets + the fan-out live INSIDE the cache producer, so a Blobs hit skips the
+    // GET /products option resolution AND the per-product fan-out entirely.
     if (parsed.value.mode === 'month') {
-      const { start, end } = monthRange(parsed.value.month);
-      const per = await mapConcurrent(targets, CONCURRENCY, async ({ productId, optionId }) => {
-        try {
-          const cal = await octoPost('/availability/calendar', key, {
-            productId,
-            optionId,
-            localDateStart: start,
-            localDateEnd: end,
-          });
-          return Array.isArray(cal)
-            ? cal
-                .filter((d) => d && (d as { available?: unknown }).available)
-                .map((d) => (d as { localDate?: unknown }).localDate)
-                .filter((x): x is string => typeof x === 'string')
-            : [];
-        } catch (e) {
-          console.error(`day-finder: calendar ${productId} failed —`, (e as Error).message);
-          return [];
-        }
+      const month = parsed.value.month;
+      const dates = await withBlobCache(store, `month/${month}`, async () => {
+        const targets = await resolveTargets(key, isAllowedProductId);
+        const { start, end } = monthRange(month);
+        const per = await mapConcurrent(targets, CONCURRENCY, async ({ productId, optionId }) => {
+          try {
+            const cal = await octoPost('/availability/calendar', key, {
+              productId,
+              optionId,
+              localDateStart: start,
+              localDateEnd: end,
+            });
+            return Array.isArray(cal)
+              ? cal
+                  .filter((d) => d && (d as { available?: unknown }).available)
+                  .map((d) => (d as { localDate?: unknown }).localDate)
+                  .filter((x): x is string => typeof x === 'string')
+              : [];
+          } catch (e) {
+            console.error(`day-finder: calendar ${productId} failed —`, (e as Error).message);
+            return [];
+          }
+        });
+        return [...new Set(per.flat())].sort();
       });
-      const dates = [...new Set(per.flat())].sort();
       return json({ dates });
     }
 
     // day mode
     const date = parsed.value.date;
-    const per = await mapConcurrent(targets, CONCURRENCY, async ({ productId, optionId }) => {
-      try {
-        const slots = await octoPost('/availability', key, {
-          productId,
-          optionId,
-          localDateStart: date,
-          localDateEnd: date,
-        });
-        return Array.isArray(slots)
-          ? slots
-              .filter((s) => s && (s as { available?: unknown }).available)
-              .map((s) => ({
-                productId,
-                time: hhmm((s as { localDateTimeStart?: unknown }).localDateTimeStart),
-                priceFrom: priceFromUnits((s as { unitPricing?: unknown }).unitPricing),
-              }))
-          : [];
-      } catch (e) {
-        console.error(`day-finder: availability ${productId} failed —`, (e as Error).message);
-        return [];
-      }
+    const departures = await withBlobCache(store, `date/${date}`, async () => {
+      const targets = await resolveTargets(key, isAllowedProductId);
+      const per = await mapConcurrent(targets, CONCURRENCY, async ({ productId, optionId }) => {
+        try {
+          const slots = await octoPost('/availability', key, {
+            productId,
+            optionId,
+            localDateStart: date,
+            localDateEnd: date,
+          });
+          return Array.isArray(slots)
+            ? slots
+                .filter((s) => s && (s as { available?: unknown }).available)
+                .map((s) => ({
+                  productId,
+                  time: hhmm((s as { localDateTimeStart?: unknown }).localDateTimeStart),
+                  priceFrom: priceFromUnits((s as { unitPricing?: unknown }).unitPricing),
+                }))
+            : [];
+        } catch (e) {
+          console.error(`day-finder: availability ${productId} failed —`, (e as Error).message);
+          return [];
+        }
+      });
+      return per.flat().filter((d) => d.time).sort((a, b) => a.time.localeCompare(b.time));
     });
-    const departures = per.flat().filter((d) => d.time).sort((a, b) => a.time.localeCompare(b.time));
     return json({ departures });
   } catch (e) {
     console.error('day-finder: failed —', (e as Error).message);

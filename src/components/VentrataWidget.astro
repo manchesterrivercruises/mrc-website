@@ -412,6 +412,12 @@ const OBSERVER_SCRIPT = `
 {
   mode === 'loader' && (
     <Fragment>
+      {/* Warm the connections the checkout needs — the widget script host and the Ventrata API
+          the widget calls (connect-src in netlify.toml) — so the TLS handshake overlaps parsing
+          instead of starting when the deferred module runs. Booking pages only (loader mode). */}
+      <link rel="preconnect" href="https://cdn.checkout.ventrata.com" crossorigin />
+      <link rel="preconnect" href="https://api.ventrata.com" crossorigin />
+
       {/* Checkout script — loaded only on this page, never globally (AGENTS rule 9).
           type="module" so it defers; is:inline so Astro keeps the external src +
           data-config intact instead of trying to bundle it. */}
