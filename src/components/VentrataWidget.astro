@@ -130,14 +130,21 @@ const OBSERVER_SCRIPT = `
 
     function armedAny() { return armedTrigger || armedEmbedded; }
 
-    // Geometry helpers for reveal detection.
-    function vw() { return window.innerWidth || root.clientWidth || 0; }
-    function vh() { return window.innerHeight || root.clientHeight || 0; }
-    function coversViewport(el) {
-      var w = vw(), h = vh(); if (!w || !h) return false;
-      var r = el.getBoundingClientRect();
-      return r.width >= w * 0.85 && r.height >= h * 0.85; // >85% width AND >85% height
+    // ── Takeover classifier ─────────────────────────────────────────────────────────────
+    // A genuine checkout takeover/pop-up is a body-level overlay that is COMPUTED
+    // position:fixed (or a dialog-style body-level overlay). Rect coverage alone NEVER
+    // qualifies: the inline embedded widget grows to its content height (height-sync) and can
+    // legitimately cover most of the viewport in both dimensions without being a takeover —
+    // classifying it as one applied the body scroll-lock to an inline widget (page scroll
+    // dead, but an in-widget Leaflet map still panning: the tell-tale body-lock signature).
+
+    // (2) The inline embed can NEVER be a takeover: anything that IS, or lives inside,
+    //     [ventrata-embedded-widget] (its iframe included) is excluded outright.
+    function isInlineEmbed(el) {
+      return !!(el && el.nodeType === 1 && el.closest && el.closest('[ventrata-embedded-widget]'));
     }
+
+    // First position:fixed ancestor (self included), stopping at <body>.
     function fixedAncestor(el) {
       var n = el;
       while (n && n.nodeType === 1 && n !== body) {
@@ -146,49 +153,62 @@ const OBSERVER_SCRIPT = `
       }
       return null;
     }
+
     function isVentrataIframe(el) {
       return el.tagName === 'IFRAME' && /ventrata/i.test(el.getAttribute('src') || el.src || '');
     }
 
-    // DETECTION arm (1) — INSERTION: a visible, post-load direct body child. Prefer ventrata
-    // identity; during an active session accept ANY new visible body child.
-    function overlayNode() {
+    // (1) THE core test — is el a genuine takeover overlay? It MUST be computed
+    //     position:fixed, or a body-level dialog (native <dialog> / role=dialog / aria-modal,
+    //     which some builds centre with margins rather than fixed). Coverage is never a
+    //     substitute for this, and the inline embed never qualifies.
+    function isTakeover(el) {
+      if (!el || el.nodeType !== 1 || !shown(el) || isInlineEmbed(el)) return false;
+      if (getComputedStyle(el).position === 'fixed') return true;
+      var dialogish = el.tagName === 'DIALOG' ||
+        el.getAttribute('role') === 'dialog' ||
+        el.getAttribute('aria-modal') === 'true';
+      return dialogish && el.parentElement === body;
+    }
+
+    // DETECTION arm (1) — INSERTION: a genuine overlay injected as a post-load body child.
+    // Prefer ventrata identity; during an armed session also accept an unbranded overlay
+    // (some builds inject a plain fixed backdrop) — but only if it is a genuine takeover.
+    function insertedOverlay() {
       var kids = body.children, fallback = null;
       for (var i = 0; i < kids.length; i++) {
         var el = kids[i];
-        if (initial.has(el) || !shown(el)) continue;
+        if (initial.has(el) || isInlineEmbed(el) || !isTakeover(el)) continue;
         if (looksVentrata(el)) return el;
         if (armedAny() && !fallback) fallback = el;
       }
       return fallback;
     }
 
-    // DETECTION arm (2) — REVEAL: a ventrata element (or ventrata-origin iframe) that has become
-    // fixed AND full-viewport. The embedded-widget fullscreen takeover restyles/reveals an
-    // EXISTING element rather than injecting a body child, so overlayNode() alone misses it.
-    function fullscreenOverlay() {
+    // DETECTION arm (2) — REVEAL: a ventrata element/iframe promoted into a genuine fixed
+    // overlay in place (no body-child insertion). A real embedded-widget fullscreen takeover
+    // reparents/wraps the iframe in a position:fixed container OUTSIDE the inline embed — that
+    // fixed container is what qualifies, never the inline aside merely growing tall.
+    function revealedOverlay() {
       var ifr = document.getElementsByTagName ? document.getElementsByTagName('iframe') : [];
       for (var i = 0; i < ifr.length; i++) {
         var f = ifr[i];
-        if (!isVentrataIframe(f) || !shown(f) || !coversViewport(f)) continue;
-        var fa = fixedAncestor(f); if (fa) return fa; // the fixed takeover container
-      }
-      var asides = document.querySelectorAll('[ventrata-embedded-widget]');
-      for (var j = 0; j < asides.length; j++) {
-        var a = asides[j];
-        if (shown(a) && coversViewport(a) && fixedAncestor(a)) return a; // aside itself expanded
+        if (!isVentrataIframe(f) || !shown(f) || isInlineEmbed(f)) continue;
+        var fa = fixedAncestor(f);
+        if (fa && !isInlineEmbed(fa)) return fa; // the genuine fixed takeover container
       }
       var kids = body.children;
       for (var k = 0; k < kids.length; k++) {
         var el = kids[k];
-        if (!shown(el)) continue;
-        if (looksVentrata(el) && coversViewport(el) && fixedAncestor(el)) return el;
+        if (isInlineEmbed(el)) continue;
+        if (looksVentrata(el) && isTakeover(el)) return el;
       }
       return null;
     }
 
-    // The overlay = an inserted pop-up OR a revealed fullscreen takeover.
-    function findOverlay() { return overlayNode() || fullscreenOverlay(); }
+    // The overlay = an inserted pop-up OR a revealed (in-place) fixed takeover. Both require a
+    // genuine fixed/dialog overlay; neither can ever be the inline embed.
+    function findOverlay() { return insertedOverlay() || revealedOverlay(); }
 
     // (3) Contain scroll chaining on the addressable overlay container so widget scrolling
     //     never drags the page behind. (The embedded aside also carries this in CSS.)
@@ -200,15 +220,24 @@ const OBSERVER_SCRIPT = `
 
     function stopWatchdog() { if (watchdog) { clearInterval(watchdog); watchdog = 0; } }
 
-    // BELT-AND-BRACES: while locked, poll ~1s and RE-RUN detection. If no overlay qualifies any
-    // more (removed, hidden, OR shrunk below full-viewport — a takeover collapsing back inline),
-    // release — regardless of whether the MutationObserver saw the teardown.
+    // BELT-AND-BRACES (3): while locked, poll ~1s and RE-VERIFY the lock is still justified.
+    // The lock is only legitimate if a genuine fixed/dialog overlay is present — re-checked
+    // LIVE via isTakeover(), not trusted from when it was first classified — or a trigger click
+    // is still within its open grace window. If the classified element is no longer genuinely
+    // fixed (collapsed back inline, removed, or hidden) the lock RELEASES. So even a FUTURE
+    // misclassification (e.g. an inline widget briefly mistaken for a takeover) self-heals
+    // within a second.
     function startWatchdog() {
       if (watchdog) return;
       watchdog = window.setInterval(function () {
-        if (!saw) return; // nothing opened yet — the failsafe covers that window
-        var still = findOverlay();
-        if (still) { currentOverlay = still; applyContain(still); return; }
+        if (!root.classList.contains(KEY)) return; // not locked — nothing to police
+        // Drop the current classification the moment it stops being a genuine fixed overlay.
+        if (currentOverlay && (!document.contains(currentOverlay) || !isTakeover(currentOverlay))) {
+          currentOverlay = null;
+        }
+        var still = currentOverlay || findOverlay();
+        if (still) { currentOverlay = still; saw = true; applyContain(still); return; }
+        if (armedTrigger && !saw) return; // trigger pop-up still opening; the failsafe times it out
         forceClose();
       }, 1000);
     }

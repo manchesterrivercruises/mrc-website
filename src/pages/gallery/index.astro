@@ -1,11 +1,22 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import { site } from '../../data/site';
+import PageHero from '../../components/PageHero.astro';
+import GalleryHeroCollage from '../../components/GalleryHeroCollage.astro';
 import GalleryWall from '../../components/GalleryWall.astro';
-import { getAlbums } from '../../lib/gallery';
+import { getAlbums, getHeroCollageImages } from '../../lib/gallery';
 
 // Gallery hub — the masonry wall of all album covers with the category filter.
 const albums = await getAlbums();
+
+// Hero collage: 3–4 owned images picked at build time (isFeatured → covers → other owned;
+// never placeholders/hotlinks). Degrades to the plain text hero when fewer than 2 qualify.
+//
+// UPGRADE PATH (post-photography): once the owned library passes ~100 images (see
+// docs/photo-inventory.md), replace this DOM collage with a single tile-mosaic composed at
+// build time into one optimised image. Parked until the library is large enough to fill it.
+const heroImages = getHeroCollageImages(albums, 4);
+const showCollage = heroImages.length >= 2;
 
 const SITE = site.url;
 const pageTitle = 'Gallery — Manchester River Cruises';
@@ -31,16 +42,15 @@ const structuredData = {
   <script type="application/ld+json" is:inline set:html={JSON.stringify(structuredData)} />
 
   <div>
-    {/* Hero — dark navy, gold accents */}
-    <section class="bg-dark text-white">
-      <div class="mx-auto max-w-6xl px-4 py-20 sm:px-6 md:py-24 lg:px-8">
-        <p class="text-sm font-semibold uppercase tracking-[0.2em] text-accent">Life on the water</p>
-        <h1 class="mt-3 text-4xl font-bold tracking-tight text-white sm:text-5xl md:text-6xl">Gallery</h1>
-        <p class="mt-5 max-w-2xl text-lg leading-relaxed text-white/80">
-          Photos from our cruises, events and the Manchester Ship Canal. Pick an album to take a look.
-        </p>
-      </div>
-    </section>
+    {/* Hero — dark navy, gold accents. Collage fills the right (desktop) / a strip (mobile)
+        when >= 2 owned images qualify; otherwise the plain text hero renders. */}
+    <PageHero
+      eyebrow="Life on the water"
+      title="Gallery"
+      subtitle="Photos from our cruises, events and the Manchester Ship Canal. Pick an album to take a look."
+    >
+      {showCollage && <GalleryHeroCollage slot="media" images={heroImages} />}
+    </PageHero>
 
     {/* Wall */}
     <div class="mx-auto max-w-6xl px-4 py-12 sm:px-6 md:py-16 lg:px-8">
