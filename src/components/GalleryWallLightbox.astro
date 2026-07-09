@@ -1,0 +1,73 @@
+---
+// PhotoSwipe lightbox for the /gallery hub (#gallery-images) — ONE continuous sequence across
+// the featured row + wall (all image links inside the gallery root). Hidden (filtered-out)
+// items are excluded via :not(.is-hidden), so swiping follows the current filter. Captions
+// carry a "From [album] →" link back to the album page. Separate from GalleryLightbox so the
+// album pages stay untouched; PhotoSwipe JS/CSS still bundle only where a lightbox is used.
+---
+
+<script>
+  import PhotoSwipeLightbox from 'photoswipe/lightbox';
+  import 'photoswipe/style.css';
+
+  const el = document.getElementById('gallery-images');
+  if (el) {
+    const lightbox = new PhotoSwipeLightbox({
+      gallery: '#gallery-images',
+      // Only image links participate (album-strip links have no data-pswp-width); filtered-out
+      // items (.is-hidden) drop out live — PhotoSwipe re-queries children on open.
+      children: 'a[data-pswp-width]:not(.is-hidden)',
+      pswpModule: () => import('photoswipe'),
+    });
+
+    lightbox.on('uiRegister', () => {
+      lightbox.pswp.ui.registerElement({
+        name: 'mrc-caption',
+        appendTo: 'root',
+        onInit: (elc) => {
+          Object.assign(elc.style, {
+            position: 'absolute',
+            left: '0',
+            right: '0',
+            bottom: '0',
+            padding: '14px 20px',
+            textAlign: 'center',
+            color: '#fff',
+            background: 'rgba(0,0,0,.5)',
+            font: '14px/1.5 system-ui, sans-serif',
+          });
+          lightbox.pswp.on('change', () => {
+            const a = lightbox.pswp.currSlide?.data?.element as HTMLElement | undefined;
+            elc.replaceChildren();
+            if (!a) {
+              elc.style.display = 'none';
+              return;
+            }
+            const cap = a.getAttribute('data-pswp-caption') || '';
+            const slug = a.getAttribute('data-album-slug');
+            const title = a.getAttribute('data-album-title') || '';
+            if (cap) {
+              const s = document.createElement('span');
+              s.textContent = cap;
+              elc.appendChild(s);
+            }
+            if (slug) {
+              if (cap) elc.appendChild(document.createTextNode('  ·  '));
+              const link = document.createElement('a');
+              link.href = `/gallery/${slug}`;
+              link.textContent = `From ${title} →`;
+              Object.assign(link.style, { color: '#fff', textDecoration: 'underline', fontWeight: '600' });
+              // Don't let the tap bubble to PhotoSwipe (which would treat it as a background tap).
+              link.addEventListener('pointerdown', (e) => e.stopPropagation());
+              link.addEventListener('click', (e) => e.stopPropagation());
+              elc.appendChild(link);
+            }
+            elc.style.display = cap || slug ? 'block' : 'none';
+          });
+        },
+      });
+    });
+
+    lightbox.init();
+  }
+</script>

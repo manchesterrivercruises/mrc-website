@@ -111,37 +111,95 @@ export function cardVariant(src: string): string {
   return isOwnedImage(card) ? card : src;
 }
 
-export interface HeroCollageImage {
+// A gallery image ready to render as a lightbox thumbnail, carrying its album so the wall/
+// lightbox can label it and link back. `src` is the full-size asset (lightbox target);
+// `cardSrc` is the card-size variant used for the thumbnail (see cardVariant).
+export interface GalleryImage {
   src: string;
+  cardSrc: string;
   alt: string;
   width?: number;
   height?: number;
   orientation?: 'landscape' | 'portrait' | 'square';
+  caption?: string;
+  albumSlug: string;
+  albumTitle: string;
+  category: Album['data']['category'];
+  isFeatured: boolean;
 }
 
-// Build-time image selection for the gallery hero collage. Sources OWNED images only —
-// isOwnedImage() excludes external hotlinks, the shared placeholder tile, and any src that
-// doesn't resolve in public/ — so the hero never advertises a placeholder or a borrowed image.
-// Priority, de-duped by src and capped at `limit`:
-//   1. one isFeatured image per album (for visual variety), then any remaining featured
-//   2. album covers
-//   3. any other owned image
-// The caller degrades to the plain hero when fewer than 2 images qualify.
-export function getHeroCollageImages(albums: Album[], limit = 4): HeroCollageImage[] {
-  const picked = new Map<string, HeroCollageImage>();
-  const add = (img: { src: string; alt?: string; width?: number; height?: number; orientation?: 'landscape' | 'portrait' | 'square' }) => {
-    // De-dupe on the ORIGINAL src; serve the card-size variant (the collage renders ~300px, so
-    // the 1600px original is pure waste on this LCP-sensitive block). width/height keep the
-    // source aspect ratio — layout is governed by the tile's aspect box + object-cover anyway.
-    if (picked.size >= limit || picked.has(img.src) || !isOwnedImage(img.src)) return;
-    picked.set(img.src, { src: cardVariant(img.src), alt: img.alt ?? '', width: img.width, height: img.height, orientation: img.orientation });
+type RawImage = {
+  src: string;
+  alt?: string;
+  width?: number;
+  height?: number;
+  orientation?: 'landscape' | 'portrait' | 'square';
+  caption?: string;
+  isFeatured?: boolean;
+};
+
+function toGalleryImage(album: Album, img: RawImage): GalleryImage {
+  return {
+    src: img.src,
+    cardSrc: cardVariant(img.src),
+    alt: img.alt ?? '',
+    width: img.width,
+    height: img.height,
+    orientation: img.orientation,
+    caption: img.caption,
+    albumSlug: album.data.slug,
+    albumTitle: album.data.title,
+    category: album.data.category,
+    isFeatured: !!img.isFeatured,
   };
+}
 
-  const featuredByAlbum = albums.map((a) => (a.data.images ?? []).filter((im) => im.isFeatured && isOwnedImage(im.src)));
-  featuredByAlbum.forEach((imgs) => imgs[0] && add(imgs[0])); // 1: first featured per album
-  featuredByAlbum.forEach((imgs) => imgs.slice(1).forEach(add)); //    then remaining featured
-  albums.forEach((a) => add({ src: a.data.coverImage, alt: a.data.coverAlt })); // 2: covers
-  albums.forEach((a) => (a.data.images ?? []).forEach(add)); // 3: any other owned image
-
+// The N strongest OWNED images for the featured row / hero, with cross-album variety:
+// one isFeatured image per album first, then any remaining featured, then covers, then any
+// other owned image. De-duped by src, capped at `limit`. (Same priority as the hero collage,
+// now returning full GalleryImage records so callers get album + dimension metadata.)
+export function selectFeaturedImages(albums: Album[], limit = 8): GalleryImage[] {
+  const picked = new Map<string, GalleryImage>();
+  const add = (album: Album, img: RawImage) => {
+    if (picked.size >= limit || picked.has(img.src) || !isOwnedImage(img.src)) return;
+    picked.set(img.src, toGalleryImage(album, img));
+  };
+  const featured = albums.map((a) => ({ a, imgs: (a.data.images ?? []).filter((im) => im.isFeatured && isOwnedImage(im.src)) }));
+  featured.forEach(({ a, imgs }) => imgs[0] && add(a, imgs[0])); // one featured per album
+  featured.forEach(({ a, imgs }) => imgs.slice(1).forEach((im) => add(a, im))); // remaining featured
+  albums.forEach((a) => add(a, { src: a.data.coverImage, alt: a.data.coverAlt })); // covers
+  albums.forEach((a) => (a.data.images ?? []).forEach((im) => add(a, im))); // any other owned
   return [...picked.values()].slice(0, limit);
+}
+
+// EVERY owned image across all albums, ordered curated-first: isFeatured images lead, then by
+// album `order`, then original image order — so the top of the wall stays strong as the
+// library grows. De-duped by src.
+export function getWallImages(albums: Album[]): GalleryImage[] {
+  const rows = albums.flatMap((a) =>
+    (a.data.images ?? [])
+      .map((im, idx) => ({ im, idx }))
+      .filter(({ im }) => isOwnedImage(im.src))
+      .map(({ im, idx }) => ({ g: toGalleryImage(a, im), order: a.data.order ?? 999, idx })),
+  );
+  rows.sort(
+    (x, y) =>
+      Number(y.g.isFeatured) - Number(x.g.isFeatured) || x.order - y.order || x.idx - y.idx,
+  );
+  const seen = new Set<string>();
+  const out: GalleryImage[] = [];
+  for (const { g } of rows) {
+    if (seen.has(g.src)) continue;
+    seen.add(g.src);
+    out.push(g);
+  }
+  return out;
+}
+
+// Build-time image selection for the gallery hero collage — the same isFeatured-first,
+// cross-album selection as the featured row (selectFeaturedImages), returning full
+// GalleryImage records so each collage tile can link back to (and label) its source album.
+// Owned images only. The caller degrades to the plain hero when fewer than 2 images qualify.
+export function getHeroCollageImages(albums: Album[], limit = 4): GalleryImage[] {
+  return selectFeaturedImages(albums, limit);
 }

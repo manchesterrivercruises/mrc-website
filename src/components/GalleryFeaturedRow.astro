@@ -1,0 +1,88 @@
+---
+import type { GalleryImage } from '../lib/gallery';
+import { imageDims } from '../lib/gallery';
+
+// Featured row — the strongest owned images in an editorial layout: one dominant landscape
+// banner + a natural-ratio masonry of supporting images (mixed sizes, never uniform squares).
+// Each tile is a PhotoSwipe link (data-pswp-*) and part of the page's single continuous
+// lightbox sequence; each carries data-category so the filter can show/hide it live.
+interface Props {
+  images: GalleryImage[];
+}
+const { images } = Astro.props;
+
+function dims(img: GalleryImage) {
+  return { w: img.width ?? imageDims(img.orientation).w, h: img.height ?? imageDims(img.orientation).h };
+}
+const isLandscape = (img: GalleryImage) =>
+  img.orientation === 'landscape' || (!!img.width && !!img.height && img.width >= img.height);
+
+// Dominant = the first landscape (fallback: the first image); the rest fill the masonry in order.
+const dominant = images.find(isLandscape) ?? images[0];
+const rest = images.filter((img) => img !== dominant);
+
+const tileClass =
+  'gallery-filterable group relative block overflow-hidden ring-1 ring-black/10 shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary';
+---
+
+{
+  dominant && (
+    <div class="space-y-3 sm:space-y-4">
+      {/* Dominant landscape — full width, full-size asset (it renders large). */}
+      {(() => {
+        const { w, h } = dims(dominant);
+        return (
+          <a
+            href={dominant.src}
+            data-pswp-width={w}
+            data-pswp-height={h}
+            data-pswp-caption={dominant.caption ?? ''}
+            data-album-slug={dominant.albumSlug}
+            data-album-title={dominant.albumTitle}
+            data-category={dominant.category}
+            aria-label={dominant.alt}
+            class:list={[tileClass, 'rounded-2xl']}
+          >
+            <img
+              src={dominant.src}
+              alt={dominant.alt}
+              loading="lazy"
+              decoding="async"
+              class="aspect-[16/9] w-full object-cover transition duration-500 group-hover:scale-[1.02] motion-reduce:transition-none motion-reduce:group-hover:scale-100"
+            />
+          </a>
+        );
+      })()}
+
+      {/* Supporting images — natural-ratio masonry (card variants, lazy). */}
+      <div class="gap-3 [column-fill:_balance] sm:columns-2 lg:columns-3">
+        {rest.map((img) => {
+          const { w, h } = dims(img);
+          return (
+            <a
+              href={img.src}
+              data-pswp-width={w}
+              data-pswp-height={h}
+              data-pswp-caption={img.caption ?? ''}
+              data-album-slug={img.albumSlug}
+              data-album-title={img.albumTitle}
+              data-category={img.category}
+              aria-label={img.alt}
+              class:list={[tileClass, 'mb-3 break-inside-avoid rounded-xl']}
+            >
+              <img
+                src={img.cardSrc}
+                alt={img.alt}
+                width={w}
+                height={h}
+                loading="lazy"
+                decoding="async"
+                class="w-full transition duration-500 group-hover:scale-[1.02] motion-reduce:transition-none motion-reduce:group-hover:scale-100"
+              />
+            </a>
+          );
+        })}
+      </div>
+    </div>
+  )
+}

@@ -1,64 +1,72 @@
 ---
-// Gallery hero collage — a small cluster of owned photos beside the /gallery hero text.
-// Images are chosen at build time by getHeroCollageImages() (owned only: isFeatured → covers
-// → other owned; never placeholders/hotlinks). Alt text is carried from each source image.
+import type { GalleryImage } from '../lib/gallery';
+
+// Gallery hero collage — a small editorial cluster of owned photos beside the /gallery hero
+// text. Each image now LINKS to its source album (carrying the slug from getHeroCollageImages)
+// and reveals the album name on hover/focus. Selection is isFeatured-first with cross-album
+// variety (owned only; never placeholders/hotlinks); alt text is carried from each source image.
 //
-// Desktop (md+): a clean tile cluster of up to 4 images, subtle radius + shadow.
-// Mobile: a single compact strip of up to 3 thumbs under the text, so the hero stays short.
+// Desktop: an editorial cluster — one dominant landscape + smaller companions, varied sizing,
+// rounding and shadow. Mobile: a compact strip of up to 3 linked thumbs, so the hero stays
+// short. Every tile is a real link with a ≥44px tap target, a focus ring, and an aria-label;
+// hover/lift motion respects prefers-reduced-motion.
 //
 // The page only renders this when >= 2 images qualify (else the plain hero shows).
-import type { HeroCollageImage } from '../lib/gallery';
-
 interface Props {
-  images: HeroCollageImage[];
+  images: GalleryImage[];
 }
 const { images } = Astro.props;
 
-const grid = images.slice(0, 4); // desktop cluster
-const strip = images.slice(0, 3); // mobile strip
-const n = grid.length;
+const isLandscape = (img: GalleryImage) =>
+  img.orientation === 'landscape' || (!!img.width && !!img.height && img.width >= img.height);
 
-// Desktop tile aspect per image. With 3 images the first tile goes wide across both columns
-// for a balanced cluster; 2 or 4 images tile evenly.
-function tileClass(i: number): string {
-  if (n === 3 && i === 0) return 'col-span-2 aspect-[16/9]';
-  if (n === 2) return 'aspect-[3/4]';
-  return 'aspect-[4/3]';
-}
+// Desktop cluster of up to 4; the dominant (2×2) cell should be a landscape.
+const four = images.slice(0, 4);
+const dominant = four.find(isLandscape) ?? four[0];
+const cluster = dominant ? [dominant, ...four.filter((i) => i !== dominant)] : four;
+const strip = images.slice(0, 3); // mobile
+
+// Editorial 4×2 grid: dominant 2×2, a wide 2×1, then two 1×1 — varied rounding for character.
+const CELL = ['col-span-2 row-span-2 rounded-2xl', 'col-span-2 rounded-xl', 'rounded-lg', 'rounded-xl'];
+
+const linkBase =
+  'group relative block overflow-hidden ring-1 ring-white/15 shadow-lg transition duration-300 hover:-translate-y-1 hover:shadow-xl focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent motion-reduce:transition-none motion-reduce:hover:translate-y-0';
+const imgBase =
+  'h-full w-full object-cover transition duration-500 group-hover:scale-105 motion-reduce:transition-none motion-reduce:group-hover:scale-100';
+const labelBase =
+  'pointer-events-none absolute inset-x-0 bottom-0 translate-y-full bg-gradient-to-t from-black/80 to-transparent px-2 pb-1.5 pt-6 text-xs font-medium text-white opacity-0 transition duration-300 group-hover:translate-y-0 group-hover:opacity-100 group-focus-within:translate-y-0 group-focus-within:opacity-100 motion-reduce:transition-none';
 ---
 
-{/* Desktop cluster */}
-<div class="hidden grid-cols-2 gap-3 md:grid">
+{/* Desktop editorial cluster */}
+<div class="hidden aspect-[5/4] grid-cols-4 grid-rows-2 gap-2.5 md:grid">
   {
-    grid.map((img, i) => (
-      <div class:list={['overflow-hidden rounded-2xl shadow-xl ring-1 ring-white/10', tileClass(i)]}>
-        <img
-          src={img.src}
-          alt={img.alt}
-          width={img.width}
-          height={img.height}
-          loading="eager"
-          decoding="async"
-          class="h-full w-full object-cover"
-        />
-      </div>
+    cluster.map((img, i) => (
+      <a
+        href={`/gallery/${img.albumSlug}`}
+        aria-label={`View the ${img.albumTitle} album`}
+        class:list={[linkBase, CELL[i]]}
+      >
+        <img src={img.cardSrc} alt={img.alt} loading="lazy" decoding="async" class={imgBase} />
+        <span class={labelBase}>{img.albumTitle}</span>
+      </a>
     ))
   }
 </div>
 
-{/* Mobile strip — kept compact so the hero never crowds on small screens */}
+{/* Mobile strip — linked thumbs (≥44px), kept compact so the hero never crowds */}
 <div class="flex gap-2 md:hidden">
   {
     strip.map((img) => (
-      <div class="h-16 w-24 flex-none overflow-hidden rounded-lg ring-1 ring-white/10">
-        <img
-          src={img.src}
-          alt={img.alt}
-          loading="eager"
-          decoding="async"
-          class="h-full w-full object-cover"
-        />
-      </div>
+      <a
+        href={`/gallery/${img.albumSlug}`}
+        aria-label={`View the ${img.albumTitle} album`}
+        class="group relative block h-16 w-24 flex-none overflow-hidden rounded-lg ring-1 ring-white/15 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+      >
+        <img src={img.cardSrc} alt={img.alt} loading="lazy" decoding="async" class="h-full w-full object-cover" />
+        <span class="pointer-events-none absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/70 to-transparent px-1.5 pb-1 pt-4 text-[0.65rem] font-medium leading-tight text-white">
+          {img.albumTitle}
+        </span>
+      </a>
     ))
   }
 </div>

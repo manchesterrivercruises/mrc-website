@@ -367,6 +367,24 @@ Example: "from £18" in the static HTML, updated to live price after hydration.
 Do not leave schema fields (price, availability) dependent only on client-side JS.
 Crawlers read the static HTML — schema must be valid at build time.
 
+### Price drift — follow-up (queued)
+
+**Problem observed:** event pages render a static `priceFrom` from the markdown
+frontmatter (e.g. Dolly "From £28") while the live checkout widget shows the real
+OCTO price (£40). Static values silently drift as Ventrata pricing changes.
+
+**Short-term (done):** the event `priceFrom` values were audited against live OCTO
+pricing (the same `pricingFrom` the `products` function returns, cheapest ADULT
+retail — see `netlify/lib/octo.ts` → `priceFromUnits`) and corrected. This is a
+point-in-time snapshot and will drift again.
+
+**Longer-term (TODO — queued as a follow-up task):** product-page price panels
+should render **live pricing with the static value as fallback** — fetch the live
+from-price (via the `products` function / `pricingFrom`) client-side and swap it in
+after hydration, keeping the build-time static price as the crawlable SEO fallback
+and the value shown if the fetch fails. That removes the manual-audit treadmill.
+Until then, re-run the price audit whenever Ventrata pricing changes.
+
 ---
 
 ## Manage My Booking
