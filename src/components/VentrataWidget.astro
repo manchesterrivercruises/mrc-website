@@ -350,11 +350,20 @@ const OBSERVER_SCRIPT = `
     });
 
     // MARKETING-LINK AUTO-OPEN (docs → "Marketing links that auto-open checkout"): the date
-    // finder links departures to a product page with ?openWidget=true&date=YYYY-MM-DD. Open the
-    // checkout for THIS page's product, preselecting that date. productID is read from the page's
-    // own embed/trigger config; dateToPreselect is the documented data-config key. A trigger
-    // element (which Ventrata binds) is used rather than a dynamic ventrata-checkout button.
-    // ⚠ ON-DEVICE QA: confirm the pop-up opens on the preselected date on the live widget.
+    // finder links departures to a product page with ?openWidget=true&date=YYYY-MM-DD[&time=HH:MM];
+    // "Join waitlist" on a sold-out departure uses the same link. Open the checkout for THIS page's
+    // product, preselecting that date.
+    //
+    // KEY NAMES ARE CONFIRMED: dateToPreselect (YYYY-MM-DD) + timeslotToPreselect (HH:MM) are the
+    // supported inputs per Ventrata's "Supported Configuration Inputs" doc — so a wrong key is NOT
+    // the cause of a missed preselect. Two real suspects remain, which on-device QA must separate:
+    //   1. SOLD-OUT date — Ventrata's calendar is availability-aware (see "Preselect the first
+    //      AVAILABLE date"); it will not preselect an unbuyable date, so a WAITLIST deep link
+    //      (sold-out by definition) can't preselect. Test an AVAILABLE date to confirm.
+    //   2. OUR SIDE — the trigger below is created dynamically; if Ventrata only reads preselect
+    //      from load-time triggers/script config, the key is right but ignored.
+    // calendarFirst is intentionally NOT sent with a date — it opens the calendar BROWSE step and
+    // competes with a specific preselect; the documented date-preselect examples omit it.
     function autoOpenFromUrl() {
       var q; try { q = new URLSearchParams(window.location.search); } catch (e) { return; }
       if (!q.get('openWidget')) return;
@@ -362,11 +371,22 @@ const OBSERVER_SCRIPT = `
       var productID = null;
       if (host) { try { productID = JSON.parse(host.getAttribute('data-config')).productID; } catch (e) {} }
       if (!productID) return;
-      var cfg = { productID: productID, calendarFirst: true };
+
+      var cfg = { productID: productID };
       var date = q.get('date');
-      if (date && /^[0-9]{4}-[0-9]{2}-[0-9]{2}$/.test(date)) cfg.dateToPreselect = date;
-      var time = q.get('time');
-      if (time && /^[0-9]{2}:[0-9]{2}$/.test(time)) cfg.timeslotToPreselect = time;
+      if (date && /^[0-9]{4}-[0-9]{2}-[0-9]{2}$/.test(date)) {
+        cfg.dateToPreselect = date; // confirmed key
+        var time = q.get('time');
+        if (time && /^[0-9]{2}:[0-9]{2}$/.test(time)) cfg.timeslotToPreselect = time; // confirmed key
+      } else {
+        cfg.calendarFirst = true; // no specific date → open on the calendar step for browsing
+      }
+
+      // TEMPORARY DIAGNOSTIC — remove after on-device QA. Logs the EXACT config handed to the
+      // trigger so one device check distinguishes right-but-ignored (Ventrata side, e.g. a
+      // sold-out date it refuses to preselect) from wrong/missing (our side).
+      try { console.debug('[MRC][ventrata] auto-open config →', JSON.stringify(cfg)); } catch (e) {}
+
       var btn = document.createElement('button');
       btn.type = 'button';
       btn.setAttribute('ventrata-checkout', '');
