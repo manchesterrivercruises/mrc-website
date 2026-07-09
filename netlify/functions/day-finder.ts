@@ -19,12 +19,19 @@ import { readDayFinderQuery } from '../lib/validate';
 import { octoPost, mapConcurrent, priceFromUnits, resolveTargets } from '../lib/octo';
 
 const CONCURRENCY = 6;
-const CACHE_TTL_MS = 600 * 1000; // 10 min — matches the CDN Cache-Control on the response below.
+// Blobs TTLs. The month view (which dates have ANY availability) changes slowly, so amortize the
+// expensive ~19-product fan-out over an hour. The day view (a date's departures/times) stays
+// short — it's closer to the booking decision. Either way the checkout widget revalidates live
+// at booking time, so a slightly-stale calendar mark costs nothing real. (The CDN Cache-Control
+// on the response is still 10 min for both — CDN revalidations within the hour are served from
+// Blobs without re-fanning-out.)
+const MONTH_TTL_MS = 60 * 60 * 1000; // 60 min
+const DAY_TTL_MS = 10 * 60 * 1000; // 10 min
 
 // Netlify Blobs shared cache. The CDN durable cache still fronts this, but on a CDN miss (cold
 // start, new edge node, expired window) the function reads the aggregated result from Blobs —
 // one read — instead of re-paying the ~19-product OCTO fan-out every time. Keyed by month/date,
-// same TTL. Degrades gracefully: if Blobs is unavailable the store is null and we always compute.
+// per-view TTL. Degrades gracefully: if Blobs is unavailable the store is null and we always compute.
 function safeStore(name: string) {
   try {
     return getStore(name);
@@ -36,12 +43,13 @@ function safeStore(name: string) {
 async function withBlobCache<T>(
   store: ReturnType<typeof safeStore>,
   key: string,
+  ttlMs: number,
   producer: () => Promise<T>,
 ): Promise<T> {
   if (store) {
     try {
       const hit = (await store.get(key, { type: 'json' })) as { t: number; v: T } | null;
-      if (hit && typeof hit.t === 'number' && Date.now() - hit.t < CACHE_TTL_MS) return hit.v;
+      if (hit && typeof hit.t === 'number' && Date.now() - hit.t < ttlMs) return hit.v;
     } catch {
       /* unreadable/absent — fall through and compute */
     }
@@ -98,7 +106,7 @@ export default withGuard(async (request: Request): Promise<Response> => {
     // GET /products option resolution AND the per-product fan-out entirely.
     if (parsed.value.mode === 'month') {
       const month = parsed.value.month;
-      const dates = await withBlobCache(store, `month/${month}`, async () => {
+      const dates = await withBlobCache(store, `month/${month}`, MONTH_TTL_MS, async () => {
         const targets = await resolveTargets(key, isAllowedProductId);
         const { start, end } = monthRange(month);
         const per = await mapConcurrent(targets, CONCURRENCY, async ({ productId, optionId }) => {
@@ -127,7 +135,7 @@ export default withGuard(async (request: Request): Promise<Response> => {
 
     // day mode
     const date = parsed.value.date;
-    const departures = await withBlobCache(store, `date/${date}`, async () => {
+    const departures = await withBlobCache(store, `date/${date}`, DAY_TTL_MS, async () => {
       const targets = await resolveTargets(key, isAllowedProductId);
       const per = await mapConcurrent(targets, CONCURRENCY, async ({ productId, optionId }) => {
         try {
