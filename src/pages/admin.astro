@@ -1,0 +1,78 @@
+---
+// /admin — the CMS entry point. Mirrors the keystaticEnabled gate in astro.config.mjs:
+//   • local dev, or KEYSTATIC_SECRET present  → the Keystatic route exists, so bounce to it.
+//   • otherwise                               → show a graceful "CMS not configured" page
+//     instead of the raw 500 the GitHub-mode Keystatic route throws when the secret is absent.
+// SSR (prerender:false) so the check runs at request time against the deploy's real env.
+export const prerender = false;
+
+const enabled = import.meta.env.DEV || !!process.env.KEYSTATIC_SECRET;
+if (enabled) return Astro.redirect('/keystatic');
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex, nofollow" />
+    <title>CMS not configured — Manchester River Cruises</title>
+    <style>
+      :root { color-scheme: light dark; }
+      body {
+        margin: 0;
+        min-height: 100vh;
+        display: grid;
+        place-items: center;
+        padding: 1.5rem;
+        font: 16px/1.6 system-ui, -apple-system, sans-serif;
+        background: #0b1f33;
+        color: #e8eef5;
+      }
+      main {
+        max-width: 34rem;
+        background: rgba(255, 255, 255, 0.04);
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        border-radius: 16px;
+        padding: 2rem;
+      }
+      h1 { margin: 0 0 0.5rem; font-size: 1.5rem; }
+      p { margin: 0 0 1rem; color: #b9c6d6; }
+      code {
+        background: rgba(255, 255, 255, 0.1);
+        padding: 0.1em 0.4em;
+        border-radius: 6px;
+        font-size: 0.9em;
+      }
+      ol { margin: 0 0 1rem; padding-left: 1.25rem; color: #b9c6d6; }
+      li { margin: 0.35rem 0; }
+      .tag {
+        display: inline-block;
+        font-size: 0.75rem;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: #7fb2ff;
+        margin-bottom: 0.75rem;
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <p class="tag">Manchester River Cruises · CMS</p>
+      <h1>The content manager isn't set up yet</h1>
+      <p>
+        The CMS uses GitHub storage on this deployment, which needs a one-time GitHub App
+        connection. Its credentials (<code>KEYSTATIC_SECRET</code> and the GitHub App client
+        keys) haven't been added to this site's environment yet, so the editor is switched off
+        rather than showing an error.
+      </p>
+      <ol>
+        <li>Generate a session secret: <code>openssl rand -base64 32</code></li>
+        <li>Add it in Netlify as <code>KEYSTATIC_SECRET</code>, then redeploy.</li>
+        <li>Reload <code>/keystatic</code> and follow the "Create GitHub App" wizard.</li>
+        <li>Add the three values it returns and redeploy — full steps in <code>docs/content-management.md</code>.</li>
+      </ol>
+      <p>Editing locally instead? Run <code>npm run dev</code> and open <code>/keystatic</code> — no login needed.</p>
+    </main>
+  </body>
+</html>
