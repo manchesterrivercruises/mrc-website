@@ -45,7 +45,7 @@ images:
     caption: "Street art along the route."
     orientation: landscape
     tags: [street-art, route]
-relatedAlbums: [city-river-tour, salford-quays]
+relatedAlbums: [city-river-tour, salford-quays, old-trafford-ferry, our-boats]
 relatedProduct: /city-river-tour
 bookingCtaLabel: Book the City River Tour
 bookingCtaUrl: /city-river-tour

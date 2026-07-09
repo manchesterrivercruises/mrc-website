@@ -49,7 +49,7 @@ images:
     isFeatured: true
     usage: [gallery, homepage, og-image]
     tags: [sunset, skyline]
-relatedAlbums: []
+relatedAlbums: [city-river-tour, manchester-ship-canal, our-boats, old-trafford-ferry]
 relatedProduct: /city-river-tour
 bookingCtaLabel: Book the City River Tour
 bookingCtaUrl: /city-river-tour

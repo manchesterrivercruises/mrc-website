@@ -24,7 +24,7 @@ images:
     orientation: landscape
     usage: [gallery, product-page]
     tags: [boat, route]
-relatedAlbums: [manchester-ship-canal, our-boats]
+relatedAlbums: [city-river-tour, manchester-ship-canal, salford-quays, our-boats]
 relatedProduct: /boat-to-old-trafford
 bookingCtaLabel: Book the matchday ferry
 bookingCtaUrl: /boat-to-old-trafford

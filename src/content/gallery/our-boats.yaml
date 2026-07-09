@@ -55,7 +55,7 @@ images:
     orientation: square
     usage: [gallery, product-page]
     tags: [crew, bar]
-relatedAlbums: [private-hire, city-river-tour]
+relatedAlbums: [city-river-tour, salford-quays, manchester-ship-canal, private-hire]
 relatedProduct: /vessels
 bookingCtaLabel: Book the City River Tour
 bookingCtaUrl: /city-river-tour
