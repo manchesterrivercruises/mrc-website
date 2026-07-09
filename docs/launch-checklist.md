@@ -14,6 +14,7 @@ Complete every item before switching the domain to the new site.
   > then **cancel and refund it in the Ventrata dashboard immediately**, or use a 100%-off
   > promo code if one exists. Do not leave live test bookings on real availability.
 - [ ] API integration tested — hero, What's On, Events listing pulling live Ventrata data
+- [ ] **Live from-pricing on product/event pages** — replace the static `priceFrom` panels (and the hardcoded "from £X" on the SEO landing pages) with live OCTO pricing, keeping the static value as the crawlable SEO / fetch-failure fallback, so displayed prices never drift from checkout. See `docs/ventrata-integration.md` → "Price drift — follow-up". *(Interim: static prices were audited against live OCTO and corrected 2026-07-09; they will drift again until this lands.)*
 - [ ] Private hire enquiry form tested end-to-end — submissions arriving at correct email
 - [ ] All 301 redirects configured and verified on staging
 - [ ] SEO meta tags verified on all pages

@@ -25,7 +25,7 @@ const icons = {
 
 const keyFacts = [
   { text: 'December dates', icon: icons.calendar },
-  { text: 'From £13 per person', icon: icons.tag },
+  { text: 'From £16 per person', icon: icons.tag },
   { text: 'Families welcome', icon: icons.users },
   { text: 'Father Christmas onboard', icon: icons.gift },
 ];
@@ -40,7 +40,7 @@ const faqs = [
 const SITE = site.url;
 const pageTitle = 'Santa Cruise Manchester — Meet Father Christmas on the Water';
 const pageDescription =
-  'Santa Cruise Manchester — a magical festive cruise on the Manchester Ship Canal where children meet Father Christmas onboard. Families welcome, from £13. Book direct.';
+  'Santa Cruise Manchester — a magical festive cruise on the Manchester Ship Canal where children meet Father Christmas onboard. Families welcome, from £16. Book direct.';
 
 // TouristAttraction + Product. We do NOT claim an Event: specific festive departure
 // dates live in Ventrata, not in our markup, so a schema.org Event (which expects a real
@@ -66,7 +66,7 @@ const structuredData = {
       description: 'A magical festive cruise where children meet Father Christmas on the Manchester Ship Canal.',
       url: `${SITE}/santa-cruise-manchester`,
       brand: { '@type': 'Brand', name: 'Manchester River Cruises' },
-      offers: { '@type': 'Offer', price: 13, priceCurrency: 'GBP', availability: 'https://schema.org/InStock', url: `${SITE}/santa-cruise-manchester` },
+      offers: { '@type': 'Offer', price: 16, priceCurrency: 'GBP', availability: 'https://schema.org/InStock', url: `${SITE}/santa-cruise-manchester` },
     },
   ],
 };
@@ -85,7 +85,7 @@ const structuredData = {
         <p class="mt-5 max-w-2xl text-lg leading-relaxed text-white/80">Meet Father Christmas on the water.</p>
         <div class="mt-8 flex flex-wrap items-center gap-4">
           <CTAButton href="#book">Book Now</CTAButton>
-          <span class="text-sm text-white/70">From £13 · December</span>
+          <span class="text-sm text-white/70">From £16 · December</span>
         </div>
       </div>
     </section>
@@ -98,7 +98,7 @@ const structuredData = {
       {/* Right column — booking panel with the live embedded Santa Cruise checkout (6cabf36f).
           Uses the site-wide checkout loader (env="test"); flips to live at launch. */}
       <aside id="book" class="mb-10 lg:order-2 lg:mb-0 lg:sticky lg:top-20">
-        <BookingPanel price="£13" priceNote="Adults £13 · Children TBC">
+        <BookingPanel price="£16" priceNote="Adults £16 · Children TBC">
           <VentrataWidget mode="embedded" productID={SANTA_CRUISE_ID} slot="widget" />
         </BookingPanel>
       </aside>
