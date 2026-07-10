@@ -7,6 +7,31 @@ category: seasonal
 coverImage: /images/events/santa-cruise-hero.webp
 coverAlt: "Father Christmas seated in a red armchair aboard the Santa Cruise, flanked by two smiling elf helpers beside a decorated Christmas tree and wrapped presents."
 images:
+  - src: /images/gallery/christmas-cruises/santa-and-elves-in-the-cabin.webp
+    width: 1600
+    height: 1069
+    alt: "Father Christmas seated in a red velvet chair between two smiling elf entertainers in green dungarees and striped tops, in the festively decorated boat cabin with a Christmas tree and a 'Merry Christmas' sign"
+    caption: "Santa and the elves aboard."
+    orientation: landscape
+    isFeatured: true
+    usage: [gallery, product-page, homepage]
+    tags: [santa, elves, festive]
+  - src: /images/gallery/christmas-cruises/children-with-presents-meeting-santa.webp
+    width: 1600
+    height: 1069
+    alt: "Three children holding wrapped presents smiling as they meet Father Christmas in the warmly lit boat cabin on an evening Santa cruise"
+    caption: "Meeting Santa with presents in hand."
+    orientation: landscape
+    usage: [gallery, product-page]
+    tags: [santa, children, presents]
+  - src: /images/gallery/christmas-cruises/elf-entertainers-onboard.webp
+    width: 1600
+    height: 900
+    alt: "Two elf entertainers in green costumes performing to families in the garland-decorated boat cabin, one pulling a surprised face"
+    caption: "Elf entertainers keeping the little ones laughing."
+    orientation: landscape
+    usage: [gallery]
+    tags: [elves, entertainment, festive]
   - src: /images/gallery/christmas-cruises/santa-and-elf.webp
     width: 1600
     height: 2400

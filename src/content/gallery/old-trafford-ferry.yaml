@@ -7,6 +7,22 @@ category: route
 coverImage: /images/boat-to-old-trafford-hero.webp
 coverAlt: "A Manchester River Cruises boat on the Manchester Ship Canal carrying passengers on the open top deck, with the Salford Quays skyline and Millennium Footbridge behind."
 images:
+  - src: /images/gallery/old-trafford-ferry/matchday-ferry-approaching-supporters.webp
+    width: 1600
+    height: 1067
+    alt: "A Manchester River Cruises ferry approaching along the Manchester Ship Canal on a matchday, supporters riding the open top deck, with the Salford Quays lift footbridge and MediaCityUK skyline behind under a grey sky"
+    caption: "Matchday ferry on the approach."
+    orientation: landscape
+    usage: [gallery, product-page]
+    tags: [ferry, matchday, supporters]
+  - src: /images/gallery/old-trafford-ferry/supporters-crossing-the-footbridge.webp
+    width: 1600
+    height: 1231
+    alt: "Football supporters silhouetted against a cloudy sky as they cross the arched glass footbridge on their way to the match"
+    caption: "Supporters crossing the footbridge to the ground."
+    orientation: landscape
+    usage: [gallery]
+    tags: [matchday, footbridge, supporters]
   - src: /images/gallery/old-trafford-ferry/matchday-fans-onboard.webp
     width: 1600
     height: 1067

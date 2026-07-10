@@ -7,6 +7,15 @@ category: private-hire
 coverImage: /images/gallery/private-hire/boat-dressed-for-valentines.webp
 coverAlt: "The boat's cabin dressed for a Valentine's charter with red heart balloons and tables laid with heart-themed decorations"
 images:
+  - src: /images/gallery/private-hire/isabella-sunset-at-salford-quays.webp
+    width: 1600
+    height: 1200
+    alt: "A golden sunset over Salford Quays seen from the bow of the Isabella private-hire boat, a coiled mooring rope on the rail and the MediaCityUK skyline, footbridge and IWM North silhouetted against the orange sky"
+    caption: "Sunset from the Isabella at Salford Quays."
+    orientation: landscape
+    isFeatured: true
+    usage: [gallery, private-hire, og-image]
+    tags: [private-hire, isabella, sunset]
   - src: /images/gallery/private-hire/boat-dressed-for-valentines.webp
     width: 1600
     height: 1066

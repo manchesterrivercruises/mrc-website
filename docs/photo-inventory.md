@@ -35,9 +35,9 @@ sync when you add or reclassify assets.
 |---|---|---|---|---|---|---|---|
 | City River Tour · route | 2 (+ hotlink/placeholder images) | 10+ (2–3 hero-grade) | ⬜ | ✅ | ✅ | ✅ | **PRIORITY 1 (eased).** First owned photography added 2026-07-10 — a drone aerial of the boat cruising past the arched footbridge (hero-grade) + an on-board open-deck shot at MediaCity. Still wants a fuller set to replace the remaining hotlinks. |
 | ABBA Night · live-music | 0 (1 owned card cover + hotlink/placeholder) | 8–10 (1 hero-grade) | ⬜ | ⬜ | ✅ | ✅ | **PRIORITY 2.** No ABBA shoot existed in the source tree — needs a real tribute-night shoot (performer mid-song, packed cabin). |
-| Private Hire · private-hire | 1 (+2 review hotlinks) | 8–10 (1 hero-grade) | ◑ | ◑ | ✅ | ✅ | Owned Valentine's-dressed cabin (Isabella) is the new cover. Needs weddings / corporate / celebration real photos. |
-| Old Trafford Ferry · route | 2 (+ owned cover) | 8–10 | ◑ | ◑ | ✅ | ✅ | Matchday supporters onboard + the ferry on the canal. Could add stadium-approach / arrival + open-deck supporters (matchday-access dependent; avoid club trademarks). |
-| Christmas Cruises · seasonal | 3 (+ owned cover) | 8–10 (2–3 hero-grade) | ◑ | ◑ | ✅ | ✅ | Santa & elf, child steering with Santa, grotto decor. Full Meet-Santa sets (High/Low Res, 2024 + 2025) available for more; want a festive boat-lit-at-night landscape. |
+| Private Hire · private-hire | 2 (+2 review hotlinks) | 8–10 (1 hero-grade) | ◑ | ✅ | ✅ | ✅ | Valentine's-dressed cabin (cover) + Isabella at a Salford Quays sunset (2026-07-10). Still needs weddings / corporate / celebration real photos. |
+| Old Trafford Ferry · route | 4 (+ owned cover) | 8–10 | ◑ | ✅ | ✅ | ✅ | Matchday supporters onboard, ferry on the canal, + ferry approaching with open-deck supporters and supporters crossing the footbridge (2026-07-10). A stadium-approach/arrival frame would still help (matchday-access dependent; avoid club trademarks). |
+| Christmas Cruises · seasonal | 6 (+ owned cover) | 8–10 (2–3 hero-grade) | ✅ | ✅ | ✅ | ✅ | Santa & elf, child steering with Santa, grotto decor, + Santa with two elves, children with presents (2025, evening) and elf entertainers (2026-07-10). Still want a festive boat-lit-at-night exterior landscape. |
 | Dolly Cruise · live-music | 3 (+ owned cover) | 8–10 (1 hero-grade) | ✅ | ✅ | ✅ | ✅ | Performer-with-crowd (cover), performer portrait, cowboy-hat singalong. 131-photo Oct shoot available for more (Low Res = duplicates). |
 | Adele Cruise · live-music | 4 | 8–10 (1 hero-grade) | ✅ | ✅ | ✅ | ✅ | NEW album. Performer, crowd, crew serving, dancing. 66-photo set — curated to 4. |
 | Elvis Live · live-music | 4 | 8–10 (1 hero-grade) | ✅ | ✅ | ✅ | ✅ | NEW album. Performer to full cabin, guest candids, dressed cabin. 93-photo set. |
@@ -47,7 +47,7 @@ sync when you add or reclassify assets.
 | Boat Tropicana · dj-night | 4 | 8–10 (1 hero-grade) | ✅ | ✅ | ✅ | ✅ | NEW album (80s party). DJ + dancefloor + neon fancy dress. 101-photo set. |
 | Our Boats · boats | 7 | 8–10 | ✅ | ✅ | ✅ | ✅ | Boat at Salford Quays (cover), fleet at footbridge, skipper at helm, rosé, dog, crew at the bar, + drone aerial of the boat moored (2026-07-10). Vessels collection still EMPTY — no per-vessel pages. |
 | Manchester Ship Canal · route | 6 | 8–10 | ✅ | ✅ | ✅ | ✅ | Sunset-from-bow (cover), IWM North, red Irwell bridge, city towers, street art, + canal & Deansgate Square towers under a dramatic sky (2026-07-10). Want more locks / heritage variety. |
-| Salford Quays · route | 7 | 8–10 | ✅ | ✅ | ✅ | ✅ | Footbridge-skyline blue hour (cover), purple footbridge, aerial sunset, rainbow, golden-hour sunset, + golden-hour drone aerial (hero-grade) and boat cruising MediaCity (2026-07-10). Feeds getting-here + Discover heroes. |
+| Salford Quays · route | 7 | 8–10 | ✅ | ✅ | ✅ | ✅ | Golden-hour drone aerial (NEW cover, hero-grade), footbridge-skyline blue hour, purple footbridge, aerial sunset, rainbow, golden-hour sunset, boat cruising MediaCity. Feeds getting-here + Discover heroes. |
 
 ## Incremental ingest — 2026-07-10 (General / Drone scenery)
 
@@ -65,8 +65,15 @@ Third pass, using the new `scripts/ingest-images.mjs` tool (visual-content de-du
 
 More available without a shoot: the `Drone/` set (April–May 2026) has ~29 further usable aerials,
 and the pro `untitled-*` / `River cruise (n of 38)` scenery has more frames — took the best few
-this pass. The thin albums (Old Trafford Ferry, Christmas, Private Hire) need their own source
-folders (`Boat to Old Trafford/`, `Father Christmas/`, `Isabella/`) — a future ingest run.
+this pass.
+
+**Thin-album top-up (same day).** Ran the tool over `Boat to Old Trafford/`, `Father Christmas/`
+and `Isabella/` and topped up the three thin albums with **6 more** (owned **55 → 61**): Old
+Trafford Ferry **+2** (ferry approaching with open-deck supporters, supporters crossing the
+footbridge), Christmas **+3** (Santa with two elves, children with presents at night, elf
+entertainers), Private Hire **+1** (Isabella at a Salford Quays sunset). Also promoted the Salford
+Quays golden-hour aerial to that album's **cover**. Same restraint — the Father Christmas set alone
+had 127 candidates (many near-identical); curated to the best few.
 
 ## Full image sweep — ingested 2026-07-08
 
@@ -104,9 +111,9 @@ has been removed, and the Adele set (previously held back) is now usable.
   Isabella has photos but no vessel page to hang them on.
 
 **Owned but thin (top up from existing sets or a light shoot):**
-- **Private Hire** — only 1 owned (Valentine's cabin); needs weddings / corporate / celebration real photos.
-- **Old Trafford Ferry** — 2 owned; add supporters on the open deck + stadium approach/arrival.
-- **Christmas Cruises** — 3 owned; add a festive boat-lit-at-night landscape (time-sensitive).
+- **Private Hire** — 2 owned (Valentine's cabin + Isabella sunset); still needs weddings / corporate / celebration real photos.
+- **Old Trafford Ferry** — 4 owned (added open-deck supporters + footbridge crossing); a stadium approach/arrival frame would still help.
+- **Christmas Cruises** — 6 owned; still want a festive boat-lit-at-night exterior landscape (time-sensitive).
 
 **Graphics-only events (promo card art, no photo album):** Diana Ross, Decks on Deck, Back to
 the 90s, Swinging on the River, Broadway Boat Party, Club Classics, Halloween, Pirates & Mermaids,
