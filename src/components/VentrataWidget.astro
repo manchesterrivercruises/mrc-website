@@ -398,9 +398,95 @@ const OBSERVER_SCRIPT = `
       window.setTimeout(function () { btn.click(); }, 400);
     }
 
+    // ── Embedded-widget focus-theft guard ──────────────────────────────────────────────────
+    // The Ventrata embed can autofocus a field inside its iframe as it loads, stealing keyboard
+    // focus: the browser scrolls the iframe into view (the page "jumps just below the widget")
+    // and arrow keys then go into the iframe until the user clicks back into the document. This
+    // counteracts ONLY that UNPROMPTED steal — during a short window after the iframe mounts and
+    // only while the user hasn't taken control. User-initiated focus (clicking in, tabbing in) is
+    // never touched.
+    function setupFocusGuard() {
+      var aside = document.querySelector('[ventrata-embedded-widget]');
+      if (!aside) return; // no embedded widget on this page
+      var focusTarget = document.getElementById('main') || body;
+
+      var guardActive = false;
+      var engaged = false; // user genuinely used the widget → never interfere again
+      var lastTabAt = 0;   // last Tab keydown = a genuine focus move (possibly INTO the widget)
+      var lastDocScroll = { x: window.scrollX || 0, y: window.scrollY || 0 };
+      var rafId = 0, timer = 0, mountObs = null;
+
+      function inWidget(node) { return !!(node && node.closest && node.closest('[ventrata-embedded-widget]')); }
+      function isWidgetIframe(el) { return !!(el && el.tagName === 'IFRAME' && inWidget(el)); }
+
+      function stopGuard() {
+        guardActive = false;
+        if (timer) { clearTimeout(timer); timer = 0; }
+        if (rafId) { cancelAnimationFrame(rafId); rafId = 0; }
+        document.removeEventListener('focusin', onFocusIn, true);
+        window.removeEventListener('blur', onWinBlur, true);
+      }
+
+      // Remember the document scroll position WHILE focus is on the page (never while the iframe
+      // holds it), so a theft jump can be undone to the pre-jump position.
+      function sample() {
+        if (!guardActive) return;
+        if (!isWidgetIframe(document.activeElement)) { lastDocScroll.x = window.scrollX || 0; lastDocScroll.y = window.scrollY || 0; }
+        rafId = requestAnimationFrame(sample);
+      }
+
+      function neutralise() {
+        if (!guardActive || engaged) return;
+        var thief = document.activeElement;
+        if (!isWidgetIframe(thief)) return;
+        if (Date.now() - lastTabAt < 700) return; // user tabbed into the widget — leave it
+        try { console.debug('[MRC][ventrata] focus theft neutralised — activeElement was', thief && thief.tagName, thief); } catch (e) {}
+        try { if (thief.blur) thief.blur(); } catch (e) {}
+        try { focusTarget.setAttribute('tabindex', '-1'); focusTarget.focus({ preventScroll: true }); } catch (e) {}
+        try { window.scrollTo(lastDocScroll.x, lastDocScroll.y); } catch (e) {} // undo the jump
+      }
+      function onFocusIn(e) { if (isWidgetIframe(e.target)) neutralise(); }
+      function onWinBlur() { neutralise(); }
+
+      // A pointerdown anywhere = the user has taken control → close the window. In the widget =
+      // the user wants it → never interfere again.
+      document.addEventListener('pointerdown', function (e) {
+        if (inWidget(e.target)) engaged = true;
+        stopGuard();
+      }, true);
+      // Tab is a genuine focus move (maybe INTO the widget) — record it so the resulting iframe
+      // focus isn't mistaken for a steal. Arrows/other keys do NOT move focus, so an iframe focus
+      // after them is unprompted. Any keydown INSIDE the widget = engaged.
+      document.addEventListener('keydown', function (e) {
+        if (inWidget(e.target)) { engaged = true; stopGuard(); return; }
+        if (e.key === 'Tab' || e.keyCode === 9) lastTabAt = Date.now();
+      }, true);
+
+      function startGuard() {
+        if (guardActive || engaged) return;
+        guardActive = true;
+        document.addEventListener('focusin', onFocusIn, true);
+        window.addEventListener('blur', onWinBlur, true);
+        rafId = requestAnimationFrame(sample);
+        timer = window.setTimeout(stopGuard, 3000); // ~3s window
+        neutralise(); // in case the iframe grabbed focus before we started listening
+      }
+
+      // Start the window when the embed's iframe first mounts (nothing can steal focus before
+      // then). If it's already present, start now.
+      if (aside.querySelector('iframe')) startGuard();
+      else {
+        mountObs = new MutationObserver(function () {
+          if (aside.querySelector('iframe')) { mountObs.disconnect(); mountObs = null; startGuard(); }
+        });
+        mountObs.observe(aside, { childList: true, subtree: true });
+      }
+    }
+
     hideLoadedSkeletons();
     evaluate();
     autoOpenFromUrl();
+    setupFocusGuard();
   }
 
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
