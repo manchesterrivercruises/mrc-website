@@ -8,6 +8,14 @@ coverImage: /images/gallery/our-boats/sightseeing-boat-at-salford-quays.webp
 coverAlt: "A Manchester River Cruises sightseeing boat with open-top red seating cruising Salford Quays past the Lowry Outlet and waterside apartments on a clear day"
 images:
   # OWNED assets — processed WebP in public/images/gallery/our-boats/, real PhotoSwipe dims.
+  - src: /images/gallery/our-boats/sightseeing-boat-moored-aerial.webp
+    width: 1600
+    height: 1200
+    alt: "Aerial view looking down on a Manchester River Cruises open-top sightseeing boat with red seats and a glass-sided cabin, moored at the quayside on the calm sunlit canal"
+    caption: "The sightseeing boat from above."
+    orientation: landscape
+    usage: [gallery, product-page]
+    tags: [boat, aerial, drone]
   - src: /images/gallery/our-boats/sightseeing-boat-at-salford-quays.webp
     width: 1600
     height: 1041

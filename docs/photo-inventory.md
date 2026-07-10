@@ -33,7 +33,7 @@ sync when you add or reclassify assets.
 
 | Album / category | Owned photos | Minimum needed | Met? | Hero-grade landscape? | Alt done? | Rights confirmed? | Notes / gaps |
 |---|---|---|---|---|---|---|---|
-| City River Tour · route | 0 (1 owned card cover + hotlink/placeholder images) | 10+ (2–3 hero-grade) | ⬜ | ⬜ | ✅ | ✅ | **PRIORITY 1.** Signature product — still needs a real gallery set + 2–3 hero-grade landscapes for the product hero, homepage card and OG. No dedicated shoot folder existed in the sweep. |
+| City River Tour · route | 2 (+ hotlink/placeholder images) | 10+ (2–3 hero-grade) | ⬜ | ✅ | ✅ | ✅ | **PRIORITY 1 (eased).** First owned photography added 2026-07-10 — a drone aerial of the boat cruising past the arched footbridge (hero-grade) + an on-board open-deck shot at MediaCity. Still wants a fuller set to replace the remaining hotlinks. |
 | ABBA Night · live-music | 0 (1 owned card cover + hotlink/placeholder) | 8–10 (1 hero-grade) | ⬜ | ⬜ | ✅ | ✅ | **PRIORITY 2.** No ABBA shoot existed in the source tree — needs a real tribute-night shoot (performer mid-song, packed cabin). |
 | Private Hire · private-hire | 1 (+2 review hotlinks) | 8–10 (1 hero-grade) | ◑ | ◑ | ✅ | ✅ | Owned Valentine's-dressed cabin (Isabella) is the new cover. Needs weddings / corporate / celebration real photos. |
 | Old Trafford Ferry · route | 2 (+ owned cover) | 8–10 | ◑ | ◑ | ✅ | ✅ | Matchday supporters onboard + the ferry on the canal. Could add stadium-approach / arrival + open-deck supporters (matchday-access dependent; avoid club trademarks). |
@@ -45,9 +45,28 @@ sync when you add or reclassify assets.
 | Soul River · live-music | 4 | 8–10 (1 hero-grade) | ✅ | ✅ | ✅ | ✅ | NEW album. Male + female singers, guest candids. 75-photo set. |
 | Rollin on the River · live-music | 4 | 8–10 (1 hero-grade) | ✅ | ✅ | ✅ | ✅ | NEW album (Tina Turner tribute). Performer + guest engagement + dancing. 110-photo set. |
 | Boat Tropicana · dj-night | 4 | 8–10 (1 hero-grade) | ✅ | ✅ | ✅ | ✅ | NEW album (80s party). DJ + dancefloor + neon fancy dress. 101-photo set. |
-| Our Boats · boats | 6 | 8–10 | ✅ | ✅ | ✅ | ✅ | Boat at Salford Quays (cover), fleet at footbridge, skipper at helm, rosé, dog, crew at the bar. Vessels collection still EMPTY — no per-vessel pages. |
-| Manchester Ship Canal · route | 5 | 8–10 | ✅ | ✅ | ✅ | ✅ | Sunset-from-bow (cover), IWM North, red Irwell bridge, city towers, street art. Want more locks / heritage variety. |
-| Salford Quays · route | 5 | 8–10 | ✅ | ✅ | ✅ | ✅ | Footbridge-skyline blue hour (cover), purple footbridge, aerial sunset, rainbow, golden-hour sunset. Feeds getting-here + Discover heroes. |
+| Our Boats · boats | 7 | 8–10 | ✅ | ✅ | ✅ | ✅ | Boat at Salford Quays (cover), fleet at footbridge, skipper at helm, rosé, dog, crew at the bar, + drone aerial of the boat moored (2026-07-10). Vessels collection still EMPTY — no per-vessel pages. |
+| Manchester Ship Canal · route | 6 | 8–10 | ✅ | ✅ | ✅ | ✅ | Sunset-from-bow (cover), IWM North, red Irwell bridge, city towers, street art, + canal & Deansgate Square towers under a dramatic sky (2026-07-10). Want more locks / heritage variety. |
+| Salford Quays · route | 7 | 8–10 | ✅ | ✅ | ✅ | ✅ | Footbridge-skyline blue hour (cover), purple footbridge, aerial sunset, rainbow, golden-hour sunset, + golden-hour drone aerial (hero-grade) and boat cruising MediaCity (2026-07-10). Feeds getting-here + Discover heroes. |
+
+## Incremental ingest — 2026-07-10 (General / Drone scenery)
+
+Third pass, using the new `scripts/ingest-images.mjs` tool (visual-content de-dup against
+`public/images/`, WebP card + large). Ran over `C:\MRC Website\General\` recursed: **214 scanned →
+155 not-yet-published** candidates (37 already published, 22 near-identical). Curated the strongest
+**6** scenery/boat shots into the route/boats albums — **owned gallery images 49 → 55**:
+
+- **City River Tour** (first owned photography — eases PRIORITY 1): drone aerial of the boat
+  cruising past the arched footbridge (`isFeatured`) + on-board open-deck at MediaCity.
+- **Salford Quays**: golden-hour drone aerial (`isFeatured`, hero/cover candidate) + boat cruising
+  the open water at MediaCity.
+- **Manchester Ship Canal**: the canal & Deansgate Square towers under a dramatic sky.
+- **Our Boats**: drone aerial of the boat moored at the quayside.
+
+More available without a shoot: the `Drone/` set (April–May 2026) has ~29 further usable aerials,
+and the pro `untitled-*` / `River cruise (n of 38)` scenery has more frames — took the best few
+this pass. The thin albums (Old Trafford Ferry, Christmas, Private Hire) need their own source
+folders (`Boat to Old Trafford/`, `Father Christmas/`, `Isabella/`) — a future ingest run.
 
 ## Full image sweep — ingested 2026-07-08
 
@@ -79,7 +98,7 @@ has been removed, and the Adele set (previously held back) is now usable.
 ## Gaps remaining — Jeff's shoot / selection list
 
 **Still needs a real shoot (no owned photography):**
-- **City River Tour** — PRIORITY 1. Signature product; needs a full gallery set + 2–3 hero-grade landscapes.
+- **City River Tour** — PRIORITY 1 (eased). Now has 2 owned (drone aerial + on-board deck, added 2026-07-10); still wants a fuller set + more hero-grade landscapes to replace the remaining hotlinks.
 - **ABBA Night** — PRIORITY 2. No ABBA shoot existed in the source tree.
 - **Vessels** — the `vessels` content collection is empty; no per-vessel pages exist. The
   Isabella has photos but no vessel page to hang them on.

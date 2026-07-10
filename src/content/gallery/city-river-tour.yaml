@@ -7,6 +7,24 @@ category: route
 coverImage: /images/city-river-tour-hero.webp
 coverAlt: "The City River Tour boat passing beneath the Millennium Footbridge on a sunny day, with passengers on the open top deck and Old Trafford in the distance."
 images:
+  # OWNED assets — processed WebP in public/images/gallery/city-river-tour/, real PhotoSwipe dims.
+  - src: /images/gallery/city-river-tour/sightseeing-boat-arched-footbridge-aerial.webp
+    width: 1600
+    height: 1200
+    alt: "Aerial view of a Manchester River Cruises sightseeing boat cruising the Manchester Ship Canal toward a steel arched footbridge, with the Deansgate Square towers on the skyline under a blue sky"
+    caption: "Cruising the canal past the arched footbridge."
+    orientation: landscape
+    isFeatured: true
+    usage: [gallery, product-page, og-image, homepage]
+    tags: [boat, canal, aerial, skyline]
+  - src: /images/gallery/city-river-tour/open-top-deck-passengers-mediacity.webp
+    width: 1600
+    height: 1066
+    alt: "Passengers on the open top deck of a City River Tour boat taking photos as it passes MediaCityUK and the Imperial Point tower at Salford Quays on a sunny day"
+    caption: "On the open top deck at MediaCity."
+    orientation: landscape
+    usage: [gallery, product-page]
+    tags: [passengers, open-deck, mediacity]
   # TEMP: hotlinked from the live manchesterrivercruises.com for review — not an owned asset.
   - src: "https://optimise2.assets-servd.host/river-cruises/production/images/City-River-Tours-Thumbnail-500-350-1.png?w=800&h=543&q=100&auto=format&fit=crop&crop=focalpoint&fp-x=0.5&fp-y=0.5&dm=1715165712&s=ab2fe6d769864a15794f36a7ad599e16"
     width: 800
