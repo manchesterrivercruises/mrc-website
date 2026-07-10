@@ -66,18 +66,39 @@ export async function getAlbums(): Promise<Album[]> {
   });
 }
 
-// Related albums: explicit relatedAlbums slugs first; if none resolve, fall back to
-// other albums in the same category. Never includes the album itself.
-export function resolveRelated(album: Album, all: Album[], limit = 3): Album[] {
+// Related albums, always topped up to `limit`. Explicit relatedAlbums lead (curated order),
+// then same-category, then an affinity fallback — other event categories, then the scene
+// albums (route / boats / private-hire), then anything — so single-member categories (Christmas,
+// Private Hire, Our Boats, Boat Tropicana) still surface a full row. Never includes itself;
+// each fallback tier is ordered by the album `order` field.
+export function resolveRelated(album: Album, all: Album[], limit = 4): Album[] {
   const bySlug = new Map(all.map((a) => [a.data.slug, a]));
-  let related = album.data.relatedAlbums
-    .map((s) => bySlug.get(s))
-    .filter((a): a is Album => !!a && a.data.slug !== album.data.slug);
+  const byOrder = (a: Album, b: Album) =>
+    (a.data.order ?? 999) - (b.data.order ?? 999) || a.data.title.localeCompare(b.data.title);
 
-  if (!related.length) {
-    related = all.filter((a) => a.data.slug !== album.data.slug && a.data.category === album.data.category);
-  }
-  return related.slice(0, limit);
+  const seen = new Set<string>([album.data.slug]);
+  const out: Album[] = [];
+  const add = (a?: Album) => {
+    if (a && !seen.has(a.data.slug)) {
+      seen.add(a.data.slug);
+      out.push(a);
+    }
+  };
+  const addPool = (pred: (a: Album) => boolean) => {
+    if (out.length >= limit) return;
+    all.filter((a) => !seen.has(a.data.slug) && pred(a)).sort(byOrder).forEach(add);
+  };
+
+  const EVENT: string[] = ['live-music', 'dj-night', 'family', 'seasonal'];
+  const SCENE: string[] = ['route', 'boats', 'private-hire'];
+
+  album.data.relatedAlbums.map((s) => bySlug.get(s)).forEach(add); // 1. curated
+  addPool((a) => a.data.category === album.data.category); // 2. same category
+  addPool((a) => EVENT.includes(a.data.category)); // 3a. other event categories
+  addPool((a) => SCENE.includes(a.data.category)); // 3b. route / boats / private-hire
+  addPool(() => true); // 3c. final backstop
+
+  return out.slice(0, limit);
 }
 
 // Find the album that cross-links to a given product: either its relatedProduct matches

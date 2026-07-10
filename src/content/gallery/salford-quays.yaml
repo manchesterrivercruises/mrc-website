@@ -4,10 +4,27 @@ order: 9
 summary: Where every cruise begins — the MediaCity waterfront, The Lowry and the Millennium Footbridge boarding point.
 category: route
 # OWNED cover asset (processed WebP, public/images/gallery/salford-quays/).
-coverImage: /images/gallery/salford-quays/salford-quays-footbridge-skyline-dusk.webp
-coverAlt: "The illuminated Millennium Footbridge lift bridge mirrored in the still water of Salford Quays at blue hour, with IWM North and the MediaCityUK skyline behind"
+coverImage: /images/gallery/salford-quays/salford-quays-boat-golden-hour-aerial.webp
+coverAlt: "Golden-hour aerial view of a Manchester River Cruises boat on the still water at Salford Quays, with the Lowry lift footbridge and the MediaCityUK skyline glowing in warm evening light"
 images:
   # OWNED assets — processed WebP in public/images/gallery/salford-quays/, real PhotoSwipe dims.
+  - src: /images/gallery/salford-quays/salford-quays-boat-golden-hour-aerial.webp
+    width: 1600
+    height: 1200
+    alt: "Golden-hour aerial view of a Manchester River Cruises boat on the still water at Salford Quays, with the Lowry lift footbridge and the MediaCityUK skyline glowing in warm evening light"
+    caption: "Golden hour over Salford Quays, from above."
+    orientation: landscape
+    isFeatured: true
+    usage: [gallery, homepage, og-image, product-page]
+    tags: [salford-quays, aerial, golden-hour, bridge]
+  - src: /images/gallery/salford-quays/salford-quays-boat-cruising-mediacity.webp
+    width: 1600
+    height: 1067
+    alt: "A Manchester River Cruises open-top boat with passengers aboard cruising the open water at Salford Quays, the MediaCityUK and Imperial Point skyline behind under a clear blue sky"
+    caption: "Cruising the open water at the Quays."
+    orientation: landscape
+    usage: [gallery, product-page]
+    tags: [salford-quays, boat, mediacity]
   - src: /images/gallery/salford-quays/salford-quays-footbridge-skyline-dusk.webp
     width: 1600
     height: 1072
@@ -49,7 +66,7 @@ images:
     isFeatured: true
     usage: [gallery, homepage, og-image]
     tags: [sunset, skyline]
-relatedAlbums: []
+relatedAlbums: [city-river-tour, manchester-ship-canal, our-boats, old-trafford-ferry]
 relatedProduct: /city-river-tour
 bookingCtaLabel: Book the City River Tour
 bookingCtaUrl: /city-river-tour

@@ -8,6 +8,14 @@ coverImage: /images/gallery/manchester-ship-canal/ship-canal-sunset-from-the-bow
 coverAlt: "The view forward from the bow of a Manchester River Cruises boat at sunset, passing beneath a bridge toward the illuminated Salford Quays skyline"
 images:
   # OWNED assets — processed WebP in public/images/gallery/manchester-ship-canal/, real PhotoSwipe dims.
+  - src: /images/gallery/manchester-ship-canal/ship-canal-towers-under-dramatic-sky.webp
+    width: 1600
+    height: 1067
+    alt: "The Manchester Ship Canal winding between waterside apartment blocks and the twin Deansgate Square towers under a dramatic cloudy sky"
+    caption: "Big skies over the ship canal."
+    orientation: landscape
+    usage: [gallery]
+    tags: [ship-canal, skyline, scenery]
   - src: /images/gallery/manchester-ship-canal/ship-canal-sunset-from-the-bow.webp
     width: 1600
     height: 1200
@@ -45,7 +53,7 @@ images:
     caption: "Street art along the route."
     orientation: landscape
     tags: [street-art, route]
-relatedAlbums: [city-river-tour, salford-quays]
+relatedAlbums: [city-river-tour, salford-quays, old-trafford-ferry, our-boats]
 relatedProduct: /city-river-tour
 bookingCtaLabel: Book the City River Tour
 bookingCtaUrl: /city-river-tour

@@ -193,10 +193,43 @@ https://manchesterrivercruises.com/city-river-tour?openWidget=true&promoCode=XMA
 
 - `openWidget=true` — the checkout script on that page opens the widget on load.
 - `promoCode=<CODE>` — pre-applies the code in the cart.
+- `date=YYYY-MM-DD` / `time=HH:MM` — passed through to `dateToPreselect` / `timeslotToPreselect`
+  (the date finder's "Book this date" and a sold-out "Join waitlist" build these).
 
 **Website-task:** ensure the target page loads the checkout script (so the params are
 read) and build campaign URLs correctly. Promo codes themselves are created and managed
 in the dashboard (**dashboard-task**). Confirm exact param names against MRC's checkout.
+
+#### Date-preselect deep link — diagnosis & on-device QA
+
+Confirmed on device: a Dolly **"Join waitlist"** deep link opens the widget but does **not**
+preselect the date. Findings:
+
+- **Key names are correct.** `dateToPreselect` (YYYY-MM-DD) + `timeslotToPreselect` (HH:MM) are
+  the supported inputs per Ventrata's *Supported Configuration Inputs* doc — a wrong key is not
+  the cause. `calendarFirst` is no longer sent alongside a date (it opens the browse step and
+  competes with a specific preselect).
+- **Leading suspect — sold-out date.** "Join waitlist" appears only on **sold-out** departures,
+  and Ventrata's calendar is availability-aware (it hunts for *available* dates), so it likely
+  refuses to preselect an unbuyable date. If so, this is expected Ventrata behaviour, not a bug —
+  the waitlist flow would need the `waitlistsAllowed` feature, not date-preselect.
+- **Second suspect — dynamic trigger.** The auto-open creates the `ventrata-checkout` trigger
+  dynamically; if Ventrata only reads preselect from load-time triggers/script config, the key is
+  right but ignored (cf. the DateFinder note that a *client-created* trigger "did not work on
+  deployed").
+
+**On-device QA (open the browser console first):**
+
+1. Open a **sold-out "Join waitlist"** link (e.g. Dolly) — the current failing case.
+2. Open a **"Book this date"** link for an **AVAILABLE** date (use the date finder to find one).
+3. For each, read the `console.debug` line **`[MRC][ventrata] auto-open config → {…}`**:
+   - Config shows the right `dateToPreselect` **and** the available date **preselects** → the
+     sold-out date is simply refused (Ventrata side) → the diagnosis is #1; drop date-preselect
+     from waitlist links (or wire the waitlist feature).
+   - Config shows the right `dateToPreselect` but **even the available date is ignored** → the key
+     is right-but-ignored (our side, #2) → move preselect to a load-time trigger / script config.
+   - Config is missing/wrong `dateToPreselect` → our URL/parse is at fault (unlikely; verified in
+     the built output).
 
 ### Order Recovery Email — abandoned cart recovery · **dashboard-task**
 

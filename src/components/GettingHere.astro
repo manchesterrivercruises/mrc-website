@@ -36,6 +36,8 @@ const placeholderTile =
         <p class="mt-1 leading-relaxed">Quayside car parks are nearby. Taxi drop-off is available close to the footbridge. (Details TBC.)</p>
       </div>
     </div>
+    {/* Contained image: on the 2-column layout (sm+) cap the height and top-align so it can't
+        outgrow the text column; mobile keeps the natural 4/3. */}
     <img
       src="/images/gallery/our-boats/boats-moored-at-millennium-footbridge-card.webp"
       alt="Manchester River Cruises boats moored at the Salford Quays boarding point beside the Millennium Footbridge and The Lowry"
@@ -43,7 +45,7 @@ const placeholderTile =
       height="600"
       loading="lazy"
       data-img-fallback
-      class="aspect-[4/3] w-full rounded-card object-cover ring-1 ring-black/5"
+      class="aspect-[4/3] w-full self-start rounded-card object-cover ring-1 ring-black/5 sm:max-h-80"
     />
   </div>
 </section>

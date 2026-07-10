@@ -38,7 +38,7 @@ images:
     orientation: landscape
     usage: [gallery, product-page, private-hire]
     tags: [cabin, interior]
-relatedAlbums: [elvis-rocks, abba-night]
+relatedAlbums: [elvis-rocks, dolly-night, rollin-on-the-river, private-hire]
 relatedProduct: /cruises/elvis-live-cruise
 bookingCtaLabel: Book the Elvis Live Cruise
 bookingCtaUrl: /cruises/elvis-live-cruise
