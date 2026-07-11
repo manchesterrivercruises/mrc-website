@@ -1,0 +1,117 @@
+---
+import type { Album } from '../lib/gallery';
+import { getAlbumImages, imageDims } from '../lib/gallery';
+import SectionHeading from './SectionHeading.astro';
+
+// Compact photo strip for an event page, shown only when its gallery album has owned images.
+// Renders a few natural-aspect card thumbnails + a "+N more / View full album" tile linking to
+// /gallery/<slug>. Every album image (including the ones past the visible few) is a PhotoSwipe
+// link, so the lightbox flows through the FULL album sequence — the extras are in the DOM but
+// visually hidden. isFeatured images lead; the page's own hero is excluded to avoid repetition.
+interface Props {
+  album: Album;
+  heroImage?: string;
+}
+const { album, heroImage } = Astro.props;
+const images = getAlbumImages(album, heroImage);
+const VISIBLE = 3;
+const moreCount = Math.max(0, images.length - VISIBLE);
+
+function dims(img: (typeof images)[number]) {
+  return { w: img.width ?? imageDims(img.orientation).w, h: img.height ?? imageDims(img.orientation).h };
+}
+---
+
+{
+  images.length > 0 && (
+    <section aria-labelledby="event-photos">
+      <SectionHeading id="event-photos">Photos</SectionHeading>
+      {/* One PhotoSwipe root; the extra album images (index >= VISIBLE) are hidden but stay in the
+          sequence. The final tile links to the album and is NOT a lightbox item (no data-pswp-*). */}
+      <div id="event-gallery" class="mt-6 flex gap-2 overflow-x-auto pb-1 sm:gap-3">
+        {images.map((img, i) => {
+          const { w, h } = dims(img);
+          const hidden = i >= VISIBLE;
+          return (
+            <a
+              href={img.src}
+              data-pswp-width={w}
+              data-pswp-height={h}
+              data-pswp-caption={img.caption ?? ''}
+              aria-label={img.alt}
+              aria-hidden={hidden ? 'true' : undefined}
+              tabindex={hidden ? '-1' : undefined}
+              class:list={[
+                'group relative block h-24 flex-none overflow-hidden rounded-card ring-1 ring-black/5 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary sm:h-28',
+                hidden && 'hidden',
+              ]}
+            >
+              <img
+                src={img.cardSrc}
+                alt={img.alt}
+                width={w}
+                height={h}
+                loading="lazy"
+                decoding="async"
+                class="h-full w-auto max-w-none transition duration-300 group-hover:scale-105 motion-reduce:transition-none motion-reduce:group-hover:scale-100"
+              />
+            </a>
+          );
+        })}
+        <a
+          href={`/gallery/${album.data.slug}`}
+          class="flex h-24 flex-none flex-col items-center justify-center gap-0.5 rounded-card bg-panel px-5 text-center text-sm font-medium text-primary ring-1 ring-black/5 transition hover:bg-primary/5 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary sm:h-28"
+        >
+          <span>{moreCount > 0 ? `+${moreCount} more photo${moreCount === 1 ? '' : 's'}` : 'View full album'}</span>
+          <span aria-hidden="true" class="text-base leading-none">→</span>
+        </a>
+      </div>
+    </section>
+  )
+}
+
+<script>
+  import PhotoSwipeLightbox from 'photoswipe/lightbox';
+  import 'photoswipe/style.css';
+
+  // No-op on event pages without a strip (no #event-gallery). PhotoSwipe core stays a lazy import
+  // (pswpModule) until the lightbox is opened.
+  const el = document.getElementById('event-gallery');
+  if (el) {
+    const lightbox = new PhotoSwipeLightbox({
+      gallery: '#event-gallery',
+      // Every album image (visible or hidden) is a lightbox item — the "+N more" tile has no
+      // data-pswp-width, so it stays a plain link to the album page.
+      children: 'a[data-pswp-width]',
+      pswpModule: () => import('photoswipe'),
+    });
+
+    lightbox.on('uiRegister', () => {
+      lightbox.pswp.ui.registerElement({
+        name: 'mrc-caption',
+        appendTo: 'root',
+        onInit: (elc) => {
+          Object.assign(elc.style, {
+            position: 'absolute',
+            left: '0',
+            right: '0',
+            bottom: '0',
+            padding: '14px 20px',
+            textAlign: 'center',
+            color: '#fff',
+            background: 'rgba(0,0,0,.5)',
+            font: '14px/1.5 system-ui, sans-serif',
+          });
+          lightbox.pswp.on('change', () => {
+            const a = lightbox.pswp.currSlide?.data?.element;
+            const cap = (a && a.getAttribute('data-pswp-caption')) || '';
+            elc.textContent = cap;
+            elc.style.display = cap ? 'block' : 'none';
+          });
+        },
+      });
+    });
+
+    lightbox.init();
+  }
+</script>

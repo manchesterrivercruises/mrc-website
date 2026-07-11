@@ -10,6 +10,7 @@ import VentrataWidget from '../../components/VentrataWidget.astro';
 import ProductCard from '../../components/ProductCard.astro';
 import GettingHere from '../../components/GettingHere.astro';
 import PageHero from '../../components/PageHero.astro';
+import EventGalleryStrip from '../../components/EventGalleryStrip.astro';
 import { site } from '../../data/site';
 import { getAlbums, findAlbumForProduct } from '../../lib/gallery';
 
@@ -123,6 +124,9 @@ const structuredData = {
               <Content />
             </div>
           </section>
+
+          {/* Mini-gallery — only when the matching album has owned photos (else nothing) */}
+          {galleryAlbum && <EventGalleryStrip album={galleryAlbum} heroImage={heroImage} />}
 
           {
             whatToExpect.length > 0 && (
