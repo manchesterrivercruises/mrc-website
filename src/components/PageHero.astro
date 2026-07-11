@@ -1,22 +1,81 @@
 ---
+import { existsSync } from 'node:fs';
+import sharp from 'sharp';
+
 // Shared dark-navy page hero (eyebrow, title, subtitle, optional CTA slot).
 // The default slot renders below the subtitle — pass CTAButton(s) into it.
 //
-// Optional `media` named slot: when populated, the hero becomes a two-column layout on desktop
-// (text left — same width and contrast — media right) and stacks on mobile. With no `media`
-// slot the layout is exactly as before (single column), so other pages are unaffected. Used by
-// the /gallery hero collage.
+// Optional `heroImage`: when provided, the hero gets a background-image treatment — the image
+// fills the section behind a navy gradient overlay (strong at the left/text side, lightening
+// rightward) so the eyebrow/title/subtitle/CTAs stay unchanged and AA-legible over the overlaid
+// (left/centre) region. Without a heroImage the hero is the plain navy block exactly as before.
+// LCP: the image is eager + fetchpriority=high + preloaded, with real dimensions and no layout
+// shift (it's absolutely positioned, object-cover).
+//
+// Optional `media` named slot: two-column layout on desktop (text left, media right) — the
+// /gallery collage. Independent of heroImage (the gallery passes media, never heroImage).
 interface Props {
   eyebrow?: string;
   title: string;
   subtitle?: string;
+  heroImage?: string;
+  heroImageAlt?: string;
 }
-const { eyebrow, title, subtitle } = Astro.props;
+const { eyebrow, title, subtitle, heroImage, heroImageAlt } = Astro.props;
 const hasCta = Astro.slots.has('default');
 const hasMedia = Astro.slots.has('media');
+
+// Prefer a full-size `-hero.webp` variant over a `-card.webp` when one exists (some events only
+// have the card — used as-is; the heavy overlay masks the lower resolution).
+function resolveHero(src: string): string {
+  if (src.endsWith('-card.webp')) {
+    const full = src.replace(/-card\.webp$/, '-hero.webp');
+    if (existsSync(`${process.cwd()}/public${full}`)) return full;
+  }
+  return src;
+}
+
+let hero: { src: string; alt: string; w: number; h: number } | null = null;
+if (heroImage) {
+  const src = resolveHero(heroImage);
+  let w = 1600;
+  let h = 900;
+  try {
+    const m = await sharp(`${process.cwd()}/public${src}`).metadata();
+    if (m.width && m.height) {
+      w = m.width;
+      h = m.height;
+    }
+  } catch {
+    /* fall back to nominal dims — layout is unaffected (object-cover, absolute) */
+  }
+  hero = { src, alt: heroImageAlt ?? '', w, h };
+}
 ---
 
-<section class="bg-dark text-white">
+<section class:list={['bg-dark text-white', hero && 'relative isolate overflow-hidden']}>
+  {
+    hero && (
+      <Fragment>
+        <link rel="preload" as="image" href={hero.src} fetchpriority="high" />
+        <img
+          src={hero.src}
+          alt={hero.alt}
+          width={hero.w}
+          height={hero.h}
+          loading="eager"
+          fetchpriority="high"
+          decoding="async"
+          class="pointer-events-none absolute inset-0 -z-10 h-full w-full object-cover"
+        />
+        {/* Legibility overlay: strong navy at the left/text side, lightening rightward. */}
+        <div
+          class="pointer-events-none absolute inset-0 -z-10 bg-gradient-to-r from-dark via-dark/85 to-dark/40"
+          aria-hidden="true"
+        />
+      </Fragment>
+    )
+  }
   <div
     class:list={[
       'mx-auto max-w-6xl px-4 py-20 sm:px-6 md:py-24 lg:px-8',
