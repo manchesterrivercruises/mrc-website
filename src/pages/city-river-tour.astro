@@ -115,10 +115,6 @@ const structuredData = {
   ],
 };
 
-// Page-local style token for the gallery placeholder tiles.
-const galleryTile =
-  'flex h-full w-full items-center justify-center rounded-card bg-panel text-sm text-subtle ring-1 ring-black/5';
-
 // What you'll see along the route, in order — rendered as a real <ol> beside the map so the itinerary is
 // crawlable static content and available without JavaScript (seeds the future full
 // 43-stop itinerary). The Leaflet map reads the same source (tour-stops.json).
@@ -183,9 +179,8 @@ const orderedStops = [...tourStops].sort((a, b) => a.id - b.id);
   <div class="pb-24 md:pb-0">
     {/* 1. Photo gallery mosaic — full width, before the title */}
     <section aria-label="Photo gallery" class="mx-auto max-w-6xl px-4 pt-6 sm:px-6 lg:px-8">
-      {/* Static placeholder tiles — real gallery photos TBD. (A prior lightbox
-          viewer was removed: it was a non-functional placeholder with a dead close
-          link and no real images.) */}
+      {/* Owned photography — the hero shot plus two from the City River Tour gallery album
+          (alt carried from the gallery data). */}
       <div class="grid grid-cols-1 gap-2 sm:grid-cols-5 sm:items-start">
         <img
           src="/images/city-river-tour-hero.webp"
@@ -197,8 +192,24 @@ const orderedStops = [...tourStops].sort((a, b) => a.id - b.id);
           class="aspect-[4/3] w-full rounded-card object-cover ring-1 ring-black/5 sm:col-span-3"
         />
         <div class="flex flex-col gap-2 sm:col-span-2">
-          <div class={`aspect-[16/9] ${galleryTile}`}>Photo 2 (TBC)</div>
-          <div class={`aspect-[16/9] ${galleryTile}`}>Photo 3 (TBC)</div>
+          <img
+            src="/images/gallery/city-river-tour/sightseeing-boat-arched-footbridge-aerial.webp"
+            alt="Aerial view of a Manchester River Cruises sightseeing boat cruising the Manchester Ship Canal toward a steel arched footbridge, with the Deansgate Square towers on the skyline under a blue sky"
+            width="1600"
+            height="1200"
+            loading="lazy"
+            data-img-fallback
+            class="aspect-[16/9] w-full rounded-card object-cover ring-1 ring-black/5"
+          />
+          <img
+            src="/images/gallery/city-river-tour/open-top-deck-passengers-mediacity.webp"
+            alt="Passengers on the open top deck of a City River Tour boat taking photos as it passes MediaCityUK and the Imperial Point tower at Salford Quays on a sunny day"
+            width="1600"
+            height="1066"
+            loading="lazy"
+            data-img-fallback
+            class="aspect-[16/9] w-full rounded-card object-cover ring-1 ring-black/5"
+          />
         </div>
       </div>
     </section>
