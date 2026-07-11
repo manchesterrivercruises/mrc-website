@@ -9,6 +9,7 @@ import BookingPanel from '../../components/BookingPanel.astro';
 import VentrataWidget from '../../components/VentrataWidget.astro';
 import ProductCard from '../../components/ProductCard.astro';
 import GettingHere from '../../components/GettingHere.astro';
+import PageHero from '../../components/PageHero.astro';
 import { site } from '../../data/site';
 import { getAlbums, findAlbumForProduct } from '../../lib/gallery';
 
@@ -35,6 +36,7 @@ const {
   priceFrom,
   whatToExpect = [],
   faqs = [],
+  heroImage,
   heroImageAlt,
 } = entry.data;
 
@@ -92,27 +94,21 @@ const structuredData = {
   <script type="application/ld+json" is:inline set:html={JSON.stringify(structuredData)} />
 
   <div class="pb-24 md:pb-0">
-    {/* Hero — dark navy, gold accents */}
-    <section class="bg-dark text-white">
-      <div class="mx-auto max-w-6xl px-4 py-20 sm:px-6 md:py-24 lg:px-8">
-        <p class="text-sm font-semibold uppercase tracking-[0.2em] text-accent">{eyebrow}</p>
-        <h1 class="mt-3 text-4xl font-bold tracking-tight text-white sm:text-5xl md:text-6xl">{title}</h1>
-        {shortTagline && <p class="mt-5 max-w-2xl text-lg leading-relaxed text-white/80">{shortTagline}</p>}
-        <div class="mt-8 flex flex-wrap items-center gap-x-6 gap-y-3">
-          <CTAButton href="#book">Book now</CTAButton>
-          {
-            galleryAlbum && (
-              <a
-                href={`/gallery/${galleryAlbum.data.slug}`}
-                class="text-sm font-medium text-white/90 underline-offset-4 hover:underline"
-              >
-                View photos →
-              </a>
-            )
-          }
-        </div>
-      </div>
-    </section>
+    {/* Hero — dark navy, gold accents. An owned heroImage becomes a background with a
+        legibility overlay (PageHero); events without one keep the plain navy hero. */}
+    <PageHero eyebrow={eyebrow} title={title} subtitle={shortTagline} heroImage={heroImage} heroImageAlt={heroImageAlt}>
+      <CTAButton href="#book">Book now</CTAButton>
+      {
+        galleryAlbum && (
+          <a
+            href={`/gallery/${galleryAlbum.data.slug}`}
+            class="text-sm font-medium text-white/90 underline-offset-4 hover:underline"
+          >
+            View photos →
+          </a>
+        )
+      }
+    </PageHero>
 
     <KeyFacts facts={keyFacts} />
 
