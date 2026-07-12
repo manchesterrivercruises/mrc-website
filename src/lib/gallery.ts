@@ -217,6 +217,16 @@ export function getWallImages(albums: Album[]): GalleryImage[] {
   return out;
 }
 
+// All OWNED images in a single album, curated-first (isFeatured lead, then declared order),
+// optionally excluding one src (e.g. an event page's own hero, to avoid repetition). Used by the
+// event mini-gallery for both its thumbnails and its full-album PhotoSwipe sequence.
+export function getAlbumImages(album: Album, excludeSrc?: string): GalleryImage[] {
+  const owned = (album.data.images ?? []).filter((im) => isOwnedImage(im.src) && im.src !== excludeSrc);
+  const featured = owned.filter((im) => im.isFeatured);
+  const rest = owned.filter((im) => !im.isFeatured);
+  return [...featured, ...rest].map((im) => toGalleryImage(album, im));
+}
+
 // Build-time image selection for the gallery hero collage — the same isFeatured-first,
 // cross-album selection as the featured row (selectFeaturedImages), returning full
 // GalleryImage records so each collage tile can link back to (and label) its source album.
