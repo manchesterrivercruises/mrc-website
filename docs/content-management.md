@@ -94,62 +94,78 @@ uses **local storage** — saves write straight to your working tree (no login).
 
 Storage switches to **GitHub** automatically outside local dev (`import.meta.env.DEV` gate in
 `keystatic.config.ts`, repo `manchesterrivercruises/mrc-website`). GitHub mode needs a **GitHub
-App** and four environment variables. Until they exist the CMS is switched **off gracefully**:
-`/admin` shows a "not configured" page and the `/keystatic` route isn't served (rather than the
-hard 500 the raw Keystatic route throws when `KEYSTATIC_SECRET` is missing — that missing secret
-is exactly what crashed it before this was added). Registration is gated on `KEYSTATIC_SECRET` in
-`astro.config.mjs`.
+App** and four environment variables.
 
-> **Which host?** Run this against the URL the new site is actually served from. Today that's the
-> Netlify deploy **`https://exquisite-gnome-3ca601.netlify.app`** — the `manchesterrivercruises.com`
-> domain still serves the old site until DNS cutover. The GitHub App can hold **multiple** callback
-> URLs, so register both now (see step 4).
+Graceful states while unconfigured:
 
-**Step 1 — set the session secret first (this is what unblocks the `/keystatic` wizard).**
-Generate one and add it in Netlify:
+- **No `KEYSTATIC_SECRET`** → `astro.config.mjs` doesn't register the Keystatic routes; `/admin`
+  shows a "not configured" page (no 500).
+- **`KEYSTATIC_SECRET` set but no GitHub App yet** (the current state) → `/keystatic` renders and
+  shows **"Log in with GitHub"**, but clicking it would hit Keystatic's GitHub OAuth endpoints,
+  which 500 with no App. `src/middleware.ts` intercepts `/api/keystatic/github/*` while
+  `KEYSTATIC_GITHUB_CLIENT_ID` is absent and returns a clear "not configured yet" message instead.
 
-```
-openssl rand -base64 32
-```
+> **Do this manually — the wizard does not appear.** With only the secret set on a deployed site,
+> Keystatic goes straight to the login UI (no "Create GitHub App" wizard), so create the App by hand.
+>
+> **Which host?** Use the URL the new site is actually served from — today the Netlify deploy
+> **`https://exquisite-gnome-3ca601.netlify.app`** (the `manchesterrivercruises.com` domain still
+> serves the old site until DNS cutover). A GitHub App holds **multiple** callback URLs, so add the
+> production one too (Step 2, Callback URL) for cutover.
 
-Netlify → **Site configuration → Environment variables → Add** →
-`KEYSTATIC_SECRET` = the generated string. Mark it **"Contains secret values"**. Then
-**redeploy** (Deploys → Trigger deploy → *Clear cache and deploy site*).
+**Step 1 — session secret (already done).** If not: `openssl rand -base64 32`, then Netlify →
+**Site configuration → Environment variables → Add** → `KEYSTATIC_SECRET` = the value, marked
+**"Contains secret values"**, and redeploy.
 
-**Step 2 — create the GitHub App via Keystatic's wizard.** Open
-`https://exquisite-gnome-3ca601.netlify.app/keystatic`. Keystatic now renders (secret is set) and,
-because no App is configured yet, shows **"Create GitHub App"**. Click it, sign in with GitHub,
-choose a name (e.g. *MRC Keystatic CMS*), and submit. Keystatic uses GitHub's app-manifest flow, so
-it **auto-registers the OAuth callback for the current host** —
-`https://exquisite-gnome-3ca601.netlify.app/api/keystatic/github/oauth/callback`.
+**Step 2 — create the GitHub App by hand.** Signed in as an account with admin on the repo:
 
-**Step 3 — copy the three values it returns into Netlify** (same Environment variables screen),
+1. Go to **github.com** → your avatar (top-right) → **Settings**.
+2. Left sidebar, bottom → **Developer settings** → **GitHub Apps** → **New GitHub App**.
+   (Direct link: `https://github.com/settings/apps/new`.)
+3. **GitHub App name:** `MRC Keystatic CMS` (must be globally unique — if taken, append a suffix
+   e.g. `MRC Keystatic CMS mrc`). This name becomes the **app slug** you need in Step 4.
+4. **Homepage URL:** `https://www.manchesterrivercruises.com`
+5. **Identifying and authorizing users → Callback URL:** add
+   `https://exquisite-gnome-3ca601.netlify.app/api/keystatic/github/oauth/callback`
+   Click **Add callback URL** and add the production one too, for cutover:
+   `https://www.manchesterrivercruises.com/api/keystatic/github/oauth/callback`
+6. Tick **"Request user authorization (OAuth) during installation"**.
+7. **Post installation:** leave defaults.
+8. **Webhook:** **uncheck "Active"** (Keystatic needs no webhook).
+9. **Permissions → Repository permissions** (leave every other permission at *No access*):
+   - **Contents:** **Read and write**
+   - **Metadata:** **Read-only** (auto-selected; mandatory)
+   - **Pull requests:** **Read-only**
+   (These match Keystatic's own GitHub-storage app manifest: `contents: write`, `metadata: read`,
+   `pull_requests: read`.)
+10. **Where can this GitHub App be installed?** → **Only on this account**.
+11. Click **Create GitHub App**.
+
+**Step 3 — get the credentials.** On the new App's **General** page:
+
+- Note the **Client ID** (shown near the top).
+- Under **Client secrets**, click **Generate a new client secret** and **copy it now** (shown once).
+- The **app slug** is the last path segment of the App's URL:
+  `https://github.com/settings/apps/<app-slug>` (the kebab-cased name from Step 2.3).
+
+**Step 4 — map the values to Netlify env vars** (Site configuration → Environment variables → Add),
 then redeploy:
 
-| Env var | Value | Secret? |
+| GitHub App value | Netlify env var | Secret? |
 |---|---|---|
-| `KEYSTATIC_GITHUB_CLIENT_ID` | the App's Client ID | no |
-| `KEYSTATIC_GITHUB_CLIENT_SECRET` | a Client secret you generate on the App page | **yes — mark secret** |
-| `PUBLIC_KEYSTATIC_GITHUB_APP_SLUG` | the App slug (the `…/apps/<slug>` part of its URL) | no (safe in the DOM) |
+| Client ID | `KEYSTATIC_GITHUB_CLIENT_ID` | no |
+| Generated client secret | `KEYSTATIC_GITHUB_CLIENT_SECRET` | **yes — mark "Contains secret values"** |
+| App slug (`…/apps/<app-slug>`) | `PUBLIC_KEYSTATIC_GITHUB_APP_SLUG` | no (public — safe in the DOM) |
 
-(`KEYSTATIC_SECRET` from step 1 is the fourth — also **secret**.)
+(`KEYSTATIC_SECRET` from Step 1 is the fourth — also **secret**.)
 
-**Step 4 — add the production callback URL for cutover.** In **GitHub → Settings → Developer
-settings → GitHub Apps → [your app] → General → Callback URLs**, add a second entry so it keeps
-working after DNS moves the site to the live domain:
+**Step 5 — install the App on the repo.** App page → left sidebar **Install App** → **Install**
+next to your account → choose **Only select repositories** → **`manchesterrivercruises/mrc-website`**
+→ **Install**. Without this, sign-in can succeed but commits fail with a permissions error.
 
-```
-https://www.manchesterrivercruises.com/api/keystatic/github/oauth/callback
-```
-
-(Keep the `exquisite-gnome-3ca601.netlify.app` one too.)
-
-**Step 5 — install the App on the repo.** GitHub App page → **Install App** →
-install on **`manchesterrivercruises/mrc-website`** (grant **Repository contents: read & write**).
-Without this, sign-in can succeed but commits fail.
-
-**Step 6 — redeploy** and open `/admin` (or `/keystatic`). It now bounces to the working CMS and
-"Sign in with GitHub" completes. Saves commit to the repo and Netlify auto-deploys.
+**Step 6 — redeploy** (Deploys → Trigger deploy → *Clear cache and deploy site*). Open `/keystatic`
+and click **Log in with GitHub** — the OAuth flow now completes; edits commit to the repo and
+Netlify auto-deploys.
 
 ### Security / SEO
 
