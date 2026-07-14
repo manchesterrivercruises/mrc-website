@@ -13,7 +13,19 @@ import tailwindcss from '@tailwindcss/vite';
 // secret exists (or in local dev, which uses no-auth local storage and needs no secret). When
 // absent, /admin (src/pages/admin.astro) shows a friendly "CMS not configured" page and the
 // walkthrough in docs/content-management.md covers the one-time GitHub App setup.
-const keystaticEnabled = process.argv.includes('dev') || !!process.env.KEYSTATIC_SECRET;
+// KEYSTATIC_SECRET must be a real long random secret, not just present. A too-short value passes a
+// truthy check but Keystatic then fails at runtime (the "short-secret trap"), so require >= 32
+// chars and say so loudly instead of registering a CMS that will 500.
+const KEYSTATIC_MIN_SECRET = 32;
+const rawKeystaticSecret = process.env.KEYSTATIC_SECRET ?? '';
+const keystaticSecretOk = rawKeystaticSecret.length >= KEYSTATIC_MIN_SECRET;
+if (rawKeystaticSecret && !keystaticSecretOk) {
+  console.warn(
+    `\n⚠ KEYSTATIC_SECRET is set but only ${rawKeystaticSecret.length} characters — it must be at least ` +
+      `${KEYSTATIC_MIN_SECRET}. The CMS stays DISABLED until this is fixed. Generate one with: openssl rand -base64 32\n`,
+  );
+}
+const keystaticEnabled = process.argv.includes('dev') || keystaticSecretOk;
 
 // https://astro.build/config
 export default defineConfig({

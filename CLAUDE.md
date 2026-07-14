@@ -93,3 +93,14 @@ Do not attempt multiple steps in one session unless explicitly instructed.
 - One commit per completed task
 - Commit message format: `task: description` (e.g. `setup: base Astro project and placeholder pages`)
 - Never commit `.env` — only `.env.example`
+
+## Deploy flow & branches
+
+- **`main` is Netlify's production branch.** Merging to `main` triggers a production build + deploy.
+- Work on a **feature branch → PR → merge to `main`**. Do not commit product changes straight to
+  `main` from tooling; open a PR. (Deploys fire on the merge.)
+- **Keystatic CMS commits straight to `main`** (GitHub storage, `main` branch) — every content save
+  in the CMS is a commit to `main` that **auto-deploys**. So a Simon edit and a merged PR are the
+  same thing to production: both land on `main` and go live. Expect CMS commits (`Update
+  src/content/...`) to appear on `main` between your pushes; rebase/fast-forward before starting new
+  work so you don't diverge from those content edits.

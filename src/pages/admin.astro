@@ -1,12 +1,13 @@
 ---
 // /admin — the CMS entry point. Mirrors the keystaticEnabled gate in astro.config.mjs:
-//   • local dev, or KEYSTATIC_SECRET present  → the Keystatic route exists, so bounce to it.
-//   • otherwise                               → show a graceful "CMS not configured" page
-//     instead of the raw 500 the GitHub-mode Keystatic route throws when the secret is absent.
+//   • local dev, or KEYSTATIC_SECRET >= 32 chars → the Keystatic route exists, so bounce to it.
+//   • otherwise (absent OR too short)            → show a graceful "CMS not configured" page
+//     instead of the raw 500 the GitHub-mode Keystatic route throws with no/short secret.
 // SSR (prerender:false) so the check runs at request time against the deploy's real env.
 export const prerender = false;
 
-const enabled = import.meta.env.DEV || !!process.env.KEYSTATIC_SECRET;
+// Must match astro.config.mjs — a short secret is treated as unconfigured (the "short-secret trap").
+const enabled = import.meta.env.DEV || (process.env.KEYSTATIC_SECRET ?? '').length >= 32;
 if (enabled) return Astro.redirect('/keystatic');
 ---
 
