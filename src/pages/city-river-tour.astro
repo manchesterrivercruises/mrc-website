@@ -424,6 +424,15 @@ const orderedStops = [...tourStops].sort((a, b) => a.id - b.id);
         {/* FAQ */}
         <FAQSection faqs={faqs} />
 
+        {/* Groups & schools pointer — group rates and school/coach charters live on /groups */}
+        <p class="max-w-3xl text-body">
+          Booking for a group, school or coach party?{' '}
+          <a href="/groups" class="font-medium text-primary underline-offset-4 hover:underline">
+            See group visits &amp; school trips
+          </a>{' '}
+          for group rates and private charters.
+        </p>
+
         {/* Reviews — static aggregate for SEO; live Google reviews rotate in as an
             enhancement (silent fallback to the static line on any failure). */}
         <ReviewStrip rating={site.rating.value} reviewCount={site.rating.count} live />
