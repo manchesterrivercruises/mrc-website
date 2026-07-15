@@ -172,6 +172,21 @@ const structuredData = {
           </ul>
         </section>
 
+        {/* School & youth groups cross-link — schools sail as private charters, so the
+            group visits page routes them back here to enquire. */}
+        <aside class="rounded-card bg-panel p-6 ring-1 ring-black/5 sm:flex sm:items-center sm:justify-between sm:gap-6">
+          <div>
+            <h2 class="font-semibold text-ink">School &amp; youth groups</h2>
+            <p class="mt-1 max-w-2xl text-body">
+              School trips, colleges, scouts and youth groups sail as a private charter — the whole
+              boat, with commentary tailored to your age range.
+            </p>
+          </div>
+          <div class="mt-4 shrink-0 sm:mt-0">
+            <CTAButton href="/groups#schools" variant="outline">Group visits &amp; school trips</CTAButton>
+          </div>
+        </aside>
+
         {/* Enquiry form (Netlify Forms; static HTML at build time) */}
         <section id="enquire" aria-labelledby="enquire-heading">
           <SectionHeading id="enquire-heading">Enquire about private hire</SectionHeading>

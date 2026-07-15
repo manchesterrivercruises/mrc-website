@@ -134,13 +134,18 @@ const gtmId = process.env.GTM_CONTAINER_ID;
 
     {/* Inter — SELF-HOSTED (@font-face in global.css). No Google Fonts request, so no
         visitor IPs leak to Google's CDN pre-consent (UK GDPR), and one fewer render-
-        blocking origin. Preload the primary text weight (400) to avoid hero FOUT. */}
+        blocking origin. Preload the primary text weight (400) to avoid hero FOUT.
+        crossorigin MUST carry the value "anonymous": browsers fetch @font-face files in
+        anonymous CORS mode even for same-origin fonts, so a preload whose CORS mode
+        doesn't match is treated as a *separate* resource — the font is fetched twice and
+        the console warns the preload went "unused". Explicit value (not a bare attribute)
+        so the mode is unambiguous and matches the font request exactly. */}
     <link
       rel="preload"
       href="/fonts/inter-latin-400-normal.woff2"
       as="font"
       type="font/woff2"
-      crossorigin
+      crossorigin="anonymous"
     />
 
     {/* Site-wide business entity + social profiles (sameAs) */}

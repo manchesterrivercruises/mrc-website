@@ -1,16 +1,16 @@
 ---
 // ─────────────────────────────────────────────────────────────────────────────
 // Shared Ventrata checkout widget — the SINGLE owner of all Ventrata client wiring.
-// Used only on bookable pages (AGENTS rule 9: the checkout script must never load
-// globally). Three modes:
+// Three modes. Per AGENTS rule 9 the checkout loader ships SITE-WIDE: it is rendered
+// once in <Header> so every page's persistent Book Now can open checkout. (Rule 9
+// deliberately supersedes the earlier "booking-pages-only" guidance — this is the ~726KB
+// third-party checkout bundle that Lighthouse reports as unused JS on non-booking pages;
+// it is an accepted, intentional cost. See docs/lighthouse-triage.md.) Modes:
 //
 //   mode="loader"   Page-level setup: the checkout <script>, the modal open/close
-//                   observer, and the loading-skeleton hide. Render ONCE per booking
-//                   page, placed in BaseLayout's head slot:
-//                       <VentrataWidget mode="loader" slot="head" env="test" />
-//                   (A nested component cannot forward slot="head" itself — the PAGE
-//                   must assign slot="head" to this instance — so `loader` is a page-
-//                   level placement by design.)
+//                   observer, and the loading-skeleton hide. Rendered ONCE site-wide by
+//                   <Header> (not per page). Load it EXACTLY ONCE per page — never add a
+//                   second per-page loader.
 //
 //   mode="embedded" Desktop embedded widget for a product. Fills a BookingPanel's
 //                   "widget" slot: <VentrataWidget mode="embedded" productID={id} slot="widget" />
