@@ -81,7 +81,7 @@ Do not attempt multiple steps in one session unless explicitly instructed.
 - Do not build the whole site in one prompt
 - Do not introduce dependencies not in the stack without asking
 - Do not create a top-level `src/pages/[slug].astro` — use `/cruises/[slug]` for dynamic routes
-- Do not load the Ventrata checkout script globally — only on pages that need it
+- Load the Ventrata checkout script **exactly once per page** — it ships site-wide via `<Header>` by design (AGENTS rule 9); never add a second per-page loader
 - Do not implement the private hire form as a hydrated JS component — it must exist in raw Astro/HTML at build time
 - Do not modify global navigation or API functions unless the task explicitly requires it
 - Do not expose secrets — all API keys go in `.env` and `.env.example`

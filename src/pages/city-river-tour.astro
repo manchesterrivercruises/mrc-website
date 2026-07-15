@@ -124,6 +124,20 @@ const orderedStops = [...tourStops].sort((a, b) => a.id - b.id);
 <BaseLayout title={pageTitle} description={pageDescription} bookProductID="ef45d8bd-529c-4dae-9c35-cd1b8e4e0a75">
   {/* Ventrata checkout loader now ships site-wide via <Header> (AGENTS rule 9). */}
 
+  {/* LCP preload — discovers the hero tile in <head>, before the body parser reaches the
+      <img>, so it isn't queued behind the deferred checkout module. imagesrcset/imagesizes
+      MIRROR the <img> exactly so the browser preloads the SAME candidate it will paint (an
+      href-only preload would fetch the 1600px hero and waste the mobile srcset saving). */}
+  <link
+    slot="head"
+    rel="preload"
+    as="image"
+    href="/images/city-river-tour-hero.webp"
+    imagesrcset="/images/city-river-tour-card.webp 800w, /images/city-river-tour-hero.webp 1600w"
+    imagesizes="(min-width: 640px) 60vw, calc(100vw - 2rem)"
+    fetchpriority="high"
+  />
+
   {/* Schema.org structured data (JSON-LD) */}
   <script type="application/ld+json" is:inline set:html={JSON.stringify(structuredData)} />
 
@@ -182,12 +196,21 @@ const orderedStops = [...tourStops].sort((a, b) => a.id - b.id);
       {/* Owned photography — the hero shot plus two from the City River Tour gallery album
           (alt carried from the gallery data). */}
       <div class="grid grid-cols-1 gap-2 sm:grid-cols-5 sm:items-start">
+        {/* LCP element (mobile): first, largest tile. eager + fetchpriority="high" so the
+            browser fetches it before the deferred checkout module and other images; a
+            matching preload sits in <head> (slot="head" below). srcset lets mobile take the
+            800px card variant (displayed ~380px CSS ≈ 760px @2×) instead of the 1600px hero,
+            which is only needed for the ~680px-wide desktop tile at 2×. sizes: 60vw at sm+
+            (3 of 5 grid cols), full-width-minus-padding below. */}
         <img
           src="/images/city-river-tour-hero.webp"
+          srcset="/images/city-river-tour-card.webp 800w, /images/city-river-tour-hero.webp 1600w"
+          sizes="(min-width: 640px) 60vw, calc(100vw - 2rem)"
           alt="The City River Tour boat passing beneath the Millennium Footbridge on a sunny day, with passengers on the open top deck and Old Trafford in the distance."
           width="1600"
           height="1200"
           loading="eager"
+          fetchpriority="high"
           data-img-fallback
           class="aspect-[4/3] w-full rounded-card object-cover ring-1 ring-black/5 sm:col-span-3"
         />

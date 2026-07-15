@@ -82,14 +82,20 @@ const CAROUSEL_CSS = `
   .rs-arrow:disabled { opacity: 0.35; cursor: default; }
   @media (min-width: 640px) { .rs-arrow { display: inline-flex; } }
 
-  .rs-dots { display: flex; align-items: center; gap: 0.5rem; }
+  .rs-dots { display: flex; align-items: center; gap: 0.25rem; }
+  /* The visual dot stays 8px, but content-box padding gives a 24px hit box (WCAG 2.2 target
+     size). background-clip: content-box keeps the paint on the 8px core; set background-color
+     (never the background shorthand, which would reset the clip) so the active state below
+     doesn't undo it. */
   .rs-dot {
-    width: 0.5rem; height: 0.5rem; padding: 0; border: none; cursor: pointer;
+    box-sizing: content-box;
+    width: 0.5rem; height: 0.5rem; padding: 0.5rem; border: none; cursor: pointer;
     border-radius: 9999px;
-    background: rgba(0, 0, 0, 0.2);
+    background-color: rgba(0, 0, 0, 0.2);
+    background-clip: content-box;
     transition: width 0.2s ease, background-color 0.2s ease;
   }
-  .rs-dot[aria-current="true"] { width: 1.25rem; background: var(--color-primary); }
+  .rs-dot[aria-current="true"] { width: 1.25rem; background-color: var(--color-primary); }
 
   .rs-arrow:focus-visible, .rs-dot:focus-visible { outline: 2px solid var(--color-primary); outline-offset: 2px; }
 

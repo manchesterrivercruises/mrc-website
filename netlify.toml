@@ -9,6 +9,31 @@
 [functions]
   directory = "netlify/functions"
 
+# --- Per-deploy Lighthouse self-reporting --------------------------------------
+# Runs Lighthouse against the built site on EVERY deploy and prints the scores in
+# the deploy log (Deploys → a deploy → the "Lighthouse" plugin section). Netlify
+# auto-installs the plugin from its registry — no package.json dependency needed.
+# Audits the two key pages: the homepage (City River Tour hero) and the standalone
+# /city-river-tour page. Paths are relative to the publish dir (`dist`); Astro's
+# default 'directory' build format emits `<route>/index.html`.
+#
+# REPORT-ONLY BY DESIGN — no `thresholds`, so a low score never fails the deploy:
+#   • Branch/preview deploys are noindex (see [context.*] below), which tanks the
+#     SEO category artificially — a hard SEO gate would fail every non-prod build.
+#   • CI-runner perf varies run to run.
+# The real "Lighthouse ≥90 perf on key pages" gate is a human launch check
+# (docs/launch-checklist.md), read against the PRODUCTION deploy's log.
+[[plugins]]
+  package = "@netlify/plugin-lighthouse"
+
+  [[plugins.inputs.audits]]
+    path = "index.html"
+    # Homepage — City River Tour is the default hero (AGENTS rule 3).
+
+  [[plugins.inputs.audits]]
+    path = "city-river-tour/index.html"
+    # Standalone City River Tour page — the LCP-tuned booking page.
+
 # --- Legacy Craft URL redirects (301) -----------------------------------------
 # Map old Craft CMS URLs to their new homes so inbound links and Search Console
 # equity are preserved. All permanent (301). `force` is intentionally OMITTED

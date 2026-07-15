@@ -71,8 +71,9 @@ const socialIcons = [
                   target="_blank"
                   rel="noopener"
                   aria-label={s.label}
-                  class="inline-block text-white/60 transition-colors hover:text-white"
+                  class="inline-flex p-2 text-white/60 transition-colors hover:text-white"
                 >
+                  {/* p-2 grows the 20px icon to a ~36px tap target (WCAG 2.2 24px min). */}
                   <svg class="h-5 w-5" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" set:html={s.icon} />
                 </a>
               </li>
@@ -89,10 +90,12 @@ const socialIcons = [
             </a>
           </li>
         </ul>
-        <div class="mt-6 flex flex-col items-start gap-3 text-sm font-medium">
-          <a href="/discover" class="text-accent transition-colors hover:underline">Discover</a>
-          <a href="/gallery" class="text-accent transition-colors hover:underline">Gallery</a>
-          <a href="/manage-booking" class="text-accent transition-colors hover:underline">Manage My Booking</a>
+        {/* py-1.5 on each link makes the stacked targets ≥24px tall (WCAG 2.2); gap-1 keeps
+            the overall block height close to the previous gap-3 layout. */}
+        <div class="mt-6 flex flex-col items-start gap-1 text-sm font-medium">
+          <a href="/discover" class="py-1.5 text-accent transition-colors hover:underline">Discover</a>
+          <a href="/gallery" class="py-1.5 text-accent transition-colors hover:underline">Gallery</a>
+          <a href="/manage-booking" class="py-1.5 text-accent transition-colors hover:underline">Manage My Booking</a>
         </div>
       </div>
     </div>

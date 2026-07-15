@@ -24,7 +24,7 @@ Complete every item before switching the domain to the new site.
 - [ ] robots.txt configured — staging set to noindex, production set to allow
 - [ ] Cookie consent (GTM consent mode) live — **and the consent-mode default (`denied`) is set BEFORE the GTM script loads** (the default snippet sits above the GTM container in `<head>`; verify in built HTML the `default … denied` call precedes the GTM `<script>`). See `docs/integrations.md` → Cookie consent.
 - [ ] Google Analytics 4 confirmed firing on all pages (only after consent granted)
-- [ ] Page speed tested — target 90+ on Google PageSpeed Insights
+- [ ] **Lighthouse ≥90 Performance on key pages (mobile)** — homepage and `/city-river-tour`. Every deploy self-reports via `@netlify/plugin-lighthouse` (netlify.toml → Deploys → the deploy's "Lighthouse" section); read the gate against the **production** deploy's log, not a branch/preview build. ⚠ On staging/preview the **SEO** category is artificially low because those contexts are deliberately `noindex` (`[context.*]` in netlify.toml) — judge SEO only on production. Cross-check with Google PageSpeed Insights on the live URL. See `docs/lighthouse-triage.md` for the accepted third-party cost (Ventrata checkout JS) and open items.
 - [ ] All images in WebP format at appropriate sizes
 - [ ] Staging environment confirmed as noindex before sharing externally
 - [ ] Manage My Booking page live and linked from footer
