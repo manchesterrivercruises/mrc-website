@@ -63,6 +63,24 @@ Before cutover:
 - [ ] Re-verify the full booking + payment flow and maps work with the policy
       **enforced** on a deploy preview before promoting to production.
 
+### Confirmed origins from live violation harvest (report-only console, 2026-07-15)
+
+Live-checkout QA produced real CSP violation reports (report-only mode doing its job).
+Fold these concrete directive changes into `netlify.toml` when re-enforcing:
+
+- **`frame-src`** — add `https://www.recaptcha.net` **and** `https://www.gstatic.com`.
+  The Ventrata checkout embeds Google reCAPTCHA; enforcing without these two origins
+  blocks the reCAPTCHA frame and **breaks payment**.
+- **`style-src`** — add `https://fonts.googleapis.com` back, and **`font-src`** — add
+  `https://fonts.gstatic.com` back. Ventrata injects its **own** Open Sans stylesheet
+  from Google Fonts. Ours (Inter) is self-hosted, so *our* pages need no Google Fonts
+  origin — but Ventrata's checkout does, so these two must be present for the widget.
+- **Inline-script hashes are stale.** The `script-src` `'sha256-…'` list in
+  `netlify.toml` is confirmed stale against the live console. Do **not** hand-patch
+  individual hashes — regenerate the whole list from the production `dist/` at
+  re-enforcement (audit one-liner in the `netlify.toml` `script-src` comment) and
+  replace the block wholesale.
+
 ---
 
 ## Launch robots.txt
