@@ -37,8 +37,11 @@ interface Props {
       See the calendarFirst caveat below — the exact data-config key is TBC with Ventrata. */
   calendarFirst?: boolean;
   /** popup: open Ventrata's GIFT-purchase flow (openGiftFlow) instead of a product checkout —
-      no productID required. See the gift caveat below (exact config shape is TBC on device). */
+      no productID required. See the flow caveat below (exact config shape is TBC on device). */
   gift?: boolean;
+  /** popup: open Ventrata's self-service RESERVATION / Manage-My-Booking flow (openReservationFlow)
+      instead of a product checkout — no productID required. See the flow caveat below (TBC on device). */
+  reservation?: boolean;
   /** embedded: min-height utility (widget must be able to grow — never a fixed height) */
   minHeightClass?: string;
 }
@@ -52,12 +55,15 @@ const {
   class: className = '',
   calendarFirst = false,
   gift = false,
+  reservation = false,
   minHeightClass = 'min-h-[40rem]',
 } = Astro.props;
 
-// A gift pop-up opens the gift-purchase flow (no product), so it is the ONE popup that doesn't
-// need a productID. Every other embedded/popup still requires one.
-if ((mode === 'embedded' || (mode === 'popup' && !gift)) && !productID) {
+// A "flow" pop-up (gift or reservation) opens a Ventrata self-service flow rather than a product
+// checkout, so it is the ONE popup kind that doesn't need a productID. Every other embedded/popup
+// still requires one.
+const isFlow = mode === 'popup' && (gift || reservation);
+if ((mode === 'embedded' || (mode === 'popup' && !isFlow)) && !productID) {
   throw new Error(`VentrataWidget mode="${mode}" requires a productID`);
 }
 
@@ -71,29 +77,34 @@ const calendarFirstConfig = calendarFirst ? { calendarFirst: true } : {};
 const embeddedConfig = JSON.stringify({ productID, embedded: true, ...calendarFirstConfig });
 const popupConfig = JSON.stringify({ productID, ...calendarFirstConfig });
 
-// GIFT FLOW — a pop-up trigger that opens Ventrata's gift-purchase flow (buy a gift voucher/card)
-// rather than a product checkout, per docs/ventrata-integration.md → "Recommended widget features"
-// (`openGiftFlow`). ⚠ The exact config shape is UNCONFIRMED and must be verified on device — same
-// posture as dateToPreselect / calendarFirst: `openGiftFlow` is documented INSIDE the `features`
-// object, but whether the trigger reads it there (vs a top-level key) and opens the gift flow with
-// NO productID is exactly what the on-device check must confirm. It also requires gift cards to be
-// ENABLED on the MRC Ventrata account — the checkout's existing "Buy as a gift card" link suggests
-// they are, but confirm. The debug script (GIFT_DEBUG_SCRIPT) logs the exact config for that check.
-const giftConfig = JSON.stringify({ features: { openGiftFlow: true } });
-const popupConfigOut = gift ? giftConfig : popupConfig;
+// SELF-SERVICE FLOWS — a pop-up trigger that opens a Ventrata flow (gift purchase, or the
+// reservation / Manage-My-Booking portal) rather than a product checkout, so it carries NO
+// productID. `openGiftFlow` is documented under "Recommended widget features"; `openReservationFlow`
+// is the analogous key for the self-service MMB flow (docs/ventrata-integration.md → "Manage My
+// Booking"). ⚠ Both config shapes are UNCONFIRMED and must be verified on device — same posture as
+// dateToPreselect / calendarFirst: the key is documented INSIDE the `features` object, but whether
+// the trigger reads it there (vs a top-level key) and opens the flow with NO productID is exactly
+// what the on-device check must confirm. Gift also requires gift cards ENABLED on the MRC Ventrata
+// account (the checkout's existing "Buy as a gift card" link suggests yes). FLOW_DEBUG_SCRIPT logs
+// the exact config for that check.
+const flow = gift ? 'gift' : reservation ? 'reservation' : null; // marker + log label
+const flowFeature = gift ? { openGiftFlow: true } : reservation ? { openReservationFlow: true } : null;
+const flowConfig = flowFeature ? JSON.stringify({ features: flowFeature }) : null;
+const popupConfigOut = flowConfig ?? popupConfig;
 
-// Logs the EXACT config handed to the gift trigger(s) so ONE device check confirms whether
-// openGiftFlow (and its placement inside `features`) is the accepted key — mirrors the auto-open
-// `console.debug('[MRC][ventrata] auto-open config →', …)` diagnostic. Self-dedupes so multiple
-// gift buttons on a page log once. Remove after on-device gift-flow QA.
-const GIFT_DEBUG_SCRIPT = `
+// Logs the EXACT config handed to each flow trigger so ONE device check confirms whether
+// openGiftFlow / openReservationFlow (and their placement inside `features`) are the accepted keys —
+// mirrors the auto-open `console.debug('[MRC][ventrata] auto-open config →', …)` diagnostic.
+// Self-dedupes so multiple flow buttons on a page log once each. Remove after on-device flow QA.
+const FLOW_DEBUG_SCRIPT = `
 (function () {
-  if (window.__mrcGiftDebug) return;
-  window.__mrcGiftDebug = true;
+  if (window.__mrcFlowDebug) return;
+  window.__mrcFlowDebug = true;
   function log() {
-    var t = document.querySelector('[ventrata-checkout][data-gift-flow]');
-    if (!t) return;
-    try { console.debug('[MRC][ventrata] gift-flow config →', t.getAttribute('data-config')); } catch (e) {}
+    var els = document.querySelectorAll('[ventrata-checkout][data-vt-flow]');
+    for (var i = 0; i < els.length; i++) {
+      try { console.debug('[MRC][ventrata] ' + els[i].getAttribute('data-vt-flow') + '-flow config →', els[i].getAttribute('data-config')); } catch (e) {}
+    }
   }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', log);
   else log();
@@ -583,13 +594,13 @@ const OBSERVER_SCRIPT = `
         class={className}
         ventrata-checkout=""
         data-config={popupConfigOut}
-        data-gift-flow={gift ? '' : undefined}
+        data-vt-flow={flow ?? undefined}
       >
         {label}
       </CTAButton>
-      {/* One-device diagnostic for the (TBC) gift-flow config — only shipped alongside a gift
-          trigger, self-dedupes across multiple gift buttons. */}
-      {gift && <script is:inline set:html={GIFT_DEBUG_SCRIPT} />}
+      {/* One-device diagnostic for the (TBC) flow config — only shipped alongside a flow
+          trigger (gift/reservation), self-dedupes across multiple flow buttons. */}
+      {flow && <script is:inline set:html={FLOW_DEBUG_SCRIPT} />}
     </Fragment>
   )
 }
