@@ -13,7 +13,9 @@
 //                   second per-page loader.
 //
 //   mode="embedded" Embedded widget for a product (fills a BookingPanel "widget" slot), OR the
-//                   product-less GIFT flow: <VentrataWidget mode="embedded" gift />
+//                   product-less GIFT flow: <VentrataWidget mode="embedded" gift />. The gift flow
+//                   also runs as a pop-up trigger — mode="popup" gift (optionally with an href
+//                   no-JS fallback).
 //
 //   mode="popup"    A pop-up trigger button (mobile sticky CTA, inline CTAs):
 //                       <VentrataWidget mode="popup" productID={id} label="Book Now" class="w-full" />
@@ -36,9 +38,14 @@ interface Props {
   /** embedded/popup: open the checkout on the date/calendar step (date-led browsing).
       See the calendarFirst caveat below — the exact data-config key is TBC with Ventrata. */
   calendarFirst?: boolean;
-  /** embedded: render Ventrata's product-less GIFT-purchase widget (features.gifts.mode="simple" —
-      the dashboard embed-generator shape). No productID. NOT valid on popup — gift is embed-only. */
+  /** embedded OR popup: render/open Ventrata's product-less GIFT-purchase flow
+      (features.gifts.mode="simple", the dashboard embed-generator shape). No productID. Support
+      confirmed the SAME features config works on a pop-up trigger's data-config, so both modes are
+      valid — /gift-vouchers uses the embed as centrepiece and pop-up triggers for its CTAs. */
   gift?: boolean;
+  /** popup: optional no-JS fallback href on the trigger. The button still opens the Ventrata pop-up
+      when JS runs; without JS the anchor navigates here (e.g. "#gift-widget" → the on-page embed). */
+  href?: string;
   /** embedded: min-height utility (widget must be able to grow — never a fixed height) */
   minHeightClass?: string;
 }
@@ -50,19 +57,15 @@ const {
   env = VENTRATA_ENV,
   label = 'Book Now',
   class: className = '',
+  href,
   calendarFirst = false,
   gift = false,
   minHeightClass = 'min-h-[40rem]',
 } = Astro.props;
 
-// Gift has no pop-up form we can prove — Ventrata's dashboard embed generator only produces an
-// EMBEDDED gift variant — so a pop-up gift trigger is refused; callers use mode="embedded" gift and
-// have CTAs anchor to it.
-if (mode === 'popup' && gift) {
-  throw new Error('VentrataWidget: gift is an EMBEDDED flow — use mode="embedded" gift (no pop-up trigger)');
-}
-// Product-less flow carries NO productID: the embedded gift widget. Everything else needs one.
-const isProductless = mode === 'embedded' && gift;
+// Product-less flow carries NO productID: the gift widget — embedded OR pop-up (support confirmed
+// the features.gifts config works on a trigger's data-config too). Everything else needs a productID.
+const isProductless = gift;
 if (!isProductless && (mode === 'embedded' || mode === 'popup') && !productID) {
   throw new Error(`VentrataWidget mode="${mode}" requires a productID`);
 }
@@ -74,21 +77,20 @@ const checkoutConfig = JSON.stringify({ apiKey: VENTRATA_CHECKOUT_KEY, env });
 // which product(s) to surface / their ordering must be confirmed with the Ventrata
 // account manager before launch.
 const calendarFirstConfig = calendarFirst ? { calendarFirst: true } : {};
-// EMBEDDED: the gift variant emits Ventrata's dashboard-generator shape VERBATIM — product-less,
-// `{"features":{"gifts":{"mode":"simple"}}}`. Every other embedded is a product checkout.
+// GIFT config — Ventrata's dashboard-generator shape, VERBATIM and product-less:
+// `{"features":{"gifts":{"mode":"simple"}}}`. Support confirmed (2026-07-16) it works on BOTH an
+// embedded widget and a pop-up trigger's data-config (features can be set globally or per element),
+// so both modes reuse it. The earlier flat `openGiftFlow` key was WRONG and is removed.
+const giftConfig = JSON.stringify({ features: { gifts: { mode: 'simple' } } });
+// EMBEDDED: gift → the gift config; otherwise a product checkout.
 const embeddedConfig = gift
-  ? JSON.stringify({ features: { gifts: { mode: 'simple' } } })
+  ? giftConfig
   : JSON.stringify({ productID, embedded: true, ...calendarFirstConfig });
-// POPUP: always a product checkout (the gift flow is embedded, not a pop-up).
-const popupConfig = JSON.stringify({ productID, ...calendarFirstConfig });
+// POPUP: gift → the product-less gift trigger; otherwise a product checkout.
+const popupConfig = gift ? giftConfig : JSON.stringify({ productID, ...calendarFirstConfig });
 
-// GIFT FLOW SHAPE (see docs/ventrata-integration.md → "Gift flow — config diagnosis"): source of
-// truth is Ventrata's dashboard embed generator, which emits verbatim:
-//     <aside ventrata-embedded-widget data-config='{"features":{"gifts":{"mode":"simple"}}}'>
-// so gift is EMBEDDED + product-less; `gifts:{mode:"simple"}` (the "simple" standalone gift purchase)
-// is the exact documented shape. The earlier flat `openGiftFlow` key was WRONG and is removed.
-// FLOW_DEBUG_SCRIPT logs the exact data-config on any [data-vt-flow] element. `flow` is the marker
-// written to data-vt-flow.
+// FLOW_DEBUG_SCRIPT logs the exact data-config on any [data-vt-flow] element (embedded gift <aside>
+// or gift pop-up trigger). `flow` is the marker written to data-vt-flow.
 const flow = gift ? 'gift' : null; // marker + debug label
 const popupConfigOut = popupConfig;
 
@@ -597,13 +599,14 @@ const OBSERVER_SCRIPT = `
     <Fragment>
       <CTAButton
         class={className}
+        href={href}
         ventrata-checkout=""
         data-config={popupConfigOut}
         data-vt-flow={flow ?? undefined}
       >
         {label}
       </CTAButton>
-      {/* One-device diagnostic for a flow trigger's config — self-dedupes. */}
+      {/* One-device diagnostic for a gift trigger's config — self-dedupes. */}
       {flow && <script is:inline set:html={FLOW_DEBUG_SCRIPT} />}
     </Fragment>
   )

@@ -257,11 +257,17 @@ the richer `gifts:{allowed,mode,openByDefault}` (the *How to Use Gift Cards* art
 the generator sends `mode` only.
 
 **Shipped fix:** `<VentrataWidget mode="embedded" gift>` renders `<aside ventrata-embedded-widget>`
-with exactly `{"features":{"gifts":{"mode":"simple"}}}` (verified in built output). `openGiftFlow` is
-removed; pop-up gift triggers are refused at build time (the generator offers no pop-up gift variant).
-On `/gift-vouchers` the embed is the centrepiece and every "Buy a gift voucher" CTA anchors to it
-(`#gift-widget`). Gift vouchers must still be **enabled in the dashboard** ("Allow Gift Voucher"
-checkbox in the Web Checkout form) for the flow to appear.
+with exactly `{"features":{"gifts":{"mode":"simple"}}}` (verified in built output); `openGiftFlow` is
+removed.
+
+**Pop-up triggers too · support-confirmed 2026-07-16.** Ventrata support confirmed the SAME
+`features:{gifts:{mode:"simple"}}` config works on a **pop-up trigger's** `data-config` (features can
+be configured globally on the script tag or per element). So `mode="popup" gift` is allowed again. On
+`/gift-vouchers` the embed is the centrepiece and every "Buy a gift voucher" CTA is a gift pop-up
+trigger (`<VentrataWidget mode="popup" gift href="#gift-widget">`) — the pop-up beats anchor-scrolling
+on a long page, and `href="#gift-widget"` stays as a no-JS fallback that scrolls to the embed. Gift
+vouchers must still be **enabled in the dashboard** ("Allow Gift Voucher" checkbox in the Web Checkout
+form) for the flow to appear.
 
 **On-device QA:** open `/gift-vouchers`; the gift widget should render inline (not a product chooser).
 The debug line `[MRC][ventrata] gift-flow config → {"features":{"gifts":{"mode":"simple"}}}` (from

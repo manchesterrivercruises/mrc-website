@@ -11,11 +11,11 @@ import VentrataWidget from '../components/VentrataWidget.astro';
 
 // Gift vouchers landing page — a conversion page for the "gift voucher boat trip Manchester"
 // intent. The centrepiece is Ventrata's product-less gift widget (mode="embedded" gift →
-// {"features":{"gifts":{"mode":"simple"}}}, the dashboard embed-generator shape); every "Buy a gift
-// voucher" CTA anchors to that embed (#gift-widget) rather than opening a pop-up — gift has no
-// pop-up form (see docs/ventrata-integration.md → "Gift flow — config diagnosis"). Every unconfirmed
-// operational detail (validity, denominations, redemption, what it covers) carries a visible (TBC)
-// marker for Simon's content pass (content-checklist.md).
+// {"features":{"gifts":{"mode":"simple"}}}, the dashboard embed-generator shape). Every "Buy a gift
+// voucher" CTA is a gift POP-UP trigger (mode="popup" gift — support-confirmed the same gifts config
+// works on a trigger) with href="#gift-widget" as a no-JS fallback that scrolls to the embed. Pop-up
+// beats anchor-scrolling on a long page. Every unconfirmed operational detail (validity,
+// denominations, redemption, what it covers) carries a visible (TBC) marker for Simon's content pass.
 
 const icons = {
   gift: '<path d="M21 11.25v8.25a1.5 1.5 0 0 1-1.5 1.5H5.25a1.5 1.5 0 0 1-1.5-1.5v-8.25M12 4.875A2.625 2.625 0 1 0 9.375 7.5H12m0-2.625V7.5m0-2.625A2.625 2.625 0 1 1 14.625 7.5H12m0 0V21m-8.625-9.75h18c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125h-18c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125Z" />',
@@ -140,7 +140,7 @@ const structuredData = {
       heroImage="/images/city-river-tour-hero.webp"
       heroImageAlt="A Manchester River Cruises boat on the Ship Canal at Salford Quays"
     >
-      <CTAButton href="#gift-widget">Buy a gift voucher</CTAButton>
+      <VentrataWidget mode="popup" gift href="#gift-widget" label="Buy a gift voucher" />
       <a href="/whats-on" class="text-sm font-medium text-white/90 underline-offset-4 hover:underline">
         See what's on →
       </a>
@@ -214,7 +214,7 @@ const structuredData = {
             }
           </ol>
           <div class="mt-8">
-            <CTAButton href="#gift-widget">Buy a gift voucher</CTAButton>
+            <VentrataWidget mode="popup" gift href="#gift-widget" label="Buy a gift voucher" />
           </div>
         </section>
       </div>
@@ -229,7 +229,7 @@ const structuredData = {
           experience on the water. Buy in minutes; they book when they’re ready.
         </p>
         <div class="mt-8 flex flex-wrap items-center justify-center gap-4">
-          <CTAButton href="#gift-widget">Buy a gift voucher</CTAButton>
+          <VentrataWidget mode="popup" gift href="#gift-widget" label="Buy a gift voucher" />
           <CTAButton href="/city-river-tour" variant="outline">Or book a cruise now</CTAButton>
         </div>
       </div>
@@ -254,6 +254,6 @@ const structuredData = {
   {/* Mobile sticky CTA — anchors to the embedded gift widget (gift has no pop-up trigger), mirroring
       the product pages' mobile sticky Book Now. */}
   <div class="fixed inset-x-0 bottom-0 z-40 border-t border-black/10 bg-white/95 p-3 backdrop-blur md:hidden">
-    <CTAButton href="#gift-widget" class="w-full">Buy a gift voucher</CTAButton>
+    <VentrataWidget mode="popup" gift href="#gift-widget" label="Buy a gift voucher" class="w-full" />
   </div>
 </BaseLayout>
