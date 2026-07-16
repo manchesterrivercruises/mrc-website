@@ -83,14 +83,13 @@ Confirm availability in MRC's specific Ventrata checkout before enabling.
   "preselectFirstAvailableDateModalCalendar": true,
   "preselectFirstUnit": true,
   "waitlistsAllowed": true,
-  "enableMoreDetailsToggle": true,
-  "openGiftFlow": true
+  "enableMoreDetailsToggle": true
 }
 ```
 
-> ⚠ **`openGiftFlow` is disputed — see "Gift flow — config diagnosis" below.** The dedicated gift
-> article documents a nested `features.gifts` object (`mode:"simple"`, `openByDefault:true`) instead.
-> The widget ships both keys as a hedge; the true one is TBC on device (Ventrata support question 3).
+> ⚠ **`openGiftFlow` is WRONG — do not use it.** The gift flow is a **`features.gifts` object on an
+> EMBEDDED widget** — `{"features":{"gifts":{"mode":"simple"}}}` — per Ventrata's own dashboard embed
+> generator (ground truth). See "Gift flow — config diagnosis" below.
 
 For MUFC Ferry — also consider:
 ```json
@@ -237,41 +236,37 @@ preselect the date. Findings:
 
 ### Gift flow — config diagnosis
 
-**Symptom (on device):** the gift trigger on `/gift-vouchers` opened the normal product
-chooser/product page, **not** a gift-purchase flow. The debug line
-`[MRC][ventrata] gift-flow config → {…}` (from `FLOW_DEBUG_SCRIPT`) confirms the config we send.
+**Symptom (on device):** the gift *pop-up trigger* on `/gift-vouchers` opened the normal product
+chooser/product page, **not** a gift-purchase flow.
 
-**Diagnosis — the shipped key is disputed across Ventrata's own docs:**
+**Root cause:** the key was wrong AND the mode was wrong. The first cut sent
+`features.openGiftFlow: true` on a **pop-up trigger** — but `openGiftFlow` is not a real gift key, so
+the trigger fell back to the product chooser.
 
-- First cut sent `features.openGiftFlow: true` (from the *Checkout Feature List*,
-  [support.ventrata.com/en/articles/10155293](https://support.ventrata.com/en/articles/10155293-checkout-feature-list),
-  which lists `openGiftFlow` + `disableGiftAmountInput` as flat feature keys).
-- The dedicated *How to Use Gift Cards on the Web Checkout*
-  ([support.ventrata.com/en/articles/9552321](https://support.ventrata.com/en/articles/9552321-how-to-use-gift-cards-on-the-web-checkout))
-  instead documents a **nested `features.gifts` object**:
-  ```json
-  "features": {
-    "gifts": { "allowed": true, "mode": "simple", "openByDefault": true }
-  }
-  ```
-  `mode:"simple"` is an explicitly **product-less** flow — *"DO NOT include a productID"* — which
-  matches our no-productID trigger. `openByDefault:true` auto-opens the gift flow.
+**Ground truth — Ventrata's dashboard embed generator.** The generator (the authoritative source, it
+emits exactly what the account accepts) produces the gift flow as an **EMBEDDED, product-less widget**:
 
-**Shipped fix (best evidence):** the widget now sends the `gifts` object (dedicated article — more
-authoritative for this flow) **and co-sends `openGiftFlow`** as a hedge, since the two official docs
-disagree and unknown feature keys are ignored by the widget. Whichever the MRC account honours wins;
-the debug line reveals which. Gift vouchers must also be **enabled in the dashboard** ("Allow Gift
-Voucher" checkbox in the Web Checkout form).
+```html
+<aside ventrata-embedded-widget data-config='{"features": {"gifts": {"mode": "simple"}}}'>
+```
 
-**Graceful fallback:** if BOTH keys are wrong, the product-less trigger degrades to the standard
-chooser — which itself carries Ventrata's own "Buy as a gift card" link — so the button is honest,
-not broken, meanwhile.
+So the correct config is `{"features":{"gifts":{"mode":"simple"}}}` — the `gifts` feature object with
+`mode:"simple"` (the standalone, **product-less** gift-purchase flow — no `productID`). This supersedes
+both earlier doc readings: the flat `openGiftFlow` (*Checkout Feature List*) is **wrong/legacy**, and
+the richer `gifts:{allowed,mode,openByDefault}` (the *How to Use Gift Cards* article) over-specifies —
+the generator sends `mode` only.
 
-**On-device QA:** open `/gift-vouchers`, tap "Buy a gift voucher" with the console open. Read the
-`gift-flow config →` line, then check whether the gift flow (not the product chooser) opens. Also tap
-Ventrata's own in-widget "Buy as a gift card" link manually — if *that* reaches a gift flow, its
-markup/handler is the ground truth to mimic (inspect the trigger's `data-config`). Report both to the
-account manager as support question 3 below.
+**Shipped fix:** `<VentrataWidget mode="embedded" gift>` renders `<aside ventrata-embedded-widget>`
+with exactly `{"features":{"gifts":{"mode":"simple"}}}` (verified in built output). `openGiftFlow` is
+removed; pop-up gift triggers are refused at build time (the generator offers no pop-up gift variant).
+On `/gift-vouchers` the embed is the centrepiece and every "Buy a gift voucher" CTA anchors to it
+(`#gift-widget`). Gift vouchers must still be **enabled in the dashboard** ("Allow Gift Voucher"
+checkbox in the Web Checkout form) for the flow to appear.
+
+**On-device QA:** open `/gift-vouchers`; the gift widget should render inline (not a product chooser).
+The debug line `[MRC][ventrata] gift-flow config → {"features":{"gifts":{"mode":"simple"}}}` (from
+`FLOW_DEBUG_SCRIPT`) confirms the exact config. If the embed shows a product chooser instead of a gift
+purchase, check "Allow Gift Voucher" is enabled in the dashboard.
 
 ### Ventrata support questions — config items to confirm on device / with the account manager
 
@@ -285,11 +280,14 @@ Each ships with best-evidence config + a debug line so one device check settles 
 2. **Waitlist deep-link state.** Should a sold-out "Join waitlist" deep link carry `dateToPreselect`
    at all, or does the availability-aware calendar correctly refuse an unbuyable date? If waitlist is
    the intended path, does it need the `waitlistsAllowed` feature rather than date-preselect?
-3. **Gift-flow config key.** Which shape does the MRC checkout honour — the nested
-   `features.gifts { mode:"simple", openByDefault:true }` (dedicated gift article) or the flat
-   `features.openGiftFlow` (feature list)? We co-send both; confirm which opens the gift flow and
-   whether "Allow Gift Voucher" is enabled in the dashboard. **The analogous `openReservationFlow`
-   used by /manage-booking is unresearched and likely carries the same risk — confirm it too.**
+3. **Reservation / Manage-My-Booking flow config.** The gift flow is now resolved from the dashboard
+   embed generator (`features.gifts.mode:"simple"`, embedded — see "Gift flow — config diagnosis"),
+   which strongly implies the reservation flow follows the **same pattern**: a `features` object on an
+   embedded widget, not the flat `openReservationFlow` key `/manage-booking` currently ships. **Action:
+   check the dashboard embed generator for a manage-booking / reservation variant** and copy its exact
+   `data-config` shape (as we did for gift). Until then `openReservationFlow` is a placeholder and the
+   `/manage-booking` "Find my booking" trigger is UNCONFIRMED. The debug line
+   `[MRC][ventrata] reservation-flow config → {…}` logs what we send for the on-device check.
 
 ### Order Recovery Email — abandoned cart recovery · **dashboard-task**
 

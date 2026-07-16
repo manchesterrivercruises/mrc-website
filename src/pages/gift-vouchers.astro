@@ -10,9 +10,12 @@ import FAQSection from '../components/FAQSection.astro';
 import VentrataWidget from '../components/VentrataWidget.astro';
 
 // Gift vouchers landing page — a conversion page for the "gift voucher boat trip Manchester"
-// intent, wired to Ventrata's gift-purchase flow (openGiftFlow) via <VentrataWidget mode="popup"
-// gift>. Every unconfirmed operational detail (validity, denominations, redemption, what it covers)
-// carries a visible (TBC) marker for Simon's content pass (content-checklist.md).
+// intent. The centrepiece is Ventrata's product-less gift widget (mode="embedded" gift →
+// {"features":{"gifts":{"mode":"simple"}}}, the dashboard embed-generator shape); every "Buy a gift
+// voucher" CTA anchors to that embed (#gift-widget) rather than opening a pop-up — gift has no
+// pop-up form (see docs/ventrata-integration.md → "Gift flow — config diagnosis"). Every unconfirmed
+// operational detail (validity, denominations, redemption, what it covers) carries a visible (TBC)
+// marker for Simon's content pass (content-checklist.md).
 
 const icons = {
   gift: '<path d="M21 11.25v8.25a1.5 1.5 0 0 1-1.5 1.5H5.25a1.5 1.5 0 0 1-1.5-1.5v-8.25M12 4.875A2.625 2.625 0 1 0 9.375 7.5H12m0-2.625V7.5m0-2.625A2.625 2.625 0 1 1 14.625 7.5H12m0 0V21m-8.625-9.75h18c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125h-18c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125Z" />',
@@ -137,13 +140,33 @@ const structuredData = {
       heroImage="/images/city-river-tour-hero.webp"
       heroImageAlt="A Manchester River Cruises boat on the Ship Canal at Salford Quays"
     >
-      <VentrataWidget mode="popup" gift label="Buy a gift voucher" />
+      <CTAButton href="#gift-widget">Buy a gift voucher</CTAButton>
       <a href="/whats-on" class="text-sm font-medium text-white/90 underline-offset-4 hover:underline">
         See what's on →
       </a>
     </PageHero>
 
     <KeyFacts facts={keyFacts} />
+
+    {/* Centrepiece — Ventrata's product-less gift widget (embedded). Config is the dashboard
+        embed-generator shape: {"features":{"gifts":{"mode":"simple"}}} (no productID). Every
+        "Buy a gift voucher" CTA on the page anchors here. scroll-mt keeps the heading clear of the
+        sticky header when jumped to. The embed is responsive — full width on mobile, capped on
+        desktop — matching our established embedded pattern; a mobile sticky CTA (below) anchors to it. */}
+    <section
+      id="gift-widget"
+      aria-labelledby="buy-gift"
+      class="mx-auto max-w-3xl scroll-mt-24 px-4 py-12 sm:px-6 md:py-16 lg:px-8"
+    >
+      <SectionHeading id="buy-gift">Buy a gift voucher</SectionHeading>
+      <p class="mt-4 text-body">
+        Choose an amount and pay securely — the voucher arrives by email as a code to pass on.
+        Denominations, validity and what it covers — TBC.
+      </p>
+      <div class="mt-8">
+        <VentrataWidget mode="embedded" gift minHeightClass="min-h-[44rem]" />
+      </div>
+    </section>
 
     <div class="mx-auto max-w-6xl px-4 py-12 sm:px-6 md:py-16 lg:px-8">
       <div class="space-y-16">
@@ -191,7 +214,7 @@ const structuredData = {
             }
           </ol>
           <div class="mt-8">
-            <VentrataWidget mode="popup" gift label="Buy a gift voucher" />
+            <CTAButton href="#gift-widget">Buy a gift voucher</CTAButton>
           </div>
         </section>
       </div>
@@ -206,7 +229,7 @@ const structuredData = {
           experience on the water. Buy in minutes; they book when they’re ready.
         </p>
         <div class="mt-8 flex flex-wrap items-center justify-center gap-4">
-          <VentrataWidget mode="popup" gift label="Buy a gift voucher" />
+          <CTAButton href="#gift-widget">Buy a gift voucher</CTAButton>
           <CTAButton href="/city-river-tour" variant="outline">Or book a cruise now</CTAButton>
         </div>
       </div>
@@ -226,5 +249,11 @@ const structuredData = {
         <FAQSection faqs={faqs} title="Gift voucher FAQs" />
       </div>
     </div>
+  </div>
+
+  {/* Mobile sticky CTA — anchors to the embedded gift widget (gift has no pop-up trigger), mirroring
+      the product pages' mobile sticky Book Now. */}
+  <div class="fixed inset-x-0 bottom-0 z-40 border-t border-black/10 bg-white/95 p-3 backdrop-blur md:hidden">
+    <CTAButton href="#gift-widget" class="w-full">Buy a gift voucher</CTAButton>
   </div>
 </BaseLayout>
