@@ -1,87 +1,229 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import { site } from '../data/site';
+import PageHero from '../components/PageHero.astro';
+import KeyFacts from '../components/KeyFacts.astro';
 import SectionHeading from '../components/SectionHeading.astro';
 import CTAButton from '../components/CTAButton.astro';
+import ProductCard from '../components/ProductCard.astro';
 import FAQSection from '../components/FAQSection.astro';
+import VentrataWidget from '../components/VentrataWidget.astro';
 
-const SITE = site.url;
-const pageTitle = 'Gift Vouchers — Manchester River Cruises';
-const pageDescription =
-  'Gift vouchers for Manchester River Cruises — give the gift of a cruise. Redeemable against the City River Tour, events or any amount. Buy online.';
+// Gift vouchers landing page — a conversion page for the "gift voucher boat trip Manchester"
+// intent, wired to Ventrata's gift-purchase flow (openGiftFlow) via <VentrataWidget mode="popup"
+// gift>. Every unconfirmed operational detail (validity, denominations, redemption, what it covers)
+// carries a visible (TBC) marker for Simon's content pass (content-checklist.md).
 
-const options = [
-  { name: 'City River Tour', desc: 'A voucher for our signature 60-minute sightseeing cruise.' },
-  { name: 'Events & music nights', desc: 'A voucher towards any of our events or music cruises.' },
-  { name: 'Any amount', desc: 'Choose a value and let them pick their own cruise.' },
+const icons = {
+  gift: '<path d="M21 11.25v8.25a1.5 1.5 0 0 1-1.5 1.5H5.25a1.5 1.5 0 0 1-1.5-1.5v-8.25M12 4.875A2.625 2.625 0 1 0 9.375 7.5H12m0-2.625V7.5m0-2.625A2.625 2.625 0 1 1 14.625 7.5H12m0 0V21m-8.625-9.75h18c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125h-18c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125Z" />',
+  mail: '<path d="M21.75 6.75v10.5a2.25 2.25 0 0 1-2.25 2.25h-15a2.25 2.25 0 0 1-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25m19.5 0v.243a2.25 2.25 0 0 1-1.07 1.916l-7.5 4.615a2.25 2.25 0 0 1-2.36 0L3.32 8.91a2.25 2.25 0 0 1-1.07-1.916V6.75" />',
+  ticket: '<path d="M16.5 6v.75m0 3v.75m0 3v.75m0 3V18m-9-5.25h5.25M7.5 15h3M3.375 5.25c-.621 0-1.125.504-1.125 1.125v3.026a2.999 2.999 0 0 1 0 5.198v3.026c0 .621.504 1.125 1.125 1.125h17.25c.621 0 1.125-.504 1.125-1.125v-3.026a2.999 2.999 0 0 1 0-5.198V6.375c0-.621-.504-1.125-1.125-1.125H3.375Z" />',
+  calendar:
+    '<path d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5" />',
+};
+
+// Gifting reassurances — TBC where the operational detail is unconfirmed.
+const keyFacts = [
+  { text: 'Redeemable against any sailing (TBC)', icon: icons.gift },
+  { text: 'Delivered by email as a code (TBC)', icon: icons.mail },
+  { text: 'Choose an amount or experience (TBC)', icon: icons.ticket },
+  { text: 'Valid for TBC months', icon: icons.calendar },
+];
+
+// Occasions we actually run cruises for — each ties the gift to a real experience.
+const occasions = [
+  {
+    title: 'Christmas',
+    copy: 'The easy present that isn’t another jumper — a festive party night or a winter sightseeing cruise on the Ship Canal.',
+    href: '/christmas-cruises-manchester',
+    linkText: 'Christmas cruises',
+  },
+  {
+    title: 'Birthdays',
+    copy: 'Give a birthday on the water — a party cruise with a licensed bar, or a relaxed daytime sightseeing trip.',
+    href: '/party-boat-manchester',
+    linkText: 'Party cruises',
+  },
+  {
+    title: "Mother's Day",
+    copy: 'Treat her to a scenic cruise through the heart of Manchester — a proper day out rather than a bunch of flowers.',
+    href: '/city-river-tour',
+    linkText: 'City River Tour',
+  },
+  {
+    title: "Father's Day",
+    copy: 'For the dad who has everything — the story of the docks and the ship canal, told from the water with live commentary.',
+    href: '/city-river-tour',
+    linkText: 'City River Tour',
+  },
+];
+
+// How it works — 3 steps. Specifics TBC for Simon's content pass.
+const steps = [
+  {
+    n: '1',
+    title: 'Buy online',
+    copy: 'Choose an amount (or a specific experience) and pay securely. Denominations and options — TBC.',
+  },
+  {
+    n: '2',
+    title: 'They receive a code',
+    copy: 'The voucher arrives by email as a gift code to pass on. Delivery and personalisation details — TBC.',
+  },
+  {
+    n: '3',
+    title: 'They book any sailing',
+    copy: 'The recipient redeems the code against a sailing that suits them. What the voucher can cover — TBC.',
+  },
 ];
 
 const faqs = [
-  { q: 'How long are gift vouchers valid for?', a: 'Validity period TBC.' },
-  { q: 'Can I top up a voucher?', a: 'TBC.' },
-  { q: "What if the recipient doesn't use it?", a: 'TBC.' },
+  { q: 'How long is a gift voucher valid for?', a: 'Validity period — TBC. (Typically vouchers are valid for a set number of months from purchase.)' },
+  { q: 'How does the recipient redeem it?', a: 'The recipient enters their gift code at checkout when booking online. Exact redemption steps — TBC.' },
+  { q: 'What amounts / denominations are available?', a: 'You’ll be able to choose from set amounts and/or a custom value. Available denominations — TBC.' },
+  { q: 'Can a voucher be used against any cruise?', a: 'The intention is that vouchers can be redeemed against any sailing, subject to availability. Exactly which cruises and events are covered — TBC.' },
+  { q: 'What happens if the recipient doesn’t use it in time?', a: 'Expiry and any extension policy — TBC.' },
+  { q: 'Can I choose a specific experience rather than an amount?', a: 'Yes — you’ll be able to gift a specific cruise or a monetary amount. Options — TBC.' },
 ];
 
+// Popular experiences to gift — the cross-sell strip.
+const experiences = [
+  { name: 'City River Tour', desc: 'Our signature 60-minute sightseeing cruise through the heart of Manchester.', href: '/city-river-tour', linkText: 'View cruise' },
+  { name: 'Music & Party Nights', desc: 'Tribute nights, DJ cruises and party boats with a licensed bar.', href: '/music-cruises-manchester', linkText: 'See events' },
+  { name: 'Christmas Cruises', desc: 'Festive party nights and seasonal sailings through the winter.', href: '/christmas-cruises-manchester', linkText: 'Christmas cruises' },
+  { name: 'Private Hire', desc: 'The whole boat, exclusively yours, for a celebration to remember.', href: '/private-hire', linkText: 'Enquire' },
+];
+
+const SITE = site.url;
+// Meta targeting the "gift voucher boat trip Manchester" family.
+const pageTitle = 'Gift Vouchers — Boat Trip Gifts in Manchester — Manchester River Cruises';
+const pageDescription =
+  'Gift vouchers for a Manchester boat trip — give a sightseeing cruise, music night or private hire on the Ship Canal. Buy online; they get a code to book any sailing. Perfect for Christmas, birthdays, Mother’s Day and Father’s Day.';
+
+// Schema.org: WebPage + FAQPage (built from the visible Q&A). Amounts/denominations are TBC, so no
+// priced Product/Offer is claimed (an honest fallback until pricing is confirmed).
 const structuredData = {
   '@context': 'https://schema.org',
-  '@type': 'WebPage',
-  name: 'Gift Vouchers',
-  description: pageDescription,
-  url: `${SITE}/gift-vouchers`,
+  '@graph': [
+    {
+      '@type': 'WebPage',
+      name: 'Gift Vouchers — Manchester River Cruises',
+      description: pageDescription,
+      url: `${SITE}/gift-vouchers`,
+      about: { '@type': 'LocalBusiness', name: site.name, url: SITE },
+    },
+    {
+      '@type': 'FAQPage',
+      mainEntity: faqs.map((f) => ({
+        '@type': 'Question',
+        name: f.q,
+        acceptedAnswer: { '@type': 'Answer', text: f.a },
+      })),
+    },
+  ],
 };
 ---
 
 <BaseLayout title={pageTitle} description={pageDescription}>
-  {/* Schema.org structured data (WebPage) */}
+  {/* Schema.org structured data (WebPage + FAQPage) */}
   <script type="application/ld+json" is:inline set:html={JSON.stringify(structuredData)} />
 
-  <div class="mx-auto max-w-3xl px-4 py-16 sm:px-6 md:py-20">
-    <h1 class="text-3xl font-bold tracking-tight text-ink sm:text-4xl">Gift Vouchers</h1>
-    <p class="mt-4 text-lg leading-relaxed text-body">
-      Give the gift of a cruise. A Manchester River Cruises gift voucher is a memorable present for
-      birthdays, anniversaries or Christmas — redeemable against any of our cruises.
-    </p>
-
-    {/* Ventrata gift voucher widget — PLACEHOLDER only.
-        The live embed uses the SAME Ventrata checkout script as the booking widget, plus a
-        container element. Script wired in a later step. */}
-    <div
-      class="mt-8 flex min-h-80 items-center justify-center rounded-card border border-dashed border-black/15 bg-panel p-8 text-center text-sm text-subtle"
+  <div>
+    {/* Hero — owned imagery behind the navy overlay; gift-mode CTA leads. */}
+    <PageHero
+      eyebrow="Gift vouchers"
+      title="Give Manchester from the water"
+      subtitle="The gift of a cruise on the Manchester Ship Canal — a sightseeing tour, a party night or the whole boat. Buy online and they get a code to book the sailing that suits them."
+      heroImage="/images/city-river-tour-hero.webp"
+      heroImageAlt="A Manchester River Cruises boat on the Ship Canal at Salford Quays"
     >
-      The gift voucher purchase will load here.
+      <VentrataWidget mode="popup" gift label="Buy a gift voucher" />
+      <a href="/whats-on" class="text-sm font-medium text-white/90 underline-offset-4 hover:underline">
+        See what's on →
+      </a>
+    </PageHero>
+
+    <KeyFacts facts={keyFacts} />
+
+    <div class="mx-auto max-w-6xl px-4 py-12 sm:px-6 md:py-16 lg:px-8">
+      <div class="space-y-16">
+        {/* Occasions */}
+        <section aria-labelledby="occasions">
+          <SectionHeading id="occasions">A gift for every occasion</SectionHeading>
+          <p class="mt-4 max-w-3xl text-body">
+            We run cruises all year round — so a voucher works for whatever’s coming up.
+          </p>
+          <div class="mt-8 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            {
+              occasions.map((o) => (
+                <div class="flex flex-col rounded-card bg-panel p-6 ring-1 ring-black/5">
+                  <h3 class="font-semibold text-ink">{o.title}</h3>
+                  <p class="mt-2 flex-1 text-sm leading-relaxed text-body">{o.copy}</p>
+                  <a
+                    href={o.href}
+                    class="mt-4 text-sm font-medium text-primary underline-offset-4 hover:underline"
+                  >
+                    {o.linkText} →
+                  </a>
+                </div>
+              ))
+            }
+          </div>
+        </section>
+
+        {/* How it works */}
+        <section aria-labelledby="how">
+          <SectionHeading id="how">How it works</SectionHeading>
+          <ol class="mt-8 grid grid-cols-1 gap-6 sm:grid-cols-3">
+            {
+              steps.map((s) => (
+                <li class="rounded-card bg-panel p-6 ring-1 ring-black/5">
+                  <span
+                    aria-hidden="true"
+                    class="flex h-9 w-9 items-center justify-center rounded-full bg-primary/10 text-base font-bold text-primary"
+                  >
+                    {s.n}
+                  </span>
+                  <h3 class="mt-4 font-semibold text-ink">{s.title}</h3>
+                  <p class="mt-2 text-sm leading-relaxed text-body">{s.copy}</p>
+                </li>
+              ))
+            }
+          </ol>
+          <div class="mt-8">
+            <VentrataWidget mode="popup" gift label="Buy a gift voucher" />
+          </div>
+        </section>
+      </div>
     </div>
 
-    <div class="mt-12 space-y-12">
-      {/* Options */}
-      <section aria-labelledby="options">
-        <SectionHeading id="options">Voucher options</SectionHeading>
-        <ul class="mt-6 grid gap-4 sm:grid-cols-3">
-          {
-            options.map((o) => (
-              <li class="rounded-card bg-panel p-5 ring-1 ring-black/5">
-                <h3 class="font-semibold text-ink">{o.name}</h3>
-                <p class="mt-1 text-sm text-body">{o.desc}</p>
-              </li>
-            ))
-          }
-        </ul>
-      </section>
-
-      {/* How to redeem */}
-      <section aria-labelledby="redeem">
-        <SectionHeading id="redeem">How to redeem</SectionHeading>
-        <p class="mt-6 leading-relaxed text-body">
-          Enter your voucher code at checkout when booking online. Full redemption steps TBC.
+    {/* Gift CTA band — dark navy, gift-mode trigger */}
+    <section class="bg-dark text-white">
+      <div class="mx-auto max-w-6xl px-4 py-16 text-center sm:px-6 md:py-20 lg:px-8">
+        <h2 class="text-2xl font-bold tracking-tight sm:text-3xl">Give a day out they’ll remember</h2>
+        <p class="mx-auto mt-3 max-w-2xl text-lg leading-relaxed text-white/80">
+          A Manchester River Cruises gift voucher is the easy present that turns into a proper
+          experience on the water. Buy in minutes; they book when they’re ready.
         </p>
-      </section>
+        <div class="mt-8 flex flex-wrap items-center justify-center gap-4">
+          <VentrataWidget mode="popup" gift label="Buy a gift voucher" />
+          <CTAButton href="/city-river-tour" variant="outline">Or book a cruise now</CTAButton>
+        </div>
+      </div>
+    </section>
 
-      <FAQSection faqs={faqs} title="Gift voucher FAQs" />
-    </div>
+    <div class="mx-auto max-w-6xl px-4 py-12 sm:px-6 md:py-16 lg:px-8">
+      <div class="space-y-16">
+        {/* Popular experiences to gift */}
+        <section aria-labelledby="experiences">
+          <SectionHeading id="experiences">Popular experiences to gift</SectionHeading>
+          <p class="mt-4 max-w-3xl text-body">Not sure what to choose? These are the ones people love to give.</p>
+          <div class="mt-8 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            {experiences.map((e) => <ProductCard name={e.name} desc={e.desc} href={e.href} linkText={e.linkText} />)}
+          </div>
+        </section>
 
-    <div class="mt-12 rounded-card bg-panel p-6 ring-1 ring-black/5 sm:flex sm:items-center sm:justify-between sm:gap-6">
-      <p class="font-semibold text-ink">Prefer to book a cruise now?</p>
-      <div class="mt-4 shrink-0 sm:mt-0">
-        <CTAButton href="/city-river-tour">Book a cruise</CTAButton>
+        <FAQSection faqs={faqs} title="Gift voucher FAQs" />
       </div>
     </div>
   </div>

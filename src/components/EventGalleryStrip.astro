@@ -36,6 +36,11 @@ const moreCount = Math.max(0, images.length - VISIBLE);
 // A mosaic needs a dominant + two supporting tiles; below that, fall back to the compact row.
 const isMosaic = images.length >= 3;
 
+// The first album image NOT shown in the visible tiles — used to back the "+N more" tile with a
+// real photo. undefined when the album is exactly the visible count (no next image) → plain tile.
+const nextImg = images[VISIBLE];
+const moreLabel = moreCount > 0 ? `+${moreCount} more photo${moreCount === 1 ? '' : 's'}` : 'View full album';
+
 function dims(img: (typeof images)[number]) {
   return { w: img.width ?? imageDims(img.orientation).w, h: img.height ?? imageDims(img.orientation).h };
 }
@@ -99,17 +104,52 @@ function dims(img: (typeof images)[number]) {
             </a>
           );
         })}
+        {/* Album / "+N more" tile. When a next (un-shown) album image exists, back the tile with it
+            under a navy overlay so it reads as a photo inside the mosaic, not a grey box. With no
+            next image (album is exactly the visible count) keep the plain panel. It's a navigation
+            link, never a lightbox item (no data-pswp-*), so the visible label is the accessible name
+            and the background image is presentational (alt=""). */}
         <a
           href={`/gallery/${album.data.slug}`}
           class:list={[
-            'flex flex-none flex-col items-center justify-center gap-0.5 rounded-card bg-panel px-5 text-center text-sm font-medium text-primary ring-1 ring-black/5 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary',
+            'group relative flex-none overflow-hidden rounded-card ring-1 ring-black/5 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary',
             isMosaic
-              ? 'h-64 w-[60vw] snap-start transition duration-300 hover:-translate-y-1 hover:bg-primary/5 hover:shadow-xl motion-reduce:transition-none motion-reduce:hover:translate-y-0 sm:col-span-2 sm:h-full sm:w-auto'
-              : 'h-24 transition hover:bg-primary/5 sm:h-28',
+              ? 'h-64 w-[60vw] snap-start transition duration-300 hover:-translate-y-1 hover:shadow-xl motion-reduce:transition-none motion-reduce:hover:translate-y-0 sm:col-span-2 sm:h-full sm:w-auto'
+              : 'h-24 transition sm:h-28',
+            !nextImg &&
+              'flex flex-col items-center justify-center gap-0.5 bg-panel px-5 text-center text-sm font-medium text-primary hover:bg-primary/5',
           ]}
         >
-          <span>{moreCount > 0 ? `+${moreCount} more photo${moreCount === 1 ? '' : 's'}` : 'View full album'}</span>
-          <span aria-hidden="true" class="text-base leading-none">→</span>
+          {
+            nextImg ? (
+              <Fragment>
+                <img
+                  src={nextImg.cardSrc}
+                  alt=""
+                  aria-hidden="true"
+                  width={dims(nextImg).w}
+                  height={dims(nextImg).h}
+                  loading="lazy"
+                  decoding="async"
+                  class="absolute inset-0 h-full w-full object-cover transition duration-300 group-hover:scale-105 motion-reduce:transition-none motion-reduce:group-hover:scale-100"
+                />
+                <span aria-hidden="true" class="absolute inset-0 bg-dark/60" />
+                <span class="absolute inset-0 flex flex-col items-center justify-center gap-0.5 px-5 text-center text-sm font-medium text-white">
+                  <span>{moreLabel}</span>
+                  <span aria-hidden="true" class="text-base leading-none">
+                    →
+                  </span>
+                </span>
+              </Fragment>
+            ) : (
+              <Fragment>
+                <span>{moreLabel}</span>
+                <span aria-hidden="true" class="text-base leading-none">
+                  →
+                </span>
+              </Fragment>
+            )
+          }
         </a>
       </div>
     </section>
