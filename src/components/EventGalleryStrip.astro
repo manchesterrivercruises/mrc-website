@@ -3,19 +3,38 @@ import type { Album } from '../lib/gallery';
 import { getAlbumImages, imageDims } from '../lib/gallery';
 import SectionHeading from './SectionHeading.astro';
 
-// Compact photo strip for an event page, shown only when its gallery album has owned images.
-// Renders a few natural-aspect card thumbnails + a "+N more / View full album" tile linking to
-// /gallery/<slug>. Every album image (including the ones past the visible few) is a PhotoSwipe
-// link, so the lightbox flows through the FULL album sequence — the extras are in the DOM but
-// visually hidden. isFeatured images lead; the page's own hero is excluded to avoid repetition.
+// Event mini-gallery — on event pages the photos ARE the sell, so this reads as a feature
+// moment, not a utility thumbnail row.
+//
+// PRESENTATION:
+//   • 3+ owned photos → editorial mosaic: one dominant landscape tile (~2x) + two supporting
+//     tiles + the "+N more / album" tile, with tight gutters and a subtle hover lift. On mobile
+//     it becomes a full-bleed, edge-to-edge horizontal swipe strip with scroll-snap.
+//   • 1–2 owned photos → the original compact row (a mosaic of two looks broken).
+//
+// Lightbox/album behaviour is UNCHANGED: every album image is a PhotoSwipe link (extras past the
+// visible few stay in the DOM but hidden), so the lightbox flows through the FULL album sequence;
+// the "+N more" tile is a plain link to /gallery/<slug>. isFeatured images lead; the page's own
+// hero is excluded to avoid repetition.
 interface Props {
   album: Album;
   heroImage?: string;
+  // Selling heading + one-line lead (per-page-appropriate copy passed by the event page).
+  heading?: string;
+  lead?: string;
 }
-const { album, heroImage } = Astro.props;
+const {
+  album,
+  heroImage,
+  heading = 'The atmosphere on board',
+  lead = 'Real nights on the water — tap to browse',
+} = Astro.props;
+
 const images = getAlbumImages(album, heroImage);
 const VISIBLE = 3;
 const moreCount = Math.max(0, images.length - VISIBLE);
+// A mosaic needs a dominant + two supporting tiles; below that, fall back to the compact row.
+const isMosaic = images.length >= 3;
 
 function dims(img: (typeof images)[number]) {
   return { w: img.width ?? imageDims(img.orientation).w, h: img.height ?? imageDims(img.orientation).h };
@@ -25,13 +44,28 @@ function dims(img: (typeof images)[number]) {
 {
   images.length > 0 && (
     <section aria-labelledby="event-photos">
-      <SectionHeading id="event-photos">Photos</SectionHeading>
-      {/* One PhotoSwipe root; the extra album images (index >= VISIBLE) are hidden but stay in the
-          sequence. The final tile links to the album and is NOT a lightbox item (no data-pswp-*). */}
-      <div id="event-gallery" class="mt-6 flex gap-2 overflow-x-auto pb-1 sm:gap-3">
+      <SectionHeading id="event-photos">{heading}</SectionHeading>
+      <p class="mt-3 text-body">{lead}</p>
+
+      {/* One PhotoSwipe root (#event-gallery). Extra album images (index >= VISIBLE) are hidden
+          (display:none) but remain PhotoSwipe children, so the lightbox runs the full sequence.
+          The final tile links to the album and is NOT a lightbox item (no data-pswp-* attrs).
+
+          Layout switches on `isMosaic`: an editorial grid that becomes a full-bleed swipe strip on
+          mobile, or the original compact row when there are only 1–2 photos. */}
+      <div
+        id="event-gallery"
+        class:list={[
+          'mt-6',
+          isMosaic
+            ? '-mx-4 flex snap-x snap-mandatory gap-2 overflow-x-auto scroll-px-4 px-4 pb-1 sm:mx-0 sm:grid sm:h-[22rem] sm:grid-cols-4 sm:grid-rows-2 sm:gap-2.5 sm:overflow-visible sm:px-0 sm:pb-0 md:h-[26rem]'
+            : 'flex gap-2 overflow-x-auto pb-1 sm:gap-3',
+        ]}
+      >
         {images.map((img, i) => {
           const { w, h } = dims(img);
           const hidden = i >= VISIBLE;
+          const dominant = isMosaic && i === 0;
           return (
             <a
               href={img.src}
@@ -42,7 +76,11 @@ function dims(img: (typeof images)[number]) {
               aria-hidden={hidden ? 'true' : undefined}
               tabindex={hidden ? '-1' : undefined}
               class:list={[
-                'group relative block h-24 flex-none overflow-hidden rounded-card ring-1 ring-black/5 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary sm:h-28',
+                'group relative flex-none overflow-hidden rounded-card ring-1 ring-black/5 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary',
+                isMosaic
+                  ? 'h-64 w-[82vw] snap-start transition duration-300 hover:-translate-y-1 hover:shadow-xl motion-reduce:transition-none motion-reduce:hover:translate-y-0 sm:h-full sm:w-auto'
+                  : 'block h-24 sm:h-28',
+                dominant && 'sm:col-span-2 sm:row-span-2',
                 hidden && 'hidden',
               ]}
             >
@@ -53,14 +91,22 @@ function dims(img: (typeof images)[number]) {
                 height={h}
                 loading="lazy"
                 decoding="async"
-                class="h-full w-auto max-w-none transition duration-300 group-hover:scale-105 motion-reduce:transition-none motion-reduce:group-hover:scale-100"
+                class:list={[
+                  'h-full w-auto max-w-none transition duration-300 group-hover:scale-105 motion-reduce:transition-none motion-reduce:group-hover:scale-100',
+                  isMosaic && 'sm:w-full sm:object-cover',
+                ]}
               />
             </a>
           );
         })}
         <a
           href={`/gallery/${album.data.slug}`}
-          class="flex h-24 flex-none flex-col items-center justify-center gap-0.5 rounded-card bg-panel px-5 text-center text-sm font-medium text-primary ring-1 ring-black/5 transition hover:bg-primary/5 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary sm:h-28"
+          class:list={[
+            'flex flex-none flex-col items-center justify-center gap-0.5 rounded-card bg-panel px-5 text-center text-sm font-medium text-primary ring-1 ring-black/5 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary',
+            isMosaic
+              ? 'h-64 w-[60vw] snap-start transition duration-300 hover:-translate-y-1 hover:bg-primary/5 hover:shadow-xl motion-reduce:transition-none motion-reduce:hover:translate-y-0 sm:col-span-2 sm:h-full sm:w-auto'
+              : 'h-24 transition hover:bg-primary/5 sm:h-28',
+          ]}
         >
           <span>{moreCount > 0 ? `+${moreCount} more photo${moreCount === 1 ? '' : 's'}` : 'View full album'}</span>
           <span aria-hidden="true" class="text-base leading-none">→</span>
