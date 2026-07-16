@@ -36,6 +36,9 @@ interface Props {
   /** embedded/popup: open the checkout on the date/calendar step (date-led browsing).
       See the calendarFirst caveat below — the exact data-config key is TBC with Ventrata. */
   calendarFirst?: boolean;
+  /** popup: open Ventrata's GIFT-purchase flow (openGiftFlow) instead of a product checkout —
+      no productID required. See the gift caveat below (exact config shape is TBC on device). */
+  gift?: boolean;
   /** embedded: min-height utility (widget must be able to grow — never a fixed height) */
   minHeightClass?: string;
 }
@@ -48,10 +51,13 @@ const {
   label = 'Book Now',
   class: className = '',
   calendarFirst = false,
+  gift = false,
   minHeightClass = 'min-h-[40rem]',
 } = Astro.props;
 
-if ((mode === 'embedded' || mode === 'popup') && !productID) {
+// A gift pop-up opens the gift-purchase flow (no product), so it is the ONE popup that doesn't
+// need a productID. Every other embedded/popup still requires one.
+if ((mode === 'embedded' || (mode === 'popup' && !gift)) && !productID) {
   throw new Error(`VentrataWidget mode="${mode}" requires a productID`);
 }
 
@@ -64,6 +70,35 @@ const checkoutConfig = JSON.stringify({ apiKey: VENTRATA_CHECKOUT_KEY, env });
 const calendarFirstConfig = calendarFirst ? { calendarFirst: true } : {};
 const embeddedConfig = JSON.stringify({ productID, embedded: true, ...calendarFirstConfig });
 const popupConfig = JSON.stringify({ productID, ...calendarFirstConfig });
+
+// GIFT FLOW — a pop-up trigger that opens Ventrata's gift-purchase flow (buy a gift voucher/card)
+// rather than a product checkout, per docs/ventrata-integration.md → "Recommended widget features"
+// (`openGiftFlow`). ⚠ The exact config shape is UNCONFIRMED and must be verified on device — same
+// posture as dateToPreselect / calendarFirst: `openGiftFlow` is documented INSIDE the `features`
+// object, but whether the trigger reads it there (vs a top-level key) and opens the gift flow with
+// NO productID is exactly what the on-device check must confirm. It also requires gift cards to be
+// ENABLED on the MRC Ventrata account — the checkout's existing "Buy as a gift card" link suggests
+// they are, but confirm. The debug script (GIFT_DEBUG_SCRIPT) logs the exact config for that check.
+const giftConfig = JSON.stringify({ features: { openGiftFlow: true } });
+const popupConfigOut = gift ? giftConfig : popupConfig;
+
+// Logs the EXACT config handed to the gift trigger(s) so ONE device check confirms whether
+// openGiftFlow (and its placement inside `features`) is the accepted key — mirrors the auto-open
+// `console.debug('[MRC][ventrata] auto-open config →', …)` diagnostic. Self-dedupes so multiple
+// gift buttons on a page log once. Remove after on-device gift-flow QA.
+const GIFT_DEBUG_SCRIPT = `
+(function () {
+  if (window.__mrcGiftDebug) return;
+  window.__mrcGiftDebug = true;
+  function log() {
+    var t = document.querySelector('[ventrata-checkout][data-gift-flow]');
+    if (!t) return;
+    try { console.debug('[MRC][ventrata] gift-flow config →', t.getAttribute('data-config')); } catch (e) {}
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', log);
+  else log();
+})();
+`;
 
 // Loader CSS + observer JS injected via set:html. IMPORTANT: Astro does NOT evaluate
 // `{...}` inside <script>/<style> tag bodies — `<script>{`…`}</script>` emits the
@@ -543,8 +578,18 @@ const OBSERVER_SCRIPT = `
 
 {
   mode === 'popup' && (
-    <CTAButton class={className} ventrata-checkout="" data-config={popupConfig}>
-      {label}
-    </CTAButton>
+    <Fragment>
+      <CTAButton
+        class={className}
+        ventrata-checkout=""
+        data-config={popupConfigOut}
+        data-gift-flow={gift ? '' : undefined}
+      >
+        {label}
+      </CTAButton>
+      {/* One-device diagnostic for the (TBC) gift-flow config — only shipped alongside a gift
+          trigger, self-dedupes across multiple gift buttons. */}
+      {gift && <script is:inline set:html={GIFT_DEBUG_SCRIPT} />}
+    </Fragment>
   )
 }
