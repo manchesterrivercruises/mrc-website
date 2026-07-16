@@ -123,20 +123,30 @@ Exact `data-config` key names should be confirmed against MRC's specific Ventrat
 checkout before shipping — Ventrata occasionally versions these. Treat the JSON below as
 the intended shape, not a guaranteed literal.
 
-### Calendar First mode — date-led browsing · **website-task**
+### Calendar First mode — date-led browsing · **website-task · support-confirmed 2026-07-16**
 
 Opens the widget on the calendar/date step first, so customers browse by date before
 picking a product/option. Good fit for the What's On flow and seasonal event pages where
 "what's on *this date*" is the natural entry point.
 
+**Config shape (support-confirmed):** `features.calendarFirst.enabled` — an object, **not** the old
+flat `calendarFirst: true` boolean:
+
 ```html
 <button
   ventrata-checkout
-  data-config='{"productID": "<PRODUCT_ID>", "calendarFirst": true}'
+  data-config='{"productID": "<PRODUCT_ID>", "features": {"calendarFirst": {"enabled": true}}}'
 >
   Check dates
 </button>
 ```
+
+- **Which products appear** is controllable via the `products` object in the config; **order** is
+  controlled by **dashboard categories**. There is a **20-product cap** on the calendar-first view.
+- **Homepage:** we did **not** rebuild it around calendar-first — desktop keeps the OCTO-powered date
+  finder (`DateFinder`, richer live availability). Only the **mobile** "Find your date" pop-up trigger
+  uses calendar-first (a full calendar + departures panel would dominate a phone homepage). Emitted by
+  `<VentrataWidget … calendarFirst>`.
 
 Set per embed via `data-config`. May also expose a dashboard default — if enabled there,
 the site config still wins per widget. Confirm the exact key in MRC's checkout.
@@ -203,7 +213,31 @@ https://manchesterrivercruises.com/city-river-tour?openWidget=true&promoCode=XMA
 read) and build campaign URLs correctly. Promo codes themselves are created and managed
 in the dashboard (**dashboard-task**). Confirm exact param names against MRC's checkout.
 
+#### Dynamic booking UI — `window.Ventrata(config)` · **support-confirmed 2026-07-16**
+
+For **in-page** booking UI built at runtime (the OCTO date finder's buttons, any JS-created trigger),
+do **not** inject a `ventrata-checkout` element and click it — Ventrata binds those triggers at load,
+so a dynamically-created one is ignored. Instead call the global:
+
+```js
+if (typeof window.Ventrata === 'function') {
+  window.Ventrata({ productID, dateToPreselect: 'YYYY-MM-DD', timeslotToPreselect: 'HH:MM' });
+}
+```
+
+This opens the checkout **in place** (e.g. on the homepage) preselecting the date/time. **Standard
+pattern:** call `window.Ventrata` from the click handler when present; keep the `?openWidget=true&date=…`
+product-page link as the `href` so it degrades gracefully when the global is absent (no JS / not yet
+loaded). Applied to the date finder's "Book this date" and the on-page auto-open path.
+
 #### Date-preselect deep link — diagnosis & on-device QA
+
+> **RESOLVED (support-confirmed 2026-07-16).** Both suspects below were right and both are now fixed:
+> (1) the sold-out case needs **`features.waitlistsAllowed: true`** (now in the global checkout
+> config) so the customer lands on the sold-out date with a "Notify me" step instead of it being
+> refused; (2) the dynamic-trigger case is solved by calling **`window.Ventrata(cfg)`** directly
+> instead of injecting a trigger element (see "Dynamic booking UI" above — now applied in the
+> date finder and the auto-open path). The historical diagnosis is kept below for context.
 
 Confirmed on device: a Dolly **"Join waitlist"** deep link opens the widget but does **not**
 preselect the date. Findings:
@@ -274,22 +308,28 @@ The debug line `[MRC][ventrata] gift-flow config → {"features":{"gifts":{"mode
 `FLOW_DEBUG_SCRIPT`) confirms the exact config. If the embed shows a product chooser instead of a gift
 purchase, check "Allow Gift Voucher" is enabled in the dashboard.
 
-### Ventrata support questions — config items to confirm on device / with the account manager
+### Ventrata support questions — RESOLVED log
 
-Open items where our config is built to Ventrata's docs but is **not yet proven** on the MRC account.
-Each ships with best-evidence config + a debug line so one device check settles it:
+All previously-open config questions were answered by Ventrata support on **2026-07-16** and applied:
 
-1. **Click-vs-bind for dynamically-created triggers.** Does the widget read a trigger's `data-config`
-   when the `ventrata-checkout` element is created *dynamically* (auto-open, client-injected), or only
-   from load-time triggers/script config? (Root cause candidate for the date-preselect deep-link miss —
-   see "Date-preselect deep link" above.)
-2. **Waitlist deep-link state.** Should a sold-out "Join waitlist" deep link carry `dateToPreselect`
-   at all, or does the availability-aware calendar correctly refuse an unbuyable date? If waitlist is
-   the intended path, does it need the `waitlistsAllowed` feature rather than date-preselect?
-3. ~~**Reservation / Manage-My-Booking flow config.**~~ **RESOLVED (support-confirmed 2026-07-16):**
-   there is no reservation *widget flow* — MMB is Ventrata's **hosted portal** at
-   `checkin.ventrata.com/{checkoutKey}`, which `/manage-booking` now links to. `openReservationFlow`
-   was wrong/legacy and is removed. See "Manage My Booking" below.
+1. ~~**Click-vs-bind for dynamically-created triggers.**~~ **RESOLVED:** use the global
+   **`window.Ventrata(cfg)`** for dynamic booking UI — injected `ventrata-checkout` triggers are bound
+   at load and ignored. See "Dynamic booking UI" above (applied in the date finder + auto-open path).
+2. ~~**Waitlist deep-link state.**~~ **RESOLVED:** `dateToPreselect` **does** work on a sold-out date
+   (customer lands on it and sees "Notify me") **provided `features.waitlistsAllowed: true`** — now in
+   the global checkout config. See "Date-preselect deep link" above.
+3. ~~**Reservation / Manage-My-Booking flow config.**~~ **RESOLVED:** there is no reservation *widget
+   flow* — MMB is Ventrata's **hosted portal** at `checkin.ventrata.com/{checkoutKey}`, which
+   `/manage-booking` now links to. `openReservationFlow` was wrong/legacy and is removed.
+
+### Ventrata dashboard settings to enable — **dashboard-task** (Simon)
+
+Toggles that must be switched on in the **Web Checkout** dashboard for shipped code to work. Code sends
+the right config; these are the account-side switches:
+
+- [ ] **Allow Gift Voucher** — enables the gift flow (`features.gifts.mode:"simple"`) on `/gift-vouchers`.
+- [ ] **Waitlists** — enables the sold-out "Notify me" step that `features.waitlistsAllowed` requests.
+- [ ] **Promo codes / categories** — as needed for campaign links and calendar-first product ordering.
 
 ### Order Recovery Email — abandoned cart recovery · **dashboard-task**
 
