@@ -30,6 +30,13 @@ const dateFilters = [
   { value: '6months', label: 'Next 6 months' },
   { value: 'all', label: 'All dates' },
 ];
+// Sailing-times filter — timing is an attribute (day/evening/both), not a category. 'Daytime' shows
+// daytime + both; 'Evening' shows evening + both. Deep-linkable via ?time=daytime|evening.
+const timeFilters = [
+  { value: 'all', label: 'All times', isDefault: true },
+  { value: 'daytime', label: 'Daytime' },
+  { value: 'evening', label: 'Evening' },
+];
 
 const venues = [
   { name: 'Kargo', tagline: 'Waterfront bar and kitchen', distance: '3 min walk' },
@@ -105,6 +112,7 @@ const HYDRATE_SCRIPT = `
     item.className = 'event-item contents';
     item.setAttribute('data-type', m.type);
     item.setAttribute('data-date', d.date);
+    item.setAttribute('data-times', m.sailingTimes || 'evening');
 
     var art = document.createElement('article');
     art.className = 'event-card group flex flex-col overflow-hidden rounded-card bg-white shadow-sm ring-1 ring-black/5 transition hover:-translate-y-0.5 hover:shadow-md hover:ring-black/10';
@@ -135,6 +143,16 @@ const HYDRATE_SCRIPT = `
       badgeEl.className = 'absolute right-3 top-3 rounded-full px-2.5 py-0.5 text-xs font-semibold ' + b.cls;
       badgeEl.textContent = b.text;
       media.appendChild(badgeEl);
+    }
+    // Timing badge (top-left) — events only; evening is the default expectation and isn't badged.
+    var timingText = m.type === 'events'
+      ? (m.sailingTimes === 'daytime' ? 'Daytime' : m.sailingTimes === 'both' ? 'Daytime & evening' : '')
+      : '';
+    if (timingText) {
+      var timeEl = document.createElement('span');
+      timeEl.className = 'absolute left-3 top-3 rounded-full bg-amber-100 px-2.5 py-0.5 text-xs font-semibold text-amber-900 ring-1 ring-amber-300';
+      timeEl.textContent = timingText;
+      media.appendChild(timeEl);
     }
     a.appendChild(media);
 
@@ -199,6 +217,19 @@ const HYDRATE_SCRIPT = `
         }
       </fieldset>
 
+      {/* Sailing-times filter (day / evening / both) */}
+      <fieldset class="m-0 mt-3 flex flex-wrap gap-2 border-0 p-0">
+        <legend class="sr-only">Filter by sailing time</legend>
+        {
+          timeFilters.map((f) => (
+            <label class="cursor-pointer">
+              <input type="radio" name="wo-time" value={f.value} checked={f.isDefault} class="peer sr-only" />
+              <span class={pillClass}>{f.label}</span>
+            </label>
+          ))
+        }
+      </fieldset>
+
       {/* Date quick-filters */}
       <fieldset id="wo-date-filters" class="m-0 mt-3 flex flex-wrap gap-2 border-0 p-0 transition-opacity">
         <legend class="sr-only">Filter by date</legend>
@@ -230,7 +261,7 @@ const HYDRATE_SCRIPT = `
       <div data-event-grid class="event-grid mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {
           products.map((p) => (
-            <div class="event-item contents" data-type={p.type} data-date="">
+            <div class="event-item contents" data-type={p.type} data-date="" data-times={p.sailingTimes}>
               <EventCard
                 type={p.typeLabel}
                 title={p.title}
@@ -239,6 +270,7 @@ const HYDRATE_SCRIPT = `
                 href={p.href}
                 image={p.image}
                 imageAlt={p.imageAlt}
+                sailingTimes={p.type === 'events' ? p.sailingTimes : undefined}
               />
             </div>
           ))
@@ -281,11 +313,13 @@ const HYDRATE_SCRIPT = `
     function applyWhatsOnFilters() {
       const typeEl = document.querySelector('input[name="wo-type"]:checked') as HTMLInputElement | null;
       const dateEl = document.querySelector('input[name="wo-date"]:checked') as HTMLInputElement | null;
+      const timeEl = document.querySelector('input[name="wo-time"]:checked') as HTMLInputElement | null;
       const fromEl = document.getElementById('wo-from') as HTMLInputElement | null;
       const toEl = document.getElementById('wo-to') as HTMLInputElement | null;
       if (!typeEl) return;
 
       const type = typeEl.value;
+      const timeFilter = timeEl ? timeEl.value : 'all';
       const dateFilter = dateEl ? dateEl.value : 'all';
       const fromMs = fromEl && fromEl.value ? new Date(fromEl.value + 'T00:00:00').getTime() : null;
       const toMs = toEl && toEl.value ? new Date(toEl.value + 'T23:59:59').getTime() : null;
@@ -295,10 +329,14 @@ const HYDRATE_SCRIPT = `
 
       document.querySelectorAll<HTMLElement>('.event-item').forEach((item) => {
         const t = item.getAttribute('data-type');
+        const times = item.getAttribute('data-times') || 'evening';
         const raw = item.getAttribute('data-date') || '';
         const ms = raw ? new Date(raw).getTime() : NaN;
         const days = (ms - now) / 86400000;
         const matchType = type === 'all' || t === type;
+        // Daytime → daytime|both; Evening → evening|both; 'both' always matches a specific choice.
+        const matchTime =
+          timeFilter === 'all' || times === 'both' || times === timeFilter;
         let matchDate;
         if (Number.isNaN(ms)) matchDate = true; // undated fallback card — always show
         else if (rangeActive) matchDate = ms >= (fromMs as number) && ms <= (toMs as number);
@@ -307,7 +345,7 @@ const HYDRATE_SCRIPT = `
         else if (dateFilter === '3months') matchDate = days >= -1 && days <= 90;
         else if (dateFilter === '6months') matchDate = days >= -1 && days <= 180;
         else matchDate = true; // 'all'
-        const show = matchType && matchDate;
+        const show = matchType && matchTime && matchDate;
         item.style.display = show ? '' : 'none';
         if (show) visible++;
       });
@@ -322,8 +360,16 @@ const HYDRATE_SCRIPT = `
 
     (window as unknown as { __applyWhatsOnFilters?: () => void }).__applyWhatsOnFilters = applyWhatsOnFilters;
 
+    // Deep link: ?time=daytime|evening preselects the sailing-times pill (used by the party-boat
+    // page's "Daytime parties" CTA). Ignored if the value isn't a real option.
+    const timeParam = new URLSearchParams(window.location.search).get('time');
+    if (timeParam === 'daytime' || timeParam === 'evening') {
+      const pill = document.querySelector<HTMLInputElement>(`input[name="wo-time"][value="${timeParam}"]`);
+      if (pill) pill.checked = true;
+    }
+
     document
-      .querySelectorAll('input[name="wo-type"], input[name="wo-date"], #wo-from, #wo-to')
+      .querySelectorAll('input[name="wo-type"], input[name="wo-time"], input[name="wo-date"], #wo-from, #wo-to')
       .forEach((el) => {
         el.addEventListener('change', applyWhatsOnFilters);
         el.addEventListener('input', applyWhatsOnFilters);

@@ -33,6 +33,10 @@ const events = defineCollection({
     shortTagline: z.string().optional(),
     ventrataProductId: z.string().optional(),
     category: z.enum(['live-music', 'dj-night', 'family', 'seasonal']).optional(),
+    // When the event sails. Timing is an ATTRIBUTE, not a category — an event can run daytime,
+    // evening or both. Decks on Deck = daytime; ABBA = both; most events = evening (the default).
+    // Dolly joins the daytime programme in 2027 (flip to 'both' then).
+    sailingTimes: z.enum(['daytime', 'evening', 'both']).default('evening'),
     duration: z.string().optional(),
     startDate: z.coerce.date().optional(),
     endDate: z.coerce.date().optional(),

@@ -87,3 +87,26 @@ built and they are excluded from all listings**. Reactivate by flipping the flag
 
 Before reactivating Broadway, Wizards & Fairies or Halloween, confirm the product
 exists in Ventrata and replace the partial ID with the full product ID.
+
+---
+
+## Daytime programme & `/daytime-parties-manchester` SEO page
+
+Sailing timing is modelled as an **attribute** on each event (`sailingTimes`: `daytime` /
+`evening` / `both`) — not a category. It drives the What's On timing filter (All times / Daytime /
+Evening, deep-linkable via `?time=daytime`), the card badges, and the event-page KeyFacts line.
+
+**Confirmed daytime line-up (2026-07-16):**
+
+| Event | sailingTimes | Notes |
+|-------|--------------|-------|
+| Decks on Deck | `daytime` | Daytime deck party (DJ) |
+| ABBA | `both` | Runs daytime **and** evening |
+| Dolly | `evening` → `both` | **Joins the daytime programme in 2027** — flip to `both` then |
+| (all other events) | `evening` | Default expectation; not badged |
+
+**SEO page — build when the 2027 daytime programme is confirmed.** Once Dolly (and any further
+daytime additions) are locked for 2027, build a dedicated **`/daytime-parties-manchester`** landing
+page targeting "daytime boat party / afternoon party Manchester" intent, cross-linked from the
+party-boat page's "Prefer a daytime party?" section. Until then, that section + the What's On
+`?time=daytime` filter cover the intent without a thin standalone page.

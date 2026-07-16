@@ -33,6 +33,7 @@ const {
   shortTagline,
   ventrataProductId,
   category,
+  sailingTimes,
   duration,
   priceFrom,
   whatToExpect = [],
@@ -43,7 +44,8 @@ const {
 
 const categoryLabels: Record<string, string> = {
   'live-music': 'Live music cruise',
-  'dj-night': 'DJ night',
+  // "DJ event" not "DJ night" — some (e.g. Decks on Deck) sail daytime; the dj-night slug stays.
+  'dj-night': 'DJ event',
   family: 'Family event',
   seasonal: 'Seasonal cruise',
 };
@@ -65,10 +67,21 @@ const icons = {
   sparkles:
     '<path d="M9.813 15.904 9 18.75l-.813-2.846a4.5 4.5 0 0 0-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 0 0 3.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 0 0 3.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 0 0-3.09 3.09Z" /><path d="M18.259 8.715 18 9.75l-.259-1.035a3.375 3.375 0 0 0-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 0 0 2.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 0 0 2.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 0 0-2.456 2.456Z" />',
   pin: '<path d="M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" /><path d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1 1 15 0Z" />',
+  sun: '<path d="M12 3v2.25m6.364.386-1.591 1.591M21 12h-2.25m-.386 6.364-1.591-1.591M12 18.75V21m-4.773-4.227-1.591 1.591M5.25 12H3m4.227-4.773L5.636 5.636M15.75 12a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0Z" />',
 };
+
+// sailingTimes drives a "when" KeyFact. Evening is the default expectation, so it gets no line —
+// only daytime/both are surfaced (matches the What's On badge rule).
+const sailingTimesFact =
+  sailingTimes === 'daytime'
+    ? { text: 'Daytime sailings', icon: icons.sun }
+    : sailingTimes === 'both'
+      ? { text: 'Daytime & evening sailings — pick your time when booking', icon: icons.sun }
+      : null;
 
 const keyFacts = [
   ...(duration ? [{ text: duration, icon: icons.clock }] : []),
+  ...(sailingTimesFact ? [sailingTimesFact] : []),
   ...(priceFrom != null ? [{ text: `From £${priceFrom}`, icon: icons.tag }] : []),
   { text: 'Licensed bar onboard', icon: icons.sparkles },
   { text: 'Millennium Footbridge departure', icon: icons.pin },

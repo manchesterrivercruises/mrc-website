@@ -9,7 +9,7 @@ export type Album = CollectionEntry<'gallery'>;
 // Human labels for the category filter pills / badges.
 export const CATEGORY_LABELS: Record<Album['data']['category'], string> = {
   'live-music': 'Live Music',
-  'dj-night': 'DJ Nights',
+  'dj-night': 'DJ Events',
   family: 'Family',
   seasonal: 'Seasonal',
   boats: 'Our Boats',
