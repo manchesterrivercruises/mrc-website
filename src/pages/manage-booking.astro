@@ -21,7 +21,8 @@ const structuredData = {
 
 // Self-service capabilities — CONFIRMED by Ventrata support for the hosted Manage My Booking portal
 // (checkin.ventrata.com). No longer TBC. We LINK to the portal rather than embed it (see the CTA
-// comment below), so this list simply tells customers what to expect before they leave the site.
+// comment below); the portal is brand-styled via Ventrata Brands, so it reads as ours — this list
+// just tells customers what to expect when they open it.
 const selfService = [
   'Reschedule your cruise — change the date or the time.',
   'Pick a date for an open (undated) ticket.',
@@ -64,12 +65,15 @@ const needsACall = [
         (checkin.ventrata.com/{checkoutKey}), opened in a new tab. Deliberately a link, NOT an embed
         or pop-up widget: the portal is Ventrata's own hosted app with its own booking-lookup, session
         and auth handling — linking hands that off cleanly (no iframe/session edge cases on our side)
-        and always tracks whatever the portal supports. The earlier openReservationFlow trigger was a
-        guessed key and is removed (marked wrong/legacy in docs/ventrata-integration.md). */}
+        and always tracks whatever the portal supports. It's brand-styled via Ventrata Brands, so it
+        looks and feels like ours — hence the "our secure booking portal" framing rather than a
+        "you're leaving the site" warning. The earlier openReservationFlow trigger was a guessed key
+        and is removed (marked wrong/legacy in docs/ventrata-integration.md). */}
     <div class="mt-8">
       <CTAButton href={VENTRATA_MMB_URL} class="w-full sm:w-auto" target="_blank" rel="noopener noreferrer">
         Find my booking
       </CTAButton>
+      <p class="mt-3 text-sm text-subtle">Opens our secure booking portal in a new tab.</p>
     </div>
 
     {/* What you can do here */}

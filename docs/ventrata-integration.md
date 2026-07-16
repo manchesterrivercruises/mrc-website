@@ -533,6 +533,11 @@ Ventrata's own hosted app with its own booking-lookup, session and auth handling
 off cleanly (no iframe/session edge cases on our side) and always tracks whatever the portal supports.
 Also link it from booking-confirmation emails and the site footer.
 
+**Branding.** The portal is **brand-styled via Ventrata Brands**, so it carries MRC's look and reads
+as ours rather than a generic third-party page. The `/manage-booking` copy reflects this — it frames
+the link as *"our secure booking portal"* (opens in a new tab) rather than a *"you're leaving the
+site"* warning.
+
 > **`openReservationFlow` was WRONG / legacy — removed.** An earlier cut shipped a pop-up trigger with
 > `features.openReservationFlow` (a guessed key by analogy to gift). There is no such widget flow —
 > MMB is the hosted portal above. The `reservation` prop has been removed from `VentrataWidget`.
