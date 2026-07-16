@@ -78,17 +78,35 @@ const embeddedConfig = JSON.stringify({ productID, embedded: true, ...calendarFi
 const popupConfig = JSON.stringify({ productID, ...calendarFirstConfig });
 
 // SELF-SERVICE FLOWS — a pop-up trigger that opens a Ventrata flow (gift purchase, or the
-// reservation / Manage-My-Booking portal) rather than a product checkout, so it carries NO
-// productID. `openGiftFlow` is documented under "Recommended widget features"; `openReservationFlow`
-// is the analogous key for the self-service MMB flow (docs/ventrata-integration.md → "Manage My
-// Booking"). ⚠ Both config shapes are UNCONFIRMED and must be verified on device — same posture as
-// dateToPreselect / calendarFirst: the key is documented INSIDE the `features` object, but whether
-// the trigger reads it there (vs a top-level key) and opens the flow with NO productID is exactly
-// what the on-device check must confirm. Gift also requires gift cards ENABLED on the MRC Ventrata
-// account (the checkout's existing "Buy as a gift card" link suggests yes). FLOW_DEBUG_SCRIPT logs
-// the exact config for that check.
+// reservation / Manage-My-Booking portal) rather than a product checkout, so it carries NO productID.
+//
+// GIFT-FLOW DIAGNOSIS (see docs/ventrata-integration.md → "Gift flow — config diagnosis"):
+// the first cut shipped `features.openGiftFlow: true`, and the gift trigger MISFIRED — it opened the
+// normal product chooser, not the gift flow. Re-checking Ventrata's own docs turned up a CONFLICT
+// between two official articles:
+//   • "How to Use Gift Cards on the Web Checkout" (support.ventrata.com/en/articles/9552321) — a
+//     nested `features.gifts` object: { allowed, mode:"simple", openByDefault }. `mode:"simple"` is
+//     an explicitly PRODUCT-LESS flow ("DO NOT include a productID"), which matches our no-productID
+//     trigger; `openByDefault:true` auto-opens the gift flow.
+//   • "Checkout Feature List" (support.ventrata.com/en/articles/10155293) — a flat
+//     `features.openGiftFlow: true` (our original guess).
+// The dedicated gift article is the more authoritative source for this specific flow, so the `gifts`
+// object is the best-evidence shape and leads here. `openGiftFlow` is CO-SENT as a hedge — the two
+// docs disagree, unknown feature keys are ignored by the widget, and one on-device check resolves
+// which the MRC account honours. Still requires gift vouchers ENABLED in the dashboard ("Allow Gift
+// Voucher"). If BOTH keys are wrong the product-less trigger degrades to the standard chooser (which
+// carries Ventrata's own "Buy as a gift card" link) — honest fallback, not a broken button. This is
+// logged as the 3rd Ventrata support question until confirmed on device.
+//
+// `openReservationFlow` (reservation branch) is analogous and remains UNCONFIRMED on device — no
+// doc research done for it yet; it likely shares the same "true key TBC" risk as gift did.
+// FLOW_DEBUG_SCRIPT logs the exact config handed to each trigger so one device check settles both.
 const flow = gift ? 'gift' : reservation ? 'reservation' : null; // marker + log label
-const flowFeature = gift ? { openGiftFlow: true } : reservation ? { openReservationFlow: true } : null;
+const flowFeature = gift
+  ? { gifts: { allowed: true, mode: 'simple', openByDefault: true }, openGiftFlow: true }
+  : reservation
+    ? { openReservationFlow: true }
+    : null;
 const flowConfig = flowFeature ? JSON.stringify({ features: flowFeature }) : null;
 const popupConfigOut = flowConfig ?? popupConfig;
 
