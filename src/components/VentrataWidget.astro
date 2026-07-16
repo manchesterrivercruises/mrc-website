@@ -39,9 +39,6 @@ interface Props {
   /** embedded: render Ventrata's product-less GIFT-purchase widget (features.gifts.mode="simple" —
       the dashboard embed-generator shape). No productID. NOT valid on popup — gift is embed-only. */
   gift?: boolean;
-  /** popup: open Ventrata's self-service RESERVATION / Manage-My-Booking flow (openReservationFlow) —
-      no productID required. Config key STILL UNCONFIRMED on device (see flow notes below). */
-  reservation?: boolean;
   /** embedded: min-height utility (widget must be able to grow — never a fixed height) */
   minHeightClass?: string;
 }
@@ -55,18 +52,17 @@ const {
   class: className = '',
   calendarFirst = false,
   gift = false,
-  reservation = false,
   minHeightClass = 'min-h-[40rem]',
 } = Astro.props;
 
 // Gift has no pop-up form we can prove — Ventrata's dashboard embed generator only produces an
 // EMBEDDED gift variant — so a pop-up gift trigger is refused; callers use mode="embedded" gift and
-// have CTAs anchor to it. Reservation remains a pop-up trigger.
+// have CTAs anchor to it.
 if (mode === 'popup' && gift) {
   throw new Error('VentrataWidget: gift is an EMBEDDED flow — use mode="embedded" gift (no pop-up trigger)');
 }
-// Product-less flows carry NO productID: embedded gift, and popup reservation. Everything else needs one.
-const isProductless = (mode === 'embedded' && gift) || (mode === 'popup' && reservation);
+// Product-less flow carries NO productID: the embedded gift widget. Everything else needs one.
+const isProductless = mode === 'embedded' && gift;
 if (!isProductless && (mode === 'embedded' || mode === 'popup') && !productID) {
   throw new Error(`VentrataWidget mode="${mode}" requires a productID`);
 }
@@ -83,30 +79,22 @@ const calendarFirstConfig = calendarFirst ? { calendarFirst: true } : {};
 const embeddedConfig = gift
   ? JSON.stringify({ features: { gifts: { mode: 'simple' } } })
   : JSON.stringify({ productID, embedded: true, ...calendarFirstConfig });
-// POPUP: reservation is the one product-less popup (openReservationFlow — TBC); all others are
-// product checkouts.
-const popupConfig = reservation
-  ? JSON.stringify({ features: { openReservationFlow: true } })
-  : JSON.stringify({ productID, ...calendarFirstConfig });
+// POPUP: always a product checkout (the gift flow is embedded, not a pop-up).
+const popupConfig = JSON.stringify({ productID, ...calendarFirstConfig });
 
-// PRODUCT-LESS FLOW SHAPES (see docs/ventrata-integration.md → "Gift flow — config diagnosis"):
-//   • GIFT — source of truth is Ventrata's dashboard embed generator, which emits verbatim:
-//        <aside ventrata-embedded-widget data-config='{"features":{"gifts":{"mode":"simple"}}}'>
-//     so gift is EMBEDDED + product-less; `gifts:{mode:"simple"}` (the "simple" = standalone gift
-//     purchase) is the exact documented shape. The earlier flat `openGiftFlow` key was WRONG — it
-//     misfired to the product chooser — and is now removed.
-//   • RESERVATION — a popup `openReservationFlow`; STILL UNCONFIRMED (no dashboard-generator variant
-//     found for it yet; it likely follows the same features-object pattern as gift). Logged as a
-//     Ventrata support question.
-// FLOW_DEBUG_SCRIPT logs the exact data-config on any [data-vt-flow] element so one on-device check
-// settles both. `flow` is the marker/label written to data-vt-flow.
-const flow = gift ? 'gift' : reservation ? 'reservation' : null; // marker + debug label
+// GIFT FLOW SHAPE (see docs/ventrata-integration.md → "Gift flow — config diagnosis"): source of
+// truth is Ventrata's dashboard embed generator, which emits verbatim:
+//     <aside ventrata-embedded-widget data-config='{"features":{"gifts":{"mode":"simple"}}}'>
+// so gift is EMBEDDED + product-less; `gifts:{mode:"simple"}` (the "simple" standalone gift purchase)
+// is the exact documented shape. The earlier flat `openGiftFlow` key was WRONG and is removed.
+// FLOW_DEBUG_SCRIPT logs the exact data-config on any [data-vt-flow] element. `flow` is the marker
+// written to data-vt-flow.
+const flow = gift ? 'gift' : null; // marker + debug label
 const popupConfigOut = popupConfig;
 
-// Logs the EXACT data-config on each flow widget (the embedded gift <aside> + any reservation popup
-// trigger) so ONE device check confirms the gift `gifts:{mode:"simple"}` shape opens the gift flow
-// and whether `openReservationFlow` is the accepted reservation key — mirrors the auto-open
-// `console.debug('[MRC][ventrata] auto-open config →', …)` diagnostic. Self-dedupes so multiple flow
+// Logs the EXACT data-config on each gift widget ([data-vt-flow]) so ONE device check confirms the
+// gift `gifts:{mode:"simple"}` shape opens the gift flow — mirrors the auto-open
+// `console.debug('[MRC][ventrata] auto-open config →', …)` diagnostic. Self-dedupes so multiple gift
 // widgets on a page log once each. Remove after on-device flow QA.
 const FLOW_DEBUG_SCRIPT = `
 (function () {
@@ -615,7 +603,7 @@ const OBSERVER_SCRIPT = `
       >
         {label}
       </CTAButton>
-      {/* One-device diagnostic for the (TBC) reservation flow config — self-dedupes. */}
+      {/* One-device diagnostic for a flow trigger's config — self-dedupes. */}
       {flow && <script is:inline set:html={FLOW_DEBUG_SCRIPT} />}
     </Fragment>
   )

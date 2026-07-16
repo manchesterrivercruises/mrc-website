@@ -280,14 +280,10 @@ Each ships with best-evidence config + a debug line so one device check settles 
 2. **Waitlist deep-link state.** Should a sold-out "Join waitlist" deep link carry `dateToPreselect`
    at all, or does the availability-aware calendar correctly refuse an unbuyable date? If waitlist is
    the intended path, does it need the `waitlistsAllowed` feature rather than date-preselect?
-3. **Reservation / Manage-My-Booking flow config.** The gift flow is now resolved from the dashboard
-   embed generator (`features.gifts.mode:"simple"`, embedded — see "Gift flow — config diagnosis"),
-   which strongly implies the reservation flow follows the **same pattern**: a `features` object on an
-   embedded widget, not the flat `openReservationFlow` key `/manage-booking` currently ships. **Action:
-   check the dashboard embed generator for a manage-booking / reservation variant** and copy its exact
-   `data-config` shape (as we did for gift). Until then `openReservationFlow` is a placeholder and the
-   `/manage-booking` "Find my booking" trigger is UNCONFIRMED. The debug line
-   `[MRC][ventrata] reservation-flow config → {…}` logs what we send for the on-device check.
+3. ~~**Reservation / Manage-My-Booking flow config.**~~ **RESOLVED (support-confirmed 2026-07-16):**
+   there is no reservation *widget flow* — MMB is Ventrata's **hosted portal** at
+   `checkin.ventrata.com/{checkoutKey}`, which `/manage-booking` now links to. `openReservationFlow`
+   was wrong/legacy and is removed. See "Manage My Booking" below.
 
 ### Order Recovery Email — abandoned cart recovery · **dashboard-task**
 
@@ -478,8 +474,19 @@ Until then, re-run the price audit whenever Ventrata pricing changes.
 
 ---
 
-## Manage My Booking
+## Manage My Booking · **support-confirmed 2026-07-16**
 
-Ventrata provides a self-service MMB portal. Embed on `/manage-booking` page.
-Implementation mirrors the checkout widget — single script tag + container element.
-Link from booking confirmation emails and the site footer.
+Ventrata runs a **HOSTED** self-service portal at `https://checkin.ventrata.com/{checkoutKey}` —
+for us `https://checkin.ventrata.com/29b8b50a-26b8-4dae-bf0e-995708d2f372` (our checkout key). There
+customers **reschedule (date or time), pick a date for open tickets, cancel where still eligible, and
+view tickets after payment** (confirmed directly by Ventrata support).
+
+**We LINK to it, not embed it.** `/manage-booking` has a plain `<a target="_blank" rel="noopener">`
+to the portal (URL from `VENTRATA_MMB_URL` in `src/data/ventrata.ts`). Deliberate: the portal is
+Ventrata's own hosted app with its own booking-lookup, session and auth handling — a link hands that
+off cleanly (no iframe/session edge cases on our side) and always tracks whatever the portal supports.
+Also link it from booking-confirmation emails and the site footer.
+
+> **`openReservationFlow` was WRONG / legacy — removed.** An earlier cut shipped a pop-up trigger with
+> `features.openReservationFlow` (a guessed key by analogy to gift). There is no such widget flow —
+> MMB is the hosted portal above. The `reservation` prop has been removed from `VentrataWidget`.
