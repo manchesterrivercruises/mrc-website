@@ -17,6 +17,8 @@ interface Props {
   imageAlt?: string;
   imageLabel?: string;
   availability?: 'available' | 'limited' | 'soldout';
+  // When it sails. Evening is the default expectation and is NOT badged; only daytime/both are.
+  sailingTimes?: 'daytime' | 'evening' | 'both';
 }
 const {
   type,
@@ -29,9 +31,13 @@ const {
   imageAlt,
   imageLabel = 'Image (TBC)',
   availability = 'available',
+  sailingTimes,
 } = Astro.props;
 const external = href.startsWith('http');
 const soldOut = availability === 'soldout';
+// Timing badge label — evening (and the un-timed staple products) get no badge.
+const timingBadge =
+  sailingTimes === 'daytime' ? 'Daytime' : sailingTimes === 'both' ? 'Daytime & evening' : null;
 ---
 
 <article
@@ -60,6 +66,13 @@ const soldOut = availability === 'soldout';
           />
         ) : (
           <div class="flex aspect-[16/9] items-center justify-center bg-panel text-xs text-subtle">{imageLabel}</div>
+        )
+      }
+      {
+        timingBadge && (
+          <span class="absolute left-3 top-3 rounded-full bg-amber-100 px-2.5 py-0.5 text-xs font-semibold text-amber-900 ring-1 ring-amber-300">
+            {timingBadge}
+          </span>
         )
       }
       {

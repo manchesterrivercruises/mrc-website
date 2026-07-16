@@ -212,13 +212,29 @@ const DATEFINDER_SCRIPT = `
       body.appendChild(mt);
       var act=document.createElement('div'); act.className='df-dep-actions';
       var info=document.createElement('a'); info.href=m.href; info.className='df-dep-info'; info.textContent='More info & tickets'; act.appendChild(info);
-      // Robust marketing-link (docs → "Marketing links that auto-open checkout"): a real
-      // link to the product page with ?openWidget=true&date=... — a load-time auto-open there
-      // opens that product's checkout preselecting the date. A client-created ventrata-checkout
-      // button did NOT work on deployed (Ventrata binds triggers at load, not dynamically).
+      // Book this date — STANDARD DYNAMIC-BOOKING PATTERN (support-confirmed 2026-07-16).
+      // PRIMARY: window.Ventrata({...}) is Ventrata's global open() and works for dynamically-created
+      // buttons, so the checkout opens RIGHT HERE on the homepage preselecting the date/time — no
+      // navigation. (This supersedes the old note that a client-created ventrata-checkout button was
+      // ignored: use the global, not a dynamic trigger element.)
+      // FALLBACK (the href): a marketing link to the product page with ?openWidget=true&date=…&time=…
+      // that auto-opens there if window.Ventrata is absent (no JS, not yet loaded, older build).
       var book=document.createElement('a'); book.className='btn btn-primary df-dep-book';
       book.href = m.href + (m.href.indexOf('?') >= 0 ? '&' : '?') + 'openWidget=true&date=' + encodeURIComponent(cur) + (dep.time ? '&time=' + encodeURIComponent(dep.time) : '');
-      book.textContent='Book this date'; act.appendChild(book);
+      book.textContent='Book this date';
+      (function(pid, date, time){
+        book.addEventListener('click', function(ev){
+          if (typeof window.Ventrata === 'function') {
+            ev.preventDefault();
+            var cfg = { productID: pid, dateToPreselect: date };
+            if (time) cfg.timeslotToPreselect = time;
+            try { console.debug('[MRC][ventrata] window.Ventrata open \\u2192', JSON.stringify(cfg)); } catch(e){}
+            window.Ventrata(cfg);
+          }
+          // else: let the href navigate to the product page (graceful fallback)
+        });
+      })(dep.productId, cur, dep.time);
+      act.appendChild(book);
       body.appendChild(act);
       li.appendChild(body);
       list.appendChild(li);

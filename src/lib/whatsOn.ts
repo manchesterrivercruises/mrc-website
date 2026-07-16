@@ -23,6 +23,8 @@ export function typeLabel(key: WoType): string {
   return 'Events';
 }
 
+export type SailingTimes = 'daytime' | 'evening' | 'both';
+
 export interface ProductMeta {
   productId: string;
   type: WoType;
@@ -32,6 +34,10 @@ export interface ProductMeta {
   href: string;
   image?: string;
   imageAlt?: string;
+  // When it sails — drives the What's On timing filter + card badge. Events carry their own
+  // sailingTimes; the two staple products (CRT, ferry) are 'both' so a timing filter never hides
+  // them (they aren't day/evening-specific parties, and they're not badged — see EventCard).
+  sailingTimes: SailingTimes;
 }
 
 // One entry per public product that has a page: City River Tour, the ferry, and every
@@ -48,6 +54,7 @@ export function buildProductMeta(events: CollectionEntry<'events'>[]): ProductMe
       href: '/city-river-tour',
       image: PRODUCT_IMAGES[CITY_RIVER_TOUR_ID],
       imageAlt: 'City River Tour boat at Salford Quays',
+      sailingTimes: 'both',
     },
     {
       productId: MUFC_FERRY_ID,
@@ -58,6 +65,7 @@ export function buildProductMeta(events: CollectionEntry<'events'>[]): ProductMe
       href: '/boat-to-old-trafford',
       image: PRODUCT_IMAGES[MUFC_FERRY_ID],
       imageAlt: 'Matchday ferry to Old Trafford',
+      sailingTimes: 'both',
     },
   ];
   // Deterministic order (by slug). The events collection's natural order depends on the
@@ -82,6 +90,7 @@ export function buildProductMeta(events: CollectionEntry<'events'>[]): ProductMe
       href: `/cruises/${e.id}`,
       image: hero || PRODUCT_IMAGES[pid],
       imageAlt: e.data.heroImageAlt || e.data.title,
+      sailingTimes: e.data.sailingTimes,
     });
   }
   return list;

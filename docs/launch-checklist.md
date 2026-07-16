@@ -135,6 +135,8 @@ Ventrata redirects only fire on 404s, not live page changes.
 - [ ] Full staging sign-off from Simon
 - [ ] 301 redirects confirmed working on staging
 - [ ] Ventrata product IDs all live (not placeholders)
+- [ ] **Ventrata dashboard toggles enabled** — Allow Gift Voucher (gift flow) and Waitlists (sold-out
+  "Notify me" step). See `docs/ventrata-integration.md` → "Ventrata dashboard settings to enable".
 - [ ] DNS updated at domain registrar — CNAME to Netlify
 - [ ] SSL certificate provisioned (automatic on Netlify)
 - [ ] manchesterrivercruises.com confirmed live on new site

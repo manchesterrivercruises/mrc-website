@@ -173,6 +173,17 @@ export default config({
           ],
           defaultValue: 'live-music',
         }),
+        sailingTimes: fields.select({
+          label: 'Sailing times',
+          description:
+            'When this event sails. An attribute, not a category — pick Both if it runs day AND evening. (Dolly joins the daytime programme in 2027 — switch it to Both then.)',
+          options: [
+            { label: 'Daytime', value: 'daytime' },
+            { label: 'Evening', value: 'evening' },
+            { label: 'Daytime & evening (both)', value: 'both' },
+          ],
+          defaultValue: 'evening',
+        }),
         duration: fields.text({ label: 'Duration', description: 'e.g. "Approx. 2 hours (TBC)" — display copy only.' }),
         priceFrom: fields.integer({ label: 'Price from (£)', description: 'Optional display "from" price. Live prices come from Ventrata.' }),
         whatToExpect: fields.array(fields.text({ label: 'Point' }), {

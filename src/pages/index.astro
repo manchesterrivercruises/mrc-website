@@ -232,8 +232,9 @@ const structuredData = {
           departures panel would dominate a phone homepage. Both rely on the VentrataWidget
           loader already on this page (checkout script + observer) for the pop-up. */}
 
-      {/* Mobile (< md): pop-up trigger (calendar-first Ventrata checkout).
-          ⚠ calendarFirst data-config key still pending Ventrata account-manager confirmation. */}
+      {/* Mobile (< md): pop-up trigger — opens the checkout calendar-first (date-led) for a
+          phone-friendly "find your date" experience. Config: features.calendarFirst.enabled
+          (support-confirmed 2026-07-16). The desktop OCTO date finder below is unchanged. */}
       <div class="mt-8 flex justify-center md:hidden">
         <VentrataWidget
           mode="popup"

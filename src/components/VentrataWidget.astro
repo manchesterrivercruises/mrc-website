@@ -12,8 +12,10 @@
 //                   <Header> (not per page). Load it EXACTLY ONCE per page — never add a
 //                   second per-page loader.
 //
-//   mode="embedded" Desktop embedded widget for a product. Fills a BookingPanel's
-//                   "widget" slot: <VentrataWidget mode="embedded" productID={id} slot="widget" />
+//   mode="embedded" Embedded widget for a product (fills a BookingPanel "widget" slot), OR the
+//                   product-less GIFT flow: <VentrataWidget mode="embedded" gift />. The gift flow
+//                   also runs as a pop-up trigger — mode="popup" gift (optionally with an href
+//                   no-JS fallback).
 //
 //   mode="popup"    A pop-up trigger button (mobile sticky CTA, inline CTAs):
 //                       <VentrataWidget mode="popup" productID={id} label="Book Now" class="w-full" />
@@ -34,14 +36,16 @@ interface Props {
   /** popup: extra classes forwarded to the trigger button */
   class?: string;
   /** embedded/popup: open the checkout on the date/calendar step (date-led browsing).
-      See the calendarFirst caveat below — the exact data-config key is TBC with Ventrata. */
+      Emits features.calendarFirst.enabled (support-confirmed 2026-07-16). */
   calendarFirst?: boolean;
-  /** popup: open Ventrata's GIFT-purchase flow (openGiftFlow) instead of a product checkout —
-      no productID required. See the flow caveat below (exact config shape is TBC on device). */
+  /** embedded OR popup: render/open Ventrata's product-less GIFT-purchase flow
+      (features.gifts.mode="simple", the dashboard embed-generator shape). No productID. Support
+      confirmed the SAME features config works on a pop-up trigger's data-config, so both modes are
+      valid — /gift-vouchers uses the embed as centrepiece and pop-up triggers for its CTAs. */
   gift?: boolean;
-  /** popup: open Ventrata's self-service RESERVATION / Manage-My-Booking flow (openReservationFlow)
-      instead of a product checkout — no productID required. See the flow caveat below (TBC on device). */
-  reservation?: boolean;
+  /** popup: optional no-JS fallback href on the trigger. The button still opens the Ventrata pop-up
+      when JS runs; without JS the anchor navigates here (e.g. "#gift-widget" → the on-page embed). */
+  href?: string;
   /** embedded: min-height utility (widget must be able to grow — never a fixed height) */
   minHeightClass?: string;
 }
@@ -53,55 +57,60 @@ const {
   env = VENTRATA_ENV,
   label = 'Book Now',
   class: className = '',
+  href,
   calendarFirst = false,
   gift = false,
-  reservation = false,
   minHeightClass = 'min-h-[40rem]',
 } = Astro.props;
 
-// A "flow" pop-up (gift or reservation) opens a Ventrata self-service flow rather than a product
-// checkout, so it is the ONE popup kind that doesn't need a productID. Every other embedded/popup
-// still requires one.
-const isFlow = mode === 'popup' && (gift || reservation);
-if ((mode === 'embedded' || (mode === 'popup' && !isFlow)) && !productID) {
+// Product-less flow carries NO productID: the gift widget — embedded OR pop-up (support confirmed
+// the features.gifts config works on a trigger's data-config too). Everything else needs a productID.
+const isProductless = gift;
+if (!isProductless && (mode === 'embedded' || mode === 'popup') && !productID) {
   throw new Error(`VentrataWidget mode="${mode}" requires a productID`);
 }
 
-const checkoutConfig = JSON.stringify({ apiKey: VENTRATA_CHECKOUT_KEY, env });
-// `calendarFirst: true` opens the widget on the date step (date-led browsing) per
-// docs/ventrata-integration.md → "Calendar First mode" — supported on both the embedded
-// and pop-up variants. ⚠ The exact key name (calendarFirst vs a versioned alias) and
-// which product(s) to surface / their ordering must be confirmed with the Ventrata
-// account manager before launch.
-const calendarFirstConfig = calendarFirst ? { calendarFirst: true } : {};
-const embeddedConfig = JSON.stringify({ productID, embedded: true, ...calendarFirstConfig });
-const popupConfig = JSON.stringify({ productID, ...calendarFirstConfig });
+// Global checkout config (script-tag level). `features.waitlistsAllowed` (support-confirmed
+// 2026-07-16) lets a customer land on a SOLD-OUT date with a "Notify me" waitlist step instead of the
+// date being refused — set globally so every widget/trigger on the page inherits it. Requires
+// Waitlists ENABLED in the Web Checkout dashboard settings (see "Ventrata dashboard settings" list).
+const checkoutConfig = JSON.stringify({
+  apiKey: VENTRATA_CHECKOUT_KEY,
+  env,
+  features: { waitlistsAllowed: true },
+});
+// Calendar-first (date-led browsing) opens the widget on the date step. Shape is
+// `features.calendarFirst.enabled` (support-confirmed 2026-07-16 — NOT the old flat `calendarFirst`
+// boolean). Supported on embedded and pop-up product variants. Per-embed products/order are set via
+// the `products` object + dashboard categories (20-product cap) — see docs → "Calendar First mode".
+const calendarFirstConfig = calendarFirst ? { features: { calendarFirst: { enabled: true } } } : {};
+// GIFT config — Ventrata's dashboard-generator shape, VERBATIM and product-less:
+// `{"features":{"gifts":{"mode":"simple"}}}`. Support confirmed (2026-07-16) it works on BOTH an
+// embedded widget and a pop-up trigger's data-config (features can be set globally or per element),
+// so both modes reuse it. The earlier flat `openGiftFlow` key was WRONG and is removed.
+const giftConfig = JSON.stringify({ features: { gifts: { mode: 'simple' } } });
+// EMBEDDED: gift → the gift config; otherwise a product checkout.
+const embeddedConfig = gift
+  ? giftConfig
+  : JSON.stringify({ productID, embedded: true, ...calendarFirstConfig });
+// POPUP: gift → the product-less gift trigger; otherwise a product checkout.
+const popupConfig = gift ? giftConfig : JSON.stringify({ productID, ...calendarFirstConfig });
 
-// SELF-SERVICE FLOWS — a pop-up trigger that opens a Ventrata flow (gift purchase, or the
-// reservation / Manage-My-Booking portal) rather than a product checkout, so it carries NO
-// productID. `openGiftFlow` is documented under "Recommended widget features"; `openReservationFlow`
-// is the analogous key for the self-service MMB flow (docs/ventrata-integration.md → "Manage My
-// Booking"). ⚠ Both config shapes are UNCONFIRMED and must be verified on device — same posture as
-// dateToPreselect / calendarFirst: the key is documented INSIDE the `features` object, but whether
-// the trigger reads it there (vs a top-level key) and opens the flow with NO productID is exactly
-// what the on-device check must confirm. Gift also requires gift cards ENABLED on the MRC Ventrata
-// account (the checkout's existing "Buy as a gift card" link suggests yes). FLOW_DEBUG_SCRIPT logs
-// the exact config for that check.
-const flow = gift ? 'gift' : reservation ? 'reservation' : null; // marker + log label
-const flowFeature = gift ? { openGiftFlow: true } : reservation ? { openReservationFlow: true } : null;
-const flowConfig = flowFeature ? JSON.stringify({ features: flowFeature }) : null;
-const popupConfigOut = flowConfig ?? popupConfig;
+// FLOW_DEBUG_SCRIPT logs the exact data-config on any [data-vt-flow] element (embedded gift <aside>
+// or gift pop-up trigger). `flow` is the marker written to data-vt-flow.
+const flow = gift ? 'gift' : null; // marker + debug label
+const popupConfigOut = popupConfig;
 
-// Logs the EXACT config handed to each flow trigger so ONE device check confirms whether
-// openGiftFlow / openReservationFlow (and their placement inside `features`) are the accepted keys —
-// mirrors the auto-open `console.debug('[MRC][ventrata] auto-open config →', …)` diagnostic.
-// Self-dedupes so multiple flow buttons on a page log once each. Remove after on-device flow QA.
+// Logs the EXACT data-config on each gift widget ([data-vt-flow]) so ONE device check confirms the
+// gift `gifts:{mode:"simple"}` shape opens the gift flow — mirrors the auto-open
+// `console.debug('[MRC][ventrata] auto-open config →', …)` diagnostic. Self-dedupes so multiple gift
+// widgets on a page log once each. Remove after on-device flow QA.
 const FLOW_DEBUG_SCRIPT = `
 (function () {
   if (window.__mrcFlowDebug) return;
   window.__mrcFlowDebug = true;
   function log() {
-    var els = document.querySelectorAll('[ventrata-checkout][data-vt-flow]');
+    var els = document.querySelectorAll('[data-vt-flow]');
     for (var i = 0; i < els.length; i++) {
       try { console.debug('[MRC][ventrata] ' + els[i].getAttribute('data-vt-flow') + '-flow config →', els[i].getAttribute('data-config')); } catch (e) {}
     }
@@ -425,14 +434,19 @@ const OBSERVER_SCRIPT = `
         var time = q.get('time');
         if (time && /^[0-9]{2}:[0-9]{2}$/.test(time)) cfg.timeslotToPreselect = time; // confirmed key
       } else {
-        cfg.calendarFirst = true; // no specific date → open on the calendar step for browsing
+        cfg.features = { calendarFirst: { enabled: true } }; // no date → open on the calendar step
       }
 
-      // TEMPORARY DIAGNOSTIC — remove after on-device QA. Logs the EXACT config handed to the
-      // trigger so one device check distinguishes right-but-ignored (Ventrata side, e.g. a
-      // sold-out date it refuses to preselect) from wrong/missing (our side).
+      // TEMPORARY DIAGNOSTIC — remove after on-device QA. Logs the EXACT config handed to the trigger.
       try { console.debug('[MRC][ventrata] auto-open config →', JSON.stringify(cfg)); } catch (e) {}
 
+      // PRIMARY: window.Ventrata(cfg) — Ventrata's global open() (support-confirmed 2026-07-16) works
+      // for dynamically-created triggers, so it reliably preselects the date (the old client-created
+      // ventrata-checkout button was bound at load and ignored a dynamic config). FALLBACK: inject a
+      // ventrata-checkout button and click it, for older builds where the global isn't present.
+      if (typeof window.Ventrata === 'function') {
+        try { window.Ventrata(cfg); return; } catch (e) {}
+      }
       var btn = document.createElement('button');
       btn.type = 'button';
       btn.setAttribute('ventrata-checkout', '');
@@ -577,13 +591,18 @@ const OBSERVER_SCRIPT = `
 
 {
   mode === 'embedded' && (
-    <aside
-      class={`${minHeightClass} h-auto w-full`}
-      ventrata-embedded-widget
-      data-config={embeddedConfig}
-    >
-      <div class="widget-loading">Loading availability&hellip;</div>
-    </aside>
+    <Fragment>
+      <aside
+        class={`${minHeightClass} h-auto w-full`}
+        ventrata-embedded-widget
+        data-config={embeddedConfig}
+        data-vt-flow={flow ?? undefined}
+      >
+        <div class="widget-loading">{gift ? 'Loading gift options' : 'Loading availability'}&hellip;</div>
+      </aside>
+      {/* One-device diagnostic for the gift-flow config (dashboard-sourced gifts:{mode:"simple"}). */}
+      {flow && <script is:inline set:html={FLOW_DEBUG_SCRIPT} />}
+    </Fragment>
   )
 }
 
@@ -592,14 +611,14 @@ const OBSERVER_SCRIPT = `
     <Fragment>
       <CTAButton
         class={className}
+        href={href}
         ventrata-checkout=""
         data-config={popupConfigOut}
         data-vt-flow={flow ?? undefined}
       >
         {label}
       </CTAButton>
-      {/* One-device diagnostic for the (TBC) flow config — only shipped alongside a flow
-          trigger (gift/reservation), self-dedupes across multiple flow buttons. */}
+      {/* One-device diagnostic for a gift trigger's config — self-dedupes. */}
       {flow && <script is:inline set:html={FLOW_DEBUG_SCRIPT} />}
     </Fragment>
   )

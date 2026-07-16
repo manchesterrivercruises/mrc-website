@@ -3,13 +3,13 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 import { site } from '../data/site';
 import SectionHeading from '../components/SectionHeading.astro';
 import CTAButton from '../components/CTAButton.astro';
-import VentrataWidget from '../components/VentrataWidget.astro';
+import { VENTRATA_MMB_URL } from '../data/ventrata';
 
 const SITE = site.url;
 const pageTitle = 'Manage My Booking — Manchester River Cruises';
 const pageDescription =
-  'Find your Manchester River Cruises booking to view the details and resend your confirmation. ' +
-  "You'll need your booking reference and the email address used when booking.";
+  'Manage your Manchester River Cruises booking online — reschedule, choose a date for an open ' +
+  "ticket, cancel where eligible or view your tickets. You'll need your booking reference and email.";
 
 const structuredData = {
   '@context': 'https://schema.org',
@@ -19,14 +19,14 @@ const structuredData = {
   url: `${SITE}/manage-booking`,
 };
 
-// Self-service capabilities the reservation flow actually exposes are TBC against Ventrata's
-// openReservationFlow on device (see VentrataWidget → SELF-SERVICE FLOWS). Copy below stays
-// deliberately conservative — "view details / resend confirmation" is the safe floor; amend/cancel
-// self-service is TBC and marked as such rather than promised. Confirm on-device, then tighten.
+// Self-service capabilities — CONFIRMED by Ventrata support for the hosted Manage My Booking portal
+// (checkin.ventrata.com). No longer TBC. We LINK to the portal rather than embed it (see the CTA
+// comment below), so this list simply tells customers what to expect before they leave the site.
 const selfService = [
-  'View your booking details — date, time, guest numbers and boarding point.',
-  'Resend your booking confirmation to the email address on the booking. (TBC)',
-  'Amend your booking where the tour and timing allow it. (TBC — depends on what Ventrata’s reservation flow permits for this account)',
+  'Reschedule your cruise — change the date or the time.',
+  'Pick a date for an open (undated) ticket.',
+  'Cancel your booking where it’s still eligible.',
+  'View your tickets once payment has gone through.',
 ];
 
 // "Needs a call" — mirrors existing policy copy in /faq (weather, cancellation, groups). Kept as the
@@ -54,15 +54,22 @@ const needsACall = [
   <section class="mx-auto max-w-2xl px-4 py-16 sm:px-6 md:py-20">
     <h1 class="text-3xl font-bold tracking-tight text-ink sm:text-4xl">Manage my booking</h1>
     <p class="mt-4 text-lg leading-relaxed text-body">
-      Already booked? Find your reservation to check the details and resend your confirmation.
-      You’ll need your <strong class="font-semibold text-ink">booking reference</strong> and the
+      Already booked? Manage it yourself in our secure booking portal — reschedule, choose a date for
+      an open ticket, cancel where eligible or view your tickets. You’ll need your
+      <strong class="font-semibold text-ink">booking reference</strong> and the
       <strong class="font-semibold text-ink">email address</strong> you booked with.
     </p>
 
-    {/* PRIMARY CTA — opens Ventrata's self-service reservation flow (openReservationFlow) directly,
-        no productID. Exact config is TBC on device; see VentrataWidget SELF-SERVICE FLOWS block. */}
+    {/* PRIMARY CTA — a plain LINK to Ventrata's HOSTED Manage My Booking portal
+        (checkin.ventrata.com/{checkoutKey}), opened in a new tab. Deliberately a link, NOT an embed
+        or pop-up widget: the portal is Ventrata's own hosted app with its own booking-lookup, session
+        and auth handling — linking hands that off cleanly (no iframe/session edge cases on our side)
+        and always tracks whatever the portal supports. The earlier openReservationFlow trigger was a
+        guessed key and is removed (marked wrong/legacy in docs/ventrata-integration.md). */}
     <div class="mt-8">
-      <VentrataWidget mode="popup" reservation label="Find my booking" class="w-full sm:w-auto" />
+      <CTAButton href={VENTRATA_MMB_URL} class="w-full sm:w-auto" target="_blank" rel="noopener noreferrer">
+        Find my booking
+      </CTAButton>
     </div>
 
     {/* What you can do here */}
