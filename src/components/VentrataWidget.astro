@@ -431,6 +431,10 @@ const OBSERVER_SCRIPT = `
       var date = q.get('date');
       if (date && /^[0-9]{4}-[0-9]{2}-[0-9]{2}$/.test(date)) {
         cfg.dateToPreselect = date; // confirmed key
+        // preselectFirstUnit (support-confirmed 2026-07-17): prefill 1 adult on the product step so a
+        // deep-linked ("Book this date" / sold-out "Join waitlist") customer flows through quantity to
+        // the calendar with their date visibly selected. Deep-link ONLY, never plain Book Now.
+        cfg.preselectFirstUnit = 1;
         var time = q.get('time');
         if (time && /^[0-9]{2}:[0-9]{2}$/.test(time)) cfg.timeslotToPreselect = time; // confirmed key
       } else {

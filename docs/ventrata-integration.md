@@ -230,6 +230,23 @@ pattern:** call `window.Ventrata` from the click handler when present; keep the 
 product-page link as the `href` so it degrades gracefully when the global is absent (no JS / not yet
 loaded). Applied to the date finder's "Book this date" and the on-page auto-open path.
 
+#### Deep-link preselect keys — division of labour · **support-confirmed 2026-07-17**
+
+Three related keys shape how the checkout opens. They do different jobs — don't conflate them:
+
+| Key | What it does | Where we use it |
+|-----|--------------|-----------------|
+| `dateToPreselect` (`YYYY-MM-DD`, + `timeslotToPreselect` `HH:MM`) | Opens on a **specific date/time already selected** on the calendar. | Deep links only — date finder "Book this date" + sold-out "Join waitlist". |
+| `preselectFirstUnit` (`true` or a number) | Prefills the **first ticket unit** (e.g. one adult) on the product step, so the customer flows **through** the quantity step to the calendar sooner. Adjustable — it's a starting quantity, not a lock. | **Deep links only** (we send `1`), alongside `dateToPreselect`. |
+| `features.calendarFirst.enabled` | Opens on the **date/calendar step first** for date-led *browsing* — no specific date, no product chosen. | Mobile "Find your date" trigger; the auto-open **no-date** fallback. |
+
+**Why `preselectFirstUnit` is deep-link-only.** There is **no** default-quantity config; `preselectFirstUnit`
+is the nearest lever. A deep-linked customer has already expressed intent (they picked a date), so
+carrying them past an empty quantity step to their visibly-selected date is a smoothing win. A customer
+opening the widget **fresh** (an ordinary **Book Now** trigger) should choose quantities deliberately —
+so `preselectFirstUnit` is **not** added to plain product popups, only to the date-finder / deep-link
+`window.Ventrata` configs. (Verify: built output emits `preselectFirstUnit` only on those paths.)
+
 #### Date-preselect deep link — diagnosis & on-device QA
 
 > **RESOLVED (support-confirmed 2026-07-16).** Both suspects below were right and both are now fixed:

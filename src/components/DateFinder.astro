@@ -226,7 +226,11 @@ const DATEFINDER_SCRIPT = `
         book.addEventListener('click', function(ev){
           if (typeof window.Ventrata === 'function') {
             ev.preventDefault();
-            var cfg = { productID: pid, dateToPreselect: date };
+            // preselectFirstUnit (support-confirmed 2026-07-17): prefill ONE adult on the product
+            // step so this deep-linked customer flows straight through quantity to the calendar,
+            // where their chosen date is already visibly selected. Adjustable; it's a deep-link
+            // enhancement only (NOT on ordinary Book Now). See docs → "Deep-link preselect keys".
+            var cfg = { productID: pid, dateToPreselect: date, preselectFirstUnit: 1 };
             if (time) cfg.timeslotToPreselect = time;
             try { console.debug('[MRC][ventrata] window.Ventrata open \\u2192', JSON.stringify(cfg)); } catch(e){}
             window.Ventrata(cfg);
