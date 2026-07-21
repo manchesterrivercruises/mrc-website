@@ -56,10 +56,10 @@ Keystatic is installed and wired against the existing Content Collections. New d
 
 | Collection | In Keystatic? | Notes |
 |---|---|---|
-| **Gallery albums** | ✅ Full | The driving use case. Every field: per-image alt (required), caption, credit, width/height, orientation, tags, `isFeatured`, `usage` (multiselect); album order, category, cover, related albums, booking CTA, SEO, draft. |
+| **Gallery albums** | ✅ Full | The driving use case. Cover + per-image are **in-CMS uploads** (`fields.image` → `public/images/gallery/`). Plus per-image alt (required), caption, credit, width/height, orientation, tags, `isFeatured`, `usage` (multiselect); album order, category, related albums, booking CTA, SEO, draft. |
 | **Vessels** | ✅ Full | Empty collection — new fleet pages are created here. |
 | **Attractions** | ✅ Full | Empty collection. |
-| **Events** | ⏳ Follow-up | Have rendered markdown bodies; see "Events & Discover follow-up" below. |
+| **Events** | ⏳ Body follow-up | **Hero image is an in-CMS upload** (`fields.image` → `public/images/events/`); rendered markdown bodies still pending — see "Events & Discover follow-up" below. |
 | **Discover guides** | ⏳ Follow-up | Same — need `@astrojs/markdoc`. |
 
 Gallery / vessels / attractions are frontmatter-only, so they are stored as **YAML** data files
@@ -80,10 +80,20 @@ paths and legacy hotlinks all round-trip, and the admin UI mounts at `/keystatic
 4. Click **Save**. Keystatic commits the change to the repo on your behalf; **Netlify auto-deploys**
    in ~1–2 minutes and the change is live.
 
-**Adding a NEW photo to an album** (until in-CMS upload lands — see follow-ups): process the
-photo to WebP (800px card + ≤1600px large) and drop it in `public/images/gallery/<album>/`, then
-in the CMS add an image row and paste its path + write the alt. (Ask Claude Code to process/place
-a batch and you just fill in alt/caption.)
+**Adding a NEW photo to an album — now an in-CMS upload.** In the album's **Images** list, add a
+row and use the **Image** field's *upload* button to pick a file from your computer. Do the same for
+an album **Cover image**, and for an event **Hero image** (Events → the event → Hero image). On
+**Save**, Keystatic commits the file into `public/images/gallery/` (events → `public/images/events/`)
+and stores its path automatically — no manual path pasting. Always fill in the **alt text**.
+
+> ⚠ **Size images down before uploading.** v1 stores uploads **as-is** — there is no automatic
+> resize/compression at build. Upload **WebP** where you can and keep the longest edge **≤1600px**
+> for gallery photos (**≤2000px** for an event hero). Oversized files ship oversized. (The field
+> descriptions in the CMS repeat this.) If you have a big batch, Claude Code can still process a folder
+> to WebP for you.
+>
+> **Note on location:** in-CMS uploads land **flat** in `public/images/gallery/` (not the per-album
+> subfolders older photos use). Both work and render the same; it's just where new uploads sit.
 
 ### Local editing (no GitHub needed)
 
@@ -184,14 +194,21 @@ Netlify auto-deploys.
    `.mdoc` and updating the two loaders. **Dates stay non-editable** regardless — Ventrata owns
    event dates via OCTO; the events schema's legacy `startDate`/`endDate` are unused and must not
    be exposed as CMS fields.
-2. **Image handling & follow-ups.** Gallery cover/image paths are **text** fields (they span
-   several folders + some hotlinks, which a single-directory Keystatic image field would corrupt on
-   save). So there is no in-CMS *upload* for gallery yet, and CMS-referenced images are **served
-   as-is** (the pre-processed WebP already are; any new originals would not be optimised). To add
-   in-CMS upload + build-time WebP optimisation, either consolidate gallery images under one
-   directory and use `fields.image`, or add a small sharp build step over an uploads folder, or
-   migrate the gallery to Astro's `image()` pipeline. (Vessels/attractions already use
-   `fields.image` uploads — greenfield, single directory each.)
+2. **Image handling.** ✅ **In-CMS upload is DONE (2026-07-21).** Gallery `coverImage` + per-image
+   `src`, and event `heroImage`, are now Keystatic `fields.image` uploads — files commit to
+   `public/images/gallery/` and `public/images/events/`. To make this safe, the six legacy external
+   hotlinks (MRC-owned images on the old assets host) were downloaded to local files first, so every
+   value is a real repo file. New uploads land **flat** in `public/images/gallery/`; legacy per-album
+   nested paths still render and round-trip.
+   - ⏳ **Still a follow-up: build-time optimisation.** Uploads are stored **as-is** — `astro:assets`
+     does not optimise files referenced by a public/ path string, so there's no automatic
+     resize/re-encode. v1 mitigates with max-dimension guidance in the field descriptions (≤1600px
+     gallery / ≤2000px hero, WebP). To add real optimisation, migrate these collections to Astro's
+     `image()` pipeline (images under `src/`, schema uses `image()`), or add a small `sharp` build
+     step over the uploads directory.
+   - ⚠ **Admin smoke-test after deploy:** open an album that still uses **legacy nested paths** in the
+     live GitHub-mode admin and confirm saving it doesn't rewrite those paths (local dev round-trips
+     them fine; verify once in production before the editor relies on it).
 3. **CSP at enforcement.** When the CSP is switched from Report-Only to enforced at launch, give
    `/keystatic*` its own relaxed policy — the admin loads React and talks to `github.com` /
    `api.github.com` for OAuth + commits (the strict `default-src 'self'` would block it).

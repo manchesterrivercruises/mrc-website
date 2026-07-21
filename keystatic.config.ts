@@ -15,20 +15,28 @@ import { config, fields, collection } from '@keystatic/core';
 
 const KEBAB = { regex: /^[a-z0-9]+(?:-[a-z0-9]+)*$/, message: 'Lowercase letters, numbers and single hyphens only.' };
 
-// Gallery cover/image paths are TEXT, not a Keystatic `fields.image` upload. The real data
-// spans several locations — per-album folders (/images/gallery/<slug>/…), shared event art
-// (/images/events/…), site root (/images/…) AND some temporary external hotlink URLs — which
-// a single-directory image field cannot represent without rewriting (and corrupting) paths on
-// save. Text round-trips every value losslessly and lets Simon edit alt/caption/order/etc.
-// safely. Adding a NEW photo: process it to WebP (800 + <=1600) and drop it in the album
-// folder first, then paste its path here. In-CMS UPLOAD + build-time WebP optimisation is a
-// documented follow-up (docs/content-management.md → "Image handling & follow-ups").
-const galleryImagePath = (label: string) =>
-  fields.text({
+// Gallery images are now Keystatic UPLOADS (fields.image). A new upload is committed to
+// public/images/gallery/ and the field stores its /images/gallery/<file> path. All hotlinks were
+// migrated to owned local files first, so every value is a real repo file the field can resolve.
+//
+// One-directory caveat: fields.image writes NEW uploads to the single `public/images/gallery` dir
+// (flat), whereas legacy photos live in per-album subfolders (/images/gallery/<album>/…). Those
+// legacy nested paths still render and round-trip as stored strings; new uploads simply sit flat in
+// /images/gallery. That's the accepted v1 shape.
+//
+// OPTIMISATION (v1, pragmatic): uploads are stored AS-IS — Astro's astro:assets does not optimise
+// files referenced by a public/ path string, so there is no build-time resize/re-encode yet. The
+// field descriptions therefore ask editors to size images DOWN before uploading (max-dimension
+// guidance). Build-time optimisation via the image() helper is the documented follow-up
+// (docs/content-management.md → "Image handling & follow-ups").
+const galleryImage = (label: string) =>
+  fields.image({
     label,
-    description:
-      'Path to an owned image (e.g. /images/gallery/<album>/<name>.webp) or a temporary hotlink URL. Process new photos to WebP and place them before referencing them here.',
+    directory: 'public/images/gallery',
+    publicPath: '/images/gallery',
     validation: { isRequired: true },
+    description:
+      'Upload a WebP or JPG. Stored as-is (no auto-optimise in v1) — please SIZE IT DOWN first: ≤1600px on the longest edge, ideally WebP. New uploads land in /images/gallery.',
   });
 
 export default config({
@@ -76,11 +84,11 @@ export default config({
           ],
           defaultValue: 'route',
         }),
-        coverImage: galleryImagePath('Cover image'),
+        coverImage: galleryImage('Cover image'),
         coverAlt: fields.text({ label: 'Cover alt text', multiline: true, validation: { isRequired: true } }),
         images: fields.array(
           fields.object({
-            src: galleryImagePath('Image'),
+            src: galleryImage('Image'),
             alt: fields.text({
               label: 'Alt text (required)',
               description: 'Describe what is actually in the photo — used for screen readers and SEO.',
@@ -197,7 +205,13 @@ export default config({
           }),
           { label: 'FAQs', itemLabel: (p) => p.fields.question.value || 'FAQ' },
         ),
-        heroImage: fields.text({ label: 'Hero image path', description: 'Path to an owned image or a temporary hotlink URL.' }),
+        heroImage: fields.image({
+          label: 'Hero image',
+          directory: 'public/images/events',
+          publicPath: '/images/events',
+          description:
+            'Upload a WebP or JPG hero image. Stored as-is (no auto-optimise in v1) — SIZE IT DOWN first: ≤2000px wide, ideally WebP. Lands in /images/events.',
+        }),
         heroImageAlt: fields.text({ label: 'Hero image alt' }),
         draft: fields.checkbox({ label: 'Draft', description: 'Hidden from the site until unchecked.' }),
         content: fields.markdoc({ label: 'Body' }),
