@@ -1,7 +1,10 @@
 // Netlify Function — OCTO-powered "Find your date" data source.
 //
-// GET ?month=YYYY-MM  → { dates: ['YYYY-MM-DD', ...] } — which dates have ANY availability
-// GET ?date=YYYY-MM-DD → { departures: [{ productId, time, priceFrom }] } — that day's slots
+// GET ?month=YYYY-MM  → { dates: [...available], soldOut: [...sold-out-only] } — which dates have
+//                       ANY availability, plus dates whose scheduled sailings are ALL sold out
+//                       (SOLD_OUT with nothing bookable) so the grid can offer the waitlist path.
+// GET ?date=YYYY-MM-DD → { departures: [{ productId, time, priceFrom, state }] } — that day's slots,
+//                       state = 'available' | 'sold-out' (sold-out drives the "Join waitlist" button).
 //
 // Fans over the confirmed PUBLIC product allowlist against /octo/availability/calendar
 // (month) and /octo/availability (day) with bounded concurrency, then aggregates. The OCTO
@@ -75,6 +78,16 @@ function hhmm(iso: unknown): string {
   return typeof iso === 'string' && iso.length >= 16 ? iso.slice(11, 16) : '';
 }
 
+// Normalise the month blob into { available, soldOut }, tolerating a stale PRE-UPGRADE blob
+// (a bare array of available dates) still inside its TTL window right after a deploy.
+function normMonth(v: unknown): { available: string[]; soldOut: string[] } {
+  const strs = (x: unknown): string[] =>
+    Array.isArray(x) ? x.filter((s): s is string => typeof s === 'string') : [];
+  if (Array.isArray(v)) return { available: strs(v), soldOut: [] };
+  const o = (v ?? {}) as { available?: unknown; soldOut?: unknown };
+  return { available: strs(o.available), soldOut: strs(o.soldOut) };
+}
+
 function json(payload: unknown): Response {
   return new Response(JSON.stringify(payload), {
     status: 200,
@@ -106,7 +119,7 @@ export default withGuard(async (request: Request): Promise<Response> => {
     // GET /products option resolution AND the per-product fan-out entirely.
     if (parsed.value.mode === 'month') {
       const month = parsed.value.month;
-      const dates = await withBlobCache(store, `month/${month}`, MONTH_TTL_MS, async () => {
+      const agg = await withBlobCache(store, `month/${month}`, MONTH_TTL_MS, async () => {
         const targets = await resolveTargets(key, isAllowedProductId);
         const { start, end } = monthRange(month);
         const per = await mapConcurrent(targets, CONCURRENCY, async ({ productId, optionId }) => {
@@ -117,20 +130,32 @@ export default withGuard(async (request: Request): Promise<Response> => {
               localDateStart: start,
               localDateEnd: end,
             });
-            return Array.isArray(cal)
-              ? cal
-                  .filter((d) => d && (d as { available?: unknown }).available)
-                  .map((d) => (d as { localDate?: unknown }).localDate)
-                  .filter((x): x is string => typeof x === 'string')
-              : [];
+            const avail: string[] = [];
+            const sold: string[] = [];
+            if (Array.isArray(cal)) {
+              for (const d of cal as Array<Record<string, unknown>>) {
+                const ld = d?.localDate;
+                if (typeof ld !== 'string') continue;
+                if (d.available) avail.push(ld);
+                // SOLD_OUT = scheduled but full → waitlist. CLOSED (not on sale) is deliberately skipped.
+                else if (d.status === 'SOLD_OUT') sold.push(ld);
+              }
+            }
+            return { avail, sold };
           } catch (e) {
             console.error(`day-finder: calendar ${productId} failed —`, (e as Error).message);
-            return [];
+            return { avail: [] as string[], sold: [] as string[] };
           }
         });
-        return [...new Set(per.flat())].sort();
+        const availSet = new Set(per.flatMap((p) => p.avail));
+        // A date bookable via ANY product counts as available (the sold-out product still surfaces in
+        // the day view with a waitlist button). Only dates whose scheduled sailings are ALL sold out
+        // are flagged sold-out in the month grid.
+        const soldOut = [...new Set(per.flatMap((p) => p.sold))].filter((d) => !availSet.has(d)).sort();
+        return { available: [...availSet].sort(), soldOut };
       });
-      return json({ dates });
+      const month_ = normMonth(agg);
+      return json({ dates: month_.available, soldOut: month_.soldOut });
     }
 
     // day mode
@@ -145,14 +170,23 @@ export default withGuard(async (request: Request): Promise<Response> => {
             localDateStart: date,
             localDateEnd: date,
           });
+          // OCTO returns only scheduled + on-sale slots (CLOSED days come back empty), so each slot
+          // is either available or SOLD_OUT — surface both; sold-out drives the waitlist button.
           return Array.isArray(slots)
             ? slots
-                .filter((s) => s && (s as { available?: unknown }).available)
-                .map((s) => ({
-                  productId,
-                  time: hhmm((s as { localDateTimeStart?: unknown }).localDateTimeStart),
-                  priceFrom: priceFromUnits((s as { unitPricing?: unknown }).unitPricing),
-                }))
+                .filter((s) => {
+                  const st = s as { available?: unknown; status?: unknown };
+                  return !!s && (st.available === true || st.status === 'SOLD_OUT');
+                })
+                .map((s) => {
+                  const st = s as { available?: unknown; localDateTimeStart?: unknown; unitPricing?: unknown };
+                  return {
+                    productId,
+                    time: hhmm(st.localDateTimeStart),
+                    priceFrom: priceFromUnits(st.unitPricing),
+                    state: st.available === true ? 'available' : 'sold-out',
+                  };
+                })
             : [];
         } catch (e) {
           console.error(`day-finder: availability ${productId} failed —`, (e as Error).message);
