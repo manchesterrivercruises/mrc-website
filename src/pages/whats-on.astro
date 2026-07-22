@@ -254,6 +254,18 @@ const HYDRATE_SCRIPT = `
         </button>
       </div>
 
+      {/* Out-of-range month deep-link notice (e.g. ?month=2026-12 before December dates are released).
+          Hidden by default; the filter script reveals it and fills the month name when the requested
+          month is beyond the live feed's rolling window, then shows the FULL unfiltered list below —
+          never an empty page. */}
+      <p
+        class="wo-month-notice mt-6 rounded-card border border-amber-300 bg-amber-50 px-4 py-3 text-sm text-amber-900"
+        role="status"
+        hidden
+      >
+        <span data-month-name>These</span> dates haven't been released yet — here's everything coming up.
+      </p>
+
       {/* Grid. SERVER-RENDERED CRAWLABLE CORE: one product-link card per product (no dates) —
           also the no-JS / feed-failure fallback. The hydration script replaces these with
           real dated event-day cards. Undated cards carry an empty data-date (never hidden by
@@ -310,6 +322,17 @@ const HYDRATE_SCRIPT = `
       (empty data-date) are never hidden by the date filter. Exposed globally so the
       hydration script can re-apply after it swaps in the live cards. */}
   <script>
+    // Month deep-link (?month=YYYY-MM): filter to a single calendar month, alongside ?time=.
+    // The live feed covers a rolling ~3-month window, so a month beyond it has zero dated cards —
+    // we then reveal a friendly "not released yet" notice above the FULL unfiltered list (never an
+    // empty page). Touching any date control clears the deep-link (explicit user override).
+    let monthFilter: string | null = null;
+    const monthNames = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+    function monthLabel(m: string): string {
+      const mm = Number(m.slice(5, 7));
+      return mm >= 1 && mm <= 12 ? monthNames[mm - 1] : m;
+    }
+
     function applyWhatsOnFilters() {
       const typeEl = document.querySelector('input[name="wo-type"]:checked') as HTMLInputElement | null;
       const dateEl = document.querySelector('input[name="wo-date"]:checked') as HTMLInputElement | null;
@@ -327,6 +350,22 @@ const HYDRATE_SCRIPT = `
       const now = Date.now();
       let visible = 0;
 
+      // Month deep-link: is the requested month covered by the live feed? (any dated card falls in it,
+      // respecting the active type/time filters). If not, degrade to "everything coming up" + notice.
+      let monthOutOfRange = false;
+      if (monthFilter) {
+        let inMonth = 0;
+        document.querySelectorAll<HTMLElement>('.event-item').forEach((item) => {
+          const t = item.getAttribute('data-type');
+          const times = item.getAttribute('data-times') || 'evening';
+          const raw = item.getAttribute('data-date') || '';
+          const okType = type === 'all' || t === type;
+          const okTime = timeFilter === 'all' || times === 'both' || times === timeFilter;
+          if (raw && raw.slice(0, 7) === monthFilter && okType && okTime) inMonth++;
+        });
+        monthOutOfRange = inMonth === 0;
+      }
+
       document.querySelectorAll<HTMLElement>('.event-item').forEach((item) => {
         const t = item.getAttribute('data-type');
         const times = item.getAttribute('data-times') || 'evening';
@@ -338,7 +377,11 @@ const HYDRATE_SCRIPT = `
         const matchTime =
           timeFilter === 'all' || times === 'both' || times === timeFilter;
         let matchDate;
-        if (Number.isNaN(ms)) matchDate = true; // undated fallback card — always show
+        if (monthFilter && !monthOutOfRange)
+          // In-range month deep-link: only dated cards in that month (undated fallbacks hidden).
+          matchDate = !Number.isNaN(ms) && raw.slice(0, 7) === monthFilter;
+        else if (monthFilter && monthOutOfRange) matchDate = true; // out of range → everything coming up
+        else if (Number.isNaN(ms)) matchDate = true; // undated fallback card — always show
         else if (rangeActive) matchDate = ms >= (fromMs as number) && ms <= (toMs as number);
         else if (dateFilter === 'week') matchDate = days >= -1 && days <= 7;
         else if (dateFilter === 'month') matchDate = days >= -1 && days <= 30;
@@ -351,8 +394,20 @@ const HYDRATE_SCRIPT = `
       });
 
       document.querySelectorAll<HTMLInputElement>('input[name="wo-date"]').forEach((el) => {
-        el.disabled = rangeActive;
+        el.disabled = rangeActive || monthFilter !== null;
       });
+
+      // Out-of-range month notice: reveal + fill the month name only when the deep-linked month is
+      // beyond the feed window; the full list is already shown beneath it.
+      const notice = document.querySelector('.wo-month-notice') as HTMLElement | null;
+      if (notice) {
+        const showNotice = monthFilter !== null && monthOutOfRange;
+        if (showNotice) {
+          const nm = notice.querySelector('[data-month-name]');
+          if (nm) nm.textContent = monthLabel(monthFilter as string);
+        }
+        notice.hidden = !showNotice;
+      }
 
       const empty = document.querySelector('.wo-empty') as HTMLElement | null;
       if (empty) empty.hidden = visible > 0;
@@ -362,17 +417,40 @@ const HYDRATE_SCRIPT = `
 
     // Deep link: ?time=daytime|evening preselects the sailing-times pill (used by the party-boat
     // page's "Daytime parties" CTA). Ignored if the value isn't a real option.
-    const timeParam = new URLSearchParams(window.location.search).get('time');
+    const params = new URLSearchParams(window.location.search);
+    const timeParam = params.get('time');
     if (timeParam === 'daytime' || timeParam === 'evening') {
       const pill = document.querySelector<HTMLInputElement>(`input[name="wo-time"][value="${timeParam}"]`);
       if (pill) pill.checked = true;
     }
 
+    // Month deep-link: ?month=YYYY-MM (months 01–12), e.g. the Christmas hub's "December party nights"
+    // CTA. Drives date-filtering and deselects the default quick-filter so the month takes over.
+    const monthParam = params.get('month');
+    if (monthParam && /^\d{4}-(0[1-9]|1[0-2])$/.test(monthParam)) {
+      monthFilter = monthParam;
+      document.querySelectorAll<HTMLInputElement>('input[name="wo-date"]').forEach((el) => {
+        el.checked = false;
+      });
+    }
+
+    // Type/time changes preserve the month deep-link (e.g. December + Evening).
     document
-      .querySelectorAll('input[name="wo-type"], input[name="wo-time"], input[name="wo-date"], #wo-from, #wo-to')
+      .querySelectorAll('input[name="wo-type"], input[name="wo-time"]')
       .forEach((el) => {
         el.addEventListener('change', applyWhatsOnFilters);
         el.addEventListener('input', applyWhatsOnFilters);
+      });
+    // Touching any date control is an explicit override — drop the month deep-link.
+    document
+      .querySelectorAll('input[name="wo-date"], #wo-from, #wo-to')
+      .forEach((el) => {
+        const clearMonth = () => {
+          monthFilter = null;
+          applyWhatsOnFilters();
+        };
+        el.addEventListener('change', clearMonth);
+        el.addEventListener('input', clearMonth);
       });
 
     document.getElementById('wo-clear-dates')?.addEventListener('click', () => {
