@@ -26,7 +26,7 @@ images:
     usage: [gallery, private-hire, product-page]
     tags: [private-hire, decor]
   # TEMP: hotlinked from the live manchesterrivercruises.com for review — not an owned asset.
-  - src: "https://optimise2.assets-servd.host/river-cruises/production/images/drinks.jpg?w=800&h=543&q=80&fm=webp&fit=crop&crop=focalpoint&fp-x=0.5&fp-y=0.5&dm=1682426551&s=0dbe00033afc521262060f0489af39c6"
+  - src: /images/gallery/private-hire/drinks-on-deck.webp
     width: 800
     height: 543
     alt: Guests mingling with drinks on the deck of a privately hired boat at golden hour
@@ -34,7 +34,7 @@ images:
     orientation: landscape
     tags: [event, deck]
   # TEMP: hotlinked from the live manchesterrivercruises.com for review — not an owned asset.
-  - src: "https://optimise2.assets-servd.host/river-cruises/production/images/party.jpg?w=1200&h=900&q=80&fm=webp&fit=crop&crop=focalpoint&fp-x=0.5&fp-y=0.5&dm=1682426547&s=287285d3882fe6c4e0234a60457d517b"
+  - src: /images/gallery/private-hire/cabin-dinner-setup.webp
     width: 1200
     height: 900
     alt: Tables laid with flowers and place settings inside the cabin for a private dinner

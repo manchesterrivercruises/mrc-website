@@ -2,75 +2,104 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import { site } from '../data/site';
 import SectionHeading from '../components/SectionHeading.astro';
-import BookingPanel from '../components/BookingPanel.astro';
-import VentrataWidget from '../components/VentrataWidget.astro';
-import ProductCard from '../components/ProductCard.astro';
 import FAQSection from '../components/FAQSection.astro';
 import CTAButton from '../components/CTAButton.astro';
 import GettingHere from '../components/GettingHere.astro';
 import KeyFacts from '../components/KeyFacts.astro';
+import EventGalleryStrip from '../components/EventGalleryStrip.astro';
+import { getAlbums } from '../lib/gallery';
 
-// Santa Cruise product — powers the booking panel + mobile sticky CTA.
-// The Ventrata checkout widget/script is wired in a later step; placeholder for now.
-const SANTA_CRUISE_ID = '6cabf36f-f48f-48c7-83c0-c964983a9dff';
+// Christmas HUB — routes three festive audiences, honestly. Confirmed reality: there are NO
+// Christmas-specific PUBLIC events except the Santa cruise. The regular party nights simply run
+// through December with the full Christmas treatment (boat decorated, festive extras, Christmas
+// songs mixed in). So this page does NOT embed a product/booking widget and claims no Event/Product
+// schema — it points to /whats-on (party nights), /private-hire (your own do) and the Santa page.
+const albums = await getAlbums();
+const christmasAlbum = albums.find((a) => a.data.slug === 'christmas-cruises' || a.id === 'christmas-cruises');
 
 const icons = {
   calendar:
     '<path d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5" />',
-  tag: '<path d="M9.568 3H5.25A2.25 2.25 0 0 0 3 5.25v4.318c0 .597.237 1.17.659 1.591l9.581 9.581c.699.699 1.78.872 2.607.33a18.095 18.095 0 0 0 5.223-5.223c.542-.827.369-1.908-.33-2.607L11.16 3.66A2.25 2.25 0 0 0 9.568 3Z" /><path d="M6 6h.008v.008H6V6Z" />',
+  gift: '<path d="M21 11.25v8.25a1.5 1.5 0 0 1-1.5 1.5H5.25a1.5 1.5 0 0 1-1.5-1.5v-8.25M12 4.875A2.625 2.625 0 1 0 9.375 7.5H12m0-2.625V7.5m0-2.625A2.625 2.625 0 1 1 14.625 7.5H12m0 0V21m-8.625-9.75h18c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125h-18c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125Z" />',
   pin: '<path d="M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" /><path d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1 1 15 0Z" />',
   sparkles:
     '<path d="M9.813 15.904 9 18.75l-.813-2.846a4.5 4.5 0 0 0-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 0 0 3.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 0 0 3.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 0 0-3.09 3.09Z" /><path d="M18.259 8.715 18 9.75l-.259-1.035a3.375 3.375 0 0 0-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 0 0 2.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 0 0 2.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 0 0-2.456 2.456Z" />',
-  check: '<path d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />',
 };
 
 const keyFacts = [
-  { text: 'November – January', icon: icons.calendar },
-  { text: 'From £16 per person', icon: icons.tag },
+  { text: 'Party nights, private hire & Santa cruises', icon: icons.sparkles },
+  { text: 'Fully decorated all through December', icon: icons.calendar },
   { text: 'Millennium Footbridge, Salford Quays', icon: icons.pin },
-  { text: 'Festive theming onboard', icon: icons.sparkles },
+  { text: 'Book early — December sells out', icon: icons.gift },
 ];
 
-// Christmas products for the events grid (ProductCard). Ventrata product IDs in comments.
-const christmasProducts = [
-  { name: 'Cruise with Father Christmas', desc: 'A magical festive cruise with a visit from Santa — a family favourite.', href: '/santa-cruise-manchester' }, // 6cabf36f
-  { name: 'Santa SEN Cruise', desc: 'A relaxed, sensory-friendly Santa cruise for children with additional needs.', href: '/santa-cruise-manchester' }, // 4cfbc7f7
-  { name: 'Christmas Party Nights', desc: 'Festive music and party cruises to celebrate with friends and colleagues.', href: '/events' },
-];
-
-const included = [
-  'Festive menu onboard',
-  'Live entertainment and music',
-  'Onboard decorations and a festive atmosphere',
-  'A visit from Father Christmas on Santa cruises',
+// The three festive journeys. `featured` marks the highest-value strand (private hire).
+const journeys = [
+  {
+    id: 'party-nights',
+    eyebrow: 'Party nights',
+    title: 'Party nights, dressed for Christmas',
+    copy: 'All our regular party nights — ABBA, Dolly, Elvis, Soul and more — get the full Christmas treatment through December: the boat decorated bow to stern, festive extras on board and Christmas songs in the mix. Same great nights, in full festive dress.',
+    image: '/images/gallery/abba-night/01.webp',
+    imageAlt: 'A tribute act performing under coloured stage lights on a party cruise',
+    cta: { label: 'See December party nights', href: '/whats-on?month=2026-12' },
+    featured: false,
+  },
+  {
+    id: 'private-party',
+    eyebrow: 'Private hire',
+    title: 'Your own Christmas party',
+    copy: 'The whole boat, exclusively yours — the standout way to do the office Christmas do or a big group celebration. Your own decorated boat, your own night on the water, with a licensed bar and the floodlit waterfront gliding past. December dates go fast, so get yours locked in.',
+    image: '/images/gallery/private-hire/boat-dressed-for-valentines.webp',
+    imageAlt: 'The boat cabin dressed for a private celebration with decorations and laid tables',
+    cta: { label: 'Plan a private Christmas party', href: '/private-hire' },
+    featured: true,
+  },
+  {
+    id: 'santa',
+    eyebrow: 'Family',
+    title: 'Santa cruises',
+    copy: 'The one truly Christmas-specific event: a magical family cruise where little ones meet Father Christmas himself on the water, with a festively decorated cabin and a gift for every child. Pure festive magic for the countdown to Christmas.',
+    image: '/images/gallery/christmas-cruises/child-at-the-wheel-with-santa-card.webp',
+    imageAlt: 'A child at the wheel of the boat alongside Father Christmas',
+    cta: { label: 'Meet Father Christmas', href: '/santa-cruise-manchester' },
+    featured: false,
+  },
 ];
 
 const faqs = [
   {
-    q: 'When is the booking deadline for Christmas cruises?',
-    a: 'Christmas cruises are hugely popular and often sell out, so we recommend booking early. Exact deadlines TBC.',
+    q: 'Do you run special Christmas events?',
+    a: 'Our regular party nights run right through December with the full Christmas treatment — the boat decorated bow to stern, festive extras on board and Christmas songs mixed into the night. The one Christmas-specific event is our family Santa cruise. For a do of your own, hire the whole boat.',
   },
-  { q: 'Can I make a group booking?', a: 'Yes — we welcome groups and festive parties. Group booking details TBC.' },
+  {
+    q: 'Can I book a private Christmas party?',
+    a: 'Yes — hire the whole boat for your office party or group celebration, with the boat decorated for Christmas. Catering, drinks packages and festive extras — TBC from Simon. Enquire via our private hire page; December books up early.',
+  },
+  {
+    q: 'When should I book for December?',
+    a: 'December is our busiest month and party nights and private dates sell out, so book as early as you can. Exact deadlines — TBC.',
+  },
   {
     q: 'What should I wear?',
     a: 'Dress warmly (and festively!). There is a heated indoor cabin, but the open deck can be cold in winter. (TBC)',
   },
   {
     q: 'Are the Christmas cruises accessible?',
-    a: 'Accessibility details — including our sensory-friendly SEN Santa cruise — are TBC.',
+    a: 'Step-free boarding is available where tides allow, and our sensory-friendly SEN Santa cruise is designed for children with additional needs. Full accessibility details — TBC.',
   },
 ];
 
 const SITE = site.url;
-const pageTitle = 'Christmas Cruises Manchester — Manchester River Cruises';
+// Meta targets the hub intent — "Christmas cruises Manchester" + "Christmas party boat Manchester".
+// The Santa page keeps "Santa cruise" ownership, so there is no title cannibalisation.
+const pageTitle = 'Christmas Cruises & Christmas Party Boat Manchester — Manchester River Cruises';
 const pageDescription =
-  'Festive Christmas cruises on the Manchester Ship Canal from Salford Quays — Cruise with Father Christmas, sensory-friendly Santa SEN cruises and Christmas party nights. From £16. Book direct.';
+  'Christmas on the Manchester Ship Canal from Salford Quays: party nights that run through December fully decorated with festive extras, private Christmas parties for your office or group, and family Santa cruises. Book direct.';
 
-// Schema.org — TouristAttraction + Product. We do NOT claim an Event: specific festive
-// departure dates live in Ventrata, not in our markup, so a schema.org Event (which
-// expects a real startDate) would be dishonest. Product needs no date and describes the
-// bookable cruise accurately; the offer carries the static "from" price only. Real Event
-// schema with real dates returns in step 9 when Ventrata data drives it.
+// Schema.org — TouristAttraction + FAQPage ONLY. No Product/Offer/InStock: this hub sells no single
+// dated product (party dates live in Ventrata; the Santa product lives on its own page), so a Product
+// with a price/InStock offer here would be dishonest — and was deliberately removed in this pass.
 const structuredData = {
   '@context': 'https://schema.org',
   '@graph': [
@@ -85,28 +114,22 @@ const structuredData = {
       geo: { '@type': 'GeoCoordinates', ...site.geo },
     },
     {
-      '@type': 'Product',
-      name: 'Cruise with Father Christmas',
-      description: 'A magical festive cruise with a visit from Santa on the Manchester Ship Canal.',
-      url: `${SITE}/santa-cruise-manchester`,
-      brand: { '@type': 'Brand', name: 'Manchester River Cruises' },
-      offers: {
-        '@type': 'Offer',
-        price: 16,
-        priceCurrency: 'GBP',
-        availability: 'https://schema.org/InStock',
-        url: `${SITE}/santa-cruise-manchester`,
-      },
+      '@type': 'FAQPage',
+      mainEntity: faqs.map((f) => ({
+        '@type': 'Question',
+        name: f.q,
+        acceptedAnswer: { '@type': 'Answer', text: f.a },
+      })),
     },
   ],
 };
 ---
 
 <BaseLayout title={pageTitle} description={pageDescription}>
-  {/* Schema.org structured data (TouristAttraction + Product — dates live in Ventrata) */}
+  {/* Schema.org (TouristAttraction + FAQPage — no Product/Offer/InStock; the hub sells no single product) */}
   <script type="application/ld+json" is:inline set:html={JSON.stringify(structuredData)} />
 
-  <div class="pb-24 md:pb-0">
+  <div>
     {/* Hero — dark navy, gold accents, festive feel */}
     <section class="bg-dark text-white">
       <div class="mx-auto max-w-6xl px-4 py-20 sm:px-6 md:py-28 lg:px-8">
@@ -115,11 +138,12 @@ const structuredData = {
           Christmas Cruises Manchester
         </h1>
         <p class="mt-5 max-w-2xl text-lg leading-relaxed text-white/80">
-          Celebrate the festive season on the Manchester Ship Canal.
+          Three ways to celebrate on the Manchester Ship Canal this December — a decked-out party
+          night, your own private do, or a Santa cruise for the family.
         </p>
         <div class="mt-8 flex flex-wrap items-center gap-4">
-          <CTAButton href="#book">Book Now</CTAButton>
-          <span class="text-sm text-white/70">From £16 · November – January</span>
+          <CTAButton href="#strands">See your options</CTAButton>
+          <span class="text-sm text-white/70">Fully decorated all through December</span>
         </div>
       </div>
     </section>
@@ -127,65 +151,113 @@ const structuredData = {
     {/* Key facts strip */}
     <KeyFacts facts={keyFacts} />
 
-    {/* Two-column: left content + right sticky booking panel (matches City River Tour). */}
-    <div class="mx-auto max-w-6xl px-4 py-10 sm:px-6 md:py-12 lg:grid lg:grid-cols-[58%_38%] lg:items-start lg:gap-[4%] lg:px-8">
-      {/* Right column — booking panel with the live embedded checkout. The Christmas page's
-          panel is the Santa Cruise product (6cabf36f) per its config. Uses the site-wide
-          checkout loader (env="test"); flips to live at launch. */}
-      <aside id="book" class="mb-10 lg:order-2 lg:mb-0 lg:sticky lg:top-20">
-        <BookingPanel price="£16" priceNote="Adults £16 · Children TBC">
-          <VentrataWidget mode="embedded" productID={SANTA_CRUISE_ID} slot="widget" />
-        </BookingPanel>
-      </aside>
+    {/* THREE JOURNEY CARDS — the router, high on the page */}
+    <section id="strands" aria-labelledby="strands-heading" class="mx-auto max-w-6xl px-4 py-12 sm:px-6 md:py-16 lg:px-8">
+      <SectionHeading id="strands-heading">Choose your Christmas</SectionHeading>
+      <div class="mt-8 grid grid-cols-1 gap-5 md:grid-cols-3">
+        {
+          journeys.map((j) => (
+            <article
+              class={`flex flex-col overflow-hidden rounded-card bg-white shadow-sm ring-1 ${j.featured ? 'ring-2 ring-primary/50' : 'ring-black/5'}`}
+            >
+              <div class="relative">
+                <img
+                  src={j.image}
+                  alt={j.imageAlt}
+                  width="800"
+                  height="450"
+                  loading="lazy"
+                  data-img-fallback
+                  class="aspect-[16/9] w-full object-cover"
+                />
+                {j.featured && (
+                  <span class="absolute left-3 top-3 rounded-full bg-primary px-2.5 py-0.5 text-xs font-semibold text-white">
+                    Most-booked for groups
+                  </span>
+                )}
+              </div>
+              <div class="flex flex-1 flex-col p-6">
+                <p class="text-xs font-semibold uppercase tracking-[0.2em] text-primary">{j.eyebrow}</p>
+                <h3 class="mt-2 text-lg font-bold text-ink">{j.title}</h3>
+                <p class="mt-2 flex-1 text-sm leading-relaxed text-body">{j.copy}</p>
+                <div class="mt-5">
+                  <CTAButton href={j.cta.href} variant={j.featured ? 'primary' : 'outline'} class="w-full">
+                    {j.cta.label}
+                  </CTAButton>
+                </div>
+              </div>
+            </article>
+          ))
+        }
+      </div>
+    </section>
 
-      {/* Left column — main content */}
-      <div class="space-y-12 md:space-y-14 lg:order-1">
-        {/* Intro */}
-        <section aria-labelledby="about">
-          <SectionHeading id="about">A festive cruise to remember</SectionHeading>
-          <div class="mt-6 max-w-3xl space-y-4 text-lg leading-relaxed text-body">
+    {/* Per-strand detail + gallery + FAQ + gift cross-sell */}
+    <div class="mx-auto max-w-6xl px-4 pb-12 sm:px-6 md:pb-16 lg:px-8">
+      <div class="space-y-14">
+        {/* Strand detail sections */}
+        <section aria-labelledby="party-detail">
+          <SectionHeading id="party-detail" as="h2">Party nights, dressed for Christmas</SectionHeading>
+          <div class="mt-4 max-w-3xl space-y-4 text-body">
             <p>
-              Wrap up warm and join us on the water this Christmas. Glide along the Manchester Ship
-              Canal aboard a festively decorated boat, with a warm heated cabin, seasonal music and a
-              magical atmosphere — the perfect way to celebrate with family, friends or colleagues.
+              We don’t run separate “Christmas specials” — we don’t need to. Every one of our regular
+              party nights runs right through December with the full festive treatment: the boat
+              decorated bow to stern, festive extras on board, and Christmas songs woven into the set.
+              Whether it’s ABBA, Dolly, Elvis or a soul night, you get the same great cruise with all
+              the Christmas sparkle on top.
             </p>
-            <p class="text-base text-subtle">Full festive description and highlights — TBC from Simon (content-checklist.md).</p>
+            <p>
+              <a href="/whats-on?month=2026-12" class="font-medium text-primary underline-offset-4 hover:underline">
+                See what’s sailing in December →
+              </a>
+            </p>
           </div>
         </section>
 
-        {/* Christmas products (ProductCard) */}
-        <section aria-labelledby="christmas-cruises">
-          <SectionHeading id="christmas-cruises">Our Christmas cruises</SectionHeading>
-          <div class="mt-8 grid grid-cols-1 gap-4 sm:grid-cols-2">
-            {christmasProducts.map((p) => <ProductCard name={p.name} desc={p.desc} href={p.href} />)}
+        <section aria-labelledby="private-detail">
+          <SectionHeading id="private-detail" as="h2">Your own Christmas party</SectionHeading>
+          <div class="mt-4 max-w-3xl space-y-4 text-body">
+            <p>
+              The office Christmas do, sorted. Take the whole boat and it’s exclusively yours for the
+              night — decorated for Christmas, with a licensed bar, a dancefloor and Manchester’s
+              floodlit waterfront as your backdrop. It’s the highest-impact way to celebrate a team or
+              a big group, and it beats booking out the same tired function room.
+            </p>
+            <p class="text-base text-subtle">Catering, drinks packages and festive extras — TBC from Simon (content-checklist.md).</p>
+            <p>
+              <a href="/private-hire" class="font-medium text-primary underline-offset-4 hover:underline">
+                Enquire about a private Christmas party →
+              </a>
+            </p>
           </div>
         </section>
 
-        {/* What's included */}
-        <section aria-labelledby="included">
-          <SectionHeading id="included">What's included</SectionHeading>
-          <ul class="mt-6 grid gap-3 sm:grid-cols-2">
-            {
-              included.map((item) => (
-                <li class="flex items-start gap-2 text-body">
-                  <svg
-                    class="mt-0.5 h-5 w-5 flex-none text-primary"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    stroke-width="1.5"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    aria-hidden="true"
-                    set:html={icons.check}
-                  />
-                  <span>{item}</span>
-                </li>
-              ))
-            }
-          </ul>
-          <p class="mt-3 text-sm text-subtle">Festive menu, entertainment and decorations — final details TBC.</p>
+        <section aria-labelledby="santa-detail">
+          <SectionHeading id="santa-detail" as="h2">Santa cruises</SectionHeading>
+          <div class="mt-4 max-w-3xl space-y-4 text-body">
+            <p>
+              Our one truly Christmas-specific event. Little ones meet Father Christmas on the water,
+              in a warm, festively decorated cabin, with a gift for every child — plus a
+              sensory-friendly SEN Santa cruise for children with additional needs.
+            </p>
+            <p>
+              <a href="/santa-cruise-manchester" class="font-medium text-primary underline-offset-4 hover:underline">
+                Meet Father Christmas on the water →
+              </a>
+            </p>
+          </div>
         </section>
+
+        {/* Christmas gallery imagery */}
+        {
+          christmasAlbum && (
+            <EventGalleryStrip
+              album={christmasAlbum}
+              heading="Christmas on board"
+              lead="Real festive moments on the water — tap to browse"
+            />
+          )
+        }
 
         {/* Getting Here (shared component) */}
         <GettingHere />
@@ -193,13 +265,14 @@ const structuredData = {
         {/* FAQ */}
         <FAQSection faqs={faqs} title="Christmas cruise FAQs" />
 
-        {/* Gift vouchers callout */}
+        {/* Gift voucher cross-sell */}
         <section aria-labelledby="gift-vouchers">
           <div class="rounded-card bg-panel p-6 ring-1 ring-black/5 sm:flex sm:items-center sm:justify-between sm:gap-6">
             <div>
-              <h2 id="gift-vouchers" class="text-lg font-semibold text-ink">Give the gift of a cruise</h2>
+              <h2 id="gift-vouchers" class="text-lg font-semibold text-ink">Can’t pick a date? Give a voucher</h2>
               <p class="mt-1 text-sm leading-relaxed text-body">
-                Gift vouchers make a perfect Christmas present — redeemable against any cruise.
+                A gift voucher is the easy Christmas present — they pick the cruise and the date that
+                suits them. Redeemable against any sailing.
               </p>
             </div>
             <div class="mt-4 shrink-0 sm:mt-0">
@@ -209,10 +282,5 @@ const structuredData = {
         </section>
       </div>
     </div>
-  </div>
-
-  {/* Mobile sticky Book Now (Santa Cruise) — scrolls to the booking panel; no Ventrata script yet. */}
-  <div class="fixed inset-x-0 bottom-0 z-40 border-t border-black/10 bg-white/95 p-3 backdrop-blur md:hidden">
-    <CTAButton href="#book" class="w-full">Book Now</CTAButton>
   </div>
 </BaseLayout>
