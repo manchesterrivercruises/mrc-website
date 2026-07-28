@@ -15,7 +15,7 @@ export interface Crumb {
 const SECTION_MAP: Record<string, { name: string; url: string }> = {
   tour: { name: 'Events', url: '/events' },
   discover: { name: 'Discover', url: '/discover' },
-  'boat-to-old-trafford': { name: 'Boat to Old Trafford', url: '/boat-to-old-trafford' },
+  'boat-to-old-trafford': { name: 'Boat to Old Trafford', url: '/tour/boat-to-old-trafford' },
 };
 
 // Whole-slug label overrides (apostrophes / acronyms a word map can't cover cleanly).

@@ -1,13 +1,13 @@
 ---
-import BaseLayout from '../../layouts/BaseLayout.astro';
-import PageHero from '../../components/PageHero.astro';
-import SectionHeading from '../../components/SectionHeading.astro';
-import CTAButton from '../../components/CTAButton.astro';
-import KeyFacts from '../../components/KeyFacts.astro';
-import BookingPanel from '../../components/BookingPanel.astro';
-import VentrataWidget from '../../components/VentrataWidget.astro';
-import { site } from '../../data/site';
-import { departurePoints, otherDeparturePoint } from '../../data/mufcFerry';
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import PageHero from '../../../components/PageHero.astro';
+import SectionHeading from '../../../components/SectionHeading.astro';
+import CTAButton from '../../../components/CTAButton.astro';
+import KeyFacts from '../../../components/KeyFacts.astro';
+import BookingPanel from '../../../components/BookingPanel.astro';
+import VentrataWidget from '../../../components/VentrataWidget.astro';
+import { site } from '../../../data/site';
+import { departurePoints, otherDeparturePoint } from '../../../data/mufcFerry';
 
 // One page per ferry departure point. Both routes arrive at Trafford Wharf; the
 // customer picks where to depart. Content is data-driven from src/data/mufcFerry.ts.
@@ -46,7 +46,7 @@ const structuredData = {
   '@type': 'BoatTrip',
   name: `MUFC Matchday Ferry — ${point.name} to Trafford Wharf`,
   description: pageDescription,
-  url: `${site.url}/boat-to-old-trafford/${point.slug}`,
+  url: `${site.url}/tour/boat-to-old-trafford/${point.slug}`,
   departureBoatTerminal: { '@type': 'BoatTerminal', name: point.name },
   arrivalBoatTerminal: { '@type': 'BoatTerminal', name: 'Trafford Wharf' },
   provider: { '@type': 'LocalBusiness', name: site.name, url: site.url },
@@ -59,16 +59,24 @@ const structuredData = {
       price: PRICE_FROM,
       priceCurrency: 'GBP',
       availability: 'https://schema.org/InStock',
-      url: `${site.url}/boat-to-old-trafford/${point.slug}`,
+      url: `${site.url}/tour/boat-to-old-trafford/${point.slug}`,
     },
   }),
 };
+// Home > Boat to Old Trafford > <departure point>. Explicit so the ferry section keeps its own
+// hierarchy rather than inheriting the /tour/ namespace Events crumb.
+const crumbs = [
+  { name: 'Home', url: `${site.url}/` },
+  { name: 'Boat to Old Trafford', url: `${site.url}/tour/boat-to-old-trafford` },
+  { name: point.name, url: `${site.url}/tour/boat-to-old-trafford/${point.slug}` },
+];
 ---
 
 <BaseLayout
   title={pageTitle}
   description={pageDescription}
   bookProductID={point.productReady ? point.ventrataProductId : undefined}
+  breadcrumbs={crumbs}
 >
   {/* Ventrata checkout loader now ships site-wide via <Header> (AGENTS rule 9). The header
       Book Now opens this point's product where it has one, else the all-products chooser. */}
@@ -156,7 +164,7 @@ const structuredData = {
                     </p>
                   </div>
                   <div class="mt-4 shrink-0 sm:mt-0">
-                    <CTAButton href={`/boat-to-old-trafford/${other.slug}`} variant="outline">Depart from {other.name}</CTAButton>
+                    <CTAButton href={`/tour/boat-to-old-trafford/${other.slug}`} variant="outline">Depart from {other.name}</CTAButton>
                   </div>
                 </div>
               </section>

@@ -31,14 +31,14 @@ City River Tour is ~65% of revenue. It dominates the site.
 
 ```
 /                                          Home
-/city-river-tour                           City River Tour
+/tour/city-river-tours                           City River Tour
 /whats-on                                  What's On
 /events                                    Events & Special Cruises
 /christmas-cruises-manchester              Christmas Cruises (SEO page)
 /santa-cruise-manchester                   Santa Cruise (SEO page)
 /music-cruises-manchester                  Music Cruises (SEO page)
 /party-boat-manchester                     Party Boat (SEO page)
-/boat-to-old-trafford                      Boat to Old Trafford (matchday ferry)
+/tour/boat-to-old-trafford                      Boat to Old Trafford (matchday ferry)
 /private-hire                              Private Hire
 /private-boat-hire-manchester              Private Boat Hire (SEO page)
 /tour/[slug]                              Event/tour product pages (dynamic — legacy namespace, adopted)

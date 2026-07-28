@@ -201,7 +201,7 @@ params — useful for email/social campaigns that drop customers straight into c
 optionally with a promo code pre-applied.
 
 ```
-https://manchesterrivercruises.com/city-river-tour?openWidget=true&promoCode=XMAS25
+https://manchesterrivercruises.com/tour/city-river-tours?openWidget=true&promoCode=XMAS25
 ```
 
 - `openWidget=true` — the checkout script on that page opens the widget on load.

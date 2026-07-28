@@ -1,6 +1,6 @@
 # Lighthouse triage
 
-Triage of a **mobile** Lighthouse run on `/city-river-tour` (CRT):
+Triage of a **mobile** Lighthouse run on `/tour/city-river-tours` (CRT):
 **Performance 68 · Accessibility 87 · Best Practices 92 · SEO 69.**
 
 This records what we changed, what is an accepted third-party cost, and what stays open.
@@ -79,7 +79,7 @@ rule-9 reversal, not a code optimisation. Not recommended pre-launch.
 
 ## 3. Accessibility 87 — our components vs the Ventrata iframe
 
-Audited every component that renders on `/city-river-tour` (Header, Nav, Footer, KeyFacts,
+Audited every component that renders on `/tour/city-river-tours` (Header, Nav, Footer, KeyFacts,
 SectionHeading, BookingPanel, VentrataWidget, ProductCard, AttractionCard, FAQSection, ReviewStrip,
 GettingHere, StarRating, MapTapActivate) plus BaseLayout and the global-css theme tokens. The split:
 

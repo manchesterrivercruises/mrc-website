@@ -24,7 +24,7 @@ Read this when working on SEO metadata, title tags, or schema markup.
 - **Schema:** TouristAttraction, LocalBusiness
 - **Primary keywords:** Manchester river cruise, boat tour Manchester, Salford Quays boat trip
 
-### City River Tour `/city-river-tour`
+### City River Tour `/tour/city-river-tours`
 - **Title:** City River Tour Manchester | Sightseeing Cruise from Salford Quays
 - **Description:** See Manchester from the water. Regular sightseeing cruises departing from Millennium Footbridge, Salford Quays M50 3RB. From £[X]. Book direct for best availability.
 - **Schema:** TouristAttraction, Product (with price)
@@ -64,7 +64,7 @@ Read this when working on SEO metadata, title tags, or schema markup.
 - **Schema:** Event, TouristAttraction
 - **Primary keywords:** party boat Manchester, boat party Manchester, Manchester Ship Canal party
 
-### Boat to Old Trafford `/boat-to-old-trafford`
+### Boat to Old Trafford `/tour/boat-to-old-trafford`
 - **Title:** Manchester United Ferry | Boat to Old Trafford | Matchday Ferry Service
 - **Description:** Travel to Old Trafford by boat. Matchday ferry service from Salford Quays direct to Old Trafford — the best way to arrive on matchday.
 - **Schema:** TouristAttraction, Service

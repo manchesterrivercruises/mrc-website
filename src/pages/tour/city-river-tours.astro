@@ -1,17 +1,17 @@
 ---
-import BaseLayout from '../layouts/BaseLayout.astro';
-import { site } from '../data/site';
-import SectionHeading from '../components/SectionHeading.astro';
-import BookingPanel from '../components/BookingPanel.astro';
-import VentrataWidget from '../components/VentrataWidget.astro';
-import ProductCard from '../components/ProductCard.astro';
-import AttractionCard from '../components/AttractionCard.astro';
-import FAQSection from '../components/FAQSection.astro';
-import ReviewStrip from '../components/ReviewStrip.astro';
-import GettingHere from '../components/GettingHere.astro';
-import KeyFacts from '../components/KeyFacts.astro';
-import MapTapActivate from '../components/MapTapActivate.astro';
-import tourStops from '../data/tour-stops.json';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { site } from '../../data/site';
+import SectionHeading from '../../components/SectionHeading.astro';
+import BookingPanel from '../../components/BookingPanel.astro';
+import VentrataWidget from '../../components/VentrataWidget.astro';
+import ProductCard from '../../components/ProductCard.astro';
+import AttractionCard from '../../components/AttractionCard.astro';
+import FAQSection from '../../components/FAQSection.astro';
+import ReviewStrip from '../../components/ReviewStrip.astro';
+import GettingHere from '../../components/GettingHere.astro';
+import KeyFacts from '../../components/KeyFacts.astro';
+import MapTapActivate from '../../components/MapTapActivate.astro';
+import tourStops from '../../data/tour-stops.json';
 
 // NOTE: Placeholder content. Items marked (TBC) await Simon's confirmed copy
 // (content-checklist.md): itinerary's 43 stops, pricing, photography, reviews.
@@ -58,7 +58,7 @@ const dayOut = [
 const crossSell = [
   { name: 'Cruise with Father Christmas', desc: 'A magical festive cruise the whole family will love', href: '/santa-cruise-manchester' },
   { name: 'ABBA Cruise', desc: 'Dance the night away on the water to the greatest ABBA hits', href: '/tour/mamma-mia-cruise-abba-tribute' },
-  { name: 'Boat to Old Trafford', desc: 'The best way to arrive on matchday', href: '/boat-to-old-trafford' },
+  { name: 'Boat to Old Trafford', desc: 'The best way to arrive on matchday', href: '/tour/boat-to-old-trafford' },
 ];
 
 const faqs = [
@@ -87,7 +87,7 @@ const structuredData = {
       name: 'City River Tour — Manchester Ship Canal',
       description:
         'Sightseeing cruise on the Manchester Ship Canal and River Irwell departing from Millennium Footbridge, Salford Quays. 60-minute round trip with audio commentary past IWM North, MediaCity, Old Trafford and more.',
-      url: `${SITE}/city-river-tour`,
+      url: `${SITE}/tour/city-river-tours`,
       touristType: 'Sightseeing',
       availableLanguage: 'English',
       aggregateRating: {
@@ -102,7 +102,7 @@ const structuredData = {
         '@type': 'Offer',
         price: 13,
         priceCurrency: 'GBP',
-        url: `${SITE}/city-river-tour`,
+        url: `${SITE}/tour/city-river-tours`,
         availability: 'https://schema.org/InStock',
         validFrom: today,
       },
@@ -119,9 +119,21 @@ const structuredData = {
 // crawlable static content and available without JavaScript (seeds the future full
 // 43-stop itinerary). The Leaflet map reads the same source (tour-stops.json).
 const orderedStops = [...tourStops].sort((a, b) => a.id - b.id);
+// The /tour/ namespace crumb resolves to the Events hub, which is wrong for CRT — it is the
+// flagship sightseeing product, not an event. Explicit trail keeps the IA honest now that the
+// URL sits under /tour/ (a URL decision, not a hierarchy change).
+const crumbs = [
+  { name: 'Home', url: `${SITE}/` },
+  { name: 'City River Tour', url: `${SITE}/tour/city-river-tours` },
+];
 ---
 
-<BaseLayout title={pageTitle} description={pageDescription} bookProductID="ef45d8bd-529c-4dae-9c35-cd1b8e4e0a75">
+<BaseLayout
+  title={pageTitle}
+  description={pageDescription}
+  bookProductID="ef45d8bd-529c-4dae-9c35-cd1b8e4e0a75"
+  breadcrumbs={crumbs}
+>
   {/* Ventrata checkout loader now ships site-wide via <Header> (AGENTS rule 9). */}
 
   {/* LCP preload — discovers the hero tile in <head>, before the body parser reaches the

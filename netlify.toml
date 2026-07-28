@@ -31,7 +31,7 @@
     # Homepage — City River Tour is the default hero (AGENTS rule 3).
 
   [[plugins.inputs.audits]]
-    path = "city-river-tour/index.html"
+    path = "tour/city-river-tours/index.html"
     # Standalone City River Tour page — the LCP-tuned booking page.
 
 # --- Legacy Craft URL redirects (301) -----------------------------------------
@@ -140,18 +140,25 @@
   to = "/events"
   status = 301
 
-# --- Products that live at a top-level page, not under /tour/ ------------------
-# City River Tour and the Old Trafford ferry keep their own top-level pages
-# (unchanged by the namespace adoption), so their legacy /tour/ addresses stay
-# redirects. Both point straight at the live page — no chain via /mufc-ferry.
+# --- CRT + ferry: ADOPTED, so these are pages and NOT redirects ---------------
+# /tour/city-river-tours and /tour/boat-to-old-trafford now RENDER — the namespace
+# adoption is complete. Their former rules were deleted; the rules below send our
+# own previous paths at the adopted ones. Ferry point pages nest beneath the
+# landing page, so a splat covers /ralli-quay and /stephensons-bridge. The splat
+# precedes the bare rule (first match wins).
 [[redirects]]
-  from = "/tour/city-river-tours"
-  to = "/city-river-tour"
+  from = "/city-river-tour"
+  to = "/tour/city-river-tours"
   status = 301
 
 [[redirects]]
-  from = "/tour/boat-to-old-trafford"
-  to = "/boat-to-old-trafford"
+  from = "/boat-to-old-trafford/*"
+  to = "/tour/boat-to-old-trafford/:splat"
+  status = 301
+
+[[redirects]]
+  from = "/boat-to-old-trafford"
+  to = "/tour/boat-to-old-trafford"
   status = 301
 
 # --- Retired legacy category facets (Craft `tourCategory` / `tourEvent`) -------
@@ -160,7 +167,7 @@
 # events collection), so no rule here can shadow a live page.
 [[redirects]]
   from = "/tour/city-sightseeing"
-  to = "/city-river-tour"
+  to = "/tour/city-river-tours"
   status = 301
 
 [[redirects]]
@@ -175,7 +182,7 @@
 
 [[redirects]]
   from = "/tour/old-trafford-event"
-  to = "/boat-to-old-trafford"
+  to = "/tour/boat-to-old-trafford"
   status = 301
 
 [[redirects]]
@@ -229,7 +236,7 @@
 # ID). 410 Gone is arguably more honest than 301 — see docs/url-parity.md §5.
 [[redirects]]
   from = "/amenities/old-trafford"
-  to = "/boat-to-old-trafford"
+  to = "/tour/boat-to-old-trafford"
   status = 301
 
 [[redirects]]
@@ -257,24 +264,24 @@
   to = "/faq"
   status = 301
 
-# --- Ferry section rename (301): /mufc-ferry → /boat-to-old-trafford ----------
+# --- Ferry section rename (301): /mufc-ferry → /tour/boat-to-old-trafford ----
 # The matchday ferry section was renamed to the keyword-exact, trademark-free
 # slug. These point straight at the NEW pages (no chains) and are trailing-slash
 # tolerant. (The legacy /tour/boat-to-old-trafford rule above also targets the new
 # page directly, so it doesn't chain through here.)
 [[redirects]]
   from = "/mufc-ferry"
-  to = "/boat-to-old-trafford"
+  to = "/tour/boat-to-old-trafford"
   status = 301
 
 [[redirects]]
   from = "/mufc-ferry/ralli-quay"
-  to = "/boat-to-old-trafford/ralli-quay"
+  to = "/tour/boat-to-old-trafford/ralli-quay"
   status = 301
 
 [[redirects]]
   from = "/mufc-ferry/stephensons-bridge"
-  to = "/boat-to-old-trafford/stephensons-bridge"
+  to = "/tour/boat-to-old-trafford/stephensons-bridge"
   status = 301
 
 # --- Security headers (all paths) ---------------------------------------------
