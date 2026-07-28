@@ -1,45 +1,50 @@
 # URL Parity — legacy Craft site vs new Astro site
 
-**Status: the `/tour/` product namespace has been ADOPTED and is live in the codebase.**
-The remaining ADOPT rows (§1) are still decisions awaiting Simon's mark-up — nothing in §1 has
-been renamed.
+**Status: COMPLETE. Every decision in this table has been executed.**
+All 46 legacy URLs are now either rendered at their original address or 301'd to a
+deliberate target. What remains is confirmation, not work — see *Still outstanding*.
 
 **Source of the old-URL inventory:** `https://manchesterrivercruises.com/sitemap.xml`
 (a sitemap index) plus its five child sitemaps, cross-checked against a crawl of the live
-homepage header, body and footer. Captured 2026-07-27. **46 legacy URLs total.**
-
-| Child sitemap | URLs |
-|---|---|
-| `sitemaps-1-section-page-1-sitemap.xml` | 15 |
-| `sitemaps-1-section-tour-1-sitemap.xml` | 17 |
-| `sitemaps-1-section-tourCategory-1-sitemap.xml` | 7 |
-| `sitemaps-1-section-tourEvent-1-sitemap.xml` | 1 |
-| `sitemaps-1-section-amenities-1-sitemap.xml` | 6 |
+homepage header, body and footer. Captured 2026-07-27. **46 legacy URLs**, plus two
+GA-confirmed URLs the sitemap never listed.
 
 ---
 
 ## Status key
 
-| Status | Meaning | Action |
-|---|---|---|
-| **ALREADY-IDENTICAL** | Old path and new path are the same string. | Nothing. Never add a redirect — it would shadow a real page. |
-| **ADOPTED** ✅ | Done. Our page now renders **at** the legacy path. | None. The URL never moved, so it needs no rule. |
-| **ADOPT** | Decision pending: rename our page to the old path. | Rename, update internal links + `docs/seo-pages.md`. No redirect. |
-| **REDIRECT** | Old path is poor, or the page was consolidated away. | 301 in `netlify.toml`. |
+| Status | Meaning |
+|---|---|
+| **ALREADY-IDENTICAL** | Old path and new path are the same string. No rule — one would shadow a real page. |
+| **ADOPTED** ✅ | Our page renders **at** the legacy path. The URL never moved, so it needs no rule. |
+| **REDIRECT** | Old path was poor or the page was consolidated away. 301 in `netlify.toml`. |
 
 ---
 
-## 0. What the `/tour/` adoption changed (executed)
+## Summary
 
-Products previously served at `/cruises/[slug]`. They now render at `/tour/[legacy-slug]`, the
-exact addresses the Craft site used, so **no legacy product URL redirects at all** — each one is
-a live page. `src/pages/cruises/` → `src/pages/tour/`; content filenames follow the slugs.
+| Status | Count |
+|---|---|
+| ALREADY-IDENTICAL | 5 |
+| **ADOPTED** ✅ | **26** |
+| REDIRECT | 15 |
+| **Total legacy URLs** | **46** |
 
-⚠️ **CMS edit URLs changed.** Keystatic addresses entries by filename, so every event's edit URL
-moved (e.g. `…/collection/events/item/santa-cruise` → `…/item/father-christmas-cruise`). Any
-bookmarks Simon has into the CMS need re-saving.
+`netlify.toml` holds **45 redirect rules**. Verified against the built output: **zero chains,
+zero dead targets, zero unintended shadows** (one documented transient — see §7).
 
-### Slug mapping
+---
+
+## 1. The `/tour/` namespace — fully adopted ✅
+
+Products render at their exact Craft addresses. **No legacy product URL redirects.**
+`src/pages/cruises/` → `src/pages/tour/`; content filenames follow the slugs.
+
+⚠️ **CMS edit URLs changed.** Keystatic addresses entries by filename, so every renamed
+event's edit URL moved (e.g. `…/item/santa-cruise` → `…/item/father-christmas-cruise`).
+Re-save any CMS bookmarks.
+
+### Event products
 
 | Was (`/cruises/…`) | Now (`/tour/…`) | Pairing source |
 |---|---|---|
@@ -51,207 +56,181 @@ bookmarks Simon has into the CMS need re-saving.
 | `elvis-rocks-cruise` | `elvis-rocks` | sitemap |
 | `fathers-day-cruise` | `fathers-day` | sitemap |
 | `mothers-day-cruise` | `mothering-sunday` | sitemap |
-| `pirates-and-mermaids` | `pirates-and-mermaid-cruise` | **Simon only — not in the sitemap** |
+| `pirates-and-mermaids` | `pirates-and-mermaid-cruise` | **Simon / GA only — not in sitemap** |
 | `santa-cruise` | `father-christmas-cruise` | sitemap |
 | `soul-river-cruise` | `soul-river` | sitemap |
 | `swinging-on-the-river` | `swing-cruise-live-music` | sitemap + Simon |
-| `adele-cruise` | `adele-cruise` | identical — namespace only |
-| `boat-tropicana` | `boat-tropicana` | identical — namespace only |
-| `dolly-cruise` | `dolly-cruise` | identical — namespace only |
-| `rollin-on-the-river` | `rollin-on-the-river` | identical — namespace only |
+| `wizards-and-fairies` | `wizards-and-fairies-cruise` | **GA only** — 517 sessions, £1,236 |
+| `adele-cruise` · `boat-tropicana` · `dolly-cruise` · `rollin-on-the-river` | unchanged | namespace only |
 
-**No legacy counterpart — kept their current slug under `/tour/`** (all four are `draft: true`
-already, so none is published yet): `broadway-boat-party`, `club-classics-cruise`,
-`halloween-boat-party`, `wizards-and-fairies`.
+**No legacy counterpart — kept their current slug** (all `draft: true`):
+`broadway-boat-party`, `club-classics-cruise`, `halloween-boat-party`.
 
-### ⚠️ Flags on the mapping — please confirm
+### Flagship products — also adopted ✅
 
-1. **`santa-cruise` → `father-christmas-cruise`.** Your note said Santa "remains as-is if already
-   executed". It had **not** been executed — what existed was a 301 `/tour/father-christmas-cruise`
-   → `/cruises/santa-cruise`, which under full adoption would have pointed at the product's own
-   new home. I applied the rule you stated (product with a legacy counterpart adopts the legacy
-   slug), so Santa now **renders at** `/tour/father-christmas-cruise` and the old 301 was removed
-   and reversed. Say the word if you wanted Santa left on `santa-cruise` instead.
-2. **`pirates-and-mermaids` → `pirates-and-mermaid-cruise`.** Taken from your instruction only —
-   **there is no GA/GSC export in the repo**, and this URL is absent from the Craft sitemap. I
-   have not verified it exists. If the real legacy path differs, this is a one-line fix.
-3. **`wizards-and-fairies` may have a legacy counterpart I cannot see.** Pirates had one that the
-   sitemap missed, and the legacy `/kids-takeover` page advertises "Pirates to Wizards, Elves to
-   Mermaids". Without the export I cannot rule out `/tour/wizards-and-fairies-cruise` or similar —
-   and an **"Elves"** cruise may exist with no new-site equivalent at all. Worth a look.
-4. **`mothering-sunday` is a worse slug than `mothers-day-cruise` for search** (people search
-   "mothers day", not "mothering sunday"). Adopted as instructed; flagging the trade-off since
-   this is the one adoption that arguably costs more than it preserves.
-5. **`/tour-type/*` does not exist.** Your note listed it among the retired paths; `/tour-type/live-music`
-   returns 404 on the live site. The category facets are at `/tour/<category>` — *inside* the
-   adopted namespace. Verified none of their slugs collides with a product slug, so the redirects
-   are safe; noting it because it means the namespace is shared, not exclusively ours.
-
-### Breadcrumbs
-
-Several adopted slugs no longer resemble the product name, so the auto-derived breadcrumb leaf
-was wrong (`/tour/swing-cruise-live-music` read "Swing Cruise Live Music"). `src/pages/tour/[slug].astro`
-now passes an explicit trail using the product title. Verified in the built output.
-
----
-
-## 1. Core pages (`page` sitemap — 15 URLs) — **decisions still open**
-
-Unchanged from the original audit. Nothing here has been renamed.
-
-| # | Old URL | Closest new page | Status | Notes |
-|---|---|---|---|---|
-| 1 | `/` | `/` | **ALREADY-IDENTICAL** | — |
-| 2 | `/whats-on` | `/whats-on` | **ALREADY-IDENTICAL** | — |
-| 3 | `/private-hire` | `/private-hire` | **ALREADY-IDENTICAL** | ⭐ Full parity already. |
-| 4 | `/about` | `/about` | **ALREADY-IDENTICAL** | — |
-| 5 | `/privacy-policy` | `/privacy-policy` | **ALREADY-IDENTICAL** | — |
-| 6 | `/our-vessels` | `/vessels` | **ADOPT** *(pending)* | Rename `vessels.astro` → `our-vessels.astro`. **3 internal links:** `about.astro:111`, `private-boat-hire-manchester.astro:187`, `private-hire.astro:163`. ⚠️ Also retarget the `/amenities/bar-on-board` 301, which currently points at `/vessels`. |
-| 7 | `/manage-bookings` | `/manage-booking` | **ADOPT** *(pending)* | Plural vs singular. **2 internal links:** `BookingPanel.astro:18` (default prop), `Footer.astro:100`. |
-| 8 | `/contact-us` | `/contact` | **ADOPT** *(pending)* | **6 internal links:** `accessibility.astro:70`, `faq.astro:85`, `groups.astro:53/94/179/268`. Check the Netlify Forms action/success path too. |
-| 9 | `/terms-conditions` | *(none)* | **ADOPT** *(pending)* | ⚠️ Content gap — no T&Cs page exists, and no footer link. Build at the legacy path. **Launch blocker.** |
-| 10 | `/help` | `/faq` | **REDIRECT** → `/faq` | Genuinely close; `/faq` is shorter and carries our `FAQPage` schema. Check GSC impressions before confirming. |
-| 11 | `/our-events` | `/whats-on` | **REDIRECT** → `/whats-on` | Retargeted from `/events` on your instruction. ⚠️ Note `/tour/on-board-events` — the same listing under a different legacy path — goes to `/events`. Two legacy URLs for one page now split across two targets; worth unifying. |
-| 12 | `/our-tours` | `/whats-on` | **REDIRECT** → `/whats-on` | Not a tour index despite the name — thin marketing page duplicating homepage copy. |
-| 13 | `/salford-quays` | `/getting-here` | **REDIRECT** → `/getting-here` | ⚠️ Still the strongest case for building a page to *match* an old URL. ~800–1000 words of boarding-point detail on a short, high-intent path; `/getting-here` covers all three boarding points so a rename would mis-title it. |
-| 14 | `/kids-takeover` | `/events` | **REDIRECT** → `/events` | No family hub page exists. See flag 3 above re: an "Elves" cruise. |
-| 15 | `/thank-you` | *(none)* | **REDIRECT** → `/` | Craft form landing page; our forms use an inline success reveal. |
-
----
-
-## 2. Tour pages (`tour` sitemap — 17 URLs)
-
-### 2a. Adopted — these are live pages, not redirects ✅
-
-All 15 legacy event URLs below now **render** at exactly these addresses.
-
-| Legacy URL (now live) | Product | Status |
+| Legacy URL (now live) | Page | Notes |
 |---|---|---|
-| `/tour/mamma-mia-cruise-abba-tribute` | ABBA Cruise | **ADOPTED** ✅ |
-| `/tour/diana-ross-the-supreme-experience` | Diana Ross Cruise | **ADOPTED** ✅ |
-| `/tour/decks-on-deck-day-party` | Decks on Deck | **ADOPTED** ✅ |
-| `/tour/soul-river` | Soul River | **ADOPTED** ✅ |
-| `/tour/adele-cruise` | Adele Cruise | **ADOPTED** ✅ |
-| `/tour/rollin-on-the-river` | Rollin' on the River | **ADOPTED** ✅ |
-| `/tour/elvis-live` | Elvis Live | **ADOPTED** ✅ |
-| `/tour/elvis-rocks` | Elvis Rocks | **ADOPTED** ✅ |
-| `/tour/fathers-day` | Father's Day Cruise | **ADOPTED** ✅ |
-| `/tour/mothering-sunday` | Mother's Day Cruise | **ADOPTED** ✅ |
-| `/tour/swing-cruise-live-music` | Swinging on the River | **ADOPTED** ✅ |
-| `/tour/dolly-cruise` | Dolly Cruise | **ADOPTED** ✅ |
-| `/tour/boat-tropicana` | Boat Tropicana | **ADOPTED** ✅ |
-| `/tour/back-to-90s` | Back to the 90s | **ADOPTED** ✅ |
-| `/tour/father-christmas-cruise` | Cruise with Father Christmas | **ADOPTED** ✅ |
+| `/tour/city-river-tours` | City River Tour | Moved from `/city-river-tour`. Most-wired page on the site: nav, homepage, date-finder map, What's On feed, gallery, groups/gift/Christmas/discover cross-links, schema, `llms.txt`, Lighthouse audit path. |
+| `/tour/boat-to-old-trafford` | Matchday ferry | Moved from `/boat-to-old-trafford`, with the two departure points nesting beneath at `/tour/boat-to-old-trafford/<point>`. |
 
-Plus `/tour/pirates-and-mermaid-cruise` (Pirates & Mermaids) — adopted from your pairing, not
-present in the Craft sitemap.
+**Breadcrumbs.** The `/tour/` namespace crumb resolves to the Events hub, which is right for
+event products but wrong for CRT and the ferry — and several adopted event slugs no longer
+resemble the product name (`/tour/swing-cruise-live-music` would have read "Swing Cruise Live
+Music"). The product template and both flagship pages now pass explicit trails.
 
-### 2b. Products that live at a top-level page — still redirects
+### ⚠️ Flags on the mapping
 
-| Old URL | New page | Status | Notes |
+1. **`santa-cruise` → `father-christmas-cruise`.** The earlier note said Santa "remains as-is if
+   already executed"; it had **not** been — what existed was a 301 pointing
+   `/tour/father-christmas-cruise` at the product's own new home. The stated rule was applied
+   (legacy counterpart → adopt legacy slug) and the old redirect reversed.
+2. **`pirates-and-mermaid-cruise` is unverified.** Taken from instruction only; absent from the
+   Craft sitemap and **there is still no GA/GSC export in the repo**. One-line fix if wrong.
+3. **`mothering-sunday` is a worse slug than `mothers-day-cruise` for search** — people search
+   "mothers day". Adopted as instructed; the one adoption that arguably costs more than it saves.
+4. **`/tour-type/*` does not exist** — `/tour-type/live-music` 404s live. The category facets are
+   at `/tour/<category>`, *inside* the adopted namespace. Verified no facet slug collides with a
+   product slug, so the redirects cannot shadow a live page.
+5. **Wizards is still `draft: true`, so `/tour/wizards-and-fairies-cruise` does not render.**
+   GA shows it earning 517 sessions and £1,236, so launching would 404 real demand. An interim
+   301 to `/whats-on` covers it and is **self-healing** — `force` is omitted, so Netlify serves
+   the real page the moment the event is published. **Publishing the event is the actual fix.**
+6. **An "Elves" cruise may exist with no successor.** The legacy `/kids-takeover` page advertises
+   "Pirates to Wizards, Elves to Mermaids". Pirates and Wizards both turned out to have
+   sitemap-invisible URLs; Elves may too. Only the GA export can settle it.
+
+---
+
+## 2. Core pages — all resolved
+
+| # | Old URL | Now | Status |
 |---|---|---|---|
-| `/tour/city-river-tours` | `/city-river-tour` | **REDIRECT** | Left as-is per instruction. CRT keeps its own top-level page. |
-| `/tour/boat-to-old-trafford` | `/boat-to-old-trafford` | **REDIRECT** | Left as-is per instruction. Points straight at the live page — no chain via `/mufc-ferry`. |
+| 1 | `/` | `/` | **ALREADY-IDENTICAL** |
+| 2 | `/whats-on` | `/whats-on` | **ALREADY-IDENTICAL** |
+| 3 | `/private-hire` | `/private-hire` | **ALREADY-IDENTICAL** ⭐ |
+| 4 | `/about` | `/about` | **ALREADY-IDENTICAL** |
+| 5 | `/privacy-policy` | `/privacy-policy` | **ALREADY-IDENTICAL** |
+| 6 | `/our-vessels` | renders here | **ADOPTED** ✅ — renamed from `/vessels`; 3 CTAs, the gallery `relatedProduct` and the `/amenities/bar-on-board` target followed |
+| 7 | `/manage-bookings` | renders here | **ADOPTED** ✅ — renamed from `/manage-booking`; Footer + the `BookingPanel` `manageBookingHref` default prop |
+| 8 | `/contact-us` | renders here | **ADOPTED** ✅ — renamed from `/contact`; 6 CTAs **and the Netlify form `action`**, which would otherwise have broken submission |
+| 9 | `/terms-conditions` | renders here | **ADOPTED** ✅ — **built from scratch**; the site had no T&Cs at all. All 17 legacy clauses transcribed verbatim, grouped by theme, original numbering preserved. Footer link added. **Needs Simon's review.** |
+| 10 | `/salford-quays` | renders here | **ADOPTED** ✅ — **built from scratch** at the legacy path rather than redirected to `/getting-here`, which covers all three boarding points and would have mis-titled itself. Legacy content as base, `salford-quays` album imagery. **Needs Simon's review.** |
+| 11 | `/help` | `/faq` | **REDIRECT** — close call; `/faq` is shorter and carries the `FAQPage` schema. Check GSC impressions. |
+| 12 | `/our-events` | `/whats-on` | **REDIRECT** — retargeted from `/events` on instruction. ⚠️ `/tour/on-board-events`, the same legacy listing under a different path, goes to `/events`. Two legacy URLs for one page, split across two targets — worth unifying. |
+| 13 | `/our-tours` | `/whats-on` | **REDIRECT** — not a tour index despite the name; thin marketing page duplicating homepage copy. |
+| 14 | `/kids-takeover` | `/events` | **REDIRECT** — no family hub page exists. See flag 6. |
+| 15 | `/thank-you` | `/` | **REDIRECT** — Craft form landing page; our forms use an inline success reveal. |
+
+### ⚠️ On the two pages built from legacy content
+
+Both carry a visible **TBC banner** for Simon. The Salford Quays one flags a genuine conflict:
+the legacy page gives the boarding address as **Pier 8, Salford Quays, M50 3AZ**, while our
+canonical NAP (`src/data/site.ts`, feeding every schema block and the footer) says **Millennium
+Footbridge, The Quays, Salford, M50 3RB**. The page uses the canonical value. **The two postcodes
+disagree and only Simon can say which is right for boarding.**
+
+The T&Cs are Simon's own wording, transcribed not rewritten. The deposit percentage, payment
+windows, refund periods and the "no wheelchair access" statement all need confirming, and ideally
+a solicitor's review.
 
 ---
 
 ## 3. Retired legacy category facets — REDIRECT
 
-Thin listing pages sharing the `/tour/` namespace. No slug collides with an adopted product.
-
 | Old URL | Target | Notes |
 |---|---|---|
-| `/tour/city-sightseeing` | `/city-river-tour` | |
+| `/tour/city-sightseeing` | `/tour/city-river-tours` | |
 | `/tour/live-music` | `/music-cruises-manchester` | |
 | `/tour/party-event` | `/party-boat-manchester` | |
-| `/tour/old-trafford-event` | `/boat-to-old-trafford` | |
+| `/tour/old-trafford-event` | `/tour/boat-to-old-trafford` | |
 | `/tour/kids-event` | `/events` | |
-| `/tour/museum-tours` | `/discover` | ⚠️ Target unconfirmed — may be better at `/discover/visiting-iwm-north`. |
-| `/tour/eat-drink` | `/whats-on` | ⚠️ Target unconfirmed — no food-and-drink equivalent exists. |
-| `/tour/on-board-events` | `/events` | See the split-target note on row 11. |
+| `/tour/museum-tours` | `/discover` | ⚠️ Target unconfirmed — may belong at `/discover/visiting-iwm-north`. |
+| `/tour/eat-drink` | `/whats-on` | ⚠️ Target unconfirmed — no food-and-drink equivalent. |
+| `/tour/on-board-events` | `/events` | See the split-target note on row 12. |
 
 ## 4. Retired legacy amenity facets — REDIRECT
 
+`/amenities/old-trafford` → `/tour/boat-to-old-trafford` · `/amenities/bar-on-board` →
+`/our-vessels` · `/amenities/groups-allowed` → `/groups` · `/amenities/pets-allowed`,
+`/amenities/toilets`, `/amenities/18` → `/faq`.
+
 Craft filter facets with no unique content; `/amenities/18` is a bare numeric ID.
+**`410 Gone` is arguably more honest than six 301s into `/faq`** — Simon's call.
 
-| Old URL | Target |
-|---|---|
-| `/amenities/old-trafford` | `/boat-to-old-trafford` |
-| `/amenities/bar-on-board` | `/vessels` *(retarget if row 6 is adopted)* |
-| `/amenities/groups-allowed` | `/groups` |
-| `/amenities/pets-allowed` | `/faq` |
-| `/amenities/toilets` | `/faq` |
-| `/amenities/18` | `/faq` |
+## 5. Our own history — REDIRECT
 
-**Alternative:** `410 Gone` is arguably more honest than six 301s into `/faq`.
-
-## 5. Our own history — `/cruises/*` → `/tour/*` REDIRECT
-
-Not legacy URLs, but the new site did briefly ship products at `/cruises/[slug]`, so staging
-links and shared previews must not 404. 12 explicit rules (slug also changed) ordered **before**
-a `/cruises/*` splat (slug already identical), plus `/cruises` → `/events`. Bare `/tour` → `/events`.
+Never public, but real in staging links and bookmarks:
+`/cruises/*` → `/tour/*` (13 explicit rules for changed slugs, ordered **before** the splat),
+`/cruises` → `/events`, bare `/tour` → `/events`, `/city-river-tour` →
+`/tour/city-river-tours`, `/boat-to-old-trafford(/*)` → `/tour/boat-to-old-trafford(/*)`,
+`/vessels` → `/our-vessels`, `/manage-booking` → `/manage-bookings`, `/contact` → `/contact-us`.
 
 ---
 
-## 6. Trailing slash — SITE-WIDE, unchanged by this work
+## 6. Trailing slash — RESOLVED ✅
 
-- **Legacy site emits no trailing slash** (`…/whats-on`). That is what Google has indexed.
-- **We emit one.** No `trailingSlash`/`build.format` in `astro.config.mjs`, so Astro's `directory`
-  default applies. Verified in the current build: canonical is
-  `https://www.manchesterrivercruises.com/tour/mamma-mia-cruise-abba-tribute/`.
+The legacy site emitted every URL **unslashed**; we were emitting `/whats-on/`. Cosmetic while it
+was only cosmetic — but the adoption made ~20 product URLs depend on matching the legacy form,
+so `astro.config.mjs` now sets `build: { format: 'file' }` and `trailingSlash: 'never'`.
 
-So the adopted product URLs still differ from the indexed form by a trailing slash. Netlify serves
-both and nothing breaks, but if the point of the adoption is that these URLs never move, setting
-`build: { format: 'file' }` (or `trailingSlash: 'never'`) completes the job. **Recommended, and
-more clearly worth doing now that 16 product URLs depend on it.** Add one normalising 301 so only
-one form is reachable. Do not write per-page rules — Netlify already matches
-trailing-slash-insensitively.
+That change bit twice, both fixed in `BaseLayout`: with `format: 'file'`, `Astro.url.pathname`
+becomes the emitted **file** path (`/whats-on.html`), so canonicals and `og:url` advertised a
+`.html` URL nobody should index, and the auto-derived breadcrumbs inherited the extension
+(defeating the label overrides). A `publicPath()` helper strips the extension and any trailing
+slash once; both consumers read it.
 
-## 7. Casing and host — unchanged
+**Verified unaffected:** `/admin` and `/keystatic` are `prerender: false`, so they are SSR-rendered
+by the Netlify function and the build format never applies to them; the six OCTO functions are
+untouched; the ferry landing file coexists with the directory holding its departure-point pages.
 
-Every legacy URL is lowercase; no conflicts. Sitemap lives at the apex but all URLs inside are
-`www.`, matching our `astro.config.mjs` `site` and `src/data/site.ts` `url`. Confirm the apex →
-`www` 301 survives the DNS cutover.
+Minor and benign: the sitemap lists the homepage as the bare origin while its canonical is the
+origin with a single `/`. Those are the same URL per RFC 3986.
 
----
+## 7. Known transient — one deliberate 2-hop
 
-## Summary
+While Wizards is draft:
+`/cruises/wizards-and-fairies` → `/tour/wizards-and-fairies-cruise` → `/whats-on`.
 
-| Status | Count |
-|---|---|
-| ALREADY-IDENTICAL | 5 |
-| **ADOPTED** ✅ (live) | **15** |
-| ADOPT (pending decision) | 4 |
-| REDIRECT | 22 |
-| **Total legacy URLs** | **46** |
+The first rule points at the correct **final** destination. Pointing it straight at `/whats-on`
+would be a rule that silently becomes wrong once the event is published. Publishing removes the
+middle hop with no edit. Everything else is single-hop.
 
-`netlify.toml` now holds **38 redirect rules**. Verified against the built output: **zero chains,
-zero dead targets, zero rules shadowed by a real page.**
+## 8. Casing and host — unchanged
+
+Every legacy URL is lowercase; no conflicts. All sitemap URLs are `www.`, matching
+`astro.config.mjs` `site` and `src/data/site.ts` `url`. Confirm the apex → `www` 301 survives the
+DNS cutover.
 
 ---
 
 ## Verification performed
 
-- All 16 published products render at their legacy addresses (`dist/tour/*`). The 4 absent events
-  are pre-existing `draft: true` entries — and are exactly the 4 with no legacy counterpart.
-- **Zero** `/cruises` references anywhere in `dist/`, `src/`, `docs/`, `public/`, `netlify.toml`,
-  `keystatic.config.ts`, or the governing rule files.
-- Sitemap: 16 `/tour/<slug>` entries, no `/cruises`.
-- Spot-checked `/tour/mamma-mia-cruise-abba-tribute`, `/tour/swing-cruise-live-music`,
-  `/tour/father-christmas-cruise` — canonical, `Product` schema `url`, `Offer` `url` and
-  `BreadcrumbList` all on `/tour/`, with correct product-title leaf labels.
+- All **18** legacy `/tour/` product URLs render (16 event products + CRT + ferry). The absent
+  events are pre-existing `draft: true` entries.
+- Redirect audit against the built output: 45 rules, **0 chains, 0 dead targets, 0 unintended
+  shadows**, plus the one documented transient above.
+- Canonicals, `og:url`, sitemap and breadcrumbs are unslashed and `.html`-free. **Zero**
+  trailing-slash or `.html` internal hrefs in built HTML.
+- **Zero** `/cruises`, `/city-river-tour`, `/boat-to-old-trafford`, `/vessels`,
+  `/manage-booking` or `/contact` references left in `src/`, `docs/`, `public/`, `netlify.toml`,
+  `keystatic.config.ts` or the governing rule files.
 - What's On `productId → slug` map, the date-finder map, gallery `relatedProduct`,
-  `bookingCtaUrl` and "View photos" matching all resolve to `/tour/` in built HTML.
-- Rule ordering confirmed: the 12 explicit `/cruises/<slug>` rules precede the `/cruises/*` splat.
+  `bookingCtaUrl` and "View photos" matching all resolve to `/tour/`.
+- Image paths (`/images/city-river-tour-*`, `/images/gallery/salford-quays/*`) and the
+  `/gallery/city-river-tour` **album** URL were deliberately excluded from every sweep.
+- Contact form `action` verified as `/contact-us?success=true#contact-success`.
 
 ## Still outstanding
 
-1. **The GA/GSC export is not in the repo** — it drove flags 2 and 3 above and is still needed for
-   malformed/historic slug variants and any blog section the Craft sitemap never listed.
-2. Rows 6–9 (`/our-vessels`, `/manage-bookings`, `/contact-us`, `/terms-conditions`) — decisions open.
-3. `/help` vs `/faq` (row 10) — decide from GSC impressions.
-4. `/salford-quays` (row 13) — the case for building a page rather than redirecting.
-5. `/tour/museum-tours` and `/tour/eat-drink` redirect targets — confirm from the live pages.
-6. Trailing-slash decision (§6) — now load-bearing for 16 adopted product URLs.
-7. `/private-hire` vs `/private-boat-hire-manchester` — parity is fine, but confirm which is
+1. **The GA/GSC export is still not in the repo.** It drove the Pirates and Wizards pairings
+   second-hand and is the only way to settle flags 2 and 6, malformed/historic slug variants, and
+   any blog section the Craft sitemap never listed.
+2. **Publish the Wizards & Fairies event** — the interim redirect is a net, not a fix.
+3. **Simon's review of `/terms-conditions` and `/salford-quays`**, including the M50 3AZ vs
+   M50 3RB boarding-address conflict.
+4. `/help` vs `/faq` — decide from GSC impressions.
+5. `/tour/museum-tours` and `/tour/eat-drink` targets — confirm from the live pages.
+6. `/our-events` and `/tour/on-board-events` currently split to `/whats-on` and `/events`.
+7. `/amenities/*` — 301 or 410.
+8. `/private-hire` vs `/private-boat-hire-manchester` — parity is fine, but confirm which is
    canonical for "private boat hire Manchester" so they don't compete.
