@@ -1,0 +1,188 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PageHero from '../components/PageHero.astro';
+import SectionHeading from '../components/SectionHeading.astro';
+import CTAButton from '../components/CTAButton.astro';
+import KeyFacts from '../components/KeyFacts.astro';
+import CTASection from '../components/CTASection.astro';
+import { site } from '../data/site';
+import { getAlbums, getAlbumImages } from '../lib/gallery';
+
+// Built at the LEGACY path /salford-quays (docs/url-parity.md row 13). The old Craft page
+// was a substantial boarding-point guide on a short, high-intent URL; /getting-here covers
+// all three boarding points, so redirecting there would have mis-titled it and thrown the
+// URL away. Content is based on the legacy page — see the TBC banner.
+const pageTitle = 'Salford Quays Boarding Point — Manchester River Cruises';
+const pageDescription =
+  'Where to board at Salford Quays: the Millennium Footbridge boarding point beside MediaCityUK, how to get there by tram or car, parking, arrival times and on-board access.';
+
+// Imagery comes from the existing salford-quays gallery album (owned assets).
+const albums = await getAlbums();
+const album = albums.find((a) => a.data.slug === 'salford-quays');
+// Exclude the cover — it is already the hero above, so including it would show twice.
+const hero = album?.data.coverImage;
+const images = album ? getAlbumImages(album, hero).slice(0, 3) : [];
+const heroAlt = album?.data.coverAlt;
+
+const icons = {
+  pin: '<path d="M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" /><path d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1 1 15 0Z" />',
+  tram: '<path d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75" />',
+  clock: '<path d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />',
+  warn: '<path d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z" />',
+};
+
+const keyFacts = [
+  { text: 'Under the Millennium Footbridge', icon: icons.pin },
+  { text: 'Tram: MediaCityUK (Eccles line)', icon: icons.tram },
+  { text: 'Boarding 5–15 min before departure', icon: icons.clock },
+  { text: 'No wheelchair access on board', icon: icons.warn },
+];
+
+const structuredData = {
+  '@context': 'https://schema.org',
+  '@type': 'BoatTerminal',
+  name: 'Salford Quays Boarding Point',
+  description: pageDescription,
+  url: `${site.url}/salford-quays`,
+  address: { '@type': 'PostalAddress', ...site.address },
+  geo: { '@type': 'GeoCoordinates', ...site.geo },
+  containedInPlace: { '@type': 'Place', name: 'Salford Quays' },
+};
+
+const crumbs = [
+  { name: 'Home', url: `${site.url}/` },
+  { name: 'Salford Quays Boarding Point', url: `${site.url}/salford-quays` },
+];
+---
+
+<BaseLayout title={pageTitle} description={pageDescription} breadcrumbs={crumbs}>
+  <script type="application/ld+json" is:inline set:html={JSON.stringify(structuredData)} />
+
+  <PageHero
+    eyebrow="Boarding point"
+    title="Salford Quays Boarding Point"
+    subtitle="Where every cruise begins — under the Millennium Footbridge, between The Lowry and the Quayside Shopping Centre."
+    heroImage={hero}
+    heroImageAlt={heroAlt}
+  >
+    <CTAButton href="/tour/city-river-tours">Book the City River Tour</CTAButton>
+  </PageHero>
+
+  <KeyFacts facts={keyFacts} />
+
+  <div class="mx-auto max-w-3xl px-4 py-12 sm:px-6 md:py-16 lg:px-8">
+    {/* Content-review note */}
+    <div class="rounded-card bg-panel p-4 text-sm leading-relaxed text-body ring-1 ring-black/5">
+      <strong class="text-ink">For Simon’s review (TBC).</strong> Based on the current live
+      Salford Quays page so the URL keeps its content. One thing to settle: the old page gives the
+      boarding address as <strong>Pier 8, Salford Quays, M50 3AZ</strong>, but our canonical
+      business address (<code>src/data/site.ts</code>, used by every schema block and the footer)
+      is <strong>{site.addressDisplay}</strong>. This page uses the canonical one — please confirm
+      which is correct for boarding, since the two postcodes disagree.
+    </div>
+
+    <div class="mt-10 space-y-14 leading-relaxed text-body">
+      <section aria-labelledby="where">
+        <SectionHeading id="where" as="h2">Where to board</SectionHeading>
+        <p class="mt-4">
+          The boarding point is located under the Millennium Footbridge, between The Lowry Theatre
+          and the Quayside Shopping Centre, beside MediaCityUK.
+        </p>
+        <p class="mt-4">{site.addressDisplay}</p>
+        <a
+          href="https://www.google.com/maps/search/?api=1&query=Millennium+Footbridge+Salford+Quays+M50+3RB"
+          class="mt-2 inline-block font-medium text-primary hover:underline"
+          rel="noopener"
+          target="_blank"
+        >
+          Open in Google Maps
+        </a>
+      </section>
+
+      <section aria-labelledby="tram">
+        <SectionHeading id="tram" as="h2">Getting here by tram</SectionHeading>
+        <p class="mt-4">
+          The nearest Metrolink stop is <strong>MediaCityUK</strong>, on the Eccles line. From there
+          it is a short walk to the boarding area.
+        </p>
+      </section>
+
+      <section aria-labelledby="car">
+        <SectionHeading id="car" as="h2">Getting here by car &amp; parking</SectionHeading>
+        <p class="mt-4">
+          The closest public parking is at the Quayside Shopping Centre, MediaCityUK. Traffic
+          congestion can be severe at weekends, on event days and during peak times — we strongly
+          recommend allowing extra travel time and arriving early.
+        </p>
+        <p class="mt-4 text-sm text-subtle">
+          Parking at embarkation points is at the owner’s risk and must not obstruct access — see
+          our <a href="/terms-conditions" class="font-medium text-primary underline-offset-4 hover:underline">terms &amp; conditions</a>.
+        </p>
+      </section>
+
+      <section aria-labelledby="arrival">
+        <SectionHeading id="arrival" as="h2">Arrival &amp; boarding times</SectionHeading>
+        <p class="mt-4">
+          Please arrive well in advance of your scheduled departure. Our vessels depart promptly and
+          cannot wait for late arrivals, regardless of traffic or parking delays. Boarding typically
+          opens 5–15 minutes before departure.
+        </p>
+      </section>
+
+      <section aria-labelledby="access">
+        <SectionHeading id="access" as="h2">Accessibility &amp; on-board restrictions</SectionHeading>
+        <ul class="mt-4 list-disc space-y-2 pl-5">
+          <li>We do not have wheelchair access on board.</li>
+          <li>All buggies must be folded down prior to boarding.</li>
+          <li>Full-size prams cannot be accommodated on board due to space and safety restrictions.</li>
+        </ul>
+        <p class="mt-4">
+          Full details are on our <a href="/accessibility" class="font-medium text-primary underline-offset-4 hover:underline">accessibility page</a>.
+        </p>
+      </section>
+
+      <section aria-labelledby="expect">
+        <SectionHeading id="expect" as="h2">What to expect</SectionHeading>
+        <p class="mt-4">
+          Unless stated otherwise, all cruises depart from and return to Salford Quays — city
+          sightseeing tours, themed cruises and special event sailings alike. Check
+          <a href="/whats-on" class="font-medium text-primary underline-offset-4 hover:underline">what’s on</a> for
+          upcoming departures.
+        </p>
+      </section>
+
+      {
+        images.length > 0 && (
+          <section aria-labelledby="photos">
+            <SectionHeading id="photos" as="h2">The Quays from the water</SectionHeading>
+            <div class="mt-6 grid gap-4 sm:grid-cols-3">
+              {images.map((img) => (
+                <img
+                  src={img.src}
+                  alt={img.alt}
+                  width={img.width}
+                  height={img.height}
+                  loading="lazy"
+                  decoding="async"
+                  class="h-40 w-full rounded-card object-cover ring-1 ring-black/5"
+                />
+              ))}
+            </div>
+            <a href="/gallery/salford-quays" class="mt-4 inline-block font-medium text-primary hover:underline">
+              See more Salford Quays photos →
+            </a>
+          </section>
+        )
+      }
+    </div>
+  </div>
+
+  <CTASection
+    heading="Ready to get on the water?"
+    text="Sightseeing cruises, live music nights and family events all depart from this boarding point."
+    primaryLabel="Book the City River Tour"
+    primaryHref="/tour/city-river-tours"
+    secondaryLabel="See what’s on"
+    secondaryHref="/whats-on"
+  />
+</BaseLayout>

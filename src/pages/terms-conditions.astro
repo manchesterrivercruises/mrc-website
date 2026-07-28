@@ -1,0 +1,127 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import SectionHeading from '../components/SectionHeading.astro';
+import { site } from '../data/site';
+
+// Built at the LEGACY path /terms-conditions (docs/url-parity.md row 9) — the Craft site
+// had T&Cs here and the new site had none at all, which was a launch blocker for a
+// booking site. Content is transcribed from the live legacy page; wording is Simon's,
+// not ours, and still needs his (and ideally a solicitor's) review — see the banner.
+const pageTitle = 'Terms & Conditions — Manchester River Cruises';
+const pageDescription =
+  'Booking terms and conditions for Manchester River Cruises — private hire deposits and balances, public sailing tickets, cancellations, safety, capacity and on-board rules.';
+
+const structuredData = {
+  '@context': 'https://schema.org',
+  '@type': 'WebPage',
+  name: 'Terms & Conditions',
+  description: pageDescription,
+  url: `${site.url}/terms-conditions`,
+};
+
+// Transcribed from the legacy site, grouped into themes for readability. The legacy page
+// was a flat numbered list of 17 clauses; the numbering is preserved in `ref` so Simon can
+// map each one back, and no clause was dropped, merged or reworded.
+const groups = [
+  {
+    id: 'booking',
+    heading: 'Booking &amp; payment',
+    clauses: [
+      { ref: 1, text: 'Private hire bookings require a completed booking form and 25% deposit. Confirmation is only valid once the company receives both and provides written acknowledgment.' },
+      { ref: 2, text: 'Final requirements and remaining payment must reach the company no later than fourteen days before departure.' },
+      { ref: 3, text: 'Public sightseeing trip tickets require full payment prior to departure.' },
+    ],
+  },
+  {
+    id: 'cancellations',
+    heading: 'Cancellations &amp; refunds',
+    clauses: [
+      { ref: 4, text: 'In the event of cancellation by the Hirer, the deposit is non-refundable and the Hirer will have no further claim on the Company.' },
+      { ref: 5, text: 'The company attempts to operate cruises as agreed but accepts no liability for cancellations, breakdowns or delays. The Hirer must also be aware that the company is under contract to travel to all Manchester United home fixtures and this will have precedence over any other booking. If a fixture change requires cancellation, alternative dates are offered or full refunds provided.' },
+      { ref: 17, text: 'Tickets for our events and tours are not refundable in less than thirty days unless otherwise specified in the terms and conditions provided for that individual trip.' },
+    ],
+  },
+  {
+    id: 'liability',
+    heading: 'Liability',
+    clauses: [
+      { ref: 6, text: 'The Hirer will be held liable for any damage caused by passengers to the boat or its contents. The company disclaims liability for injuries or passenger possessions.' },
+      { ref: 9, text: "Car parking at embarkation points occurs at the owner's risk and must not obstruct." },
+    ],
+  },
+  {
+    id: 'safety',
+    heading: 'Safety &amp; the skipper’s discretion',
+    clauses: [
+      { ref: 7, text: 'The skipper retains discretion to modify trips for safety reasons and may alter schedules or routes without notice.' },
+      { ref: 11, text: 'The skipper may refuse boarding or order disembarkation for disruptive behaviour or safety concerns.' },
+      { ref: 12, text: 'Passengers must follow crew safety instructions and observe on-board safety notices.' },
+      { ref: 16, text: 'All sailings depend on weather conditions and River Irwell conditions.' },
+    ],
+  },
+  {
+    id: 'on-board',
+    heading: 'On board',
+    clauses: [
+      { ref: 8, text: 'Passenger capacity cannot exceed Marine and Coastguard Agency limits. Children over one year old count as passengers.' },
+      { ref: 10, text: 'Under NO circumstances may food or drink be brought on board by passengers.' },
+      { ref: 13, text: 'Smoking is prohibited except in designated areas.' },
+      { ref: 14, text: 'Children under 16 must have adult supervision.' },
+      { ref: 15, text: 'The vessel cannot accommodate wheelchair access.' },
+    ],
+  },
+];
+---
+
+<BaseLayout title={pageTitle} description={pageDescription}>
+  <script type="application/ld+json" is:inline set:html={JSON.stringify(structuredData)} />
+
+  <div class="mx-auto max-w-3xl px-4 py-16 sm:px-6 md:py-20 lg:px-8">
+    <h1 class="text-3xl font-bold tracking-tight text-ink sm:text-4xl">Terms &amp; Conditions</h1>
+
+    {/* Review note — this content is carried over verbatim and has not been re-checked. */}
+    <div class="mt-6 rounded-card bg-panel p-4 text-sm leading-relaxed text-body ring-1 ring-black/5">
+      <strong class="text-ink">For Simon’s review (TBC).</strong> These terms are transcribed from
+      the current live site so the page exists at its established address rather than launching
+      with nothing. Nothing has been reworded, dropped or added — the original clause numbers are
+      shown so you can check each against the old page. Please confirm they are still accurate
+      (deposit percentage, payment windows, refund periods and the accessibility statement in
+      particular), and ideally have them reviewed by a solicitor before launch.
+    </div>
+
+    <p class="mt-10 leading-relaxed text-body">
+      These terms apply to bookings with {site.name}. Individual events and tours may carry their
+      own additional terms, which are provided at the time of booking and take precedence where
+      they differ.
+    </p>
+
+    <div class="mt-10 space-y-10 leading-relaxed text-body">
+      {
+        groups.map((g) => (
+          <section aria-labelledby={g.id}>
+            <SectionHeading id={g.id} as="h2" set:html={g.heading} />
+            <ol class="mt-4 space-y-4">
+              {g.clauses.map((c) => (
+                <li class="flex gap-3">
+                  <span class="shrink-0 font-semibold text-subtle" aria-hidden="true">
+                    {c.ref}.
+                  </span>
+                  <span>{c.text}</span>
+                </li>
+              ))}
+            </ol>
+          </section>
+        ))
+      }
+
+      <section aria-labelledby="contact">
+        <SectionHeading id="contact" as="h2">Questions about these terms</SectionHeading>
+        <p class="mt-4">
+          If anything here is unclear, please <a href="/contact-us" class="font-medium text-primary underline-offset-4 hover:underline">get in touch</a> before
+          you book. Accessibility on board is covered in more detail on our
+          <a href="/accessibility" class="font-medium text-primary underline-offset-4 hover:underline">accessibility page</a>.
+        </p>
+      </section>
+    </div>
+  </div>
+</BaseLayout>

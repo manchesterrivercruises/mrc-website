@@ -263,6 +263,13 @@
   to = "/faq"
   status = 301
 
+# The legacy kids hub. No family hub page exists on the new site yet — /events is
+# the honest closest match. See docs/url-parity.md row 14.
+[[redirects]]
+  from = "/kids-takeover"
+  to = "/events"
+  status = 301
+
 # Craft form-submission landing page. No equivalent — our forms use an inline
 # success reveal.
 [[redirects]]
