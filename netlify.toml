@@ -14,8 +14,8 @@
 # the deploy log (Deploys → a deploy → the "Lighthouse" plugin section). Netlify
 # auto-installs the plugin from its registry — no package.json dependency needed.
 # Audits the two key pages: the homepage (City River Tour hero) and the standalone
-# /city-river-tour page. Paths are relative to the publish dir (`dist`); Astro's
-# default 'directory' build format emits `<route>/index.html`.
+# /tour/city-river-tours page. Paths are relative to the publish dir (`dist`); Astro's
+# build format is 'file' (astro.config.mjs), so routes emit `<route>.html`.
 #
 # REPORT-ONLY BY DESIGN — no `thresholds`, so a low score never fails the deploy:
 #   • Branch/preview deploys are noindex (see [context.*] below), which tanks the
@@ -31,7 +31,7 @@
     # Homepage — City River Tour is the default hero (AGENTS rule 3).
 
   [[plugins.inputs.audits]]
-    path = "tour/city-river-tours/index.html"
+    path = "tour/city-river-tours.html"
     # Standalone City River Tour page — the LCP-tuned booking page.
 
 # --- Legacy Craft URL redirects (301) -----------------------------------------
@@ -122,6 +122,14 @@
 # GA confirms /tour/wizards-and-fairies-cruise carried real traffic (517 sessions,
 # £1,236) despite being absent from the Craft sitemap — so the draft event adopts
 # that slug too. Must precede the splat, which would otherwise 404 on the old path.
+#
+# ⚠ KNOWN TRANSIENT 2-HOP: this rule points at the correct FINAL destination, but
+#   that destination is itself temporarily redirected to /whats-on further down
+#   (the draft-event net), so today the path is
+#     /cruises/wizards-and-fairies → /tour/wizards-and-fairies-cruise → /whats-on
+#   This is deliberate. The alternative — pointing straight at /whats-on — would be
+#   a rule that silently becomes WRONG once the event is published. Publishing the
+#   event removes the middle hop automatically and needs no edit here.
 [[redirects]]
   from = "/cruises/wizards-and-fairies"
   to = "/tour/wizards-and-fairies-cruise"

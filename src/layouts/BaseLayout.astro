@@ -25,9 +25,24 @@ const {
   bookProductID,
 } = Astro.props;
 
+// PUBLIC PATH — the URL we actually want to advertise, which is NOT Astro.url.pathname.
+// astro.config.mjs uses build.format 'file' so the site matches the legacy unslashed URL
+// form (docs/url-parity.md §6). That makes Astro.url.pathname the emitted FILE path —
+// "/whats-on.html", "/tour/elvis-live.html" — while Netlify serves those at "/whats-on"
+// and "/tour/elvis-live". Advertising the .html form in the canonical, og:url or
+// breadcrumbs would point search engines at a URL that is not the one we want indexed and
+// is not the one the legacy site had. Strip the extension, and any trailing slash, once
+// here so every consumer below agrees. Root stays "/".
+function publicPath(pathname: string): string {
+  const noExt = pathname.replace(/\.html$/, '');
+  const trimmed = noExt.replace(/\/+$/, '');
+  return trimmed === '' ? '/' : trimmed;
+}
+const cleanPath = publicPath(Astro.url.pathname);
+
 // BreadcrumbList — auto-derived from the pathname (Home > section > page) unless a
 // page passes an explicit `breadcrumbs` prop. Omitted on the homepage (single item).
-const crumbs = breadcrumbs ?? buildBreadcrumbs(Astro.url.pathname);
+const crumbs = breadcrumbs ?? buildBreadcrumbs(cleanPath);
 const breadcrumbSchema =
   crumbs.length > 1
     ? {
@@ -44,7 +59,9 @@ const breadcrumbSchema =
 
 // Canonical + absolute OG URLs. Astro.site is set in astro.config.mjs.
 const siteURL = Astro.site ?? new URL('/', Astro.url);
-const canonicalURL = canonical ?? new URL(Astro.url.pathname, siteURL).href;
+// `cleanPath` (not Astro.url.pathname) — see publicPath() above. Root canonicalises to
+// the origin with a single trailing slash; every other page is unslashed and .html-free.
+const canonicalURL = canonical ?? new URL(cleanPath, siteURL).href;
 const ogImage = new URL(image, siteURL).href;
 
 // Site-wide business entity carrying the social profiles (schema.org sameAs).
