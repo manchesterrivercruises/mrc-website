@@ -8,7 +8,7 @@ import BookDirect from '../components/BookDirect.astro';
 import CTASection from '../components/CTASection.astro';
 import { site } from '../data/site';
 
-// Fleet — brief teasers only; the detail lives on /vessels. TEMPORARY placeholder
+// Fleet — brief teasers only; the detail lives on /our-vessels. TEMPORARY placeholder
 // data; move to a `vessels` Content Collection once real content is provided.
 const vessels = [
   { name: 'Princess Katherine' },
@@ -90,7 +90,7 @@ const structuredData = {
       {/* Trust strip — sits immediately after Our Story */}
       <TrustStrip stats={trustStats} />
 
-      {/* Our fleet — brief teasers; detail lives on /vessels */}
+      {/* Our fleet — brief teasers; detail lives on /our-vessels */}
       <section aria-labelledby="fleet">
         <SectionHeading id="fleet">Our fleet</SectionHeading>
         <p class="mt-6 max-w-3xl text-body">
@@ -108,7 +108,7 @@ const structuredData = {
           }
         </ul>
         <div class="mt-8">
-          <CTAButton href="/vessels" variant="outline">View our vessels</CTAButton>
+          <CTAButton href="/our-vessels" variant="outline">View our vessels</CTAButton>
         </div>
       </section>
 

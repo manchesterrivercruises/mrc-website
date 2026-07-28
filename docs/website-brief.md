@@ -58,7 +58,7 @@ City River Tour is ~65% of revenue. It dominates the site.
 /vessels                                   Our Vessels
 /about                                     About
 /contact                                   Contact
-/manage-booking                            Manage My Booking
+/manage-bookings                            Manage My Booking
 ```
 
 ---

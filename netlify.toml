@@ -169,6 +169,25 @@
   to = "/tour/boat-to-old-trafford"
   status = 301
 
+# --- Parity renames: legacy paths ADOPTED, our own former paths redirect ------
+# /our-vessels, /manage-bookings and /contact-us are the legacy Craft addresses and
+# now RENDER. These rules cover our own shorter paths, which were never public but
+# do exist in staging links and internal bookmarks.
+[[redirects]]
+  from = "/vessels"
+  to = "/our-vessels"
+  status = 301
+
+[[redirects]]
+  from = "/manage-booking"
+  to = "/manage-bookings"
+  status = 301
+
+[[redirects]]
+  from = "/contact"
+  to = "/contact-us"
+  status = 301
+
 # --- Wizards & Fairies: interim net while the event is draft ------------------
 # The event has adopted /tour/wizards-and-fairies-cruise but is still draft: true,
 # so it does not render yet — and GA shows the legacy URL earning real traffic
@@ -261,7 +280,7 @@
 
 [[redirects]]
   from = "/amenities/bar-on-board"
-  to = "/vessels"
+  to = "/our-vessels"
   status = 301
 
 [[redirects]]

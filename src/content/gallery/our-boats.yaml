@@ -64,7 +64,7 @@ images:
     usage: [gallery, product-page]
     tags: [crew, bar]
 relatedAlbums: [city-river-tour, salford-quays, manchester-ship-canal, private-hire]
-relatedProduct: /vessels
+relatedProduct: /our-vessels
 bookingCtaLabel: Book the City River Tour
 bookingCtaUrl: /tour/city-river-tours
 seoTitle: Our Boats — The Manchester River Cruises Fleet in Photos

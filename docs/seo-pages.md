@@ -148,7 +148,7 @@ Read this when working on SEO metadata, title tags, or schema markup.
 - **Title:** Contact Manchester River Cruises
 - **Schema:** ContactPage, LocalBusiness
 
-### Manage My Booking `/manage-booking`
+### Manage My Booking `/manage-bookings`
 - **Title:** Manage My Booking | Manchester River Cruises
 - **Description:** Change or cancel your Manchester River Cruises booking online.
 
