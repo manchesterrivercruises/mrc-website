@@ -71,17 +71,7 @@ const crumbs = [
   <KeyFacts facts={keyFacts} />
 
   <div class="mx-auto max-w-3xl px-4 py-12 sm:px-6 md:py-16 lg:px-8">
-    {/* Content-review note */}
-    <div class="rounded-card bg-panel p-4 text-sm leading-relaxed text-body ring-1 ring-black/5">
-      <strong class="text-ink">For Simon’s review (TBC).</strong> Based on the current live
-      Salford Quays page so the URL keeps its content. One thing to settle: the old page gives the
-      boarding address as <strong>Pier 8, Salford Quays, M50 3AZ</strong>, but our canonical
-      business address (<code>src/data/site.ts</code>, used by every schema block and the footer)
-      is <strong>{site.addressDisplay}</strong>. This page uses the canonical one — please confirm
-      which is correct for boarding, since the two postcodes disagree.
-    </div>
-
-    <div class="mt-10 space-y-14 leading-relaxed text-body">
+    <div class="space-y-14 leading-relaxed text-body">
       <section aria-labelledby="where">
         <SectionHeading id="where" as="h2">Where to board</SectionHeading>
         <p class="mt-4">
@@ -89,6 +79,12 @@ const crumbs = [
           and the Quayside Shopping Centre, beside MediaCityUK.
         </p>
         <p class="mt-4">{site.addressDisplay}</p>
+        {/* Same place, two names. The legacy site called this Pier 8 (M50 3AZ) and Simon has
+            confirmed it is the same boarding location as the canonical Millennium Footbridge
+            address (M50 3RB) in site.ts. Kept visible as a secondary line so returning customers
+            and anyone whose satnav still holds the old postcode recognise they are in the right
+            place — the canonical address stays primary and remains the only one in schema. */}
+        <p class="mt-1 text-sm text-subtle">Also known as Pier 8, Salford Quays.</p>
         <a
           href="https://www.google.com/maps/search/?api=1&query=Millennium+Footbridge+Salford+Quays+M50+3RB"
           class="mt-2 inline-block font-medium text-primary hover:underline"

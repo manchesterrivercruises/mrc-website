@@ -114,24 +114,29 @@ Music"). The product template and both flagship pages now pass explicit trails.
 | 7 | `/manage-bookings` | renders here | **ADOPTED** ✅ — renamed from `/manage-booking`; Footer + the `BookingPanel` `manageBookingHref` default prop |
 | 8 | `/contact-us` | renders here | **ADOPTED** ✅ — renamed from `/contact`; 6 CTAs **and the Netlify form `action`**, which would otherwise have broken submission |
 | 9 | `/terms-conditions` | renders here | **ADOPTED** ✅ — **built from scratch**; the site had no T&Cs at all. All 17 legacy clauses transcribed verbatim, grouped by theme, original numbering preserved. Footer link added. **Needs Simon's review.** |
-| 10 | `/salford-quays` | renders here | **ADOPTED** ✅ — **built from scratch** at the legacy path rather than redirected to `/getting-here`, which covers all three boarding points and would have mis-titled itself. Legacy content as base, `salford-quays` album imagery. **Needs Simon's review.** |
+| 10 | `/salford-quays` | renders here | **ADOPTED** ✅ — **built from scratch** at the legacy path rather than redirected to `/getting-here`, which covers all three boarding points and would have mis-titled itself. Legacy content as base, `salford-quays` album imagery. Boarding address confirmed — Pier 8 carried as an alias. |
 | 11 | `/help` | `/faq` | **REDIRECT** — close call; `/faq` is shorter and carries the `FAQPage` schema. Check GSC impressions. |
 | 12 | `/our-events` | `/whats-on` | **REDIRECT** — retargeted from `/events` on instruction. ⚠️ `/tour/on-board-events`, the same legacy listing under a different path, goes to `/events`. Two legacy URLs for one page, split across two targets — worth unifying. |
 | 13 | `/our-tours` | `/whats-on` | **REDIRECT** — not a tour index despite the name; thin marketing page duplicating homepage copy. |
 | 14 | `/kids-takeover` | `/events` | **REDIRECT** — no family hub page exists. See flag 6. |
 | 15 | `/thank-you` | `/` | **REDIRECT** — Craft form landing page; our forms use an inline success reveal. |
 
-### ⚠️ On the two pages built from legacy content
+### ✅ Salford Quays boarding address — RESOLVED
 
-Both carry a visible **TBC banner** for Simon. The Salford Quays one flags a genuine conflict:
-the legacy page gives the boarding address as **Pier 8, Salford Quays, M50 3AZ**, while our
-canonical NAP (`src/data/site.ts`, feeding every schema block and the footer) says **Millennium
-Footbridge, The Quays, Salford, M50 3RB**. The page uses the canonical value. **The two postcodes
-disagree and only Simon can say which is right for boarding.**
+The legacy page gave the boarding address as **Pier 8, Salford Quays, M50 3AZ**, while our
+canonical NAP (`src/data/site.ts`) says **Millennium Footbridge, The Quays, Salford, M50 3RB**.
+Simon has confirmed **these are the same boarding location**, not a conflict.
+
+Resolution: the canonical `site.ts` address stays primary and remains the only one in schema and
+the footer, with `Also known as Pier 8, Salford Quays.` as a secondary line on `/salford-quays`.
+That keeps NAP consistency intact while giving returning customers — and anyone whose satnav
+still holds the old postcode — the recognition cue. The TBC banner has been removed.
+
+### ⚠️ Terms & conditions — still pending review
 
 The T&Cs are Simon's own wording, transcribed not rewritten. The deposit percentage, payment
 windows, refund periods and the "no wheelchair access" statement all need confirming, and ideally
-a solicitor's review.
+a solicitor's review. That page keeps its TBC banner.
 
 ---
 
@@ -226,8 +231,8 @@ DNS cutover.
    second-hand and is the only way to settle flags 2 and 6, malformed/historic slug variants, and
    any blog section the Craft sitemap never listed.
 2. **Publish the Wizards & Fairies event** — the interim redirect is a net, not a fix.
-3. **Simon's review of `/terms-conditions` and `/salford-quays`**, including the M50 3AZ vs
-   M50 3RB boarding-address conflict.
+3. **Simon's review of `/terms-conditions`** — the clause wording, deposit percentage, payment
+   windows and refund periods. (`/salford-quays` is resolved — see §2.)
 4. `/help` vs `/faq` — decide from GSC impressions.
 5. `/tour/museum-tours` and `/tour/eat-drink` targets — confirm from the live pages.
 6. `/our-events` and `/tour/on-board-events` currently split to `/whats-on` and `/events`.
