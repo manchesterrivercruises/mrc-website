@@ -54,7 +54,7 @@ See `AGENTS.md` for the full list. Key points:
 3. City River Tour is the default homepage hero — do not change this without explicit instruction
 4. All pages need static crawlable copy — not just dynamically loaded content
 5. Every page needs title tag, meta description, Open Graph tags, schema, and image alt text
-6. Dynamic tour pages must live under `/cruises/[slug]` — never at top level
+6. Dynamic tour pages must live under `/tour/[slug]` — never at top level (legacy namespace, adopted — see docs/url-parity.md)
 
 ---
 
@@ -80,7 +80,7 @@ Do not attempt multiple steps in one session unless explicitly instructed.
 
 - Do not build the whole site in one prompt
 - Do not introduce dependencies not in the stack without asking
-- Do not create a top-level `src/pages/[slug].astro` — use `/cruises/[slug]` for dynamic routes
+- Do not create a top-level `src/pages/[slug].astro` — use `/tour/[slug]` for dynamic routes
 - Load the Ventrata checkout script **exactly once per page** — it ships site-wide via `<Header>` by design (AGENTS rule 9); never add a second per-page loader
 - Do not implement the private hire form as a hydrated JS component — it must exist in raw Astro/HTML at build time
 - Do not modify global navigation or API functions unless the task explicitly requires it

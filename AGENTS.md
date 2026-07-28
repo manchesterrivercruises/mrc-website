@@ -39,7 +39,7 @@ They are non-negotiable. Do not deviate from them without explicit written appro
     - `/docs/content-management.md` for Content Collections and the CMS workflow
     - `/docs/integrations.md` for third-party integrations: Mapbox/Leaflet, Google Tag Manager, Ventrata OCTO
 
-14. **Dynamic tour pages must be scoped under `/cruises/[slug]`**, not at the top level. A top-level `src/pages/[slug].astro` catch-all in Astro intercepts valid static routes like `/about`, `/contact`, and `/vessels`. Never create top-level dynamic route files.
+14. **Dynamic tour pages must be scoped under `/tour/[slug]`**, not at the top level. A top-level `src/pages/[slug].astro` catch-all in Astro intercepts valid static routes like `/about`, `/contact`, and `/vessels`. Never create top-level dynamic route files.
 
 15. **CSS convention.** Use Tailwind utility classes for layout and spacing; keep design tokens and base styles in `src/styles/global.css`; and extract repeated UI patterns into reusable Astro components under `src/components/`. Never recreate card, button, or heading patterns inline on individual pages — use the shared components (`SectionHeading`, `CTAButton`, `BookingPanel`, `ProductCard`, `AttractionCard`, `FAQSection`, `ReviewStrip`, …) and add new ones there when a pattern repeats.
 

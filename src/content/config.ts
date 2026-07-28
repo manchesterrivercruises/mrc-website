@@ -138,7 +138,7 @@ const gallery = defineCollection({
       .min(1),
     // Explicit related-album slugs. Empty → same-category fallback (see src/lib/gallery.ts).
     relatedAlbums: z.array(z.string()).default([]),
-    // Optional page path of the product this album relates to, e.g. "/cruises/dolly-cruise".
+    // Optional page path of the product this album relates to, e.g. "/tour/dolly-cruise".
     relatedProduct: z.string().optional(),
     bookingCtaLabel: z.string(),
     bookingCtaUrl: z.string(),

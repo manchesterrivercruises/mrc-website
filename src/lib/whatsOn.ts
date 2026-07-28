@@ -87,7 +87,7 @@ export function buildProductMeta(events: CollectionEntry<'events'>[]): ProductMe
       typeLabel: 'Events',
       title: e.data.title,
       description: e.data.shortTagline || e.data.description,
-      href: `/cruises/${e.id}`,
+      href: `/tour/${e.id}`,
       image: hero || PRODUCT_IMAGES[pid],
       imageAlt: e.data.heroImageAlt || e.data.title,
       sailingTimes: e.data.sailingTimes,

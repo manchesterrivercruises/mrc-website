@@ -116,7 +116,7 @@ const structuredData = {
           <div class="mt-8 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {
               liveMusicNights.map((e) => (
-                <ProductCard name={e.data.title} desc={e.data.shortTagline ?? e.data.description} href={`/cruises/${e.id}`} linkText="View & book" />
+                <ProductCard name={e.data.title} desc={e.data.shortTagline ?? e.data.description} href={`/tour/${e.id}`} linkText="View & book" />
               ))
             }
           </div>
@@ -132,7 +132,7 @@ const structuredData = {
           <div class="mt-8 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {
               djNights.map((e) => (
-                <ProductCard name={e.data.title} desc={e.data.shortTagline ?? e.data.description} href={`/cruises/${e.id}`} linkText="View & book" />
+                <ProductCard name={e.data.title} desc={e.data.shortTagline ?? e.data.description} href={`/tour/${e.id}`} linkText="View & book" />
               ))
             }
           </div>

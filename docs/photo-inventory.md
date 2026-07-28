@@ -86,7 +86,7 @@ Selected images were viewed, given genuine alt text, kebab-renamed, and processe
 
 **Six new event albums created** (each event had 4+ decent images and no album): `adele-night`,
 `elvis-live`, `elvis-rocks`, `soul-river`, `rollin-on-the-river`, `boat-tropicana` — all linked
-to their `/cruises/[slug]` product pages and on the gallery wall (15 albums total).
+to their `/tour/[slug]` product pages and on the gallery wall (15 albums total).
 
 **Existing albums filled with owned photos** (replacing leftover placeholders/hotlinks): Dolly
 (3, new cover), Christmas (3), Old Trafford Ferry (2), Private Hire (1 + cover), Our Boats

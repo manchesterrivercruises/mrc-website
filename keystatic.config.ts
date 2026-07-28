@@ -136,7 +136,7 @@ export default config({
           description: 'Album slugs to cross-link. Empty falls back to same-category albums.',
           itemLabel: (p) => p.value,
         }),
-        relatedProduct: fields.text({ label: 'Related product path', description: 'e.g. /cruises/adele-cruise' }),
+        relatedProduct: fields.text({ label: 'Related product path', description: 'e.g. /tour/adele-cruise' }),
         bookingCtaLabel: fields.text({ label: 'Booking CTA label', validation: { isRequired: true } }),
         bookingCtaUrl: fields.text({ label: 'Booking CTA URL', validation: { isRequired: true } }),
         seoTitle: fields.text({ label: 'SEO title' }),
@@ -159,7 +159,7 @@ export default config({
         title: fields.slug({
           name: {
             label: 'Title',
-            description: 'Display name. The URL slug (/cruises/<slug>) is the filename — edit it in the Slug field.',
+            description: 'Display name. The URL slug (/tour/<slug>) is the filename — edit it in the Slug field.',
             validation: { isRequired: true },
           },
         }),

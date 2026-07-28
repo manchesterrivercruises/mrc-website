@@ -41,7 +41,7 @@ City River Tour is ~65% of revenue. It dominates the site.
 /boat-to-old-trafford                      Boat to Old Trafford (matchday ferry)
 /private-hire                              Private Hire
 /private-boat-hire-manchester              Private Boat Hire (SEO page)
-/cruises/[slug]                            New Tour TBC (dynamic — under /cruises/ not root)
+/tour/[slug]                              Event/tour product pages (dynamic — legacy namespace, adopted)
 /plan-your-visit                           Plan Your Visit
 /getting-here                              Getting Here
 /accessibility                             Accessibility
@@ -128,7 +128,7 @@ Submissions go to MRC email. Team records confirmed bookings in Ventrata to bloc
 
 - OCTO key: server-side only
 - City River Tour: default hero, never changed by API
-- Dynamic routes: /cruises/[slug] only — never root level
+- Dynamic routes: /tour/[slug] only — never root level
 - Netlify Forms: raw HTML at build time
 - No new CMS without approval
 - No new dependencies without approval

@@ -18,7 +18,7 @@ They mirror AGENTS.md — both files must stay in sync.
 11. No new CMS without approval
 12. No new dependencies without approval
 13. Context diet: read only the relevant /docs/ file for each task
-14. Dynamic routes: /cruises/[slug] only — never top-level [slug].astro
+14. Dynamic routes: /tour/[slug] only — never top-level [slug].astro
 
 ## Scope
 

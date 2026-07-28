@@ -38,9 +38,9 @@ images:
     orientation: landscape
     tags: [elvis, performer]
 relatedAlbums: [elvis-live, rollin-on-the-river, boat-tropicana, private-hire]
-relatedProduct: /cruises/elvis-rocks-cruise
+relatedProduct: /tour/elvis-rocks
 bookingCtaLabel: Book the Elvis Rocks Cruise
-bookingCtaUrl: /cruises/elvis-rocks-cruise
+bookingCtaUrl: /tour/elvis-rocks
 seoTitle: Elvis Rocks Cruise Photos — Rock 'n' Roll Tribute Night in Manchester
 seoDescription: Photos from the Elvis Rocks tribute cruise on the Manchester Ship Canal — the performance and the party onboard. Book the Elvis Rocks Cruise.
 draft: false

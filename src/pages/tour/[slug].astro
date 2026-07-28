@@ -25,7 +25,7 @@ const { entry } = Astro.props;
 
 // "View photos" cross-link when a gallery album relates to this event — either its
 // relatedProduct is this page path, or its slug matches the event slug.
-const galleryAlbum = findAlbumForProduct(await getAlbums(), `/cruises/${entry.id}`, entry.id);
+const galleryAlbum = findAlbumForProduct(await getAlbums(), `/tour/${entry.id}`, entry.id);
 const { Content } = await render(entry);
 const {
   title,
@@ -103,15 +103,26 @@ const structuredData = {
   '@type': 'Product',
   name: title,
   description,
-  url: `${SITE}/cruises/${entry.id}`,
+  url: `${SITE}/tour/${entry.id}`,
   brand: { '@type': 'Brand', name: 'Manchester River Cruises' },
   ...(priceFrom != null
-    ? { offers: { '@type': 'Offer', price: priceFrom, priceCurrency: 'GBP', availability: 'https://schema.org/InStock', url: `${SITE}/cruises/${entry.id}` } }
+    ? { offers: { '@type': 'Offer', price: priceFrom, priceCurrency: 'GBP', availability: 'https://schema.org/InStock', url: `${SITE}/tour/${entry.id}` } }
     : {}),
 };
+
+// Breadcrumb leaf must be the product TITLE, not a title-cased slug. Since the legacy
+// /tour/ slugs were adopted verbatim (docs/url-parity.md), several no longer resemble
+// the product name — the auto-derived crumb would read "Swing Cruise Live Music" for
+// "Swinging on the River", or "Father Christmas Cruise" for "Cruise with Father
+// Christmas". Override explicitly so the trail always shows the real name.
+const crumbs = [
+  { name: 'Home', url: `${SITE}/` },
+  { name: 'Events', url: `${SITE}/events` },
+  { name: title, url: `${SITE}/tour/${entry.id}` },
+];
 ---
 
-<BaseLayout title={pageTitle} description={description} bookProductID={ventrataProductId}>
+<BaseLayout title={pageTitle} description={description} bookProductID={ventrataProductId} breadcrumbs={crumbs}>
   {/* Ventrata checkout loader now ships site-wide via <Header> (AGENTS rule 9). */}
 
   {/* Schema.org structured data (Product — dates live in Ventrata, so not an Event) */}
