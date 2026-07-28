@@ -119,9 +119,17 @@
   to = "/tour/swing-cruise-live-music"
   status = 301
 
+# GA confirms /tour/wizards-and-fairies-cruise carried real traffic (517 sessions,
+# £1,236) despite being absent from the Craft sitemap — so the draft event adopts
+# that slug too. Must precede the splat, which would otherwise 404 on the old path.
+[[redirects]]
+  from = "/cruises/wizards-and-fairies"
+  to = "/tour/wizards-and-fairies-cruise"
+  status = 301
+
 # Slug was already identical (adele-cruise, boat-tropicana, dolly-cruise,
 # rollin-on-the-river, broadway-boat-party, club-classics-cruise,
-# halloween-boat-party, wizards-and-fairies) — only the namespace moved.
+# halloween-boat-party) — only the namespace moved.
 [[redirects]]
   from = "/cruises/*"
   to = "/tour/:splat"
@@ -159,6 +167,18 @@
 [[redirects]]
   from = "/boat-to-old-trafford"
   to = "/tour/boat-to-old-trafford"
+  status = 301
+
+# --- Wizards & Fairies: interim net while the event is draft ------------------
+# The event has adopted /tour/wizards-and-fairies-cruise but is still draft: true,
+# so it does not render yet — and GA shows the legacy URL earning real traffic
+# (517 sessions, £1,236). Without this, launching would 404 that demand.
+# SELF-HEALING: `force` is omitted, so the moment the event is published the real
+# page exists and Netlify serves it INSTEAD of this rule. No cleanup required —
+# but publishing the event is the actual fix. See docs/url-parity.md.
+[[redirects]]
+  from = "/tour/wizards-and-fairies-cruise"
+  to = "/whats-on"
   status = 301
 
 # --- Retired legacy category facets (Craft `tourCategory` / `tourEvent`) -------
