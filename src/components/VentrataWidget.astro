@@ -7,7 +7,7 @@
 // third-party checkout bundle that Lighthouse reports as unused JS on non-booking pages;
 // it is an accepted, intentional cost. See docs/lighthouse-triage.md.) Modes:
 //
-//   mode="loader"   Page-level setup: the checkout <script>, the modal open/close
+//   mode="loader"   Page-level setup: the checkout script tag, the modal open/close
 //                   observer, and the loading-skeleton hide. Rendered ONCE site-wide by
 //                   <Header> (not per page). Load it EXACTLY ONCE per page — never add a
 //                   second per-page loader.
@@ -121,7 +121,7 @@ const FLOW_DEBUG_SCRIPT = `
 `;
 
 // Loader CSS + observer JS injected via set:html. IMPORTANT: Astro does NOT evaluate
-// `{...}` inside <script>/<style> tag bodies — `<script>{`…`}</script>` emits the
+// `{...}` inside `script`/`style` tag bodies — a `script`-wrapped `{`…`}` emits the
 // backticks + code LITERALLY, so the IIFE never runs. set:html sets the evaluated string
 // as element content (same pattern as the JSON-LD blocks and the ReviewStrip fix).
 const SKELETON_CSS = `
@@ -581,7 +581,7 @@ const OBSERVER_SCRIPT = `
           node landed as a direct sibling of the skeleton, which is why the skeleton stuck on
           some products. The script below is the belt-and-suspenders fallback for the (rare)
           case where the widget renders without an iframe. :has() is within our baseline. */}
-      {/* set:html — NOT `<style>{`…`}</style>` / `<script>{`…`}</script>` (Astro emits
+      {/* set:html — NOT a `style`- or `script`-wrapped `{`…`}` expression (Astro emits
           those bodies LITERALLY, so nothing runs). Injects the evaluated strings above. */}
       <style is:global set:html={SKELETON_CSS} />
 

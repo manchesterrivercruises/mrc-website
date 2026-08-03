@@ -1,0 +1,62 @@
+{
+  "seoTitle": "Private Hire — Exclusive Boat Hire for Events & Celebrations — Manchester River Cruises",
+  "seoDescription": "Hire a whole boat for your event with Manchester River Cruises. Exclusive private hire for corporate events, celebrations, weddings, filming and parties from Salford Quays. Enquire today.",
+  "heroEyebrow": "Private hire",
+  "heroHeading": "Private Hire",
+  "heroIntro": "Exclusive hire of the whole vessel for your event — corporate days, celebrations, weddings and more.",
+  "heroCtaLabel": "Enquire now",
+  "heroPhotosLabel": "View photos →",
+  "keyFacts": [
+    "Exclusive whole-vessel hire",
+    "Up to TBC guests",
+    "Salford Quays departure",
+    "Bespoke catering available"
+  ],
+  "aboutHeading": "The whole boat, exclusively yours",
+  "aboutBody": "Private hire gives you exclusive use of one of our vessels — a striking, memorable setting on the water for whatever you're planning. Our team will help tailor every detail, from catering to timings, so you can simply enjoy the occasion.",
+  "aboutTbcNote": "Full private hire details — TBC from Simon (content-checklist.md).",
+  "giftNoteBefore": "Treating someone?",
+  "giftNoteLinkText": "Gift vouchers",
+  "giftNoteAfter": "are available for any cruise.",
+  "occasions": [
+    "Corporate events",
+    "Celebrations",
+    "Filming & photography",
+    "Product launches",
+    "Birthday parties",
+    "Hen & stag dos",
+    "Weddings"
+  ],
+  "vesselsHeading": "Our vessels for hire",
+  "vesselCardDesc": "Capacity and details — TBC.",
+  "hireVessels": ["Princess Katherine", "Isabella", "Melody"],
+  "includedHeading": "What's included",
+  "included": [
+    "Exclusive use of the whole vessel",
+    "Experienced crew and skipper",
+    "Licensed bar service",
+    "Catering options (TBC)",
+    "Sound system (TBC)"
+  ],
+  "christmasEyebrow": "Christmas parties",
+  "christmasHeading": "Your office Christmas party, on the water",
+  "christmasBody": "Take the whole boat for your office or group Christmas do — decorated bow to stern for the season, with a licensed bar, a dancefloor and the floodlit waterfront gliding past. It’s the standout way to celebrate a team, and it beats the same old function room.",
+  "christmasEmphasis": "December dates go fast — book early.",
+  "christmasTbcNote": "Catering, drinks packages and festive extras — TBC from Simon (content-checklist.md).",
+  "christmasCtaLabel": "Enquire for December",
+  "christmasLinkLabel": "All Christmas cruises →",
+  "schoolsHeading": "School & youth groups",
+  "schoolsBody": "School trips, colleges, scouts and youth groups sail as a private charter — the whole boat for a daytime educational visit, with commentary tailored to your age range. (Not party or prom bookings.)",
+  "schoolsCtaLabel": "Group visits & school trips",
+  "enquireHeading": "Enquire about private hire",
+  "enquireSuccess": "Thanks for your enquiry. We'll get back to you within 24 hours.",
+  "faqTitle": "Private hire FAQs",
+  "faqs": [
+    { "question": "Is there a minimum hire duration?", "answer": "Minimum hire duration TBC." },
+    { "question": "What catering options are available?", "answer": "We offer a range of catering options to suit your event — details TBC." },
+    { "question": "Can we bring our own alcohol?", "answer": "There is a licensed bar onboard; corkage and bring-your-own policy TBC." },
+    { "question": "Is there a DJ or sound system?", "answer": "A sound system is available onboard; DJ and entertainment options TBC." },
+    { "question": "How far in advance should we book?", "answer": "We recommend enquiring as early as possible, especially for peak dates. (TBC)" },
+    { "question": "Is a deposit required?", "answer": "Deposit and payment terms TBC." }
+  ]
+}
