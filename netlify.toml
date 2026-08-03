@@ -177,6 +177,16 @@
   to = "/tour/boat-to-old-trafford"
   status = 301
 
+# --- Gallery album rename: christmas-cruises → father-christmas-cruise --------
+# The album's content is entirely Father Christmas Cruise material, so it was
+# renamed to match the adopted product slug (which is what makes the event↔album
+# linkage resolve — relatedProduct, the mini-gallery strip and "View photos" all
+# key off /tour/father-christmas-cruise).
+[[redirects]]
+  from = "/gallery/christmas-cruises"
+  to = "/gallery/father-christmas-cruise"
+  status = 301
+
 # --- Parity renames: legacy paths ADOPTED, our own former paths redirect ------
 # /our-vessels, /manage-bookings and /contact-us are the legacy Craft addresses and
 # now RENDER. These rules cover our own shorter paths, which were never public but

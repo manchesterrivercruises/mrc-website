@@ -1,7 +1,7 @@
-title: Christmas Cruises
-slug: christmas-cruises
+title: Father Christmas Cruises
+slug: father-christmas-cruise
 order: 2
-summary: Festive nights on the water — twinkling lights, party cruises and a visit from Father Christmas along the Manchester Ship Canal.
+summary: Aboard the Father Christmas Cruise — Santa and his elves, the decorated cabin and the grotto, on the Manchester Ship Canal.
 category: seasonal
 # OWNED cover + images (processed WebP, public/images/). Rights confirmed by Simon.
 coverImage: /images/events/santa-cruise-hero.webp
@@ -56,8 +56,8 @@ images:
     orientation: landscape
     tags: [decor, christmas]
 relatedAlbums: [private-hire, dolly-night, our-boats, abba-night]
-relatedProduct: /christmas-cruises-manchester
-bookingCtaLabel: Book a Christmas cruise
-bookingCtaUrl: /christmas-cruises-manchester
-seoTitle: Christmas Cruise Photos — Festive Boat Parties & Santa Cruises Manchester
-seoDescription: Photos from our Christmas cruises on the Manchester Ship Canal — festive party nights, Santa visits and the winter waterfront after dark. Book a Christmas cruise.
+relatedProduct: /tour/father-christmas-cruise
+bookingCtaLabel: Book the Father Christmas Cruise
+bookingCtaUrl: /tour/father-christmas-cruise
+seoTitle: Father Christmas Cruise Photos — Santa on the Water, Manchester
+seoDescription: Photos from the Father Christmas Cruise on the Manchester Ship Canal — Santa and his elves, the decorated cabin and the grotto. Book the Father Christmas Cruise.
