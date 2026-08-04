@@ -8,11 +8,12 @@ import FAQSection from '../components/FAQSection.astro';
 import GettingHere from '../components/GettingHere.astro';
 import { site } from '../data/site';
 
-// EDITABLE COPY lives in the CMS ("Page: Private Hire" singleton) and is stored in
-// src/content/pages/private-hire.json. This template owns STRUCTURE ONLY —
+// EDITABLE COPY lives in the CMS (Page copy → private-hire) and is stored in
+// src/content/page-copy/private-hire.json. This template owns STRUCTURE ONLY —
 // layout, components, icons, the enquiry form and every href. See
 // docs/content-management.md → "Extracting a page's copy into the CMS" for the recipe.
-import copy from '../content/pages/private-hire.json';
+import copy from '../content/page-copy/private-hire.json';
+import { sec, list, faqs, faqGroup, str } from '../lib/pageCopy';
 
 const icons = {
   sparkles:
@@ -26,7 +27,7 @@ const icons = {
 // Icon choice is structural, so it stays here; only the label comes from the CMS.
 // Zipped by position — the CMS field is a fixed-length list of 4 (see the config).
 const factIcons = [icons.sparkles, icons.users, icons.pin, icons.cake];
-const keyFacts = copy.keyFacts.map((text, i) => ({ text, icon: factIcons[i] ?? icons.sparkles }));
+const keyFacts = (copy.keyFacts ?? []).map((text, i) => ({ text, icon: factIcons[i] ?? icons.sparkles }));
 
 // The form's option lists stay in code: they are submitted VALUES that Netlify
 // notifications and any downstream routing key off, not display copy.
@@ -34,7 +35,8 @@ const eventTypes = ['Corporate Event', 'Birthday', 'Hen/Stag', 'Wedding', 'Filmi
 const hearAbout = ['Google search', 'Social media', 'Recommendation', "We've cruised before", 'Other'];
 
 // FAQSection takes { q, a }; the CMS stores the friendlier { question, answer }.
-const faqs = copy.faqs.map((f) => ({ q: f.question, a: f.answer }));
+const faqItems = faqs(copy);
+const faqGroupTitle = faqGroup(copy, 'main').title;
 
 const inputClass =
   'mt-1 w-full rounded-md border border-black/15 bg-white px-3 py-2 text-sm text-ink focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary';
@@ -44,8 +46,8 @@ const SITE = site.url;
 // Note: the "private boat hire manchester" keyword is owned by the dedicated SEO page
 // (/private-boat-hire-manchester). This page targets the "private hire" enquiry intent
 // with its own distinct title/description/H1 to avoid duplicate titles (AGENTS.md rule 7).
-const pageTitle = copy.seoTitle;
-const pageDescription = copy.seoDescription;
+const pageTitle = copy.seoTitle!;
+const pageDescription = copy.seoDescription!;
 
 const structuredData = {
   '@context': 'https://schema.org',
@@ -90,15 +92,15 @@ const structuredData = {
     {/* Hero — dark navy, gold accents, premium tone */}
     <section class="bg-dark text-white">
       <div class="mx-auto max-w-6xl px-4 py-20 sm:px-6 md:py-28 lg:px-8">
-        <p class="text-sm font-semibold uppercase tracking-[0.2em] text-accent">{copy.heroEyebrow}</p>
-        <h1 class="mt-3 text-4xl font-bold tracking-tight text-white sm:text-5xl md:text-6xl">{copy.heroHeading}</h1>
+        <p class="text-sm font-semibold uppercase tracking-[0.2em] text-accent">{copy.eyebrow}</p>
+        <h1 class="mt-3 text-4xl font-bold tracking-tight text-white sm:text-5xl md:text-6xl">{copy.heading}</h1>
         <p class="mt-5 max-w-2xl text-lg leading-relaxed text-white/80">
-          {copy.heroIntro}
+          {copy.intro}
         </p>
         <div class="mt-8 flex flex-wrap items-center gap-x-6 gap-y-3">
-          <CTAButton href="#enquire">{copy.heroCtaLabel}</CTAButton>
+          <CTAButton href="#enquire">{str(copy, 'heroCtaLabel')}</CTAButton>
           <a href="/gallery/private-hire" class="text-sm font-medium text-white/90 underline-offset-4 hover:underline">
-            {copy.heroPhotosLabel}
+            {str(copy, 'heroPhotosLabel')}
           </a>
         </div>
       </div>
@@ -110,23 +112,23 @@ const structuredData = {
       <div class="space-y-16">
         {/* About */}
         <section aria-labelledby="about">
-          <SectionHeading id="about">{copy.aboutHeading}</SectionHeading>
+          <SectionHeading id="about">{sec(copy, 'about').heading}</SectionHeading>
           <div class="mt-6 max-w-3xl space-y-4 text-lg leading-relaxed text-body">
-            <p>{copy.aboutBody}</p>
-            <p class="text-base text-subtle">{copy.aboutTbcNote}</p>
+            <p>{sec(copy, 'about').body?.[0]}</p>
+            <p class="text-base text-subtle">{sec(copy, 'about').note}</p>
             {/* Prose carrying an inline cross-link: the wording either side is editable,
                 the href stays in code (links are structure). See the doc's recipe. */}
             <p class="text-base text-subtle">
-              {copy.giftNoteBefore}{' '}
+              {str(copy, 'giftNoteBefore')}{' '}
               <a href="/gift-vouchers" class="font-medium text-primary underline-offset-4 hover:underline">
-                {copy.giftNoteLinkText}
+                {str(copy, 'giftNoteLinkText')}
               </a>{' '}
-              {copy.giftNoteAfter}
+              {str(copy, 'giftNoteAfter')}
             </p>
           </div>
           <ul class="mt-6 flex flex-wrap gap-2">
             {
-              copy.occasions.map((o) => (
+              list(copy, 'occasions').map((o) => (
                 <li class="rounded-full bg-panel px-3 py-1 text-sm text-body ring-1 ring-black/5">{o}</li>
               ))
             }
@@ -135,18 +137,18 @@ const structuredData = {
 
         {/* Vessels for hire */}
         <section aria-labelledby="vessels">
-          <SectionHeading id="vessels">{copy.vesselsHeading}</SectionHeading>
+          <SectionHeading id="vessels">{sec(copy, 'vessels').heading}</SectionHeading>
           <div class="mt-8 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {copy.hireVessels.map((name) => <ProductCard name={name} desc={copy.vesselCardDesc} href="/our-vessels" linkText="View fleet" />)}
+            {list(copy, 'hireVessels').map((name) => <ProductCard name={name} desc={str(copy, 'vesselCardDesc')} href="/our-vessels" linkText="View fleet" />)}
           </div>
         </section>
 
         {/* What's included */}
         <section aria-labelledby="included">
-          <SectionHeading id="included">{copy.includedHeading}</SectionHeading>
+          <SectionHeading id="included">{sec(copy, 'included').heading}</SectionHeading>
           <ul class="mt-6 max-w-3xl space-y-3">
             {
-              copy.included.map((item) => (
+              list(copy, 'included').map((item) => (
                 <li class="flex gap-3 text-body">
                   <span aria-hidden="true" class="mt-0.5 flex-none text-primary">✓</span>
                   <span>{item}</span>
@@ -159,17 +161,17 @@ const structuredData = {
         {/* Christmas parties — private hire is the standout Christmas do. Evergreen (no date toggle);
             December urgency is the message. Cross-links the Christmas hub. */}
         <section aria-labelledby="christmas" class="rounded-card bg-dark p-6 text-white sm:p-8">
-          <p class="text-xs font-semibold uppercase tracking-[0.2em] text-accent">{copy.christmasEyebrow}</p>
-          <h2 id="christmas" class="mt-2 text-2xl font-bold tracking-tight">{copy.christmasHeading}</h2>
+          <p class="text-xs font-semibold uppercase tracking-[0.2em] text-accent">{str(copy, 'christmasEyebrow')}</p>
+          <h2 id="christmas" class="mt-2 text-2xl font-bold tracking-tight">{sec(copy, 'christmas').heading}</h2>
           <p class="mt-3 max-w-2xl leading-relaxed text-white/80">
-            {copy.christmasBody}
-            <strong class="font-semibold text-white"> {copy.christmasEmphasis}</strong>
+            {sec(copy, 'christmas').body?.[0]}
+            <strong class="font-semibold text-white"> {str(copy, 'christmasEmphasis')}</strong>
           </p>
-          <p class="mt-2 text-sm text-white/60">{copy.christmasTbcNote}</p>
+          <p class="mt-2 text-sm text-white/60">{sec(copy, 'christmas').note}</p>
           <div class="mt-5 flex flex-wrap items-center gap-x-6 gap-y-3">
-            <CTAButton href="#enquire">{copy.christmasCtaLabel}</CTAButton>
+            <CTAButton href="#enquire">{str(copy, 'christmasCtaLabel')}</CTAButton>
             <a href="/christmas-cruises-manchester" class="text-sm font-medium text-white/90 underline-offset-4 hover:underline">
-              {copy.christmasLinkLabel}
+              {str(copy, 'christmasLinkLabel')}
             </a>
           </div>
         </section>
@@ -178,22 +180,22 @@ const structuredData = {
             group visits page routes them back here to enquire. */}
         <aside class="rounded-card bg-panel p-6 ring-1 ring-black/5 sm:flex sm:items-center sm:justify-between sm:gap-6">
           <div>
-            <h2 class="font-semibold text-ink">{copy.schoolsHeading}</h2>
-            <p class="mt-1 max-w-2xl text-body">{copy.schoolsBody}</p>
+            <h2 class="font-semibold text-ink">{sec(copy, 'schools').heading}</h2>
+            <p class="mt-1 max-w-2xl text-body">{sec(copy, 'schools').body?.[0]}</p>
           </div>
           <div class="mt-4 shrink-0 sm:mt-0">
-            <CTAButton href="/groups#schools" variant="outline">{copy.schoolsCtaLabel}</CTAButton>
+            <CTAButton href="/groups#schools" variant="outline">{str(copy, 'schoolsCtaLabel')}</CTAButton>
           </div>
         </aside>
 
         {/* Enquiry form (Netlify Forms; static HTML at build time) */}
         <section id="enquire" aria-labelledby="enquire-heading">
-          <SectionHeading id="enquire-heading">{copy.enquireHeading}</SectionHeading>
+          <SectionHeading id="enquire-heading">{sec(copy, 'enquire').heading}</SectionHeading>
 
           {/* Success message — hidden by CSS until #ph-success is the :target (see the
               style block above). Static markup: perceivable without JS when the fragment is set. */}
           <div id="ph-success" class="mt-6 rounded-card bg-panel p-4 text-body ring-1 ring-black/5">
-            <p class="font-medium text-ink">{copy.enquireSuccess}</p>
+            <p class="font-medium text-ink">{str(copy, 'enquireSuccess')}</p>
           </div>
 
           <form
@@ -260,7 +262,7 @@ const structuredData = {
           </form>
         </section>
 
-        <FAQSection faqs={faqs} title={copy.faqTitle} />
+        <FAQSection faqs={faqItems} title={faqGroupTitle} />
 
         <GettingHere />
       </div>

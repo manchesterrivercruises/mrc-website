@@ -277,7 +277,7 @@ they are not in the list above.
 ### Verifying the CMS wiring
 
 ```
-node scripts/verify-cms-singletons.mjs
+node scripts/verify-cms-wiring.mjs
 ```
 
 Reads both singletons through Keystatic's **own reader** — the same path/format resolution the
