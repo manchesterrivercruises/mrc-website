@@ -97,8 +97,8 @@ const structuredData = {
               waterfront after dark.
             </p>
             <p>
-              In December, every night comes Christmas-decorated with festive extras — see our{' '}
-              <a href="/christmas-cruises-manchester" class="font-medium text-primary underline-offset-4 hover:underline">Christmas cruises</a>.
+              In December, every night comes Christmas-decorated with festive extras — see{' '}
+              <a href="/christmas-cruises-manchester" class="font-medium text-primary underline-offset-4 hover:underline">Christmas on the water</a>.
             </p>
             <p class="text-base text-subtle">Full line-up and descriptions — TBC from Simon (content-checklist.md).</p>
           </div>
@@ -116,7 +116,7 @@ const structuredData = {
           <div class="mt-8 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {
               liveMusicNights.map((e) => (
-                <ProductCard name={e.data.title} desc={e.data.shortTagline ?? e.data.description} href={`/cruises/${e.id}`} linkText="View & book" />
+                <ProductCard name={e.data.title} desc={e.data.shortTagline ?? e.data.description} href={`/tour/${e.id}`} linkText="View & book" />
               ))
             }
           </div>
@@ -132,7 +132,7 @@ const structuredData = {
           <div class="mt-8 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {
               djNights.map((e) => (
-                <ProductCard name={e.data.title} desc={e.data.shortTagline ?? e.data.description} href={`/cruises/${e.id}`} linkText="View & book" />
+                <ProductCard name={e.data.title} desc={e.data.shortTagline ?? e.data.description} href={`/tour/${e.id}`} linkText="View & book" />
               ))
             }
           </div>
@@ -145,7 +145,7 @@ const structuredData = {
         <section aria-labelledby="also">
           <SectionHeading id="also">Prefer a daytime cruise?</SectionHeading>
           <div class="mt-8 sm:max-w-sm">
-            <ProductCard name="City River Tour" desc="Our signature 60-minute sightseeing cruise along the Manchester Ship Canal." href="/city-river-tour" />
+            <ProductCard name="City River Tour" desc="Our signature 60-minute sightseeing cruise along the Manchester Ship Canal." href="/tour/city-river-tours" />
           </div>
         </section>
 

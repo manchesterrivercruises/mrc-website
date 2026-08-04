@@ -39,9 +39,9 @@ images:
     orientation: portrait
     tags: [guests, party]
 relatedAlbums: [abba-night, soul-river, dolly-night, private-hire]
-relatedProduct: /cruises/adele-cruise
+relatedProduct: /tour/adele-cruise
 bookingCtaLabel: Book the Adele Cruise
-bookingCtaUrl: /cruises/adele-cruise
+bookingCtaUrl: /tour/adele-cruise
 seoTitle: Adele Cruise Photos — Tribute Night on the Water in Manchester
 seoDescription: Photos from the Adele Cruise on the Manchester Ship Canal — the tribute performance, the party and the atmosphere onboard. Book the Adele Cruise.
 draft: false

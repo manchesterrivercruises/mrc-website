@@ -39,9 +39,9 @@ images:
     usage: [gallery, product-page, private-hire]
     tags: [cabin, interior]
 relatedAlbums: [elvis-rocks, dolly-night, rollin-on-the-river, private-hire]
-relatedProduct: /cruises/elvis-live-cruise
+relatedProduct: /tour/elvis-live
 bookingCtaLabel: Book the Elvis Live Cruise
-bookingCtaUrl: /cruises/elvis-live-cruise
+bookingCtaUrl: /tour/elvis-live
 seoTitle: Elvis Live Cruise Photos — Tribute Night on the Manchester Ship Canal
 seoDescription: Photos from the Elvis 'Live from the Irwell' tribute cruise — the performance and the party onboard on the Manchester Ship Canal. Book the Elvis Live Cruise.
 draft: false

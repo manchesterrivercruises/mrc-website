@@ -1,4 +1,4 @@
-import { config, fields, collection } from '@keystatic/core';
+import { config, fields, collection, singleton } from '@keystatic/core';
 
 // Keystatic CMS — Phase 2 (see docs/content-management.md).
 //
@@ -46,7 +46,161 @@ export default config({
       : { kind: 'github', repo: 'manchesterrivercruises/mrc-website' },
   ui: {
     brand: { name: 'Manchester River Cruises' },
+    navigation: {
+      'Site-wide': ['siteSettings'],
+      Pages: ['pagePrivateHire'],
+      Content: ['gallery', 'events', 'discover', 'vessels', 'attractions'],
+    },
   },
+
+  // ---- Singletons (Phase 2.5) ------------------------------------------------------------
+  // Both write JSON (`format: { data: 'json' }`) rather than YAML, because the consuming
+  // modules import them SYNCHRONOUSLY at build time — Vite handles .json natively, and a
+  // sync import is what lets src/data/site.ts stay a plain module that ~34 files already
+  // import at the top level (including lib/breadcrumbs.ts, which cannot await).
+  singletons: {
+    // ---- Site settings -------------------------------------------------------------------
+    siteSettings: singleton({
+      label: 'Site settings',
+      path: 'src/data/site-settings',
+      format: { data: 'json' },
+      schema: {
+        name: fields.text({
+          label: 'Business name',
+          description: 'The N in NAP. Used in the footer, page titles and every schema.org block.',
+          validation: { isRequired: true },
+        }),
+        email: fields.text({ label: 'Email address', validation: { isRequired: true } }),
+        phone: fields.text({
+          label: 'Phone number',
+          description:
+            'Display form, e.g. "+44 7856 016 801". The tel: link is generated from this automatically — do not add a second field for it.',
+          validation: { isRequired: true },
+        }),
+        address: fields.object(
+          {
+            streetAddress: fields.text({ label: 'Street address', validation: { isRequired: true } }),
+            addressLocality: fields.text({ label: 'Town / city', validation: { isRequired: true } }),
+            postalCode: fields.text({ label: 'Postcode', validation: { isRequired: true } }),
+            addressCountry: fields.text({
+              label: 'Country code',
+              description: 'Two-letter ISO code, e.g. GB. Rarely needs changing.',
+              validation: { isRequired: true },
+            }),
+          },
+          {
+            label: 'Address',
+            description:
+              'The A in NAP. The one-line address shown in the footer and on Getting Here is BUILT from these parts, so the displayed and structured addresses can never disagree.',
+          },
+        ),
+        socials: fields.object(
+          {
+            facebook: fields.url({ label: 'Facebook URL' }),
+            instagram: fields.url({ label: 'Instagram URL' }),
+            tiktok: fields.url({ label: 'TikTok URL' }),
+            tripadvisor: fields.url({ label: 'Tripadvisor URL' }),
+          },
+          {
+            label: 'Social profiles',
+            description:
+              'Used for the footer icons, the contact page and the schema.org sameAs array. Leave one blank only if the profile genuinely no longer exists.',
+          },
+        ),
+        footerTagline: fields.text({
+          label: 'Footer tagline',
+          description: 'The line of copy under the logo in the footer.',
+          multiline: true,
+          validation: { isRequired: true },
+        }),
+      },
+    }),
+
+    // ---- Page: Private Hire (Phase 2.5 pilot) ---------------------------------------------
+    // COPY ONLY. The template (src/pages/private-hire.astro) keeps the structure: layout,
+    // components, icons, every href, and the whole enquiry form. See
+    // docs/content-management.md → "Extracting a page's copy into the CMS".
+    pagePrivateHire: singleton({
+      label: 'Page: Private Hire',
+      path: 'src/content/pages/private-hire',
+      format: { data: 'json' },
+      schema: {
+        seoTitle: fields.text({ label: 'SEO title', description: 'Browser tab + Google result title.', validation: { isRequired: true } }),
+        seoDescription: fields.text({ label: 'SEO description', multiline: true, validation: { isRequired: true } }),
+
+        heroEyebrow: fields.text({ label: 'Hero — eyebrow', description: 'Small uppercase line above the heading.' }),
+        heroHeading: fields.text({ label: 'Hero — heading (H1)', validation: { isRequired: true } }),
+        heroIntro: fields.text({ label: 'Hero — intro', multiline: true, validation: { isRequired: true } }),
+        heroCtaLabel: fields.text({ label: 'Hero — button label', validation: { isRequired: true } }),
+        heroPhotosLabel: fields.text({ label: 'Hero — photos link label', description: 'Links to the private hire gallery album (destination fixed in code).' }),
+
+        keyFacts: fields.array(fields.text({ label: 'Fact' }), {
+          label: 'Key facts strip',
+          description: 'Exactly 4 — each pairs with a fixed icon by position (sparkles, guests, pin, catering).',
+          itemLabel: (p) => p.value,
+          validation: { length: { min: 4, max: 4 } },
+        }),
+
+        aboutHeading: fields.text({ label: 'About — heading', validation: { isRequired: true } }),
+        aboutBody: fields.text({ label: 'About — body', multiline: true, validation: { isRequired: true } }),
+        aboutTbcNote: fields.text({
+          label: 'About — TBC note',
+          description: 'The smaller grey placeholder line. Clear it once the real copy lands.',
+          multiline: true,
+        }),
+        giftNoteBefore: fields.text({ label: 'Gift note — text before the link' }),
+        giftNoteLinkText: fields.text({ label: 'Gift note — link text', description: 'Links to /gift-vouchers (destination fixed in code).' }),
+        giftNoteAfter: fields.text({ label: 'Gift note — text after the link' }),
+
+        occasions: fields.array(fields.text({ label: 'Occasion' }), {
+          label: 'Occasion pills',
+          itemLabel: (p) => p.value,
+        }),
+
+        vesselsHeading: fields.text({ label: 'Vessels — heading' }),
+        vesselCardDesc: fields.text({ label: 'Vessels — card description', description: 'Shown on every vessel card.' }),
+        hireVessels: fields.array(fields.text({ label: 'Vessel name' }), {
+          label: 'Vessels for hire',
+          itemLabel: (p) => p.value,
+        }),
+
+        includedHeading: fields.text({ label: "What's included — heading" }),
+        included: fields.array(fields.text({ label: 'Item' }), {
+          label: "What's included",
+          itemLabel: (p) => p.value,
+        }),
+
+        christmasEyebrow: fields.text({ label: 'Christmas — eyebrow' }),
+        christmasHeading: fields.text({ label: 'Christmas — heading' }),
+        christmasBody: fields.text({ label: 'Christmas — body', multiline: true }),
+        christmasEmphasis: fields.text({ label: 'Christmas — bold closing line', description: 'Rendered bold at the end of the body paragraph.' }),
+        christmasTbcNote: fields.text({ label: 'Christmas — TBC note', multiline: true }),
+        christmasCtaLabel: fields.text({ label: 'Christmas — button label' }),
+        christmasLinkLabel: fields.text({ label: 'Christmas — link label', description: 'Links to the Christmas hub (destination fixed in code).' }),
+
+        schoolsHeading: fields.text({ label: 'Schools — heading' }),
+        schoolsBody: fields.text({ label: 'Schools — body', multiline: true }),
+        schoolsCtaLabel: fields.text({ label: 'Schools — button label' }),
+
+        enquireHeading: fields.text({ label: 'Enquiry — heading' }),
+        enquireSuccess: fields.text({
+          label: 'Enquiry — success message',
+          description: 'Shown after the form is submitted. The form fields themselves are code.',
+          multiline: true,
+        }),
+
+        faqTitle: fields.text({ label: 'FAQs — section title' }),
+        faqs: fields.array(
+          fields.object({
+            question: fields.text({ label: 'Question' }),
+            answer: fields.text({ label: 'Answer', multiline: true }),
+          }),
+          { label: 'FAQs', itemLabel: (p) => p.fields.question.value || 'FAQ' },
+        ),
+      },
+    }),
+  },
+
   collections: {
     // ---- Gallery albums (the driving use case) -------------------------------------------
     gallery: collection({
@@ -136,7 +290,7 @@ export default config({
           description: 'Album slugs to cross-link. Empty falls back to same-category albums.',
           itemLabel: (p) => p.value,
         }),
-        relatedProduct: fields.text({ label: 'Related product path', description: 'e.g. /cruises/adele-cruise' }),
+        relatedProduct: fields.text({ label: 'Related product path', description: 'e.g. /tour/adele-cruise' }),
         bookingCtaLabel: fields.text({ label: 'Booking CTA label', validation: { isRequired: true } }),
         bookingCtaUrl: fields.text({ label: 'Booking CTA URL', validation: { isRequired: true } }),
         seoTitle: fields.text({ label: 'SEO title' }),
@@ -159,7 +313,7 @@ export default config({
         title: fields.slug({
           name: {
             label: 'Title',
-            description: 'Display name. The URL slug (/cruises/<slug>) is the filename — edit it in the Slug field.',
+            description: 'Display name. The URL slug (/tour/<slug>) is the filename — edit it in the Slug field.',
             validation: { isRequired: true },
           },
         }),

@@ -14,8 +14,8 @@
 # the deploy log (Deploys → a deploy → the "Lighthouse" plugin section). Netlify
 # auto-installs the plugin from its registry — no package.json dependency needed.
 # Audits the two key pages: the homepage (City River Tour hero) and the standalone
-# /city-river-tour page. Paths are relative to the publish dir (`dist`); Astro's
-# default 'directory' build format emits `<route>/index.html`.
+# /tour/city-river-tours page. Paths are relative to the publish dir (`dist`); Astro's
+# build format is 'file' (astro.config.mjs), so routes emit `<route>.html`.
 #
 # REPORT-ONLY BY DESIGN — no `thresholds`, so a low score never fails the deploy:
 #   • Branch/preview deploys are noindex (see [context.*] below), which tanks the
@@ -31,68 +31,321 @@
     # Homepage — City River Tour is the default hero (AGENTS rule 3).
 
   [[plugins.inputs.audits]]
-    path = "city-river-tour/index.html"
+    path = "tour/city-river-tours.html"
     # Standalone City River Tour page — the LCP-tuned booking page.
 
 # --- Legacy Craft URL redirects (301) -----------------------------------------
-# Map old Craft CMS URLs to their new homes so inbound links and Search Console
-# equity are preserved. All permanent (301). `force` is intentionally OMITTED
-# (defaults to false) so a redirect NEVER shadows a real page — if a file exists
-# at the `from` path, Netlify serves it instead of redirecting. Netlify matches
-# redirects trailing-slash-insensitively, so each rule covers both `/path` and
-# `/path/`.
+# All permanent (301). `force` is intentionally OMITTED (defaults to false) so a
+# redirect NEVER shadows a real page — if a file exists at the `from` path,
+# Netlify serves it instead of redirecting. Netlify matches redirects
+# trailing-slash-insensitively, so each rule covers both `/path` and `/path/`.
+# Netlify evaluates rules IN ORDER, first match wins — which is why the explicit
+# `/cruises/<slug>` rules below must precede the `/cruises/*` splat.
 #
-# ⚠ THIS MAP IS INCOMPLETE — it will be completed from Simon's Google Search
-#   Console export (top legacy URLs by traffic/impressions) BEFORE launch. Known
-#   categories still to map:
-#     - Event pages under /tour/ or /event/ (ABBA, Elvis, Dolly, Diana Ross,
-#       Rollin'/Tina, Soul, Swinging, party nights, kids events, seasonal specials,
-#       Christmas/Santa variants …) → their /cruises/[slug] or SEO pages
-#     - Blog / news / editorial posts, if the old site had any → /discover or events
-#     - Info / utility pages under old Craft paths (about, contact, FAQ, gift
-#       vouchers, private hire, accessibility, plan-your-visit, vessels, gallery …)
-#   See docs/launch-checklist.md → "URL redirect map".
+# ⚠ THE /tour/ PRODUCT NAMESPACE IS NOT REDIRECTED — IT IS ADOPTED.
+#   Product pages now RENDER at their exact legacy addresses (/tour/<legacy-slug>,
+#   e.g. /tour/mamma-mia-cruise-abba-tribute), so those URLs never moved and need
+#   no rule. Anything below under /tour/ is a genuinely-retired legacy path
+#   (a category facet, or a product that lives at a top-level page instead).
+#   See docs/url-parity.md for the full decision table and slug mapping.
+#
+# ⚠ STILL TO COMPLETE from Simon's Google Search Console / GA export before
+#   launch: malformed or historic slug variants, and any blog/news section the
+#   Craft sitemap never listed. See docs/launch-checklist.md → "URL redirect map".
 
+# --- Our own history: /cruises/* → /tour/* ------------------------------------
+# The new site briefly shipped products at /cruises/[slug]. Staging links, shared
+# previews and internal bookmarks must not 404. Explicit rules first for the 12
+# products whose slug ALSO changed (to the legacy slug), then a splat for the 8
+# whose slug was already identical. Every one of these lands on a real page in a
+# single hop — no chains.
 [[redirects]]
-  from = "/tour/city-river-tours"
-  to = "/city-river-tour"
+  from = "/cruises/abba-tribute-cruise"
+  to = "/tour/mamma-mia-cruise-abba-tribute"
   status = 301
 
-# Points directly at the live /boat-to-old-trafford page (NOT via /mufc-ferry) so
-# there is no redirect chain.
 [[redirects]]
-  from = "/tour/boat-to-old-trafford"
-  to = "/boat-to-old-trafford"
+  from = "/cruises/back-to-the-90s"
+  to = "/tour/back-to-90s"
   status = 301
 
 [[redirects]]
-  from = "/tour/father-christmas-cruise"
-  to = "/cruises/santa-cruise"
+  from = "/cruises/decks-on-deck"
+  to = "/tour/decks-on-deck-day-party"
+  status = 301
+
+[[redirects]]
+  from = "/cruises/diana-ross-cruise"
+  to = "/tour/diana-ross-the-supreme-experience"
+  status = 301
+
+[[redirects]]
+  from = "/cruises/elvis-live-cruise"
+  to = "/tour/elvis-live"
+  status = 301
+
+[[redirects]]
+  from = "/cruises/elvis-rocks-cruise"
+  to = "/tour/elvis-rocks"
+  status = 301
+
+[[redirects]]
+  from = "/cruises/fathers-day-cruise"
+  to = "/tour/fathers-day"
+  status = 301
+
+[[redirects]]
+  from = "/cruises/mothers-day-cruise"
+  to = "/tour/mothering-sunday"
+  status = 301
+
+[[redirects]]
+  from = "/cruises/pirates-and-mermaids"
+  to = "/tour/pirates-and-mermaid-cruise"
+  status = 301
+
+[[redirects]]
+  from = "/cruises/santa-cruise"
+  to = "/tour/father-christmas-cruise"
+  status = 301
+
+[[redirects]]
+  from = "/cruises/soul-river-cruise"
+  to = "/tour/soul-river"
+  status = 301
+
+[[redirects]]
+  from = "/cruises/swinging-on-the-river"
+  to = "/tour/swing-cruise-live-music"
+  status = 301
+
+# GA confirms /tour/wizards-and-fairies-cruise carried real traffic (517 sessions,
+# £1,236) despite being absent from the Craft sitemap — so the draft event adopts
+# that slug too. Must precede the splat, which would otherwise 404 on the old path.
+#
+# ⚠ KNOWN TRANSIENT 2-HOP: this rule points at the correct FINAL destination, but
+#   that destination is itself temporarily redirected to /whats-on further down
+#   (the draft-event net), so today the path is
+#     /cruises/wizards-and-fairies → /tour/wizards-and-fairies-cruise → /whats-on
+#   This is deliberate. The alternative — pointing straight at /whats-on — would be
+#   a rule that silently becomes WRONG once the event is published. Publishing the
+#   event removes the middle hop automatically and needs no edit here.
+[[redirects]]
+  from = "/cruises/wizards-and-fairies"
+  to = "/tour/wizards-and-fairies-cruise"
+  status = 301
+
+# Slug was already identical (adele-cruise, boat-tropicana, dolly-cruise,
+# rollin-on-the-river, broadway-boat-party, club-classics-cruise,
+# halloween-boat-party) — only the namespace moved.
+[[redirects]]
+  from = "/cruises/*"
+  to = "/tour/:splat"
+  status = 301
+
+[[redirects]]
+  from = "/cruises"
+  to = "/events"
+  status = 301
+
+# --- Bare namespace root -------------------------------------------------------
+# /tour has no index page (products are leaves); the Events hub is the closest
+# thing to a product index.
+[[redirects]]
+  from = "/tour"
+  to = "/events"
+  status = 301
+
+# --- CRT + ferry: ADOPTED, so these are pages and NOT redirects ---------------
+# /tour/city-river-tours and /tour/boat-to-old-trafford now RENDER — the namespace
+# adoption is complete. Their former rules were deleted; the rules below send our
+# own previous paths at the adopted ones. Ferry point pages nest beneath the
+# landing page, so a splat covers /ralli-quay and /stephensons-bridge. The splat
+# precedes the bare rule (first match wins).
+[[redirects]]
+  from = "/city-river-tour"
+  to = "/tour/city-river-tours"
+  status = 301
+
+[[redirects]]
+  from = "/boat-to-old-trafford/*"
+  to = "/tour/boat-to-old-trafford/:splat"
+  status = 301
+
+[[redirects]]
+  from = "/boat-to-old-trafford"
+  to = "/tour/boat-to-old-trafford"
+  status = 301
+
+# --- Gallery album rename: christmas-cruises → father-christmas-cruise --------
+# The album's content is entirely Father Christmas Cruise material, so it was
+# renamed to match the adopted product slug (which is what makes the event↔album
+# linkage resolve — relatedProduct, the mini-gallery strip and "View photos" all
+# key off /tour/father-christmas-cruise).
+[[redirects]]
+  from = "/gallery/christmas-cruises"
+  to = "/gallery/father-christmas-cruise"
+  status = 301
+
+# --- Parity renames: legacy paths ADOPTED, our own former paths redirect ------
+# /our-vessels, /manage-bookings and /contact-us are the legacy Craft addresses and
+# now RENDER. These rules cover our own shorter paths, which were never public but
+# do exist in staging links and internal bookmarks.
+[[redirects]]
+  from = "/vessels"
+  to = "/our-vessels"
+  status = 301
+
+[[redirects]]
+  from = "/manage-booking"
+  to = "/manage-bookings"
+  status = 301
+
+[[redirects]]
+  from = "/contact"
+  to = "/contact-us"
+  status = 301
+
+# --- Wizards & Fairies: interim net while the event is draft ------------------
+# The event has adopted /tour/wizards-and-fairies-cruise but is still draft: true,
+# so it does not render yet — and GA shows the legacy URL earning real traffic
+# (517 sessions, £1,236). Without this, launching would 404 that demand.
+# SELF-HEALING: `force` is omitted, so the moment the event is published the real
+# page exists and Netlify serves it INSTEAD of this rule. No cleanup required —
+# but publishing the event is the actual fix. See docs/url-parity.md.
+[[redirects]]
+  from = "/tour/wizards-and-fairies-cruise"
+  to = "/whats-on"
+  status = 301
+
+# --- Retired legacy category facets (Craft `tourCategory` / `tourEvent`) -------
+# Thin listing pages that shared the /tour/ namespace with real products. None of
+# these slugs collides with an adopted product slug (verified against the full
+# events collection), so no rule here can shadow a live page.
+[[redirects]]
+  from = "/tour/city-sightseeing"
+  to = "/tour/city-river-tours"
+  status = 301
+
+[[redirects]]
+  from = "/tour/live-music"
+  to = "/music-cruises-manchester"
+  status = 301
+
+[[redirects]]
+  from = "/tour/party-event"
+  to = "/party-boat-manchester"
+  status = 301
+
+[[redirects]]
+  from = "/tour/old-trafford-event"
+  to = "/tour/boat-to-old-trafford"
+  status = 301
+
+[[redirects]]
+  from = "/tour/kids-event"
+  to = "/events"
+  status = 301
+
+# ⚠ Target unconfirmed — likely IWM North / Lowry content. If so
+#   /discover/visiting-iwm-north may be the better target. Verify before launch.
+[[redirects]]
+  from = "/tour/museum-tours"
+  to = "/discover"
+  status = 301
+
+# ⚠ Target unconfirmed — no new-site equivalent for a food-and-drink category.
+[[redirects]]
+  from = "/tour/eat-drink"
+  to = "/whats-on"
+  status = 301
+
+[[redirects]]
+  from = "/tour/on-board-events"
+  to = "/events"
+  status = 301
+
+# --- Retired legacy pages ------------------------------------------------------
+[[redirects]]
+  from = "/our-tours"
+  to = "/whats-on"
   status = 301
 
 [[redirects]]
   from = "/our-events"
+  to = "/whats-on"
+  status = 301
+
+[[redirects]]
+  from = "/help"
+  to = "/faq"
+  status = 301
+
+# The legacy kids hub. No family hub page exists on the new site yet — /events is
+# the honest closest match. See docs/url-parity.md row 14.
+[[redirects]]
+  from = "/kids-takeover"
   to = "/events"
   status = 301
 
-# --- Ferry section rename (301): /mufc-ferry → /boat-to-old-trafford ----------
+# Craft form-submission landing page. No equivalent — our forms use an inline
+# success reveal.
+[[redirects]]
+  from = "/thank-you"
+  to = "/"
+  status = 301
+
+# --- Retired legacy amenity facets --------------------------------------------
+# Craft filter-facet pages with no unique content (/amenities/18 is a bare numeric
+# ID). 410 Gone is arguably more honest than 301 — see docs/url-parity.md §5.
+[[redirects]]
+  from = "/amenities/old-trafford"
+  to = "/tour/boat-to-old-trafford"
+  status = 301
+
+[[redirects]]
+  from = "/amenities/bar-on-board"
+  to = "/our-vessels"
+  status = 301
+
+[[redirects]]
+  from = "/amenities/groups-allowed"
+  to = "/groups"
+  status = 301
+
+[[redirects]]
+  from = "/amenities/pets-allowed"
+  to = "/faq"
+  status = 301
+
+[[redirects]]
+  from = "/amenities/toilets"
+  to = "/faq"
+  status = 301
+
+[[redirects]]
+  from = "/amenities/18"
+  to = "/faq"
+  status = 301
+
+# --- Ferry section rename (301): /mufc-ferry → /tour/boat-to-old-trafford ----
 # The matchday ferry section was renamed to the keyword-exact, trademark-free
 # slug. These point straight at the NEW pages (no chains) and are trailing-slash
 # tolerant. (The legacy /tour/boat-to-old-trafford rule above also targets the new
 # page directly, so it doesn't chain through here.)
 [[redirects]]
   from = "/mufc-ferry"
-  to = "/boat-to-old-trafford"
+  to = "/tour/boat-to-old-trafford"
   status = 301
 
 [[redirects]]
   from = "/mufc-ferry/ralli-quay"
-  to = "/boat-to-old-trafford/ralli-quay"
+  to = "/tour/boat-to-old-trafford/ralli-quay"
   status = 301
 
 [[redirects]]
   from = "/mufc-ferry/stephensons-bridge"
-  to = "/boat-to-old-trafford/stephensons-bridge"
+  to = "/tour/boat-to-old-trafford/stephensons-bridge"
   status = 301
 
 # --- Security headers (all paths) ---------------------------------------------

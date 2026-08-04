@@ -16,11 +16,11 @@ const events = await getCollection('events', ({ data }) => !data.draft);
 
 // productId -> { title, href, image? }
 const meta: Record<string, { title: string; href: string; image?: string }> = {};
-meta['ef45d8bd-529c-4dae-9c35-cd1b8e4e0a75'] = { title: 'City River Tour', href: '/city-river-tour' };
-meta['458c8d36-8268-481d-ae47-491b41508b8e'] = { title: 'Boat to Old Trafford', href: '/boat-to-old-trafford' };
+meta['ef45d8bd-529c-4dae-9c35-cd1b8e4e0a75'] = { title: 'City River Tour', href: '/tour/city-river-tours' };
+meta['458c8d36-8268-481d-ae47-491b41508b8e'] = { title: 'Boat to Old Trafford', href: '/tour/boat-to-old-trafford' };
 for (const e of events) {
   const pid = e.data.ventrataProductId;
-  if (pid) meta[pid] = { title: e.data.title, href: `/cruises/${e.id}` };
+  if (pid) meta[pid] = { title: e.data.title, href: `/tour/${e.id}` };
 }
 for (const [pid, url] of Object.entries(PRODUCT_IMAGES)) {
   if (meta[pid]) meta[pid].image = url;

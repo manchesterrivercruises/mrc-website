@@ -31,6 +31,25 @@ const keystaticEnabled = process.argv.includes('dev') || keystaticSecretOk;
 export default defineConfig({
   // `site` is the canonical origin — the sitemap uses it for absolute URLs.
   site: 'https://www.manchesterrivercruises.com',
+  // ── URL FORM: unslashed, to match the legacy Craft site exactly ──────────────
+  // The legacy site emitted every URL WITHOUT a trailing slash (`/whats-on`), and that
+  // is the form Google has indexed. Astro's default `directory` format emits
+  // `<route>/index.html`, which makes canonicals and sitemap entries `/whats-on/` —
+  // a different string from the indexed one. That was tolerable while it was cosmetic,
+  // but the /tour/ namespace adoption (docs/url-parity.md) means ~20 product URLs now
+  // depend on matching the legacy form exactly, so it is no longer cosmetic.
+  //
+  // `format: 'file'` emits `<route>.html`, so every URL is served unslashed and
+  // Astro.url.pathname (which BaseLayout derives the canonical from) has no trailing
+  // slash. `trailingSlash: 'never'` keeps dev-server matching consistent with that.
+  // Nested sections still work: /tour/boat-to-old-trafford.html sits alongside the
+  // directory /tour/boat-to-old-trafford/ holding the departure-point pages.
+  //
+  // NOTE: this does NOT affect the on-demand Keystatic routes (/keystatic,
+  // /api/keystatic) — those are SSR-rendered by the Netlify function, not emitted as
+  // static files, so the build format does not apply to them.
+  build: { format: 'file' },
+  trailingSlash: 'never',
   // Static output (default). The Netlify adapter is the deployment target and also enables
   // the on-demand (prerender:false) routes Keystatic injects: the admin UI at /keystatic and
   // its API at /api/keystatic (see keystatic.config.ts).

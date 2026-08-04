@@ -37,7 +37,7 @@ sync when you add or reclassify assets.
 | ABBA Night · live-music | 0 (1 owned card cover + hotlink/placeholder) | 8–10 (1 hero-grade) | ⬜ | ⬜ | ✅ | ✅ | **PRIORITY 2.** No ABBA shoot existed in the source tree — needs a real tribute-night shoot (performer mid-song, packed cabin). |
 | Private Hire · private-hire | 2 (+2 review hotlinks) | 8–10 (1 hero-grade) | ◑ | ✅ | ✅ | ✅ | Valentine's-dressed cabin (cover) + Isabella at a Salford Quays sunset (2026-07-10). Still needs weddings / corporate / celebration real photos. |
 | Old Trafford Ferry · route | 4 (+ owned cover) | 8–10 | ◑ | ✅ | ✅ | ✅ | Matchday supporters onboard, ferry on the canal, + ferry approaching with open-deck supporters and supporters crossing the footbridge (2026-07-10). A stadium-approach/arrival frame would still help (matchday-access dependent; avoid club trademarks). |
-| Christmas Cruises · seasonal | 6 (+ owned cover) | 8–10 (2–3 hero-grade) | ✅ | ✅ | ✅ | ✅ | Santa & elf, child steering with Santa, grotto decor, + Santa with two elves, children with presents (2025, evening) and elf entertainers (2026-07-10). Still want a festive boat-lit-at-night exterior landscape. |
+| Father Christmas Cruises · seasonal | 6 (+ owned cover) | 8–10 (2–3 hero-grade) | ✅ | ✅ | ✅ | ✅ | Renamed from "Christmas Cruises" — every shot is Father Christmas Cruise material, so the album now matches the product slug (`father-christmas-cruise`). Santa & elf, child steering with Santa, grotto decor, + Santa with two elves, children with presents (2025, evening) and elf entertainers (2026-07-10). |
 | Dolly Cruise · live-music | 3 (+ owned cover) | 8–10 (1 hero-grade) | ✅ | ✅ | ✅ | ✅ | Performer-with-crowd (cover), performer portrait, cowboy-hat singalong. 131-photo Oct shoot available for more (Low Res = duplicates). |
 | Adele Cruise · live-music | 4 | 8–10 (1 hero-grade) | ✅ | ✅ | ✅ | ✅ | NEW album. Performer, crowd, crew serving, dancing. 66-photo set — curated to 4. |
 | Elvis Live · live-music | 4 | 8–10 (1 hero-grade) | ✅ | ✅ | ✅ | ✅ | NEW album. Performer to full cabin, guest candids, dressed cabin. 93-photo set. |
@@ -86,7 +86,7 @@ Selected images were viewed, given genuine alt text, kebab-renamed, and processe
 
 **Six new event albums created** (each event had 4+ decent images and no album): `adele-night`,
 `elvis-live`, `elvis-rocks`, `soul-river`, `rollin-on-the-river`, `boat-tropicana` — all linked
-to their `/cruises/[slug]` product pages and on the gallery wall (15 albums total).
+to their `/tour/[slug]` product pages and on the gallery wall (15 albums total).
 
 **Existing albums filled with owned photos** (replacing leftover placeholders/hotlinks): Dolly
 (3, new cover), Christmas (3), Old Trafford Ferry (2), Private Hire (1 + cover), Our Boats
@@ -109,11 +109,23 @@ has been removed, and the Adele set (previously held back) is now usable.
 - **ABBA Night** — PRIORITY 2. No ABBA shoot existed in the source tree.
 - **Vessels** — the `vessels` content collection is empty; no per-vessel pages exist. The
   Isabella has photos but no vessel page to hang them on.
+- **Christmas on the water (the wider festive offer)** — **time-sensitive, December only.** A
+  decorated boat lit at night (exterior landscape), a December party night in full swing, a private
+  Christmas do. None of this exists: every shot in the old "Christmas Cruises" album turned out to
+  be Father Christmas Cruise material, which is why that album was renamed. A future
+  `christmas-on-the-water` album is blocked on this shoot.
 
 **Owned but thin (top up from existing sets or a light shoot):**
 - **Private Hire** — 2 owned (Valentine's cabin + Isabella sunset); still needs weddings / corporate / celebration real photos.
 - **Old Trafford Ferry** — 4 owned (added open-deck supporters + footbridge crossing); a stadium approach/arrival frame would still help.
-- **Christmas Cruises** — 6 owned; still want a festive boat-lit-at-night exterior landscape (time-sensitive).
+- **Father Christmas Cruises** — 6 owned, and complete for what it now covers (the Santa product).
+- **`christmas-on-the-water` (does not exist yet)** — there is currently **no album for the wider
+  Christmas offer**: December party nights on a decorated boat, the festive-lit waterfront after
+  dark, a private Christmas do. Those shots do not exist, which is precisely why the old
+  "Christmas Cruises" album was 100% Santa material and had to be renamed. Create this album once
+  the decorated-boat / festive-night photography lands — it is already on the shoot gap list below
+  (festive boat-lit-at-night exterior; time-sensitive, December only). Until then the Christmas hub
+  leans on event card art, and the honest routing copy on that page carries the weight.
 
 **Graphics-only events (promo card art, no photo album):** Diana Ross, Decks on Deck, Back to
 the 90s, Swinging on the River, Broadway Boat Party, Club Classics, Halloween, Pirates & Mermaids,

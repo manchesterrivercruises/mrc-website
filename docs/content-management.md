@@ -186,6 +186,111 @@ Netlify auto-deploys.
 - **CSP:** the site-wide policy is currently **Report-Only**, so it does **not** block the React
   admin UI today (confirmed).
 
+---
+
+## Implementation — Phase 2.5 (site settings + page copy) — DONE 2026-08-03
+
+Phase 2 made *content* editable. Phase 2.5 extends that to **site furniture** and to the
+**copy inside bespoke pages**, which until now was hardcoded in `.astro` templates.
+
+### Site settings singleton
+
+**Keystatic → "Site settings"** → `src/data/site-settings.json`.
+
+| Editable | Not editable (stays in code) |
+|---|---|
+| Business name, email, phone | `url` — the canonical origin. Deploy/DNS config, not copy; changing it rewrites every canonical, OG and schema URL. |
+| Address (street, town, postcode, country) | `geo` — schema.org coordinates. A typo silently breaks map/rich results with no visible symptom in the CMS. |
+| Social URLs (Facebook, Instagram, TikTok, Tripadvisor) | `rating` — `aggregateRating` must reflect the real Google listing; editing it freehand risks misrepresenting review data. |
+| Footer tagline | **Navigation and footer link architecture** — see below. |
+
+**Navigation stays in code, deliberately.** `src/components/Nav.astro` and the footer's link
+columns are *routes and layout*, not copy. A CMS field that can point a nav item at a
+non-existent path produces a 404 no editor can debug, and the link set is load-bearing for the
+URL parity work (`docs/url-parity.md`). Same reasoning is recorded in the config description in
+`keystatic.config.ts`, so the next person reads it where they'd change it.
+
+**NAP stays single-source.** `src/data/site.ts` still exports the same `site` object with the
+same shape — it now reads the JSON and *derives* the values that must never drift:
+
+- `phoneHref` is generated from `phone` (there is no second field to forget).
+- `addressDisplay` is built from the same parts schema.org consumes, so the footer line and the
+  structured address cannot disagree.
+
+Everything downstream — the footer, `GettingHere`, the contact page, and every schema.org block
+— is unchanged and still imports `site`.
+
+**Why a synchronous JSON import rather than a content collection:** `site` is imported at the top
+level of layouts, components and lib modules (`src/lib/breadcrumbs.ts` among them, which cannot
+`await`). Astro's content APIs are async, so a collection would force `await getEntry(...)` into
+~34 call sites. A build-time JSON import keeps one source of truth with zero churn. This is why
+both singletons use `format: { data: 'json' }` and not YAML — Vite imports `.json` natively.
+
+### Extracting a page's copy into the CMS — the recipe
+
+Pilot: **Private Hire** (`src/pages/private-hire.astro` → `src/content/pages/private-hire.json`,
+Keystatic → "Page: Private Hire"). Follow the same five steps for any other bespoke page.
+
+1. **Split copy from structure.** Copy = anything a reader sees: headings, paragraphs, list
+   items, button labels, FAQ items, SEO title/description. Structure = layout, components,
+   icons, CSS classes, **every `href`**, and forms. Only copy moves.
+2. **Create the JSON** at `src/content/pages/<page>.json` with the current strings *verbatim* —
+   including any `(TBC)` markers, which stay as ordinary editable text so Simon can clear them
+   in the CMS as real copy lands.
+3. **Add a Keystatic singleton** with `path: 'src/content/pages/<page>'` and
+   `format: { data: 'json' }`. ⚠ That path resolves to `src/content/pages/<page>.json` — **not**
+   `<page>/index.json`. Getting this wrong makes the admin silently show empty fields and save to
+   a second file the site never reads.
+4. **Import it in the template** (`import copy from '../content/pages/<page>.json'`) and replace
+   each literal with `{copy.field}`.
+5. **Verify losslessly** — build before and after, and diff the rendered *text* and JSON-LD, not
+   the raw HTML (JSX reformatting changes whitespace but not output).
+
+Three sub-patterns the pilot establishes:
+
+- **Prose containing a cross-link** — split into `…Before` / `…LinkText` / `…After` fields. The
+  wording is editable; the `href` stays in code.
+- **Copy paired with a fixed icon** (the key-facts strip) — the CMS holds a fixed-length list of
+  labels; the template zips them against a code-owned icon array by position.
+- **Form option lists stay in code.** They are submitted *values* that Netlify notifications and
+  downstream routing key off, not display copy. Only the form's heading and success message moved.
+
+### Pages that remain code-only
+
+Every page below still has its copy in the `.astro` template:
+
+`/` · `/about` · `/whats-on` · `/events` · `/tour/city-river-tours` · `/tour/boat-to-old-trafford`
+(+ departure points) · `/private-boat-hire-manchester` · `/party-boat-manchester` ·
+`/music-cruises-manchester` · `/christmas-cruises-manchester` · `/santa-cruise-manchester` ·
+`/groups` · `/gift-vouchers` · `/plan-your-visit` · `/getting-here` · `/salford-quays` · `/faq` ·
+`/accessibility` · `/contact-us` · `/manage-bookings` · `/our-vessels` · `/gallery` · `/discover` ·
+`/privacy-policy` · `/terms-conditions`
+
+**To change copy on any of them meanwhile:** send the wording to Claude Code (or note it in
+`docs/content-checklist.md`) and it ships as a normal PR — usually minutes. Extracting a page is
+only worth doing for copy that changes *repeatedly*; a one-off edit is cheaper as a PR than as a
+new singleton.
+
+Product/event pages (`/tour/<slug>`) are **already** fully editable via the Events collection —
+they are not in the list above.
+
+### Verifying the CMS wiring
+
+```
+node scripts/verify-cms-singletons.mjs
+```
+
+Reads both singletons through Keystatic's **own reader** — the same path/format resolution the
+admin uses — and asserts the data matches the files the site imports. Run it after adding or
+moving any singleton. It catches the `<path>.json` vs `<path>/index.json` trap directly.
+
+> ⚠ **The admin UI cannot currently be opened in local dev.** `/@id/astro:scripts/before-hydration.js`
+> returns 500 with `Missing field \`moduleType\`` from rolldown's react-refresh wrapper, so no
+> React island hydrates. **This reproduces on a clean checkout with all CMS changes stashed** — it
+> is an Astro/rolldown toolchain issue, not a config one, and it does not affect the production
+> build (which compiles and renders fine). Until it is resolved, verify CMS wiring with the script
+> above and edit content in production (GitHub mode) or by editing the JSON directly.
+
 ### Follow-ups (documented, not done this pass)
 
 1. **Events & Discover follow-up.** These collections have rendered markdown bodies (`<Content/>`),
@@ -212,3 +317,12 @@ Netlify auto-deploys.
 3. **CSP at enforcement.** When the CSP is switched from Report-Only to enforced at launch, give
    `/keystatic*` its own relaxed policy — the admin loads React and talks to `github.com` /
    `api.github.com` for OAuth + commits (the strict `default-src 'self'` would block it).
+4. **Local-dev admin is broken by a toolchain bug** (see the callout above): rolldown's
+   react-refresh wrapper throws `Missing field \`moduleType\``, so React never hydrates at
+   `/keystatic`. Reproduces on a clean checkout. Needs an Astro/Vite/rolldown version bump to fix —
+   a dependency change, so it needs sign-off per the stack rules. **Confirm the GitHub-mode admin
+   works in production before Simon relies on the CMS**, since that path was never exercised
+   locally for these two singletons.
+5. **More page extractions.** The recipe above is proven on Private Hire. Good next candidates are
+   the pages whose copy Simon revises seasonally — `/christmas-cruises-manchester`,
+   `/santa-cruise-manchester` and `/groups`. Leave the rest until the copy actually churns.

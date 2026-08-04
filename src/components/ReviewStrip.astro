@@ -42,7 +42,7 @@ const hasHalf = rating - fullCount >= 0.5;
 const emptyCount = 5 - fullCount - (hasHalf ? 1 : 0);
 
 // Carousel CSS + client script injected via set:html. IMPORTANT: Astro does NOT evaluate
-// `{...}` expressions inside <script>/<style> tag bodies — writing `<script>{`…`}</script>`
+// `{...}` expressions inside `script`/`style` tag bodies — writing `script`-wrapped `{`…`}`
 // emits the backticks + code LITERALLY, so the IIFE never runs (it becomes a template
 // string). set:html evaluates the expression and sets it as the element's content, the
 // same proven pattern the JSON-LD blocks use.
@@ -324,7 +324,7 @@ const REVIEWS_SCRIPT = `
           hidden
         />
 
-        {/* set:html — NOT `<style>{`…`}</style>` / `<script>{`…`}</script>`: Astro emits
+        {/* set:html — NOT a `style`- or `script`-wrapped `{`…`}` expression: Astro emits
             `{…}` inside script/style tag bodies LITERALLY (the backticks + code become
             text), so the IIFE never executes. set:html injects the evaluated string. */}
         <style is:global set:html={CAROUSEL_CSS} />

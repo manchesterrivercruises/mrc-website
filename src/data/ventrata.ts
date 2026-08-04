@@ -14,5 +14,5 @@ export const VENTRATA_CHECKOUT_SRC =
 // Manage My Booking — Ventrata's HOSTED self-service portal (confirmed by Ventrata support). It is
 // keyed by our checkout key: https://checkin.ventrata.com/{checkoutKey}. Customers reschedule, pick
 // a date for open tickets, cancel where eligible and view tickets there. We LINK to it (their portal,
-// their session/auth handling) rather than embedding — see /manage-booking for the reasoning.
+// their session/auth handling) rather than embedding — see /manage-bookings for the reasoning.
 export const VENTRATA_MMB_URL = `https://checkin.ventrata.com/${VENTRATA_CHECKOUT_KEY}`;

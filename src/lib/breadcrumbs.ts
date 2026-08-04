@@ -10,12 +10,12 @@ export interface Crumb {
 }
 
 // Parent segments of nested routes that need a specific label and/or destination.
-// `/cruises/[slug]` product pages have no `/cruises` index, so that crumb points at
+// `/tour/[slug]` product pages have no `/tour` index, so that crumb points at
 // the Events hub instead.
 const SECTION_MAP: Record<string, { name: string; url: string }> = {
-  cruises: { name: 'Events', url: '/events' },
+  tour: { name: 'Events', url: '/events' },
   discover: { name: 'Discover', url: '/discover' },
-  'boat-to-old-trafford': { name: 'Boat to Old Trafford', url: '/boat-to-old-trafford' },
+  'boat-to-old-trafford': { name: 'Boat to Old Trafford', url: '/tour/boat-to-old-trafford' },
 };
 
 // Whole-slug label overrides (apostrophes / acronyms a word map can't cover cleanly).

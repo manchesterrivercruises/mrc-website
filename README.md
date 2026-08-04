@@ -60,7 +60,7 @@ Key variables:
 │   │   ├── index.astro   Home
 │   │   ├── city-river-tour.astro
 │   │   ├── events.astro
-│   │   ├── cruises/      Dynamic tour routes (/cruises/[slug])
+│   │   ├── tour/         Dynamic tour routes (/tour/[slug] — adopted legacy namespace)
 │   │   └── discover/     Editorial guide pages
 │   └── styles/           Global styles / design tokens
 ├── netlify/

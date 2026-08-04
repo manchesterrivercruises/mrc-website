@@ -24,7 +24,7 @@ Read this when working on SEO metadata, title tags, or schema markup.
 - **Schema:** TouristAttraction, LocalBusiness
 - **Primary keywords:** Manchester river cruise, boat tour Manchester, Salford Quays boat trip
 
-### City River Tour `/city-river-tour`
+### City River Tour `/tour/city-river-tours`
 - **Title:** City River Tour Manchester | Sightseeing Cruise from Salford Quays
 - **Description:** See Manchester from the water. Regular sightseeing cruises departing from Millennium Footbridge, Salford Quays M50 3RB. From £[X]. Book direct for best availability.
 - **Schema:** TouristAttraction, Product (with price)
@@ -64,7 +64,7 @@ Read this when working on SEO metadata, title tags, or schema markup.
 - **Schema:** Event, TouristAttraction
 - **Primary keywords:** party boat Manchester, boat party Manchester, Manchester Ship Canal party
 
-### Boat to Old Trafford `/boat-to-old-trafford`
+### Boat to Old Trafford `/tour/boat-to-old-trafford`
 - **Title:** Manchester United Ferry | Boat to Old Trafford | Matchday Ferry Service
 - **Description:** Travel to Old Trafford by boat. Matchday ferry service from Salford Quays direct to Old Trafford — the best way to arrive on matchday.
 - **Schema:** TouristAttraction, Service
@@ -140,17 +140,29 @@ Read this when working on SEO metadata, title tags, or schema markup.
 - **Title:** About Manchester River Cruises | Our Story
 - **Schema:** AboutPage, LocalBusiness
 
-### Our Vessels `/vessels`
+### Our Vessels `/our-vessels`
 - **Title:** Our Fleet | Manchester River Cruises Vessels
 - **Schema:** ItemList
 
-### Contact `/contact`
+### Contact `/contact-us`
 - **Title:** Contact Manchester River Cruises
 - **Schema:** ContactPage, LocalBusiness
 
-### Manage My Booking `/manage-booking`
+### Manage My Booking `/manage-bookings`
 - **Title:** Manage My Booking | Manchester River Cruises
 - **Description:** Change or cancel your Manchester River Cruises booking online.
+
+### Salford Quays Boarding Point `/salford-quays`
+- **Title:** Salford Quays Boarding Point — Manchester River Cruises
+- **Description:** Where to board at Salford Quays: the Millennium Footbridge boarding point beside MediaCityUK, how to get there by tram or car, parking, arrival times and on-board access.
+- **Schema:** BoatTerminal
+- **Primary keywords:** Salford Quays boat trip, Salford Quays boarding point, MediaCityUK boat
+- **Note:** adopted legacy URL (see `docs/url-parity.md`) — a short, high-intent path worth keeping. Do not fold into `/getting-here`, which covers all three boarding points.
+
+### Terms & Conditions `/terms-conditions`
+- **Title:** Terms & Conditions — Manchester River Cruises
+- **Schema:** WebPage
+- **Note:** adopted legacy URL. Content transcribed from the live Craft page and pending Simon's (and ideally a solicitor's) review.
 
 ---
 

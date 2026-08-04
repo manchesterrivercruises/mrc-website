@@ -201,7 +201,7 @@ params — useful for email/social campaigns that drop customers straight into c
 optionally with a promo code pre-applied.
 
 ```
-https://manchesterrivercruises.com/city-river-tour?openWidget=true&promoCode=XMAS25
+https://manchesterrivercruises.com/tour/city-river-tours?openWidget=true&promoCode=XMAS25
 ```
 
 - `openWidget=true` — the checkout script on that page opens the widget on load.
@@ -337,7 +337,7 @@ All previously-open config questions were answered by Ventrata support on **2026
    the global checkout config. See "Date-preselect deep link" above.
 3. ~~**Reservation / Manage-My-Booking flow config.**~~ **RESOLVED:** there is no reservation *widget
    flow* — MMB is Ventrata's **hosted portal** at `checkin.ventrata.com/{checkoutKey}`, which
-   `/manage-booking` now links to. `openReservationFlow` was wrong/legacy and is removed.
+   `/manage-bookings` now links to. `openReservationFlow` was wrong/legacy and is removed.
 
 ### Ventrata dashboard settings to enable — **dashboard-task** (Simon)
 
@@ -544,14 +544,14 @@ for us `https://checkin.ventrata.com/29b8b50a-26b8-4dae-bf0e-995708d2f372` (our 
 customers **reschedule (date or time), pick a date for open tickets, cancel where still eligible, and
 view tickets after payment** (confirmed directly by Ventrata support).
 
-**We LINK to it, not embed it.** `/manage-booking` has a plain `<a target="_blank" rel="noopener">`
+**We LINK to it, not embed it.** `/manage-bookings` has a plain `<a target="_blank" rel="noopener">`
 to the portal (URL from `VENTRATA_MMB_URL` in `src/data/ventrata.ts`). Deliberate: the portal is
 Ventrata's own hosted app with its own booking-lookup, session and auth handling — a link hands that
 off cleanly (no iframe/session edge cases on our side) and always tracks whatever the portal supports.
 Also link it from booking-confirmation emails and the site footer.
 
 **Branding.** The portal is **brand-styled via Ventrata Brands**, so it carries MRC's look and reads
-as ours rather than a generic third-party page. The `/manage-booking` copy reflects this — it frames
+as ours rather than a generic third-party page. The `/manage-bookings` copy reflects this — it frames
 the link as *"our secure booking portal"* (opens in a new tab) rather than a *"you're leaving the
 site"* warning.
 

@@ -41,8 +41,8 @@ images:
     usage: [gallery, product-page]
     tags: [boat, route]
 relatedAlbums: [city-river-tour, manchester-ship-canal, salford-quays, our-boats]
-relatedProduct: /boat-to-old-trafford
+relatedProduct: /tour/boat-to-old-trafford
 bookingCtaLabel: Book the matchday ferry
-bookingCtaUrl: /boat-to-old-trafford
+bookingCtaUrl: /tour/boat-to-old-trafford
 seoTitle: Old Trafford Ferry Photos — Matchday Boat to the Stadium
 seoDescription: Photos of the matchday ferry to Old Trafford — supporters boarding at Salford, cruising the ship canal and arriving at Trafford Wharf. Book the matchday ferry.

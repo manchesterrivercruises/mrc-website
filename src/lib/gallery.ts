@@ -102,7 +102,7 @@ export function resolveRelated(album: Album, all: Album[], limit = 4): Album[] {
 }
 
 // Find the album that cross-links to a given product: either its relatedProduct matches
-// the page path (e.g. "/cruises/dolly-cruise"), or its slug matches the event slug.
+// the page path (e.g. "/tour/dolly-cruise"), or its slug matches the event slug.
 export function findAlbumForProduct(
   all: Album[],
   productPath: string,

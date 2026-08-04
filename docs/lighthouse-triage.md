@@ -1,6 +1,6 @@
 # Lighthouse triage
 
-Triage of a **mobile** Lighthouse run on `/city-river-tour` (CRT):
+Triage of a **mobile** Lighthouse run on `/tour/city-river-tours` (CRT):
 **Performance 68 · Accessibility 87 · Best Practices 92 · SEO 69.**
 
 This records what we changed, what is an accepted third-party cost, and what stays open.
@@ -17,7 +17,7 @@ changes, confirmed against the **built** HTML in `dist/`.
 ## 1. LCP 4.9s — hero image (Performance)
 
 **LCP element (mobile):** the first, largest photo tile in the CRT gallery mosaic —
-`/images/city-river-tour-hero.webp` in `src/pages/city-river-tour.astro`. On mobile the mosaic is
+`/images/city-river-tour-hero.webp` in `src/pages/tour/city-river-tours.astro`. On mobile the mosaic is
 `grid-cols-1`, so this tile is full-width and paints as the LCP.
 
 **What was wrong:**
@@ -29,7 +29,7 @@ changes, confirmed against the **built** HTML in `dist/`.
 - The single 1600×1200 source (**222 KB**) was served to every viewport, including mobile where the
   tile renders ~380 px CSS wide.
 
-**Fixes (`src/pages/city-river-tour.astro`):**
+**Fixes (`src/pages/tour/city-river-tours.astro`):**
 - Added `fetchpriority="high"` to the LCP `<img>` (kept `loading="eager"`).
 - Added a responsive `srcset`/`sizes`: mobile now takes the existing **800×600 card variant
   (66 KB)** instead of the 1600 px hero; desktop (tile ≈ 680 px CSS, at 2× ≈ 1360 px) still takes the
@@ -40,7 +40,7 @@ changes, confirmed against the **built** HTML in `dist/`.
   candidate it will paint (an `href`-only preload would fetch the 1600 px hero and waste the mobile
   saving).
 
-**Verified in `dist/city-river-tour/index.html`:** the preload sits inside `<head>`; the `<img>`
+**Verified in `dist/tour/city-river-tours.html`:** the preload sits inside `<head>`; the `<img>`
 carries `srcset`, `sizes`, `loading="eager"`, and `fetchpriority="high"`.
 
 **Homepage (the other key page):** its hero is currently a **placeholder box** (no real image —
@@ -57,7 +57,7 @@ there is nothing to preload yet. **When the real hero WebP lands, give it the sa
 not ours to shrink** — a third-party, minified payment widget.
 
 **It loads site-wide — by design.** Confirmed in `dist/`: the module is present on non-booking pages
-too (homepage, `/about`, `/contact`, `/privacy-policy`). This is **AGENTS rule 9** — the persistent
+too (homepage, `/about`, `/contact-us`, `/privacy-policy`). This is **AGENTS rule 9** — the persistent
 **Book Now** trigger in `<Header>` makes every page booking-capable, so the checkout loader ships
 once site-wide (`<VentrataWidget mode="loader">` rendered once in `Header.astro`). Rule 9 explicitly
 **supersedes** the earlier "load only on booking pages" guidance.
@@ -79,7 +79,7 @@ rule-9 reversal, not a code optimisation. Not recommended pre-launch.
 
 ## 3. Accessibility 87 — our components vs the Ventrata iframe
 
-Audited every component that renders on `/city-river-tour` (Header, Nav, Footer, KeyFacts,
+Audited every component that renders on `/tour/city-river-tours` (Header, Nav, Footer, KeyFacts,
 SectionHeading, BookingPanel, VentrataWidget, ProductCard, AttractionCard, FAQSection, ReviewStrip,
 GettingHere, StarRating, MapTapActivate) plus BaseLayout and the global-css theme tokens. The split:
 
@@ -117,7 +117,7 @@ visible text; the popup renders a labelled `CTAButton`).
 background today (≈8:1, passes) — as text on white it would be ≈1.8:1. Keep gold off light
 backgrounds. The `SectionHeading` gold bar is a decorative rule (exempt).
 
-**Cosmetic nit (deferred):** `city-river-tour.astro` puts `aria-label` on the bare
+**Cosmetic nit (deferred):** `tour/city-river-tours.astro` puts `aria-label` on the bare
 `<div id="route-map">` (no role) — ARIA names are ignored on a generic container, so it's a no-op
 until Leaflet populates the node. Harmless; the enclosing `<section>` is already labelled.
 
@@ -130,7 +130,7 @@ its registry — **no `package.json` dependency**. It audits two key pages on **
 prints the scores in the deploy log (Deploys → a deploy → the "Lighthouse" section):
 
 - `index.html` — homepage (CRT is the default hero, AGENTS rule 3)
-- `city-river-tour/index.html` — the LCP-tuned booking page
+- `tour/city-river-tours.html` — the LCP-tuned booking page
 
 **Report-only — no `thresholds`, so a low score never fails a deploy.** Rationale: branch/preview
 deploys are `noindex` (artificially low SEO), and CI-runner performance varies run to run. The real

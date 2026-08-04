@@ -64,8 +64,8 @@ images:
     usage: [gallery, product-page]
     tags: [crew, bar]
 relatedAlbums: [city-river-tour, salford-quays, manchester-ship-canal, private-hire]
-relatedProduct: /vessels
+relatedProduct: /our-vessels
 bookingCtaLabel: Book the City River Tour
-bookingCtaUrl: /city-river-tour
+bookingCtaUrl: /tour/city-river-tours
 seoTitle: Our Boats — The Manchester River Cruises Fleet in Photos
 seoDescription: Photos of the Manchester River Cruises fleet — heated cabins, open decks, the onboard bar and the vessels moored at Salford Quays. Book the City River Tour.

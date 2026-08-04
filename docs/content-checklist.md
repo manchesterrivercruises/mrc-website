@@ -74,7 +74,7 @@ Update this file as items are confirmed.
 ### Dormant / inactive events
 
 The following events are not currently running. Their markdown lives in
-`src/content/events/` but is set `draft: true`, so **no `/cruises/[slug]` page is
+`src/content/events/` but is set `draft: true`, so **no `/tour/[slug]` page is
 built and they are excluded from all listings**. Reactivate by flipping the flag to
 `draft: false` when the event returns.
 

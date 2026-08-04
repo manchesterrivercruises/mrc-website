@@ -1,15 +1,15 @@
 ---
-import BaseLayout from '../layouts/BaseLayout.astro';
-import PageHero from '../components/PageHero.astro';
-import SectionHeading from '../components/SectionHeading.astro';
-import CTAButton from '../components/CTAButton.astro';
-import ProductCard from '../components/ProductCard.astro';
-import FAQSection from '../components/FAQSection.astro';
-import KeyFacts from '../components/KeyFacts.astro';
-import CTASection from '../components/CTASection.astro';
-import MapTapActivate from '../components/MapTapActivate.astro';
-import { site } from '../data/site';
-import { departurePoints, TRAFFORD_WHARF, OLD_TRAFFORD } from '../data/mufcFerry';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import PageHero from '../../components/PageHero.astro';
+import SectionHeading from '../../components/SectionHeading.astro';
+import CTAButton from '../../components/CTAButton.astro';
+import ProductCard from '../../components/ProductCard.astro';
+import FAQSection from '../../components/FAQSection.astro';
+import KeyFacts from '../../components/KeyFacts.astro';
+import CTASection from '../../components/CTASection.astro';
+import MapTapActivate from '../../components/MapTapActivate.astro';
+import { site } from '../../data/site';
+import { departurePoints, TRAFFORD_WHARF, OLD_TRAFFORD } from '../../data/mufcFerry';
 
 const icons = {
   calendar:
@@ -54,7 +54,7 @@ const structuredData = {
   name: 'MUFC Matchday Ferry',
   serviceType: 'Matchday ferry service',
   description: pageDescription,
-  url: `${site.url}/boat-to-old-trafford`,
+  url: `${site.url}/tour/boat-to-old-trafford`,
   areaServed: 'Manchester',
   provider: {
     '@type': 'LocalBusiness',
@@ -65,9 +65,15 @@ const structuredData = {
     geo: { '@type': 'GeoCoordinates', ...site.geo },
   },
 };
+// Explicit trail: the matchday ferry is not an event, so it must not inherit the /tour/
+// namespace Events crumb. Point pages nest beneath this one.
+const crumbs = [
+  { name: 'Home', url: `${site.url}/` },
+  { name: 'Boat to Old Trafford', url: `${site.url}/tour/boat-to-old-trafford` },
+];
 ---
 
-<BaseLayout title={pageTitle} description={pageDescription}>
+<BaseLayout title={pageTitle} description={pageDescription} breadcrumbs={crumbs}>
   {/* Schema.org structured data (Service) */}
   <script type="application/ld+json" is:inline set:html={JSON.stringify(structuredData)} />
 
@@ -115,7 +121,7 @@ const structuredData = {
               <ProductCard
                 name={`Depart from ${p.name}`}
                 desc={`Departs ${p.location}. Arrives Trafford Wharf — a short walk from the ground.`}
-                href={`/boat-to-old-trafford/${p.slug}`}
+                href={`/tour/boat-to-old-trafford/${p.slug}`}
                 linkText="View & book"
                 image="/images/boat-to-old-trafford-card.webp"
                 imageAlt="A Manchester River Cruises boat on the Manchester Ship Canal carrying passengers on the open top deck, with the Salford Quays skyline behind."
