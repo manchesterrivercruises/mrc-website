@@ -1,0 +1,21 @@
+{
+  "page": "contact-us",
+  "seoTitle": "Contact Us — Manchester River Cruises",
+  "seoDescription": "Contact Manchester River Cruises — get in touch with our team by email, phone or using our enquiry form. Departing from Millennium Footbridge, Salford Quays.",
+  "heading": "Contact Us",
+  "intro": "Get in touch with the Manchester River Cruises team.",
+  "sections": [
+    { "key": "details", "heading": "Contact details" },
+    { "key": "form", "heading": "Send us a message" }
+  ],
+  "strings": [
+    { "key": "successMessage", "value": "Thanks for getting in touch. We'll get back to you within 24 hours." },
+    { "key": "labelEmail", "value": "Email" },
+    { "key": "labelPhone", "value": "Phone" },
+    { "key": "labelAddress", "value": "Address" },
+    { "key": "labelFollow", "value": "Follow us" },
+    { "key": "submitLabel", "value": "Send message" },
+    { "key": "faqPrompt", "value": "Looking for quick answers?" },
+    { "key": "faqCtaLabel", "value": "Check our FAQ" }
+  ]
+}

@@ -1,0 +1,144 @@
+{
+  "page": "salford-quays",
+  "seoTitle": "Salford Quays Boarding Point — Manchester River Cruises",
+  "seoDescription": "Where to board at Salford Quays: the Millennium Footbridge boarding point beside MediaCityUK, how to get there by tram or car, parking, arrival times and on-board access.",
+  "eyebrow": "Boarding point",
+  "heading": "Salford Quays Boarding Point",
+  "intro": "Where every cruise begins — under the Millennium Footbridge, between The Lowry and the Quayside Shopping Centre.",
+  "keyFacts": [
+    "Under the Millennium Footbridge",
+    "Tram: MediaCityUK (Eccles line)",
+    "Boarding 5–15 min before departure",
+    "No wheelchair access on board"
+  ],
+  "sections": [
+    {
+      "key": "where",
+      "heading": "Where to board",
+      "body": [
+        "The boarding point is located under the Millennium Footbridge, between The Lowry Theatre and the Quayside Shopping Centre, beside MediaCityUK."
+      ]
+    },
+    {
+      "key": "tram",
+      "heading": "Getting here by tram"
+    },
+    {
+      "key": "car",
+      "heading": "Getting here by car & parking",
+      "body": [
+        "The closest public parking is at the Quayside Shopping Centre, MediaCityUK. Traffic congestion can be severe at weekends, on event days and during peak times — we strongly recommend allowing extra travel time and arriving early."
+      ]
+    },
+    {
+      "key": "arrival",
+      "heading": "Arrival & boarding times",
+      "body": [
+        "Please arrive well in advance of your scheduled departure. Our vessels depart promptly and cannot wait for late arrivals, regardless of traffic or parking delays. Boarding typically opens 5–15 minutes before departure."
+      ]
+    },
+    {
+      "key": "access",
+      "heading": "Accessibility & on-board restrictions"
+    },
+    {
+      "key": "expect",
+      "heading": "What to expect",
+      "body": [
+        "Unless stated otherwise, all cruises depart from and return to Salford Quays — city sightseeing tours, themed cruises and special event sailings alike. Check"
+      ]
+    },
+    {
+      "key": "photos",
+      "heading": "The Quays from the water"
+    }
+  ],
+  "lists": [
+    {
+      "key": "access",
+      "items": [
+        "We do not have wheelchair access on board.",
+        "All buggies must be folded down prior to boarding.",
+        "Full-size prams cannot be accommodated on board due to space and safety restrictions."
+      ]
+    }
+  ],
+  "strings": [
+    {
+      "key": "heroCtaLabel",
+      "value": "Book the City River Tour"
+    },
+    {
+      "key": "alsoKnownAs",
+      "value": "Also known as Pier 8, Salford Quays."
+    },
+    {
+      "key": "mapsLinkLabel",
+      "value": "Open in Google Maps"
+    },
+    {
+      "key": "carParkingNoteBefore",
+      "value": "Parking at embarkation points is at the owner’s risk and must not obstruct access — see our"
+    },
+    {
+      "key": "carParkingNoteLinkText",
+      "value": "terms & conditions"
+    },
+    {
+      "key": "carParkingNoteAfter",
+      "value": "."
+    },
+    {
+      "key": "accessMoreBefore",
+      "value": "Full details are on our"
+    },
+    {
+      "key": "accessMoreLinkText",
+      "value": "accessibility page"
+    },
+    {
+      "key": "accessMoreAfter",
+      "value": "."
+    },
+    {
+      "key": "expectLinkText",
+      "value": "what’s on"
+    },
+    {
+      "key": "expectAfter",
+      "value": "for upcoming departures."
+    },
+    {
+      "key": "morePhotosLabel",
+      "value": "See more Salford Quays photos →"
+    },
+    {
+      "key": "ctaHeading",
+      "value": "Ready to get on the water?"
+    },
+    {
+      "key": "ctaText",
+      "value": "Sightseeing cruises, live music nights and family events all depart from this boarding point."
+    },
+    {
+      "key": "ctaPrimaryLabel",
+      "value": "Book the City River Tour"
+    },
+    {
+      "key": "ctaSecondaryLabel",
+      "value": "See what’s on"
+    },
+    {
+      "key": "tramBefore",
+      "value": "The nearest Metrolink stop is"
+    },
+    {
+      "key": "tramStop",
+      "value": "MediaCityUK"
+    },
+    {
+      "key": "tramAfter",
+      "value": ", on the Eccles line. From there it is a short walk to the boarding area."
+    }
+  ]
+}

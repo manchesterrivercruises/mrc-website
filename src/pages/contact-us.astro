@@ -3,11 +3,16 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 import SectionHeading from '../components/SectionHeading.astro';
 import CTAButton from '../components/CTAButton.astro';
 import { site } from '../data/site';
+import copy from '../content/page-copy/contact-us.json';
+import { sec, str } from '../lib/pageCopy';
+
+// EDITABLE COPY lives in the CMS (Page copy → contact-us) and is stored in
+// src/content/page-copy/contact-us.json. This template owns STRUCTURE ONLY — layout, components,
+// icons, every href, the schema block and any live data. See docs/content-management.md.
 
 const SITE = site.url;
-const pageTitle = 'Contact Us — Manchester River Cruises';
-const pageDescription =
-  'Contact Manchester River Cruises — get in touch with our team by email, phone or using our enquiry form. Departing from Millennium Footbridge, Salford Quays.';
+const pageTitle = copy.seoTitle!;
+const pageDescription = copy.seoDescription!;
 
 const subjects = ['General Enquiry', 'Booking Help', 'Group Travel', 'Private Hire', 'Press/Media', 'Other'];
 // Real social profiles from site.ts (single source of truth) — same set the footer uses.
@@ -55,38 +60,38 @@ const structuredData = {
   </style>
 
   <div class="mx-auto max-w-6xl px-4 py-16 sm:px-6 md:py-20 lg:px-8">
-    <h1 class="text-3xl font-bold tracking-tight text-ink sm:text-4xl">Contact Us</h1>
-    <p class="mt-4 text-lg leading-relaxed text-body">Get in touch with the Manchester River Cruises team.</p>
+    <h1 class="text-3xl font-bold tracking-tight text-ink sm:text-4xl">{copy.heading}</h1>
+    <p class="mt-4 text-lg leading-relaxed text-body">{copy.intro}</p>
 
     {/* Success message — hidden by CSS until #contact-success is the :target (see the
         style block above). Static markup: perceivable without JS when the fragment is set. */}
     <div id="contact-success" class="mt-6 rounded-card bg-panel p-4 text-body ring-1 ring-black/5">
-      <p class="font-medium text-ink">Thanks for getting in touch. We'll get back to you within 24 hours.</p>
+      <p class="font-medium text-ink">{str(copy, 'successMessage')}</p>
     </div>
 
     <div class="mt-10 grid gap-10 md:grid-cols-2">
       {/* Left column — contact details */}
       <div>
-        <SectionHeading as="h2">Contact details</SectionHeading>
+        <SectionHeading as="h2">{sec(copy, 'details').heading}</SectionHeading>
         <div class="mt-6 space-y-5 text-body">
           <div>
-            <h3 class="text-xs font-semibold uppercase tracking-wider text-subtle">Email</h3>
+            <h3 class="text-xs font-semibold uppercase tracking-wider text-subtle">{str(copy, 'labelEmail')}</h3>
             <p class="mt-1">
               <a href={`mailto:${site.email}`} class="font-medium text-primary hover:underline">{site.email}</a>
             </p>
           </div>
           <div>
-            <h3 class="text-xs font-semibold uppercase tracking-wider text-subtle">Phone</h3>
+            <h3 class="text-xs font-semibold uppercase tracking-wider text-subtle">{str(copy, 'labelPhone')}</h3>
             <p class="mt-1">
               <a href={site.phoneHref} class="font-medium text-primary hover:underline">{site.phone}</a>
             </p>
           </div>
           <div>
-            <h3 class="text-xs font-semibold uppercase tracking-wider text-subtle">Address</h3>
+            <h3 class="text-xs font-semibold uppercase tracking-wider text-subtle">{str(copy, 'labelAddress')}</h3>
             <address class="mt-1 not-italic">{site.addressDisplay}</address>
           </div>
           <div>
-            <h3 class="text-xs font-semibold uppercase tracking-wider text-subtle">Follow us</h3>
+            <h3 class="text-xs font-semibold uppercase tracking-wider text-subtle">{str(copy, 'labelFollow')}</h3>
             <ul class="mt-1 flex flex-wrap gap-4">
               {
                 social.map((s) => (
@@ -110,7 +115,7 @@ const structuredData = {
 
       {/* Right column — enquiry form (Netlify Forms; static HTML at build time) */}
       <div>
-        <SectionHeading as="h2">Send us a message</SectionHeading>
+        <SectionHeading as="h2">{sec(copy, 'form').heading}</SectionHeading>
         <form
           name="contact"
           method="POST"
@@ -149,7 +154,7 @@ const structuredData = {
             <textarea id="message" name="message" rows="5" required class={inputClass}></textarea>
           </div>
           <div>
-            <button type="submit" class="btn btn-primary">Send message</button>
+            <button type="submit" class="btn btn-primary">{str(copy, 'submitLabel')}</button>
           </div>
         </form>
       </div>
@@ -157,9 +162,9 @@ const structuredData = {
 
     {/* FAQ link */}
     <div class="mt-12 rounded-card bg-panel p-6 ring-1 ring-black/5 sm:flex sm:items-center sm:justify-between sm:gap-6">
-      <p class="font-semibold text-ink">Looking for quick answers?</p>
+      <p class="font-semibold text-ink">{str(copy, 'faqPrompt')}</p>
       <div class="mt-4 shrink-0 sm:mt-0">
-        <CTAButton href="/faq" variant="outline">Check our FAQ</CTAButton>
+        <CTAButton href="/faq" variant="outline">{str(copy, 'faqCtaLabel')}</CTAButton>
       </div>
     </div>
   </div>

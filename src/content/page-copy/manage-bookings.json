@@ -1,0 +1,57 @@
+{
+  "page": "manage-bookings",
+  "seoTitle": "Manage My Booking — Manchester River Cruises",
+  "seoDescription": "Manage your Manchester River Cruises booking online — reschedule, choose a date for an open ticket, cancel where eligible or view your tickets. You'll need your booking reference and email.",
+  "heading": "Manage my booking",
+  "sections": [
+    { "key": "selfService", "heading": "What you can do here" },
+    {
+      "key": "needsACall",
+      "heading": "Things to call us about",
+      "body": ["Some changes are quicker with a human. Get in touch for any of these and we’ll sort it."]
+    },
+    {
+      "key": "cantFind",
+      "heading": "Can’t find your booking?",
+      "body": ["If your reference isn’t recognised, check it against your confirmation email — then our team is happy to help."]
+    }
+  ],
+  "lists": [
+    {
+      "key": "selfService",
+      "items": [
+        "Reschedule your cruise — change the date or the time.",
+        "Pick a date for an open (undated) ticket.",
+        "Cancel your booking where it’s still eligible.",
+        "View your tickets once payment has gone through."
+      ]
+    }
+  ],
+  "cards": [
+    {
+      "key": "needsACall:weather",
+      "name": "Weather cancellations",
+      "desc": "Cruises run in most weather — the boat has a heated indoor cabin. If we ever have to cancel for conditions on the water, we’ll contact you directly; call us if you’re unsure before you travel. (TBC)"
+    },
+    {
+      "key": "needsACall:groups",
+      "name": "Group & large-party changes",
+      "desc": "Changes to group bookings and larger parties are handled by our team so we can keep seating and boarding right for everyone. (TBC)"
+    },
+    {
+      "key": "needsACall:cancellations",
+      "name": "Cancellations & refunds",
+      "desc": "Free cancellation up to 24 hours before departure. For anything inside that window, or if you’re not sure what your booking allows, give us a call. (Full policy TBC.)"
+    }
+  ],
+  "strings": [
+    { "key": "introBefore", "value": "Already booked? Manage it yourself in our secure booking portal — reschedule, choose a date for an open ticket, cancel where eligible or view your tickets. You’ll need your" },
+    { "key": "introRefLabel", "value": "booking reference" },
+    { "key": "introJoin", "value": "and the" },
+    { "key": "introEmailLabel", "value": "email address" },
+    { "key": "introAfter", "value": "you booked with." },
+    { "key": "portalCtaLabel", "value": "Find my booking" },
+    { "key": "portalNote", "value": "Opens our secure booking portal in a new tab." },
+    { "key": "faqCtaLabel", "value": "Read our FAQ" }
+  ]
+}

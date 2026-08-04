@@ -4,12 +4,16 @@ import { site } from '../data/site';
 import SectionHeading from '../components/SectionHeading.astro';
 import CTAButton from '../components/CTAButton.astro';
 import { VENTRATA_MMB_URL } from '../data/ventrata';
+import copy from '../content/page-copy/manage-bookings.json';
+import { sec, list, cards, str } from '../lib/pageCopy';
+
+// EDITABLE COPY lives in the CMS (Page copy → manage-bookings) and is stored in
+// src/content/page-copy/manage-bookings.json. This template owns STRUCTURE ONLY — layout, components,
+// icons, every href, the schema block and any live data. See docs/content-management.md.
 
 const SITE = site.url;
-const pageTitle = 'Manage My Booking — Manchester River Cruises';
-const pageDescription =
-  'Manage your Manchester River Cruises booking online — reschedule, choose a date for an open ' +
-  "ticket, cancel where eligible or view your tickets. You'll need your booking reference and email.";
+const pageTitle = copy.seoTitle!;
+const pageDescription = copy.seoDescription!;
 
 const structuredData = {
   '@context': 'https://schema.org',
@@ -19,33 +23,9 @@ const structuredData = {
   url: `${SITE}/manage-bookings`,
 };
 
-// Self-service capabilities — CONFIRMED by Ventrata support for the hosted Manage My Booking portal
-// (checkin.ventrata.com). No longer TBC. We LINK to the portal rather than embed it (see the CTA
-// comment below); the portal is brand-styled via Ventrata Brands, so it reads as ours — this list
-// just tells customers what to expect when they open it.
-const selfService = [
-  'Reschedule your cruise — change the date or the time.',
-  'Pick a date for an open (undated) ticket.',
-  'Cancel your booking where it’s still eligible.',
-  'View your tickets once payment has gone through.',
-];
-
-// "Needs a call" — mirrors existing policy copy in /faq (weather, cancellation, groups). Kept as the
-// human-handled path because these aren’t reliably self-service and some carry a judgement call.
-const needsACall = [
-  {
-    title: 'Weather cancellations',
-    body: 'Cruises run in most weather — the boat has a heated indoor cabin. If we ever have to cancel for conditions on the water, we’ll contact you directly; call us if you’re unsure before you travel. (TBC)',
-  },
-  {
-    title: 'Group & large-party changes',
-    body: 'Changes to group bookings and larger parties are handled by our team so we can keep seating and boarding right for everyone. (TBC)',
-  },
-  {
-    title: 'Cancellations & refunds',
-    body: 'Free cancellation up to 24 hours before departure. For anything inside that window, or if you’re not sure what your booking allows, give us a call. (Full policy TBC.)',
-  },
-];
+// The self-service list and the "needs a call" cards are CMS-owned (Page copy → manage-bookings).
+// Those capabilities were CONFIRMED by Ventrata support for the hosted Manage My Booking portal
+// (checkin.ventrata.com) — if the portal's capabilities change, the wording here must follow.
 ---
 
 <BaseLayout title={pageTitle} description={pageDescription}>
@@ -53,12 +33,11 @@ const needsACall = [
   <script type="application/ld+json" is:inline set:html={JSON.stringify(structuredData)} />
 
   <section class="mx-auto max-w-2xl px-4 py-16 sm:px-6 md:py-20">
-    <h1 class="text-3xl font-bold tracking-tight text-ink sm:text-4xl">Manage my booking</h1>
+    <h1 class="text-3xl font-bold tracking-tight text-ink sm:text-4xl">{copy.heading}</h1>
     <p class="mt-4 text-lg leading-relaxed text-body">
-      Already booked? Manage it yourself in our secure booking portal — reschedule, choose a date for
-      an open ticket, cancel where eligible or view your tickets. You’ll need your
-      <strong class="font-semibold text-ink">booking reference</strong> and the
-      <strong class="font-semibold text-ink">email address</strong> you booked with.
+      {str(copy, 'introBefore')}{' '}
+      <strong class="font-semibold text-ink">{str(copy, 'introRefLabel')}</strong> {str(copy, 'introJoin')}
+      <strong class="font-semibold text-ink">{str(copy, 'introEmailLabel')}</strong> {str(copy, 'introAfter')}
     </p>
 
     {/* PRIMARY CTA — a plain LINK to Ventrata's HOSTED Manage My Booking portal
@@ -71,17 +50,17 @@ const needsACall = [
         and is removed (marked wrong/legacy in docs/ventrata-integration.md). */}
     <div class="mt-8">
       <CTAButton href={VENTRATA_MMB_URL} class="w-full sm:w-auto" target="_blank" rel="noopener noreferrer">
-        Find my booking
+        {str(copy, 'portalCtaLabel')}
       </CTAButton>
-      <p class="mt-3 text-sm text-subtle">Opens our secure booking portal in a new tab.</p>
+      <p class="mt-3 text-sm text-subtle">{str(copy, 'portalNote')}</p>
     </div>
 
     {/* What you can do here */}
     <div class="mt-12">
-      <SectionHeading as="h2">What you can do here</SectionHeading>
+      <SectionHeading as="h2">{sec(copy, 'selfService').heading}</SectionHeading>
       <ul class="mt-4 space-y-3 text-body">
         {
-          selfService.map((item) => (
+          list(copy, 'selfService').map((item) => (
             <li class="flex gap-3">
               <span class="mt-2 h-1.5 w-1.5 flex-none rounded-full bg-primary" aria-hidden="true" />
               <span class="leading-relaxed">{item}</span>
@@ -93,16 +72,14 @@ const needsACall = [
 
     {/* What needs a call */}
     <div class="mt-12">
-      <SectionHeading as="h2">Things to call us about</SectionHeading>
-      <p class="mt-4 text-body">
-        Some changes are quicker with a human. Get in touch for any of these and we’ll sort it.
-      </p>
+      <SectionHeading as="h2">{sec(copy, 'needsACall').heading}</SectionHeading>
+      <p class="mt-4 text-body">{sec(copy, 'needsACall').body?.[0]}</p>
       <dl class="mt-6 space-y-5">
         {
-          needsACall.map((n) => (
+          cards(copy, 'needsACall').map((n) => (
             <div class="rounded-card bg-panel p-5 ring-1 ring-black/5">
-              <dt class="font-semibold text-ink">{n.title}</dt>
-              <dd class="mt-1.5 text-sm leading-relaxed text-body">{n.body}</dd>
+              <dt class="font-semibold text-ink">{n.name}</dt>
+              <dd class="mt-1.5 text-sm leading-relaxed text-body">{n.desc}</dd>
             </div>
           ))
         }
@@ -111,11 +88,8 @@ const needsACall = [
 
     {/* Contact fallback */}
     <div class="mt-12 rounded-card bg-panel p-6 ring-1 ring-black/5">
-      <SectionHeading as="h2">Can’t find your booking?</SectionHeading>
-      <p class="mt-4 text-body">
-        If your reference isn’t recognised, check it against your confirmation email — then our team
-        is happy to help.
-      </p>
+      <SectionHeading as="h2">{sec(copy, 'cantFind').heading}</SectionHeading>
+      <p class="mt-4 text-body">{sec(copy, 'cantFind').body?.[0]}</p>
       <address class="mt-3 space-y-1 text-sm not-italic text-body">
         <p>
           <a href={`mailto:${site.email}`} class="font-medium text-primary hover:underline">
@@ -129,7 +103,7 @@ const needsACall = [
         </p>
       </address>
       <div class="mt-5">
-        <CTAButton href="/faq" variant="outline">Read our FAQ</CTAButton>
+        <CTAButton href="/faq" variant="outline">{str(copy, 'faqCtaLabel')}</CTAButton>
       </div>
     </div>
   </section>
