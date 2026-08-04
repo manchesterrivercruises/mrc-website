@@ -8,6 +8,12 @@ import GettingHere from '../components/GettingHere.astro';
 import KeyFacts from '../components/KeyFacts.astro';
 import ProductCard from '../components/ProductCard.astro';
 import { getCollection } from 'astro:content';
+import copy from '../content/page-copy/music-cruises-manchester.json';
+import { sec, card, faqGroup, faqs, str } from '../lib/pageCopy';
+
+// EDITABLE COPY lives in the CMS (Page copy → music-cruises-manchester) and is stored in
+// src/content/page-copy/music-cruises-manchester.json. STRUCTURE stays here — and so does the
+// EVENT LIST below, which is live data from the events collection, not copy.
 
 // Event lists pulled from the events collection (drafts excluded), split by category.
 const events = await getCollection('events', ({ data }) => !data.draft);
@@ -28,25 +34,15 @@ const icons = {
     '<path d="M9.813 15.904 9 18.75l-.813-2.846a4.5 4.5 0 0 0-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 0 0 3.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 0 0 3.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 0 0-3.09 3.09Z" /><path d="M18.259 8.715 18 9.75l-.259-1.035a3.375 3.375 0 0 0-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 0 0 2.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 0 0 2.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 0 0-2.456 2.456Z" />',
 };
 
-const keyFacts = [
-  { text: 'Events year-round', icon: icons.calendar },
-  { text: 'From £30 per person', icon: icons.tag },
-  { text: 'Live tribute & party nights', icon: icons.music },
-  { text: 'Licensed bar onboard', icon: icons.sparkles },
-];
+// Icons are structural; only the labels come from the CMS, zipped by position.
+const factIcons = [icons.calendar, icons.tag, icons.music, icons.sparkles];
+const keyFacts = (copy.keyFacts ?? []).map((text, i) => ({ text, icon: factIcons[i] ?? icons.calendar }));
 
-const faqs = [
-  { q: 'Is there a dress code?', a: 'Come as you are or dress to impress — most guests make a night of it. (TBC)' },
-  { q: 'Is there a bar onboard?', a: 'Yes — every music cruise has a fully licensed bar. (TBC)' },
-  { q: 'Are there age restrictions?', a: 'Evening music and party nights are usually over-18s. Exact restrictions vary by event. (TBC)' },
-  { q: 'Can I make a group booking?', a: 'Absolutely — music cruises are perfect for groups and celebrations. Group details TBC.' },
-  { q: "What's included?", a: 'Your cruise, live entertainment and access to the onboard bar (drinks not included). (TBC)' },
-];
+const faqItems = faqs(copy);
 
 const SITE = site.url;
-const pageTitle = 'Music Cruises Manchester — Live Music on the Water';
-const pageDescription =
-  'Music cruises in Manchester — live tribute and party nights on the Manchester Ship Canal, from ABBA and Elvis to Dolly, Adele, Club Classics, Soul River and Decks on Deck. Licensed bar onboard. Book direct.';
+const pageTitle = copy.seoTitle!;
+const pageDescription = copy.seoDescription!;
 
 const structuredData = {
   '@context': 'https://schema.org',
@@ -69,14 +65,12 @@ const structuredData = {
     {/* Hero — dark navy, gold accents */}
     <section class="bg-dark text-white">
       <div class="mx-auto max-w-6xl px-4 py-20 sm:px-6 md:py-28 lg:px-8">
-        <p class="text-sm font-semibold uppercase tracking-[0.2em] text-accent">Live music on the water</p>
-        <h1 class="mt-3 text-4xl font-bold tracking-tight text-white sm:text-5xl md:text-6xl">Music Cruises Manchester</h1>
-        <p class="mt-5 max-w-2xl text-lg leading-relaxed text-white/80">
-          Tribute and party nights on the Manchester Ship Canal.
-        </p>
+        <p class="text-sm font-semibold uppercase tracking-[0.2em] text-accent">{copy.eyebrow}</p>
+        <h1 class="mt-3 text-4xl font-bold tracking-tight text-white sm:text-5xl md:text-6xl">{copy.heading}</h1>
+        <p class="mt-5 max-w-2xl text-lg leading-relaxed text-white/80">{copy.intro}</p>
         <div class="mt-8 flex flex-wrap items-center gap-4">
-          <CTAButton href="/whats-on">See upcoming music cruises</CTAButton>
-          <span class="text-sm text-white/70">From £30 · licensed bar onboard</span>
+          <CTAButton href="/whats-on">{str(copy, 'heroCtaLabel')}</CTAButton>
+          <span class="text-sm text-white/70">{str(copy, 'heroPriceNote')}</span>
         </div>
       </div>
     </section>
@@ -88,35 +82,28 @@ const structuredData = {
     <div class="mx-auto max-w-6xl px-4 py-10 sm:px-6 md:py-12 lg:px-8">
       <div class="space-y-12 md:space-y-14">
         <section aria-labelledby="about">
-          <SectionHeading id="about">Manchester's floating music venue</SectionHeading>
+          <SectionHeading id="about">{sec(copy, 'about').heading}</SectionHeading>
           <div class="mt-6 max-w-3xl space-y-4 text-lg leading-relaxed text-body">
+            <p>{sec(copy, 'about').body?.[0]}</p>
             <p>
-              Set sail for a night to remember. Our music cruises span every era and genre — from
-              ABBA, Elvis and Dolly tributes to Adele, Club Classics, Soul River and Decks on Deck
-              day parties — all with live entertainment, a licensed bar and unbeatable views of the
-              waterfront after dark.
+              {str(copy, 'christmasNoteBefore')}{' '}
+              <a href="/christmas-cruises-manchester" class="font-medium text-primary underline-offset-4 hover:underline">{str(copy, 'christmasNoteLinkText')}</a>{str(copy, 'christmasNoteAfter')}
             </p>
-            <p>
-              In December, every night comes Christmas-decorated with festive extras — see{' '}
-              <a href="/christmas-cruises-manchester" class="font-medium text-primary underline-offset-4 hover:underline">Christmas on the water</a>.
-            </p>
-            <p class="text-base text-subtle">Full line-up and descriptions — TBC from Simon (content-checklist.md).</p>
+            <p class="text-base text-subtle">{sec(copy, 'about').note}</p>
           </div>
           <div class="mt-6">
-            <CTAButton href="/whats-on">See what's on</CTAButton>
+            <CTAButton href="/whats-on">{str(copy, 'aboutCtaLabel')}</CTAButton>
           </div>
         </section>
 
         {/* Live Music Nights — from the events collection (category: live-music). */}
         <section aria-labelledby="live-music">
-          <SectionHeading id="live-music">Live Music Nights</SectionHeading>
-          <p class="mt-6 max-w-3xl text-body">
-            Live tribute and themed nights — a singer, a band and a boatful of people who know every word.
-          </p>
+          <SectionHeading id="live-music">{sec(copy, 'liveMusic').heading}</SectionHeading>
+          <p class="mt-6 max-w-3xl text-body">{sec(copy, 'liveMusic').body?.[0]}</p>
           <div class="mt-8 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {
               liveMusicNights.map((e) => (
-                <ProductCard name={e.data.title} desc={e.data.shortTagline ?? e.data.description} href={`/tour/${e.id}`} linkText="View & book" />
+                <ProductCard name={e.data.title} desc={e.data.shortTagline ?? e.data.description} href={`/tour/${e.id}`} linkText={str(copy, 'eventCardLinkText')} />
               ))
             }
           </div>
@@ -125,27 +112,25 @@ const structuredData = {
         {/* DJ Events — from the events collection (category: dj-night). Label says "Events" not
             "Nights" because some (e.g. Decks on Deck) sail daytime; the dj-night slug stays. */}
         <section aria-labelledby="dj-nights">
-          <SectionHeading id="dj-nights">DJ Events</SectionHeading>
-          <p class="mt-6 max-w-3xl text-body">
-            DJ-led party cruises — anthems, floor-fillers and the city skyline as your dancefloor backdrop.
-          </p>
+          <SectionHeading id="dj-nights">{sec(copy, 'djNights').heading}</SectionHeading>
+          <p class="mt-6 max-w-3xl text-body">{sec(copy, 'djNights').body?.[0]}</p>
           <div class="mt-8 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {
               djNights.map((e) => (
-                <ProductCard name={e.data.title} desc={e.data.shortTagline ?? e.data.description} href={`/tour/${e.id}`} linkText="View & book" />
+                <ProductCard name={e.data.title} desc={e.data.shortTagline ?? e.data.description} href={`/tour/${e.id}`} linkText={str(copy, 'eventCardLinkText')} />
               ))
             }
           </div>
-          <p class="mt-6 text-sm text-subtle">See all upcoming dates on the <a href="/whats-on" class="font-medium text-primary hover:underline">What's On</a> page.</p>
+          <p class="mt-6 text-sm text-subtle">{str(copy, 'allDatesBefore')} <a href="/whats-on" class="font-medium text-primary hover:underline">{str(copy, 'allDatesLinkText')}</a> {str(copy, 'allDatesAfter')}</p>
         </section>
 
-        <FAQSection faqs={faqs} title="Music cruise FAQs" />
+        <FAQSection faqs={faqItems} title={faqGroup(copy, 'main').title} />
 
         {/* Cross-sell to City River Tour */}
         <section aria-labelledby="also">
-          <SectionHeading id="also">Prefer a daytime cruise?</SectionHeading>
+          <SectionHeading id="also">{sec(copy, 'also').heading}</SectionHeading>
           <div class="mt-8 sm:max-w-sm">
-            <ProductCard name="City River Tour" desc="Our signature 60-minute sightseeing cruise along the Manchester Ship Canal." href="/tour/city-river-tours" />
+            <ProductCard name={card(copy, 'crossSell:crt').name} desc={card(copy, 'crossSell:crt').desc} href="/tour/city-river-tours" />
           </div>
         </section>
 
@@ -156,6 +141,6 @@ const structuredData = {
 
   {/* Mobile sticky CTA — link to the events listing (no product widget). */}
   <div class="fixed inset-x-0 bottom-0 z-40 border-t border-black/10 bg-white/95 p-3 backdrop-blur md:hidden">
-    <CTAButton href="/whats-on" class="w-full">See music cruises</CTAButton>
+    <CTAButton href="/whats-on" class="w-full">{str(copy, 'stickyCtaLabel')}</CTAButton>
   </div>
 </BaseLayout>

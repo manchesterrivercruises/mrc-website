@@ -1,0 +1,104 @@
+{
+  "page": "events",
+  "seoTitle": "Events & Special Cruises Manchester — Music, Party & Family Cruises",
+  "seoDescription": "Event cruises on the Manchester Ship Canal — live music tribute nights, boat parties, Christmas and Santa cruises, kids events and seasonal specials. Licensed bar onboard. Book direct.",
+  "eyebrow": "What's on the water",
+  "heading": "Events & Special Cruises",
+  "intro": "Live music, party nights and family events on the Manchester Ship Canal.",
+  "keyFacts": [
+    "Evening & weekend events",
+    "From £20 (TBC)",
+    "Licensed bar onboard",
+    "Millennium Footbridge departure"
+  ],
+  "sections": [
+    { "key": "categories", "heading": "Event categories" },
+    {
+      "key": "upcoming",
+      "heading": "Upcoming events",
+      "body": [
+        "New event cruises are added throughout the year. See the full What's On listing for live dates, times and availability across every event."
+      ]
+    },
+    { "key": "how", "heading": "How events work" },
+    {
+      "key": "private",
+      "heading": "Want the whole boat?",
+      "body": [
+        "Hire a boat exclusively for your own event — private parties, celebrations and corporate occasions, tailored around you."
+      ]
+    }
+  ],
+  "cards": [
+    {
+      "key": "categories:live-music",
+      "name": "Live Music Nights",
+      "desc": "Live tribute and themed nights — ABBA, Elvis, Dolly, Adele, Diana Ross, Soul and more.",
+      "linkText": "Live music nights"
+    },
+    {
+      "key": "categories:dj",
+      "name": "DJ Events",
+      "desc": "DJ-led party cruises — Boat Tropicana and Back to the 90s in the evening, Decks on Deck in the daytime.",
+      "linkText": "See dates"
+    },
+    {
+      "key": "categories:family",
+      "name": "Family Events",
+      "desc": "Family adventures afloat — Pirates & Mermaids and cruises with Father Christmas.",
+      "linkText": "See dates"
+    },
+    {
+      "key": "categories:christmas",
+      "name": "Christmas on the water",
+      "desc": "Festive party nights and seasonal cruises through November, December and January.",
+      "linkText": "See your options"
+    },
+    {
+      "key": "categories:santa",
+      "name": "Santa Cruise",
+      "desc": "A magical festive cruise with a visit from Father Christmas — a family favourite.",
+      "linkText": "Santa cruise"
+    },
+    {
+      "key": "categories:seasonal",
+      "name": "Seasonal Specials",
+      "desc": "Occasion cruises through the year — Mother's Day and Father's Day.",
+      "linkText": "See dates"
+    },
+    {
+      "key": "steps:book",
+      "name": "Book your tickets",
+      "desc": "Choose your event and date and book direct for the latest availability."
+    },
+    {
+      "key": "steps:arrive",
+      "name": "Arrive 15 minutes early",
+      "desc": "Come to the Millennium Footbridge boarding point at Salford Quays in good time to board."
+    },
+    {
+      "key": "steps:enjoy",
+      "name": "Enjoy the cruise",
+      "desc": "Most events last approximately 2 hours (TBC), with a licensed bar onboard throughout."
+    }
+  ],
+  "faqGroups": [
+    {
+      "key": "main",
+      "title": "Events FAQs",
+      "items": [
+        { "question": "Are there age restrictions?", "answer": "Some evening party and music cruises are over-18s, while kids and family events are all ages. Age restrictions are shown on each event. (TBC)" },
+        { "question": "Is there a dress code?", "answer": "There is no formal dress code — come as you are, though some themed nights are more fun in costume. (TBC)" },
+        { "question": "What's included in the ticket?", "answer": "Your ticket includes the cruise and the event/entertainment. Food and drinks are available to buy onboard unless stated otherwise. (TBC)" },
+        { "question": "How much are drinks at the bar?", "answer": "A fully licensed bar is onboard every event cruise. Bar prices TBC." },
+        { "question": "Are the boats accessible?", "answer": "Accessibility varies by vessel — please see our accessibility page or contact us before booking. (TBC)" },
+        { "question": "Can I make a group booking?", "answer": "Yes — we welcome groups for events. For larger groups, exclusive private hire may suit you better. Group booking details TBC." }
+      ]
+    }
+  ],
+  "strings": [
+    { "key": "heroCtaLabel", "value": "See all upcoming dates" },
+    { "key": "upcomingCtaLabel", "value": "See all upcoming dates" },
+    { "key": "privateCtaLabel", "value": "Private events & hire" }
+  ]
+}

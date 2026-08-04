@@ -1,0 +1,68 @@
+{
+  "page": "music-cruises-manchester",
+  "seoTitle": "Music Cruises Manchester — Live Music on the Water",
+  "seoDescription": "Music cruises in Manchester — live tribute and party nights on the Manchester Ship Canal, from ABBA and Elvis to Dolly, Adele, Club Classics, Soul River and Decks on Deck. Licensed bar onboard. Book direct.",
+  "eyebrow": "Live music on the water",
+  "heading": "Music Cruises Manchester",
+  "intro": "Tribute and party nights on the Manchester Ship Canal.",
+  "keyFacts": [
+    "Events year-round",
+    "From £30 per person",
+    "Live tribute & party nights",
+    "Licensed bar onboard"
+  ],
+  "sections": [
+    {
+      "key": "about",
+      "heading": "Manchester's floating music venue",
+      "body": [
+        "Set sail for a night to remember. Our music cruises span every era and genre — from ABBA, Elvis and Dolly tributes to Adele, Club Classics, Soul River and Decks on Deck day parties — all with live entertainment, a licensed bar and unbeatable views of the waterfront after dark."
+      ],
+      "note": "Full line-up and descriptions — TBC from Simon (content-checklist.md)."
+    },
+    {
+      "key": "liveMusic",
+      "heading": "Live Music Nights",
+      "body": ["Live tribute and themed nights — a singer, a band and a boatful of people who know every word."]
+    },
+    {
+      "key": "djNights",
+      "heading": "DJ Events",
+      "body": ["DJ-led party cruises — anthems, floor-fillers and the city skyline as your dancefloor backdrop."]
+    },
+    { "key": "also", "heading": "Prefer a daytime cruise?" }
+  ],
+  "cards": [
+    {
+      "key": "crossSell:crt",
+      "name": "City River Tour",
+      "desc": "Our signature 60-minute sightseeing cruise along the Manchester Ship Canal."
+    }
+  ],
+  "faqGroups": [
+    {
+      "key": "main",
+      "title": "Music cruise FAQs",
+      "items": [
+        { "question": "Is there a dress code?", "answer": "Come as you are or dress to impress — most guests make a night of it. (TBC)" },
+        { "question": "Is there a bar onboard?", "answer": "Yes — every music cruise has a fully licensed bar. (TBC)" },
+        { "question": "Are there age restrictions?", "answer": "Evening music and party nights are usually over-18s. Exact restrictions vary by event. (TBC)" },
+        { "question": "Can I make a group booking?", "answer": "Absolutely — music cruises are perfect for groups and celebrations. Group details TBC." },
+        { "question": "What's included?", "answer": "Your cruise, live entertainment and access to the onboard bar (drinks not included). (TBC)" }
+      ]
+    }
+  ],
+  "strings": [
+    { "key": "heroCtaLabel", "value": "See upcoming music cruises" },
+    { "key": "heroPriceNote", "value": "From £30 · licensed bar onboard" },
+    { "key": "christmasNoteBefore", "value": "In December, every night comes Christmas-decorated with festive extras — see" },
+    { "key": "christmasNoteLinkText", "value": "Christmas on the water" },
+    { "key": "christmasNoteAfter", "value": "." },
+    { "key": "aboutCtaLabel", "value": "See what's on" },
+    { "key": "eventCardLinkText", "value": "View & book" },
+    { "key": "allDatesBefore", "value": "See all upcoming dates on the" },
+    { "key": "allDatesLinkText", "value": "What's On" },
+    { "key": "allDatesAfter", "value": "page." },
+    { "key": "stickyCtaLabel", "value": "See music cruises" }
+  ]
+}
