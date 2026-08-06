@@ -255,29 +255,91 @@ Three sub-patterns the pilot establishes:
 - **Form option lists stay in code.** They are submitted *values* that Netlify notifications and
   downstream routing key off, not display copy. Only the form's heading and success message moved.
 
-### Pages that remain code-only
+### Where page copy lives — current state
 
-Every page below still has its copy in the `.astro` template:
+The **Page copy** collection (one entry per page) is the home for editable page wording. It
+replaced the per-page singleton approach, which would have buried the sidebar.
 
-`/` · `/about` · `/whats-on` · `/events` · `/tour/city-river-tours` · `/tour/boat-to-old-trafford`
-(+ departure points) · `/private-boat-hire-manchester` · `/party-boat-manchester` ·
-`/music-cruises-manchester` · `/christmas-cruises-manchester` · `/santa-cruise-manchester` ·
-`/groups` · `/gift-vouchers` · `/plan-your-visit` · `/getting-here` · `/salford-quays` · `/faq` ·
-`/accessibility` · `/contact-us` · `/manage-bookings` · `/our-vessels` · `/gallery` · `/discover` ·
-`/privacy-policy` · `/terms-conditions`
+**Extracted — editable in the CMS now (Page copy → …):**
 
-**To change copy on any of them meanwhile:** send the wording to Claude Code (or note it in
-`docs/content-checklist.md`) and it ships as a normal PR — usually minutes. Extracting a page is
-only worth doing for copy that changes *repeatedly*; a one-off edit is cheaper as a PR than as a
-new singleton.
+| Page | Entry |
+|---|---|
+| `/private-hire` | `private-hire` |
+| `/about` | `about` |
+| `/contact-us` | `contact-us` |
+| `/faq` | `faq` |
+| `/manage-bookings` | `manage-bookings` |
+| `/plan-your-visit` | `plan-your-visit` |
+| `/salford-quays` | `salford-quays` |
+| `/events` | `events` |
+| `/music-cruises-manchester` | `music-cruises-manchester` |
+
+**Not yet extracted — copy still lives in the `.astro` template:**
+
+`/` (homepage) · `/tour/city-river-tours` · `/tour/boat-to-old-trafford` (+ its two departure
+point pages) · `/groups` · `/christmas-cruises-manchester` · `/gift-vouchers` ·
+`/party-boat-manchester`
+
+These are the largest and most intricate templates on the site (the homepage and City River Tour
+alone are ~900 lines between them, and both interleave copy with live OCTO/Ventrata feeds), so
+they are the ones where a careless extraction does the most damage. They follow the same recipe —
+the work is queued, not blocked.
+
+Also still code-only, and **deliberately so**: `/whats-on` (a live availability feed with no
+standing copy), `/santa-cruise-manchester`, `/private-boat-hire-manchester`, `/getting-here`,
+`/accessibility`, `/our-vessels`, `/gallery`, `/discover`, `/privacy-policy` and
+`/terms-conditions`. The last two are legal text that should change only under review, not in a
+CMS field.
+
+**To change copy on a not-yet-extracted page:** send the wording to Claude Code (or note it in
+`docs/content-checklist.md`) and it ships as a normal PR — usually minutes.
 
 Product/event pages (`/tour/<slug>`) are **already** fully editable via the Events collection —
-they are not in the list above.
+they are not in either list above.
+
+### What stays in code permanently
+
+Extraction moves *wording*. These surfaces are structural and stay in the template no matter how
+many pages are extracted:
+
+- **Navigation and footer link architecture** — routes and layout. A CMS-editable path can 404 in
+  a way no editor can debug.
+- **Every `href`.** Where prose contains a link, the wording either side is editable and the
+  destination is not. Card destinations live in a code-side map keyed off the card key.
+- **Redirects** (`netlify.toml`) and the **OCTO proxy functions** (`netlify/functions/`).
+- **schema.org / JSON-LD**, and the breadcrumb trails.
+- **Live data** — Ventrata + OCTO availability, real prices, the What's On and date-finder product
+  maps, the City River Tour route/sights data, and any list generated from a content collection.
+- **Forms**: field names, option values and the Netlify `action`. Those are submitted data that
+  notifications and routing key off, not display copy. Only headings and success messages moved.
+- **Icons, CSS and component choice.** Where copy pairs with a fixed icon (the key-facts strips),
+  the CMS holds the labels and the template zips them against a code-owned icon array by position.
+- **Derived values** — anything computed from another source stays computed, so it cannot drift:
+  the review score/count from `site.ts`, the fleet count from the vessel list, `phoneHref` from
+  `phone`, `addressDisplay` from the address parts.
+
+### Admin sidebar organisation
+
+```
+Content      Gallery albums · Events · Discover guides · Vessels · Attractions
+Page copy    Page copy          (one entry per page, named for the page)
+Site-wide    Site settings      (NAP, socials, footer tagline)
+```
+
+Ordered by how often Simon touches them: routine content first, page wording next, site-wide
+settings last — rarely changed and the easiest to get wrong.
+
+### A note on prices in copy
+
+Some extracted copy contains prices ("From £30 per person", "From £20 (TBC)"). Those are **display
+copy only** — they do not drive checkout. **Ventrata is the source of truth.** The CMS field
+descriptions say so explicitly, because a price edited here without a matching change in Ventrata
+means the page advertises one price and charges another.
 
 ### Verifying the CMS wiring
 
 ```
-node scripts/verify-cms-singletons.mjs
+node scripts/verify-cms-wiring.mjs
 ```
 
 Reads both singletons through Keystatic's **own reader** — the same path/format resolution the
@@ -323,6 +385,9 @@ moving any singleton. It catches the `<path>.json` vs `<path>/index.json` trap d
    a dependency change, so it needs sign-off per the stack rules. **Confirm the GitHub-mode admin
    works in production before Simon relies on the CMS**, since that path was never exercised
    locally for these two singletons.
-5. **More page extractions.** The recipe above is proven on Private Hire. Good next candidates are
-   the pages whose copy Simon revises seasonally — `/christmas-cruises-manchester`,
-   `/santa-cruise-manchester` and `/groups`. Leave the rest until the copy actually churns.
+5. **Finish the page extractions.** Nine pages are done (see the table above). Still to do:
+   the homepage, `/tour/city-river-tours`, the ferry landing + its two departure-point pages,
+   `/groups`, `/christmas-cruises-manchester`, `/gift-vouchers` and `/party-boat-manchester`.
+   Same recipe throughout. Each must be verified lossless before it lands — build before and after,
+   and diff the rendered TEXT, JSON-LD and meta/link/image attributes rather than raw bytes (moving
+   copy into JSON reflows the JSX, so whitespace changes legitimately while output must not).

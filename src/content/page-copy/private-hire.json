@@ -1,0 +1,95 @@
+{
+  "page": "private-hire",
+  "seoTitle": "Private Hire — Exclusive Boat Hire for Events & Celebrations — Manchester River Cruises",
+  "seoDescription": "Hire a whole boat for your event with Manchester River Cruises. Exclusive private hire for corporate events, celebrations, weddings, filming and parties from Salford Quays. Enquire today.",
+  "eyebrow": "Private hire",
+  "heading": "Private Hire",
+  "intro": "Exclusive hire of the whole vessel for your event — corporate days, celebrations, weddings and more.",
+  "keyFacts": [
+    "Exclusive whole-vessel hire",
+    "Up to TBC guests",
+    "Salford Quays departure",
+    "Bespoke catering available"
+  ],
+  "sections": [
+    {
+      "key": "about",
+      "heading": "The whole boat, exclusively yours",
+      "body": [
+        "Private hire gives you exclusive use of one of our vessels — a striking, memorable setting on the water for whatever you're planning. Our team will help tailor every detail, from catering to timings, so you can simply enjoy the occasion."
+      ],
+      "note": "Full private hire details — TBC from Simon (content-checklist.md)."
+    },
+    { "key": "vessels", "heading": "Our vessels for hire" },
+    { "key": "included", "heading": "What's included" },
+    {
+      "key": "christmas",
+      "heading": "Your office Christmas party, on the water",
+      "body": [
+        "Take the whole boat for your office or group Christmas do — decorated bow to stern for the season, with a licensed bar, a dancefloor and the floodlit waterfront gliding past. It’s the standout way to celebrate a team, and it beats the same old function room."
+      ],
+      "note": "Catering, drinks packages and festive extras — TBC from Simon (content-checklist.md)."
+    },
+    {
+      "key": "schools",
+      "heading": "School & youth groups",
+      "body": [
+        "School trips, colleges, scouts and youth groups sail as a private charter — the whole boat for a daytime educational visit, with commentary tailored to your age range. (Not party or prom bookings.)"
+      ]
+    },
+    { "key": "enquire", "heading": "Enquire about private hire" }
+  ],
+  "lists": [
+    {
+      "key": "occasions",
+      "items": [
+        "Corporate events",
+        "Celebrations",
+        "Filming & photography",
+        "Product launches",
+        "Birthday parties",
+        "Hen & stag dos",
+        "Weddings"
+      ]
+    },
+    {
+      "key": "included",
+      "items": [
+        "Exclusive use of the whole vessel",
+        "Experienced crew and skipper",
+        "Licensed bar service",
+        "Catering options (TBC)",
+        "Sound system (TBC)"
+      ]
+    },
+    { "key": "hireVessels", "items": ["Princess Katherine", "Isabella", "Melody"] }
+  ],
+  "faqGroups": [
+    {
+      "key": "main",
+      "title": "Private hire FAQs",
+      "items": [
+        { "question": "Is there a minimum hire duration?", "answer": "Minimum hire duration TBC." },
+        { "question": "What catering options are available?", "answer": "We offer a range of catering options to suit your event — details TBC." },
+        { "question": "Can we bring our own alcohol?", "answer": "There is a licensed bar onboard; corkage and bring-your-own policy TBC." },
+        { "question": "Is there a DJ or sound system?", "answer": "A sound system is available onboard; DJ and entertainment options TBC." },
+        { "question": "How far in advance should we book?", "answer": "We recommend enquiring as early as possible, especially for peak dates. (TBC)" },
+        { "question": "Is a deposit required?", "answer": "Deposit and payment terms TBC." }
+      ]
+    }
+  ],
+  "strings": [
+    { "key": "heroCtaLabel", "value": "Enquire now" },
+    { "key": "heroPhotosLabel", "value": "View photos →" },
+    { "key": "giftNoteBefore", "value": "Treating someone?" },
+    { "key": "giftNoteLinkText", "value": "Gift vouchers" },
+    { "key": "giftNoteAfter", "value": "are available for any cruise." },
+    { "key": "vesselCardDesc", "value": "Capacity and details — TBC." },
+    { "key": "christmasEyebrow", "value": "Christmas parties" },
+    { "key": "christmasEmphasis", "value": "December dates go fast — book early." },
+    { "key": "christmasCtaLabel", "value": "Enquire for December" },
+    { "key": "christmasLinkLabel", "value": "Christmas on the water →" },
+    { "key": "schoolsCtaLabel", "value": "Group visits & school trips" },
+    { "key": "enquireSuccess", "value": "Thanks for your enquiry. We'll get back to you within 24 hours." }
+  ]
+}

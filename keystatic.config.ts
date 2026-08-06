@@ -46,10 +46,12 @@ export default config({
       : { kind: 'github', repo: 'manchesterrivercruises/mrc-website' },
   ui: {
     brand: { name: 'Manchester River Cruises' },
+    // Sidebar grouping. Ordered by how often Simon touches them: content he edits routinely
+    // first, page wording next, site-wide settings last (rarely changed, easy to get wrong).
     navigation: {
-      'Site-wide': ['siteSettings'],
-      Pages: ['pagePrivateHire'],
       Content: ['gallery', 'events', 'discover', 'vessels', 'attractions'],
+      'Page copy': ['pageCopy'],
+      'Site-wide': ['siteSettings'],
     },
   },
 
@@ -115,93 +117,129 @@ export default config({
         }),
       },
     }),
-
-    // ---- Page: Private Hire (Phase 2.5 pilot) ---------------------------------------------
-    // COPY ONLY. The template (src/pages/private-hire.astro) keeps the structure: layout,
-    // components, icons, every href, and the whole enquiry form. See
-    // docs/content-management.md → "Extracting a page's copy into the CMS".
-    pagePrivateHire: singleton({
-      label: 'Page: Private Hire',
-      path: 'src/content/pages/private-hire',
-      format: { data: 'json' },
-      schema: {
-        seoTitle: fields.text({ label: 'SEO title', description: 'Browser tab + Google result title.', validation: { isRequired: true } }),
-        seoDescription: fields.text({ label: 'SEO description', multiline: true, validation: { isRequired: true } }),
-
-        heroEyebrow: fields.text({ label: 'Hero — eyebrow', description: 'Small uppercase line above the heading.' }),
-        heroHeading: fields.text({ label: 'Hero — heading (H1)', validation: { isRequired: true } }),
-        heroIntro: fields.text({ label: 'Hero — intro', multiline: true, validation: { isRequired: true } }),
-        heroCtaLabel: fields.text({ label: 'Hero — button label', validation: { isRequired: true } }),
-        heroPhotosLabel: fields.text({ label: 'Hero — photos link label', description: 'Links to the private hire gallery album (destination fixed in code).' }),
-
-        keyFacts: fields.array(fields.text({ label: 'Fact' }), {
-          label: 'Key facts strip',
-          description: 'Exactly 4 — each pairs with a fixed icon by position (sparkles, guests, pin, catering).',
-          itemLabel: (p) => p.value,
-          validation: { length: { min: 4, max: 4 } },
-        }),
-
-        aboutHeading: fields.text({ label: 'About — heading', validation: { isRequired: true } }),
-        aboutBody: fields.text({ label: 'About — body', multiline: true, validation: { isRequired: true } }),
-        aboutTbcNote: fields.text({
-          label: 'About — TBC note',
-          description: 'The smaller grey placeholder line. Clear it once the real copy lands.',
-          multiline: true,
-        }),
-        giftNoteBefore: fields.text({ label: 'Gift note — text before the link' }),
-        giftNoteLinkText: fields.text({ label: 'Gift note — link text', description: 'Links to /gift-vouchers (destination fixed in code).' }),
-        giftNoteAfter: fields.text({ label: 'Gift note — text after the link' }),
-
-        occasions: fields.array(fields.text({ label: 'Occasion' }), {
-          label: 'Occasion pills',
-          itemLabel: (p) => p.value,
-        }),
-
-        vesselsHeading: fields.text({ label: 'Vessels — heading' }),
-        vesselCardDesc: fields.text({ label: 'Vessels — card description', description: 'Shown on every vessel card.' }),
-        hireVessels: fields.array(fields.text({ label: 'Vessel name' }), {
-          label: 'Vessels for hire',
-          itemLabel: (p) => p.value,
-        }),
-
-        includedHeading: fields.text({ label: "What's included — heading" }),
-        included: fields.array(fields.text({ label: 'Item' }), {
-          label: "What's included",
-          itemLabel: (p) => p.value,
-        }),
-
-        christmasEyebrow: fields.text({ label: 'Christmas — eyebrow' }),
-        christmasHeading: fields.text({ label: 'Christmas — heading' }),
-        christmasBody: fields.text({ label: 'Christmas — body', multiline: true }),
-        christmasEmphasis: fields.text({ label: 'Christmas — bold closing line', description: 'Rendered bold at the end of the body paragraph.' }),
-        christmasTbcNote: fields.text({ label: 'Christmas — TBC note', multiline: true }),
-        christmasCtaLabel: fields.text({ label: 'Christmas — button label' }),
-        christmasLinkLabel: fields.text({ label: 'Christmas — link label', description: 'Links to the Christmas hub (destination fixed in code).' }),
-
-        schoolsHeading: fields.text({ label: 'Schools — heading' }),
-        schoolsBody: fields.text({ label: 'Schools — body', multiline: true }),
-        schoolsCtaLabel: fields.text({ label: 'Schools — button label' }),
-
-        enquireHeading: fields.text({ label: 'Enquiry — heading' }),
-        enquireSuccess: fields.text({
-          label: 'Enquiry — success message',
-          description: 'Shown after the form is submitted. The form fields themselves are code.',
-          multiline: true,
-        }),
-
-        faqTitle: fields.text({ label: 'FAQs — section title' }),
-        faqs: fields.array(
-          fields.object({
-            question: fields.text({ label: 'Question' }),
-            answer: fields.text({ label: 'Answer', multiline: true }),
-          }),
-          { label: 'FAQs', itemLabel: (p) => p.fields.question.value || 'FAQ' },
-        ),
-      },
-    }),
   },
 
   collections: {
+    // ---- Page copy -----------------------------------------------------------------------
+    // COPY ONLY, one entry per bespoke page. Filename = the page, and the template imports
+    // its own JSON directly (src/content/page-copy/<page>.json), so the `page` slug MUST match
+    // the filename — changing it in the CMS renames the file and breaks the import.
+    //
+    // A COLLECTION, not one singleton per page: sixteen singletons would bury the sidebar. The
+    // cost is that every page shares this one schema, so it is shape-based (sections, lists,
+    // cards, FAQ groups, loose strings) rather than naming each page's fields. Templates read it
+    // through src/lib/pageCopy.ts, whose lookups THROW AT BUILD TIME on a missing key — a typo
+    // fails the build instead of silently rendering an empty heading.
+    //
+    // WHAT NEVER COMES IN HERE (it stays in the template):
+    //   • structure, layout, components, icons, CSS
+    //   • every href, and the nav/footer link architecture
+    //   • forms and their option values (they are submitted data, not display copy)
+    //   • schema.org / JSON-LD
+    //   • live data — Ventrata + OCTO feeds, availability, real prices, the CRT route/sights
+    //     data, and the What's On / date-finder product maps
+    pageCopy: collection({
+      label: 'Page copy',
+      path: 'src/content/page-copy/*',
+      slugField: 'page',
+      format: { data: 'json' },
+      columns: ['page', 'heading'],
+      schema: {
+        page: fields.slug({
+          name: {
+            label: 'Page',
+            description:
+              'Must match the filename the template imports (e.g. "about" → src/content/page-copy/about.json). Do not rename.',
+            validation: { pattern: KEBAB },
+          },
+        }),
+
+        seoTitle: fields.text({ label: 'SEO title', description: 'Browser tab + Google result title.' }),
+        seoDescription: fields.text({ label: 'SEO description', multiline: true }),
+
+        eyebrow: fields.text({ label: 'Eyebrow', description: 'Small line above the main heading, where the design has one.' }),
+        heading: fields.text({ label: 'Main heading (H1)' }),
+        intro: fields.text({ label: 'Intro paragraph', multiline: true }),
+
+        keyFacts: fields.array(fields.text({ label: 'Fact' }), {
+          label: 'Key facts strip',
+          description: 'Short facts shown in the strip under the hero. Each pairs with a fixed icon by position.',
+          itemLabel: (p) => p.value,
+        }),
+
+        sections: fields.array(
+          fields.object({
+            key: fields.text({
+              label: 'Key',
+              description: 'How the template finds this section. Do not change — it is a code reference, not copy.',
+              validation: { isRequired: true },
+            }),
+            heading: fields.text({ label: 'Heading' }),
+            body: fields.array(fields.text({ label: 'Paragraph', multiline: true }), {
+              label: 'Body paragraphs',
+              itemLabel: (p) => (p.value || '').slice(0, 60),
+            }),
+            note: fields.text({
+              label: 'Small note',
+              description: 'The smaller grey line under the body — usually a (TBC) placeholder. Clear it once real copy lands.',
+              multiline: true,
+            }),
+          }),
+          { label: 'Sections', itemLabel: (p) => p.fields.heading.value || p.fields.key.value || 'Section' },
+        ),
+
+        lists: fields.array(
+          fields.object({
+            key: fields.text({ label: 'Key', description: 'Code reference — do not change.', validation: { isRequired: true } }),
+            items: fields.array(fields.text({ label: 'Item' }), { label: 'Items', itemLabel: (p) => p.value }),
+          }),
+          { label: 'Lists (bullets, pills, checklists)', itemLabel: (p) => p.fields.key.value || 'List' },
+        ),
+
+        cards: fields.array(
+          fields.object({
+            key: fields.text({
+              label: 'Key',
+              description: 'Code reference, "group:name". Do not change — the link destination is matched to it in code.',
+              validation: { isRequired: true },
+            }),
+            name: fields.text({ label: 'Card title', validation: { isRequired: true } }),
+            desc: fields.text({ label: 'Card description', multiline: true }),
+            linkText: fields.text({ label: 'Link text' }),
+          }),
+          { label: 'Cards', itemLabel: (p) => p.fields.name.value || 'Card' },
+        ),
+
+        faqGroups: fields.array(
+          fields.object({
+            key: fields.text({ label: 'Key', description: 'Code reference — do not change.', validation: { isRequired: true } }),
+            title: fields.text({ label: 'Group title' }),
+            items: fields.array(
+              fields.object({
+                question: fields.text({ label: 'Question' }),
+                answer: fields.text({ label: 'Answer', multiline: true }),
+              }),
+              { label: 'Questions', itemLabel: (p) => p.fields.question.value || 'FAQ' },
+            ),
+          }),
+          { label: 'FAQ groups', itemLabel: (p) => p.fields.title.value || p.fields.key.value || 'FAQs' },
+        ),
+
+        strings: fields.array(
+          fields.object({
+            key: fields.text({ label: 'Key', description: 'Code reference — do not change.', validation: { isRequired: true } }),
+            value: fields.text({ label: 'Text', multiline: true }),
+          }),
+          {
+            label: 'Other text (labels, buttons, one-off lines)',
+            description:
+              '⚠ PRICES: any price written here is display copy only — it does NOT drive checkout. Ventrata is the source of truth, so if you change a price here you must confirm it matches Ventrata, or the page will advertise one price and charge another.',
+            itemLabel: (p) => `${p.fields.key.value}: ${(p.fields.value.value || '').slice(0, 40)}`,
+          },
+        ),
+      },
+    }),
+
     // ---- Gallery albums (the driving use case) -------------------------------------------
     gallery: collection({
       label: 'Gallery albums',

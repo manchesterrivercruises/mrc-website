@@ -34,3 +34,4 @@ Thumbs.db
 
 # Incremental image ingest staging (scripts/ingest-images.mjs)
 .ingest/
+_lossless.mjs

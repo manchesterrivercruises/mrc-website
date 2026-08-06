@@ -1,0 +1,26 @@
+{
+  "page": "plan-your-visit",
+  "seoTitle": "Plan Your Visit — Manchester River Cruises",
+  "seoDescription": "Plan your visit to Manchester River Cruises — getting here, accessibility, FAQs, gift vouchers and what to bring for your cruise from Salford Quays.",
+  "heading": "Plan Your Visit",
+  "intro": "Everything you need to plan a great day — or night — on the water.",
+  "sections": [
+    {
+      "key": "whatToBring",
+      "heading": "What to bring",
+      "body": [
+        "Dress for the weather and the water. Bring layers — it can be cooler on the open deck, even on a warm day — along with a waterproof just in case, and a camera for the skyline."
+      ],
+      "note": "There's a heated indoor cabin onboard if the weather turns."
+    }
+  ],
+  "cards": [
+    { "key": "links:getting-here", "name": "Getting Here", "desc": "Directions by tram, car, taxi and bike, plus parking.", "linkText": "View" },
+    { "key": "links:accessibility", "name": "Accessibility", "desc": "Boarding, onboard facilities and assistance.", "linkText": "View" },
+    { "key": "links:faq", "name": "FAQ", "desc": "Answers to the most common questions.", "linkText": "View" },
+    { "key": "links:gift-vouchers", "name": "Gift Vouchers", "desc": "Give the gift of a cruise.", "linkText": "View" },
+    { "key": "links:whats-on", "name": "What's On", "desc": "Upcoming departures, events and music nights.", "linkText": "View" },
+    { "key": "links:gallery", "name": "Gallery", "desc": "Photos from our cruises, events and the Ship Canal.", "linkText": "View" },
+    { "key": "links:groups", "name": "Groups & Schools", "desc": "Group visits, school trips and coach parties.", "linkText": "View" }
+  ]
+}

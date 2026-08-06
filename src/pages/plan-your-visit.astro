@@ -3,21 +3,29 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 import { site } from '../data/site';
 import SectionHeading from '../components/SectionHeading.astro';
 import ProductCard from '../components/ProductCard.astro';
+import copy from '../content/page-copy/plan-your-visit.json';
+import { sec, cards } from '../lib/pageCopy';
+
+// EDITABLE COPY lives in the CMS (Page copy → plan-your-visit) and is stored in
+// src/content/page-copy/plan-your-visit.json. This template owns STRUCTURE ONLY — layout, components,
+// icons, every href, the schema block and any live data. See docs/content-management.md.
 
 const SITE = site.url;
-const pageTitle = 'Plan Your Visit — Manchester River Cruises';
-const pageDescription =
-  'Plan your visit to Manchester River Cruises — getting here, accessibility, FAQs, gift vouchers and what to bring for your cruise from Salford Quays.';
+const pageTitle = copy.seoTitle!;
+const pageDescription = copy.seoDescription!;
 
-const links = [
-  { name: 'Getting Here', desc: 'Directions by tram, car, taxi and bike, plus parking.', href: '/getting-here' },
-  { name: 'Accessibility', desc: 'Boarding, onboard facilities and assistance.', href: '/accessibility' },
-  { name: 'FAQ', desc: 'Answers to the most common questions.', href: '/faq' },
-  { name: 'Gift Vouchers', desc: 'Give the gift of a cruise.', href: '/gift-vouchers' },
-  { name: "What's On", desc: 'Upcoming departures, events and music nights.', href: '/whats-on' },
-  { name: 'Gallery', desc: 'Photos from our cruises, events and the Ship Canal.', href: '/gallery' },
-  { name: 'Groups & Schools', desc: 'Group visits, school trips and coach parties.', href: '/groups' },
-];
+// Destinations stay in code (routes are structure); the card wording comes from the CMS,
+// matched by the part of the key after "links:".
+const LINK_HREFS: Record<string, string> = {
+  'getting-here': '/getting-here',
+  accessibility: '/accessibility',
+  faq: '/faq',
+  'gift-vouchers': '/gift-vouchers',
+  'whats-on': '/whats-on',
+  gallery: '/gallery',
+  groups: '/groups',
+};
+const links = cards(copy, 'links').map((c) => ({ ...c, href: LINK_HREFS[c.key.split(':')[1]] }));
 
 const structuredData = {
   '@context': 'https://schema.org',
@@ -33,24 +41,21 @@ const structuredData = {
   <script type="application/ld+json" is:inline set:html={JSON.stringify(structuredData)} />
 
   <div class="mx-auto max-w-6xl px-4 py-16 sm:px-6 md:py-20 lg:px-8">
-    <h1 class="text-3xl font-bold tracking-tight text-ink sm:text-4xl">Plan Your Visit</h1>
+    <h1 class="text-3xl font-bold tracking-tight text-ink sm:text-4xl">{copy.heading}</h1>
     <p class="mt-4 max-w-2xl text-lg leading-relaxed text-body">
-      Everything you need to plan a great day — or night — on the water.
+      {copy.intro}
     </p>
 
     <div class="mt-10 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-      {links.map((l) => <ProductCard name={l.name} desc={l.desc} href={l.href} linkText="View" />)}
+      {links.map((l) => <ProductCard name={l.name} desc={l.desc} href={l.href} linkText={l.linkText} />)}
     </div>
 
     {/* What to bring */}
     <section aria-labelledby="what-to-bring" class="mt-16">
-      <SectionHeading id="what-to-bring">What to bring</SectionHeading>
+      <SectionHeading id="what-to-bring">{sec(copy, 'whatToBring').heading}</SectionHeading>
       <div class="mt-6 max-w-3xl space-y-4 text-lg leading-relaxed text-body">
-        <p>
-          Dress for the weather and the water. Bring layers — it can be cooler on the open deck, even
-          on a warm day — along with a waterproof just in case, and a camera for the skyline.
-        </p>
-        <p class="text-base text-subtle">There's a heated indoor cabin onboard if the weather turns.</p>
+        <p>{sec(copy, 'whatToBring').body?.[0]}</p>
+        <p class="text-base text-subtle">{sec(copy, 'whatToBring').note}</p>
       </div>
     </section>
   </div>

@@ -7,16 +7,18 @@ import TrustStrip from '../components/TrustStrip.astro';
 import BookDirect from '../components/BookDirect.astro';
 import CTASection from '../components/CTASection.astro';
 import { site } from '../data/site';
+import copy from '../content/page-copy/about.json';
+import { sec, list, str } from '../lib/pageCopy';
+
+// EDITABLE COPY lives in the CMS (Page copy → about) and is stored in
+// src/content/page-copy/about.json. This template owns STRUCTURE ONLY — layout, components,
+// icons, every href, the schema block and any live data. See docs/content-management.md.
+// NOTE: the page title and hero title compose the business NAME, which is itself CMS-owned via
+// Site settings — so they stay derived here rather than being duplicated as copy.
 
 // Fleet — brief teasers only; the detail lives on /our-vessels. TEMPORARY placeholder
 // data; move to a `vessels` Content Collection once real content is provided.
-const vessels = [
-  { name: 'Princess Katherine' },
-  { name: 'Isabella' },
-  { name: 'Melody' },
-  { name: 'Georgina' },
-  { name: 'Joyce Too' },
-];
+const vessels = list(copy, 'vessels');
 
 // Awards & press — drives the conditional section below. Empty for now, so the
 // section renders nothing. Add { title, source, href? } items to switch it on.
@@ -32,16 +34,17 @@ const icons = {
     '<path d="M9 12.75 11.25 15 15 9.75m-3-7.036A11.959 11.959 0 0 1 3.598 6 11.99 11.99 0 0 0 3 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285Z" />',
 };
 
+// Values that are DERIVED stay derived: the review score/count come from site.ts, and the
+// fleet count from the vessel list — so they can never drift from their source.
 const trustStats = [
-  { value: 'TBC', label: 'Years operating', icon: icons.calendar },
-  { value: `${site.rating.value}★`, label: `${site.rating.count} Google reviews`, icon: icons.star },
-  { value: `${vessels.length}`, label: 'Vessels in our fleet', icon: icons.lifebuoy },
-  { value: 'Official', label: 'Operator — book direct', icon: icons.badge },
+  { value: str(copy, 'trustYearsValue'), label: str(copy, 'trustYearsLabel'), icon: icons.calendar },
+  { value: `${site.rating.value}★`, label: `${site.rating.count} ${str(copy, 'trustReviewsLabel')}`, icon: icons.star },
+  { value: `${vessels.length}`, label: str(copy, 'trustFleetLabel'), icon: icons.lifebuoy },
+  { value: str(copy, 'trustOfficialValue'), label: str(copy, 'trustOfficialLabel'), icon: icons.badge },
 ];
 
 const pageTitle = `About ${site.name}`;
-const pageDescription =
-  'About Manchester River Cruises — sightseeing cruises, events and private hire on the Manchester Ship Canal from Salford Quays. Meet our fleet and the team behind the boats.';
+const pageDescription = copy.seoDescription!;
 
 // NAP + business data sourced from src/data/site.ts (single source of truth).
 const structuredData = {
@@ -67,23 +70,19 @@ const structuredData = {
   <script type="application/ld+json" is:inline set:html={JSON.stringify(structuredData)} />
 
   <PageHero
-    eyebrow="About us"
+    eyebrow={copy.eyebrow}
     title={`About ${site.name}`}
-    subtitle="Sightseeing cruises, events and private hire on the Manchester Ship Canal — here's the story behind the boats."
+    subtitle={copy.intro}
   />
 
   <div class="mx-auto max-w-6xl px-4 py-16 sm:px-6 md:py-20 lg:px-8">
     <div class="space-y-16">
       {/* Our story */}
       <section aria-labelledby="story">
-        <SectionHeading id="story">Our story</SectionHeading>
+        <SectionHeading id="story">{sec(copy, 'story').heading}</SectionHeading>
         <div class="mt-6 max-w-3xl space-y-4 text-lg leading-relaxed text-body">
-          <p>
-            Manchester River Cruises was founded to bring river tours to the heart of Manchester,
-            operating from Salford Quays. We're passionate about the city's waterways and the history
-            written along the Manchester Ship Canal.
-          </p>
-          <p class="text-base text-subtle">Full company story — TBC from Simon (content-checklist.md).</p>
+          <p>{sec(copy, 'story').body?.[0]}</p>
+          <p class="text-base text-subtle">{sec(copy, 'story').note}</p>
         </div>
       </section>
 
@@ -92,46 +91,40 @@ const structuredData = {
 
       {/* Our fleet — brief teasers; detail lives on /our-vessels */}
       <section aria-labelledby="fleet">
-        <SectionHeading id="fleet">Our fleet</SectionHeading>
-        <p class="mt-6 max-w-3xl text-body">
-          Meet the boats that carry you along the water. Each has its own character; full details and
-          passenger capacities live on our vessels page.
-        </p>
+        <SectionHeading id="fleet">{sec(copy, 'fleet').heading}</SectionHeading>
+        <p class="mt-6 max-w-3xl text-body">{sec(copy, 'fleet').body?.[0]}</p>
         <ul class="mt-8 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {
-            vessels.map((v) => (
+            vessels.map((name) => (
               <li class="rounded-card bg-panel p-5 ring-1 ring-black/5">
-                <strong class="block text-ink">{v.name}</strong>
-                <p class="mt-1 text-sm text-subtle">Description and passenger capacity — TBC.</p>
+                <strong class="block text-ink">{name}</strong>
+                <p class="mt-1 text-sm text-subtle">{str(copy, 'vesselNote')}</p>
               </li>
             ))
           }
         </ul>
         <div class="mt-8">
-          <CTAButton href="/our-vessels" variant="outline">View our vessels</CTAButton>
+          <CTAButton href="/our-vessels" variant="outline">{str(copy, 'fleetCtaLabel')}</CTAButton>
         </div>
       </section>
 
       {/* Our team — lightweight: one intro block + a single photo placeholder */}
       <section aria-labelledby="team">
-        <SectionHeading id="team">Meet the team</SectionHeading>
+        <SectionHeading id="team">{sec(copy, 'team').heading}</SectionHeading>
         <div class="mt-6 grid gap-8 md:grid-cols-2 md:items-center">
           <div class="max-w-xl space-y-4 text-lg leading-relaxed text-body">
-            <p>
-              Behind every cruise is a small, dedicated crew — skippers, hosts and the office team who
-              keep the boats running and the welcome warm.
-            </p>
-            <p class="text-base text-subtle">Team introduction — TBC from Simon (content-checklist.md).</p>
+            <p>{sec(copy, 'team').body?.[0]}</p>
+            <p class="text-base text-subtle">{sec(copy, 'team').note}</p>
           </div>
           <div class="flex aspect-[4/3] items-center justify-center rounded-card bg-panel text-xs text-subtle">
-            Team photo (TBC)
+            {str(copy, 'teamPhotoPlaceholder')}
           </div>
         </div>
       </section>
 
       {/* Why book direct — copy from the shared BookDirect component */}
       <section aria-labelledby="book-direct">
-        <SectionHeading id="book-direct">Why book direct</SectionHeading>
+        <SectionHeading id="book-direct">{sec(copy, 'bookDirect').heading}</SectionHeading>
         <BookDirect class="mt-6 max-w-3xl" />
       </section>
 
@@ -139,7 +132,7 @@ const structuredData = {
       {
         awards.length > 0 && (
           <section aria-labelledby="press">
-            <SectionHeading id="press">Awards &amp; press</SectionHeading>
+            <SectionHeading id="press">{sec(copy, 'press').heading}</SectionHeading>
             <ul class="mt-6 max-w-3xl space-y-3">
               {awards.map((a) => (
                 <li class="text-body">
@@ -160,11 +153,11 @@ const structuredData = {
 
   {/* Split final CTA */}
   <CTASection
-    heading="Ready to get on the water?"
-    text="Join our signature sightseeing cruise, or talk to us about hiring a boat exclusively for your event."
+    heading={str(copy, 'ctaHeading')}
+    text={str(copy, 'ctaText')}
     primaryHref="/tour/city-river-tours"
-    primaryLabel="Book a sightseeing cruise"
+    primaryLabel={str(copy, 'ctaPrimaryLabel')}
     secondaryHref="/private-hire"
-    secondaryLabel="Enquire about private hire"
+    secondaryLabel={str(copy, 'ctaSecondaryLabel')}
   />
 </BaseLayout>

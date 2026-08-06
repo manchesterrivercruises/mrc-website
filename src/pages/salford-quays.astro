@@ -7,14 +7,19 @@ import KeyFacts from '../components/KeyFacts.astro';
 import CTASection from '../components/CTASection.astro';
 import { site } from '../data/site';
 import { getAlbums, getAlbumImages } from '../lib/gallery';
+import copy from '../content/page-copy/salford-quays.json';
+import { sec, list, str } from '../lib/pageCopy';
+
+// EDITABLE COPY lives in the CMS (Page copy → salford-quays) and is stored in
+// src/content/page-copy/salford-quays.json. This template owns STRUCTURE ONLY — layout,
+// components, icons, every href, the schema block and the gallery album lookup.
 
 // Built at the LEGACY path /salford-quays (docs/url-parity.md row 13). The old Craft page
 // was a substantial boarding-point guide on a short, high-intent URL; /getting-here covers
 // all three boarding points, so redirecting there would have mis-titled it and thrown the
-// URL away. Content is based on the legacy page — see the TBC banner.
-const pageTitle = 'Salford Quays Boarding Point — Manchester River Cruises';
-const pageDescription =
-  'Where to board at Salford Quays: the Millennium Footbridge boarding point beside MediaCityUK, how to get there by tram or car, parking, arrival times and on-board access.';
+// URL away. Content is based on the legacy page; the boarding-address alias is confirmed.
+const pageTitle = copy.seoTitle!;
+const pageDescription = copy.seoDescription!;
 
 // Imagery comes from the existing salford-quays gallery album (owned assets).
 const albums = await getAlbums();
@@ -31,12 +36,9 @@ const icons = {
   warn: '<path d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z" />',
 };
 
-const keyFacts = [
-  { text: 'Under the Millennium Footbridge', icon: icons.pin },
-  { text: 'Tram: MediaCityUK (Eccles line)', icon: icons.tram },
-  { text: 'Boarding 5–15 min before departure', icon: icons.clock },
-  { text: 'No wheelchair access on board', icon: icons.warn },
-];
+// Icons are structural; only the labels come from the CMS, zipped by position.
+const factIcons = [icons.pin, icons.tram, icons.clock, icons.warn];
+const keyFacts = (copy.keyFacts ?? []).map((text, i) => ({ text, icon: factIcons[i] ?? icons.pin }));
 
 const structuredData = {
   '@context': 'https://schema.org',
@@ -59,13 +61,13 @@ const crumbs = [
   <script type="application/ld+json" is:inline set:html={JSON.stringify(structuredData)} />
 
   <PageHero
-    eyebrow="Boarding point"
-    title="Salford Quays Boarding Point"
-    subtitle="Where every cruise begins — under the Millennium Footbridge, between The Lowry and the Quayside Shopping Centre."
+    eyebrow={copy.eyebrow}
+    title={copy.heading}
+    subtitle={copy.intro}
     heroImage={hero}
     heroImageAlt={heroAlt}
   >
-    <CTAButton href="/tour/city-river-tours">Book the City River Tour</CTAButton>
+    <CTAButton href="/tour/city-river-tours">{str(copy, 'heroCtaLabel')}</CTAButton>
   </PageHero>
 
   <KeyFacts facts={keyFacts} />
@@ -73,84 +75,70 @@ const crumbs = [
   <div class="mx-auto max-w-3xl px-4 py-12 sm:px-6 md:py-16 lg:px-8">
     <div class="space-y-14 leading-relaxed text-body">
       <section aria-labelledby="where">
-        <SectionHeading id="where" as="h2">Where to board</SectionHeading>
-        <p class="mt-4">
-          The boarding point is located under the Millennium Footbridge, between The Lowry Theatre
-          and the Quayside Shopping Centre, beside MediaCityUK.
-        </p>
+        <SectionHeading id="where" as="h2">{sec(copy, 'where').heading}</SectionHeading>
+        <p class="mt-4">{sec(copy, 'where').body?.[0]}</p>
         <p class="mt-4">{site.addressDisplay}</p>
         {/* Same place, two names. The legacy site called this Pier 8 (M50 3AZ) and Simon has
             confirmed it is the same boarding location as the canonical Millennium Footbridge
             address (M50 3RB) in site.ts. Kept visible as a secondary line so returning customers
             and anyone whose satnav still holds the old postcode recognise they are in the right
             place — the canonical address stays primary and remains the only one in schema. */}
-        <p class="mt-1 text-sm text-subtle">Also known as Pier 8, Salford Quays.</p>
+        <p class="mt-1 text-sm text-subtle">{str(copy, 'alsoKnownAs')}</p>
         <a
           href="https://www.google.com/maps/search/?api=1&query=Millennium+Footbridge+Salford+Quays+M50+3RB"
           class="mt-2 inline-block font-medium text-primary hover:underline"
           rel="noopener"
           target="_blank"
         >
-          Open in Google Maps
+          {str(copy, 'mapsLinkLabel')}
         </a>
       </section>
 
       <section aria-labelledby="tram">
-        <SectionHeading id="tram" as="h2">Getting here by tram</SectionHeading>
+        <SectionHeading id="tram" as="h2">{sec(copy, 'tram').heading}</SectionHeading>
         <p class="mt-4">
-          The nearest Metrolink stop is <strong>MediaCityUK</strong>, on the Eccles line. From there
-          it is a short walk to the boarding area.
+          {str(copy, 'tramBefore')} <strong>{str(copy, 'tramStop')}</strong>{str(copy, 'tramAfter')}
         </p>
       </section>
 
       <section aria-labelledby="car">
-        <SectionHeading id="car" as="h2">Getting here by car &amp; parking</SectionHeading>
-        <p class="mt-4">
-          The closest public parking is at the Quayside Shopping Centre, MediaCityUK. Traffic
-          congestion can be severe at weekends, on event days and during peak times — we strongly
-          recommend allowing extra travel time and arriving early.
-        </p>
+        <SectionHeading id="car" as="h2">{sec(copy, 'car').heading}</SectionHeading>
+        <p class="mt-4">{sec(copy, 'car').body?.[0]}</p>
         <p class="mt-4 text-sm text-subtle">
-          Parking at embarkation points is at the owner’s risk and must not obstruct access — see
-          our <a href="/terms-conditions" class="font-medium text-primary underline-offset-4 hover:underline">terms &amp; conditions</a>.
+          {str(copy, 'carParkingNoteBefore')}{' '}
+          <a href="/terms-conditions" class="font-medium text-primary underline-offset-4 hover:underline">{str(copy, 'carParkingNoteLinkText')}</a>{str(copy, 'carParkingNoteAfter')}
         </p>
       </section>
 
       <section aria-labelledby="arrival">
-        <SectionHeading id="arrival" as="h2">Arrival &amp; boarding times</SectionHeading>
-        <p class="mt-4">
-          Please arrive well in advance of your scheduled departure. Our vessels depart promptly and
-          cannot wait for late arrivals, regardless of traffic or parking delays. Boarding typically
-          opens 5–15 minutes before departure.
-        </p>
+        <SectionHeading id="arrival" as="h2">{sec(copy, 'arrival').heading}</SectionHeading>
+        <p class="mt-4">{sec(copy, 'arrival').body?.[0]}</p>
       </section>
 
       <section aria-labelledby="access">
-        <SectionHeading id="access" as="h2">Accessibility &amp; on-board restrictions</SectionHeading>
+        <SectionHeading id="access" as="h2">{sec(copy, 'access').heading}</SectionHeading>
         <ul class="mt-4 list-disc space-y-2 pl-5">
-          <li>We do not have wheelchair access on board.</li>
-          <li>All buggies must be folded down prior to boarding.</li>
-          <li>Full-size prams cannot be accommodated on board due to space and safety restrictions.</li>
+          {list(copy, 'access').map((i) => <li>{i}</li>)}
         </ul>
         <p class="mt-4">
-          Full details are on our <a href="/accessibility" class="font-medium text-primary underline-offset-4 hover:underline">accessibility page</a>.
+          {str(copy, 'accessMoreBefore')}{' '}
+          <a href="/accessibility" class="font-medium text-primary underline-offset-4 hover:underline">{str(copy, 'accessMoreLinkText')}</a>{str(copy, 'accessMoreAfter')}
         </p>
       </section>
 
       <section aria-labelledby="expect">
-        <SectionHeading id="expect" as="h2">What to expect</SectionHeading>
+        <SectionHeading id="expect" as="h2">{sec(copy, 'expect').heading}</SectionHeading>
         <p class="mt-4">
-          Unless stated otherwise, all cruises depart from and return to Salford Quays — city
-          sightseeing tours, themed cruises and special event sailings alike. Check
-          <a href="/whats-on" class="font-medium text-primary underline-offset-4 hover:underline">what’s on</a> for
-          upcoming departures.
+          {sec(copy, 'expect').body?.[0]}{' '}
+          <a href="/whats-on" class="font-medium text-primary underline-offset-4 hover:underline">{str(copy, 'expectLinkText')}</a>{' '}
+          {str(copy, 'expectAfter')}
         </p>
       </section>
 
       {
         images.length > 0 && (
           <section aria-labelledby="photos">
-            <SectionHeading id="photos" as="h2">The Quays from the water</SectionHeading>
+            <SectionHeading id="photos" as="h2">{sec(copy, 'photos').heading}</SectionHeading>
             <div class="mt-6 grid gap-4 sm:grid-cols-3">
               {images.map((img) => (
                 <img
@@ -165,7 +153,7 @@ const crumbs = [
               ))}
             </div>
             <a href="/gallery/salford-quays" class="mt-4 inline-block font-medium text-primary hover:underline">
-              See more Salford Quays photos →
+              {str(copy, 'morePhotosLabel')}
             </a>
           </section>
         )
@@ -174,11 +162,11 @@ const crumbs = [
   </div>
 
   <CTASection
-    heading="Ready to get on the water?"
-    text="Sightseeing cruises, live music nights and family events all depart from this boarding point."
-    primaryLabel="Book the City River Tour"
+    heading={str(copy, 'ctaHeading')}
+    text={str(copy, 'ctaText')}
+    primaryLabel={str(copy, 'ctaPrimaryLabel')}
     primaryHref="/tour/city-river-tours"
-    secondaryLabel="See what’s on"
+    secondaryLabel={str(copy, 'ctaSecondaryLabel')}
     secondaryHref="/whats-on"
   />
 </BaseLayout>

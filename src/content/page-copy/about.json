@@ -1,0 +1,54 @@
+{
+  "page": "about",
+  "seoDescription": "About Manchester River Cruises — sightseeing cruises, events and private hire on the Manchester Ship Canal from Salford Quays. Meet our fleet and the team behind the boats.",
+  "eyebrow": "About us",
+  "intro": "Sightseeing cruises, events and private hire on the Manchester Ship Canal — here's the story behind the boats.",
+  "sections": [
+    {
+      "key": "story",
+      "heading": "Our story",
+      "body": [
+        "Manchester River Cruises was founded to bring river tours to the heart of Manchester, operating from Salford Quays. We're passionate about the city's waterways and the history written along the Manchester Ship Canal."
+      ],
+      "note": "Full company story — TBC from Simon (content-checklist.md)."
+    },
+    {
+      "key": "fleet",
+      "heading": "Our fleet",
+      "body": [
+        "Meet the boats that carry you along the water. Each has its own character; full details and passenger capacities live on our vessels page."
+      ]
+    },
+    {
+      "key": "team",
+      "heading": "Meet the team",
+      "body": [
+        "Behind every cruise is a small, dedicated crew — skippers, hosts and the office team who keep the boats running and the welcome warm."
+      ],
+      "note": "Team introduction — TBC from Simon (content-checklist.md)."
+    },
+    { "key": "bookDirect", "heading": "Why book direct" },
+    { "key": "press", "heading": "Awards & press" }
+  ],
+  "lists": [
+    {
+      "key": "vessels",
+      "items": ["Princess Katherine", "Isabella", "Melody", "Georgina", "Joyce Too"]
+    }
+  ],
+  "strings": [
+    { "key": "vesselNote", "value": "Description and passenger capacity — TBC." },
+    { "key": "fleetCtaLabel", "value": "View our vessels" },
+    { "key": "teamPhotoPlaceholder", "value": "Team photo (TBC)" },
+    { "key": "trustYearsValue", "value": "TBC" },
+    { "key": "trustYearsLabel", "value": "Years operating" },
+    { "key": "trustReviewsLabel", "value": "Google reviews" },
+    { "key": "trustFleetLabel", "value": "Vessels in our fleet" },
+    { "key": "trustOfficialValue", "value": "Official" },
+    { "key": "trustOfficialLabel", "value": "Operator — book direct" },
+    { "key": "ctaHeading", "value": "Ready to get on the water?" },
+    { "key": "ctaText", "value": "Join our signature sightseeing cruise, or talk to us about hiring a boat exclusively for your event." },
+    { "key": "ctaPrimaryLabel", "value": "Book a sightseeing cruise" },
+    { "key": "ctaSecondaryLabel", "value": "Enquire about private hire" }
+  ]
+}
