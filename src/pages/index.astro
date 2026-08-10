@@ -11,19 +11,23 @@ import VentrataWidget from '../components/VentrataWidget.astro';
 import DateFinder from '../components/DateFinder.astro';
 import SocialBand from '../components/SocialBand.astro';
 import { site } from '../data/site';
+import copy from '../content/page-copy/home.json';
+import { sec, list, cards, str } from '../lib/pageCopy';
+
+// EDITABLE COPY lives in the CMS (Page copy → home) and is stored in
+// src/content/page-copy/home.json. This template owns STRUCTURE ONLY — layout,
+// components, icons, every href, the schema block, and the live data below:
+// the OCTO date finder, the What's On strip feed and the collection-driven grids.
 
 // ─────────────────────────────────────────────────────────────────────────────
 // FEATURED HERO PRODUCT — manual config, NEVER API-selected (AGENTS.md rule 5).
-// Defaults to City River Tour. Change here for a seasonal campaign; do not wire
-// this to the OCTO API. `title`/`subtitle` drive the hero copy.
+// Defaults to City River Tour. The DESTINATION and image path stay here; the hero
+// wording (heading/intro/CTA label/image alt) is CMS copy. Do not wire either to
+// the OCTO API.
 // ─────────────────────────────────────────────────────────────────────────────
 const heroProduct = {
-  title: 'See Manchester from the Water',
-  subtitle: 'Sightseeing cruises, live music nights and matchday ferries from Salford Quays',
   href: '/tour/city-river-tours',
-  ctaLabel: 'Book the City River Tour',
   image: '/images/hero-city-river-tour.jpg', // placeholder — real WebP asset TBC
-  imageAlt: 'The City River Tour boat cruising past MediaCity at Salford Quays',
 };
 
 // Google review figures — sourced from src/data/site.ts (single source of truth).
@@ -122,22 +126,34 @@ const factIcons = {
   tag: '<path d="M9.568 3H5.25A2.25 2.25 0 0 0 3 5.25v4.318c0 .597.237 1.17.659 1.591l9.581 9.581c.699.699 1.78.872 2.607.33a18.095 18.095 0 0 0 5.223-5.223c.542-.827.369-1.908-.33-2.607L11.16 3.66A2.25 2.25 0 0 0 9.568 3Z" /><path d="M6 6h.008v.008H6V6Z" />',
   check: '<path d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />',
 };
-const cityFacts = [
-  { text: '60 minutes', icon: factIcons.clock },
-  { text: 'From £13', icon: factIcons.tag },
-  { text: 'Free cancellation', icon: factIcons.check },
-];
+// Icons are structural; only the fact labels come from the CMS, zipped by position.
+const cityFactIcons = [factIcons.clock, factIcons.tag, factIcons.check];
+const cityFacts = list(copy, 'cityFacts').map((text, i) => ({
+  text,
+  icon: cityFactIcons[i] ?? factIcons.check,
+}));
+
+// "Nights to remember" card destinations. Every href stays in code, keyed off the
+// card key the CMS holds — the wording is editable, the route is not.
+const NIGHT_HREFS: Record<string, string> = {
+  'nights:music': '/music-cruises-manchester',
+  'nights:party': '/party-boat-manchester',
+  'nights:christmas': '/christmas-cruises-manchester',
+};
+
+// Fleet size — TODO: derive from the vessels collection once it is seeded, so it
+// cannot drift from the fleet itself.
+const FLEET_COUNT = 5;
 
 const statTiles = [
-  { stat: '43', label: 'Points of interest' },
-  { stat: '5', label: 'Vessels in the fleet' },
-  { stat: 'Salford Quays', label: 'Departing from' },
+  { stat: str(copy, 'statPoiValue'), label: str(copy, 'statPoiLabel') },
+  { stat: `${FLEET_COUNT}`, label: str(copy, 'statFleetLabel') },
+  { stat: str(copy, 'statDepartingValue'), label: str(copy, 'statDepartingLabel') },
 ];
 
 const SITE = site.url;
-const pageTitle = 'Manchester River Cruises | Boat Tours, Events & Ferry from Salford Quays';
-const pageDescription =
-  'Sightseeing river cruises, live music and party nights, and matchday ferries on the Manchester Ship Canal from Salford Quays. Book direct with Manchester River Cruises.';
+const pageTitle = copy.seoTitle!;
+const pageDescription = copy.seoDescription!;
 
 const structuredData = {
   '@context': 'https://schema.org',
@@ -171,22 +187,23 @@ const structuredData = {
   <section class="bg-dark text-white">
     <div class="mx-auto grid max-w-6xl gap-10 px-4 py-20 sm:px-6 md:py-28 lg:grid-cols-2 lg:items-center lg:gap-12 lg:px-8">
       <div>
-        <p class="text-sm font-semibold uppercase tracking-[0.2em] text-accent">Manchester River Cruises</p>
-        <h1 class="mt-3 text-4xl font-bold tracking-tight text-white sm:text-5xl md:text-6xl">{heroProduct.title}</h1>
-        <p class="mt-5 max-w-xl text-lg leading-relaxed text-white/80">{heroProduct.subtitle}</p>
+        <p class="text-sm font-semibold uppercase tracking-[0.2em] text-accent">{copy.eyebrow}</p>
+        <h1 class="mt-3 text-4xl font-bold tracking-tight text-white sm:text-5xl md:text-6xl">{copy.heading}</h1>
+        <p class="mt-5 max-w-xl text-lg leading-relaxed text-white/80">{copy.intro}</p>
         <div class="mt-8 flex flex-wrap items-center gap-4">
-          <CTAButton href={heroProduct.href}>{heroProduct.ctaLabel}</CTAButton>
-          <CTAButton href="/whats-on" variant="outline">What's On</CTAButton>
+          <CTAButton href={heroProduct.href}>{str(copy, 'heroCtaLabel')}</CTAButton>
+          <CTAButton href="/whats-on" variant="outline">{str(copy, 'heroSecondaryLabel')}</CTAButton>
         </div>
-        {/* Trust line */}
+        {/* Trust line — the score and review count are DERIVED from site.ts and stay in
+            code; only the words around them are CMS copy. */}
         <div class="mt-6 flex items-center gap-2 text-sm text-white/80">
           <StarRating rating={RATING} size="h-4 w-4" />
-          <span><span class="font-semibold text-white">{RATING} stars</span> · {REVIEW_COUNT} Google reviews</span>
+          <span><span class="font-semibold text-white">{RATING} {str(copy, 'trustStarsSuffix')}</span> · {REVIEW_COUNT} {str(copy, 'trustReviewsSuffix')}</span>
         </div>
       </div>
       {/* Hero image placeholder — swap for a real WebP asset */}
       <div class="flex aspect-[4/3] items-center justify-center rounded-card bg-white/5 text-xs text-white/70 ring-1 ring-white/10 lg:aspect-[5/4]">
-        {heroProduct.imageAlt}
+        {str(copy, 'heroImageAlt')}
       </div>
     </div>
   </section>
@@ -195,14 +212,11 @@ const structuredData = {
   <section aria-labelledby="crt" class="mx-auto max-w-6xl px-4 py-16 sm:px-6 md:py-20 lg:px-8">
     <div class="grid gap-10 lg:grid-cols-2 lg:items-center lg:gap-12">
       <div class="flex aspect-[16/10] items-center justify-center rounded-card bg-panel text-xs text-subtle">
-        City River Tour photo (TBC)
+        {str(copy, 'crtImagePlaceholder')}
       </div>
       <div>
-        <SectionHeading id="crt">The City River Tour</SectionHeading>
-        <p class="mt-6 text-lg leading-relaxed text-body">
-          Our signature sightseeing cruise glides along the historic Manchester Ship Canal from Salford
-          Quays, with live commentary bringing the waterfront's landmarks and stories to life.
-        </p>
+        <SectionHeading id="crt">{sec(copy, 'crt').heading}</SectionHeading>
+        <p class="mt-6 text-lg leading-relaxed text-body">{sec(copy, 'crt').body?.[0]}</p>
         <ul class="mt-6 flex flex-col gap-3 text-sm sm:flex-row sm:flex-wrap sm:items-center sm:gap-6">
           {
             cityFacts.map((f) => (
@@ -214,7 +228,7 @@ const structuredData = {
           }
         </ul>
         <div class="mt-8">
-          <CTAButton href="/tour/city-river-tours">Book the City River Tour</CTAButton>
+          <CTAButton href="/tour/city-river-tours">{str(copy, 'crtCtaLabel')}</CTAButton>
         </div>
       </div>
     </div>
@@ -223,9 +237,9 @@ const structuredData = {
   {/* 2b. FIND YOUR DATE — calendar-first booking entry ─────────────────────── */}
   <section aria-labelledby="find-date" class="mx-auto max-w-6xl px-4 py-12 sm:px-6 md:py-16 lg:px-8">
     <div class="rounded-card bg-dark px-6 py-10 text-center text-white sm:px-10">
-      <h2 id="find-date" class="text-2xl font-bold tracking-tight sm:text-3xl">Find your date</h2>
+      <h2 id="find-date" class="text-2xl font-bold tracking-tight sm:text-3xl">{sec(copy, 'findDate').heading}</h2>
       <p class="mx-auto mt-3 max-w-xl text-lg leading-relaxed text-white/80">
-        Tell us when you're free — see everything sailing that day.
+        {sec(copy, 'findDate').body?.[0]}
       </p>
       {/* Desktop gets the OCTO-powered date finder (month calendar + selected day's live
           departures/pricing). Mobile keeps the gold pop-up trigger — a full calendar +
@@ -255,8 +269,8 @@ const structuredData = {
   <section aria-labelledby="coming-up" class="bg-panel">
     <div class="mx-auto max-w-6xl px-4 py-16 sm:px-6 md:py-20 lg:px-8">
       <div class="flex flex-wrap items-end justify-between gap-4">
-        <SectionHeading id="coming-up">Coming up</SectionHeading>
-        <a href="/whats-on" class="text-sm font-medium text-primary hover:underline">See all dates →</a>
+        <SectionHeading id="coming-up">{sec(copy, 'comingUp').heading}</SectionHeading>
+        <a href="/whats-on" class="text-sm font-medium text-primary hover:underline">{str(copy, 'comingUpSeeAllLinkLabel')}</a>
       </div>
       {/* Server-rendered crawlable core: soonest event products (no fabricated dates) — the
           no-JS / feed-failure fallback. Hydrated with the soonest 4 live event-days. */}
@@ -276,7 +290,7 @@ const structuredData = {
         }
       </div>
       <div class="mt-8">
-        <CTAButton href="/whats-on" variant="outline">See all dates</CTAButton>
+        <CTAButton href="/whats-on" variant="outline">{str(copy, 'comingUpCtaLabel')}</CTAButton>
       </div>
       <script is:inline set:html={STRIP_SCRIPT} />
 
@@ -286,11 +300,13 @@ const structuredData = {
 
   {/* 4. EVENTS GRID ───────────────────────────────────────────────────────── */}
   <section aria-labelledby="nights" class="mx-auto max-w-6xl px-4 py-16 sm:px-6 md:py-20 lg:px-8">
-    <SectionHeading id="nights">Nights to remember</SectionHeading>
+    <SectionHeading id="nights">{sec(copy, 'nights').heading}</SectionHeading>
     <div class="mt-8 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-      <ProductCard name="Music Cruises" desc="Live tribute and themed nights — ABBA, Elvis, Dolly, Adele, Soul and more." href="/music-cruises-manchester" linkText="Music cruises" />
-      <ProductCard name="Party Nights" desc="Boat parties on the Ship Canal — dancing, drinks and the city skyline." href="/party-boat-manchester" linkText="Party nights" />
-      <ProductCard name="Christmas on the water" desc="Festive party nights and seasonal cruises through the winter." href="/christmas-cruises-manchester" linkText="See your options" />
+      {
+        cards(copy, 'nights').map((c) => (
+          <ProductCard name={c.name} desc={c.desc} href={NIGHT_HREFS[c.key]} linkText={c.linkText} />
+        ))
+      }
     </div>
   </section>
 
@@ -298,13 +314,13 @@ const structuredData = {
   <section aria-labelledby="mufc" class="bg-dark text-white">
     <div class="mx-auto flex max-w-6xl flex-col gap-6 px-4 py-14 sm:px-6 md:flex-row md:items-center md:justify-between lg:px-8">
       <div>
-        <h2 id="mufc" class="text-2xl font-bold tracking-tight sm:text-3xl">Matchday by boat</h2>
+        <h2 id="mufc" class="text-2xl font-bold tracking-tight sm:text-3xl">{sec(copy, 'mufc').heading}</h2>
         <p class="mt-2 max-w-2xl text-lg leading-relaxed text-white/80">
-          Skip the matchday traffic and arrive at Old Trafford by ferry along the Ship Canal.
+          {sec(copy, 'mufc').body?.[0]}
         </p>
       </div>
       <div class="shrink-0">
-        <CTAButton href="/tour/boat-to-old-trafford">Boat to Old Trafford</CTAButton>
+        <CTAButton href="/tour/boat-to-old-trafford">{str(copy, 'mufcCtaLabel')}</CTAButton>
       </div>
     </div>
   </section>
@@ -313,13 +329,13 @@ const structuredData = {
   <section aria-labelledby="private" class="mx-auto max-w-6xl px-4 py-16 sm:px-6 md:py-20 lg:px-8">
     <div class="rounded-card bg-panel p-8 ring-1 ring-black/5 sm:flex sm:items-center sm:justify-between sm:gap-6 sm:p-10">
       <div>
-        <h2 id="private" class="text-2xl font-bold tracking-tight text-ink sm:text-3xl">Make it yours</h2>
+        <h2 id="private" class="text-2xl font-bold tracking-tight text-ink sm:text-3xl">{sec(copy, 'private').heading}</h2>
         <p class="mt-2 max-w-2xl text-lg leading-relaxed text-body">
-          Charter a boat exclusively for your celebration, corporate event or private party.
+          {sec(copy, 'private').body?.[0]}
         </p>
       </div>
       <div class="mt-6 shrink-0 sm:mt-0">
-        <CTAButton href="/private-hire" variant="outline">Private hire</CTAButton>
+        <CTAButton href="/private-hire" variant="outline">{str(copy, 'privateCtaLabel')}</CTAButton>
       </div>
     </div>
   </section>
@@ -328,8 +344,8 @@ const structuredData = {
   <section aria-labelledby="discover" class="bg-panel">
     <div class="mx-auto max-w-6xl px-4 py-16 sm:px-6 md:py-20 lg:px-8">
       <div class="flex flex-wrap items-end justify-between gap-4">
-        <SectionHeading id="discover">Plan your day</SectionHeading>
-        <a href="/discover" class="text-sm font-medium text-primary hover:underline">All guides →</a>
+        <SectionHeading id="discover">{sec(copy, 'discover').heading}</SectionHeading>
+        <a href="/discover" class="text-sm font-medium text-primary hover:underline">{str(copy, 'discoverAllLinkLabel')}</a>
       </div>
       <div class="mt-8 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {
@@ -338,10 +354,10 @@ const structuredData = {
               name={g.data.title}
               desc={g.data.description}
               href={`/discover/${g.id}`}
-              linkText="Read guide"
+              linkText={str(copy, 'discoverLinkText')}
               image={g.data.heroImage}
               imageAlt={g.data.heroImageAlt}
-              imageLabel={g.data.heroImageAlt ?? 'Image (TBC)'}
+              imageLabel={g.data.heroImageAlt ?? str(copy, 'discoverImagePlaceholder')}
             />
           ))
         }
@@ -351,12 +367,12 @@ const structuredData = {
 
   {/* 8. SOCIAL PROOF ──────────────────────────────────────────────────────── */}
   <section aria-labelledby="proof" class="mx-auto max-w-6xl px-4 py-16 sm:px-6 md:py-20 lg:px-8">
-    <h2 id="proof" class="sr-only">Why book with us</h2>
+    <h2 id="proof" class="sr-only">{sec(copy, 'proof').heading}</h2>
     <div class="flex flex-col items-center gap-3 text-center">
       <StarRating rating={RATING} size="h-7 w-7" />
       <p class="text-2xl font-bold text-ink">
         {RATING} / 5
-        <span class="ml-2 align-middle text-base font-normal text-subtle">from {REVIEW_COUNT} Google reviews</span>
+        <span class="ml-2 align-middle text-base font-normal text-subtle">{str(copy, 'proofReviewsBefore')} {REVIEW_COUNT} {str(copy, 'proofReviewsAfter')}</span>
       </p>
     </div>
     <div class="mt-10 grid grid-cols-1 gap-4 sm:grid-cols-3">

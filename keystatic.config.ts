@@ -163,7 +163,8 @@ export default config({
 
         keyFacts: fields.array(fields.text({ label: 'Fact' }), {
           label: 'Key facts strip',
-          description: 'Short facts shown in the strip under the hero. Each pairs with a fixed icon by position.',
+          description:
+            'Short facts shown in the strip under the hero. Each pairs with a fixed icon by position. ⚠ PRICES: a price written here is display copy only — it does NOT drive checkout. Ventrata is the source of truth; if you change one, confirm it matches Ventrata.',
           itemLabel: (p) => p.value,
         }),
 
@@ -193,7 +194,12 @@ export default config({
             key: fields.text({ label: 'Key', description: 'Code reference — do not change.', validation: { isRequired: true } }),
             items: fields.array(fields.text({ label: 'Item' }), { label: 'Items', itemLabel: (p) => p.value }),
           }),
-          { label: 'Lists (bullets, pills, checklists)', itemLabel: (p) => p.fields.key.value || 'List' },
+          {
+            label: 'Lists (bullets, pills, checklists)',
+            description:
+              '⚠ PRICES: a price written in a list item is display copy only — it does NOT drive checkout. Ventrata is the source of truth; if you change one, confirm it matches Ventrata.',
+            itemLabel: (p) => p.fields.key.value || 'List',
+          },
         ),
 
         cards: fields.array(
