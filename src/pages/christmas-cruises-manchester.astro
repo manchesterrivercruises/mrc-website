@@ -8,6 +8,13 @@ import GettingHere from '../components/GettingHere.astro';
 import KeyFacts from '../components/KeyFacts.astro';
 import EventGalleryStrip from '../components/EventGalleryStrip.astro';
 import { getAlbums } from '../lib/gallery';
+import copy from '../content/page-copy/christmas-cruises-manchester.json';
+import { sec, cards, faqGroup, faqs as faqItems, str } from '../lib/pageCopy';
+
+// EDITABLE COPY lives in the CMS (Page copy → christmas-cruises-manchester) and is
+// stored in src/content/page-copy/christmas-cruises-manchester.json. This template
+// owns STRUCTURE ONLY — layout, components, icons, every href (including the
+// ?month=2026-12 What's On deep link), the gallery album lookup and the schema block.
 
 // Christmas HUB — routes three festive audiences, honestly. Confirmed reality: there are NO
 // Christmas-specific PUBLIC events except the Santa cruise. The regular party nights simply run
@@ -26,76 +33,53 @@ const icons = {
     '<path d="M9.813 15.904 9 18.75l-.813-2.846a4.5 4.5 0 0 0-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 0 0 3.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 0 0 3.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 0 0-3.09 3.09Z" /><path d="M18.259 8.715 18 9.75l-.259-1.035a3.375 3.375 0 0 0-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 0 0 2.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 0 0 2.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 0 0-2.456 2.456Z" />',
 };
 
-const keyFacts = [
-  { text: 'Party nights, private hire & Santa cruises', icon: icons.sparkles },
-  { text: 'Fully decorated all through December', icon: icons.calendar },
-  { text: 'Millennium Footbridge, Salford Quays', icon: icons.pin },
-  { text: 'Book early — December sells out', icon: icons.gift },
-];
+// Icons are structural; only the fact labels come from the CMS, zipped by position.
+const factIcons = [icons.sparkles, icons.calendar, icons.pin, icons.gift];
+const keyFacts = (copy.keyFacts ?? []).map((text, i) => ({ text, icon: factIcons[i] ?? icons.sparkles }));
 
-// The three festive journeys. `featured` marks the highest-value strand (private hire).
-const journeys = [
+// The three festive journeys. Image paths, destinations and `featured` (which marks the
+// highest-value strand — private hire) are structure and stay here; the wording, the
+// eyebrow and the image alt come from the CMS, keyed off the card key.
+const JOURNEYS = [
   {
-    id: 'party-nights',
-    eyebrow: 'Party nights',
-    title: 'Party nights, dressed for Christmas',
-    copy: 'All our regular party nights — ABBA, Dolly, Elvis, Soul and more — get the full Christmas treatment through December: the boat decorated bow to stern, festive extras on board and Christmas songs in the mix. Same great nights, in full festive dress.',
+    key: 'journeys:party-nights',
     image: '/images/gallery/abba-night/01.webp',
-    imageAlt: 'A tribute act performing under coloured stage lights on a party cruise',
-    cta: { label: 'See December party nights', href: '/whats-on?month=2026-12' },
+    href: '/whats-on?month=2026-12',
     featured: false,
   },
   {
-    id: 'private-party',
-    eyebrow: 'Private hire',
-    title: 'Your own Christmas party',
-    copy: 'The whole boat, exclusively yours — the standout way to do the office Christmas do or a big group celebration. Your own decorated boat, your own night on the water, with a licensed bar and the floodlit waterfront gliding past. December dates go fast, so get yours locked in.',
+    key: 'journeys:private-party',
     image: '/images/gallery/private-hire/boat-dressed-for-valentines.webp',
-    imageAlt: 'The boat cabin dressed for a private celebration with decorations and laid tables',
-    cta: { label: 'Plan a private Christmas party', href: '/private-hire' },
+    href: '/private-hire',
     featured: true,
   },
   {
-    id: 'santa',
-    eyebrow: 'Family',
-    title: 'Santa cruises',
-    copy: 'The one truly Christmas-specific event: a magical family cruise where little ones meet Father Christmas himself on the water, with a festively decorated cabin and a gift for every child. Pure festive magic for the countdown to Christmas.',
+    key: 'journeys:santa',
     image: '/images/gallery/christmas-cruises/child-at-the-wheel-with-santa-card.webp',
-    imageAlt: 'A child at the wheel of the boat alongside Father Christmas',
-    cta: { label: 'Meet Father Christmas', href: '/santa-cruise-manchester' },
+    href: '/santa-cruise-manchester',
     featured: false,
   },
-];
+] as const;
 
-const faqs = [
-  {
-    q: 'Do you run special Christmas events?',
-    a: 'Our regular party nights run right through December with the full Christmas treatment — the boat decorated bow to stern, festive extras on board and Christmas songs mixed into the night. The one Christmas-specific event is our family Santa cruise. For a do of your own, hire the whole boat.',
-  },
-  {
-    q: 'Can I book a private Christmas party?',
-    a: 'Yes — hire the whole boat for your office party or group celebration, with the boat decorated for Christmas. Catering, drinks packages and festive extras — TBC from Simon. Enquire via our private hire page; December books up early.',
-  },
-  {
-    q: 'When should I book for December?',
-    a: 'December is our busiest month and party nights and private dates sell out, so book as early as you can. Exact deadlines — TBC.',
-  },
-  {
-    q: 'What should I wear?',
-    a: 'Dress warmly (and festively!). There is a heated indoor cabin, but the open deck can be cold in winter. (TBC)',
-  },
-  {
-    q: 'Are the Christmas cruises accessible?',
-    a: 'Step-free boarding is available where tides allow, and our sensory-friendly SEN Santa cruise is designed for children with additional needs. Full accessibility details — TBC.',
-  },
-];
+const journeys = JOURNEYS.map((j) => {
+  const c = cards(copy, 'journeys').find((x) => x.key === j.key)!;
+  return {
+    ...j,
+    eyebrow: str(copy, `${j.key}-eyebrow`),
+    title: c.name,
+    copy: c.desc,
+    ctaLabel: c.linkText,
+    imageAlt: str(copy, `${j.key}-imageAlt`),
+  };
+});
+
+const faqs = faqItems(copy);
 
 const SITE = site.url;
 // Meta targets the hub intent — "Christmas cruises Manchester" + "Christmas party boat Manchester".
 // The Santa page keeps "Santa cruise" ownership, so there is no title cannibalisation.
-const pageTitle = 'Christmas Cruises & Christmas Party Boat Manchester — Manchester River Cruises';
-const pageDescription =
-  'Christmas on the Manchester Ship Canal from Salford Quays: party nights that run through December fully decorated with festive extras, private Christmas parties for your office or group, and family Santa cruises. Book direct.';
+const pageTitle = copy.seoTitle!;
+const pageDescription = copy.seoDescription!;
 
 // Schema.org — TouristAttraction + FAQPage ONLY. No Product/Offer/InStock: this hub sells no single
 // dated product (party dates live in Ventrata; the Santa product lives on its own page), so a Product
@@ -133,17 +117,16 @@ const structuredData = {
     {/* Hero — dark navy, gold accents, festive feel */}
     <section class="bg-dark text-white">
       <div class="mx-auto max-w-6xl px-4 py-20 sm:px-6 md:py-28 lg:px-8">
-        <p class="text-sm font-semibold uppercase tracking-[0.2em] text-accent">Christmas on the water</p>
+        <p class="text-sm font-semibold uppercase tracking-[0.2em] text-accent">{copy.eyebrow}</p>
         <h1 class="mt-3 text-4xl font-bold tracking-tight text-white sm:text-5xl md:text-6xl">
-          Christmas Cruises Manchester
+          {copy.heading}
         </h1>
         <p class="mt-5 max-w-2xl text-lg leading-relaxed text-white/80">
-          Three ways to celebrate on the Manchester Ship Canal this December — a decked-out party
-          night, your own private do, or a Santa cruise for the family.
+          {copy.intro}
         </p>
         <div class="mt-8 flex flex-wrap items-center gap-4">
-          <CTAButton href="#strands">See your options</CTAButton>
-          <span class="text-sm text-white/70">Fully decorated all through December</span>
+          <CTAButton href="#strands">{str(copy, 'heroCtaLabel')}</CTAButton>
+          <span class="text-sm text-white/70">{str(copy, 'heroCtaNote')}</span>
         </div>
       </div>
     </section>
@@ -153,7 +136,7 @@ const structuredData = {
 
     {/* THREE JOURNEY CARDS — the router, high on the page */}
     <section id="strands" aria-labelledby="strands-heading" class="mx-auto max-w-6xl px-4 py-12 sm:px-6 md:py-16 lg:px-8">
-      <SectionHeading id="strands-heading">What's Christmas like on the water?</SectionHeading>
+      <SectionHeading id="strands-heading">{sec(copy, 'strands').heading}</SectionHeading>
       <div class="mt-8 grid grid-cols-1 gap-5 md:grid-cols-3">
         {
           journeys.map((j) => (
@@ -172,7 +155,7 @@ const structuredData = {
                 />
                 {j.featured && (
                   <span class="absolute left-3 top-3 rounded-full bg-primary px-2.5 py-0.5 text-xs font-semibold text-white">
-                    Most-booked for groups
+                    {str(copy, 'featuredBadge')}
                   </span>
                 )}
               </div>
@@ -181,8 +164,8 @@ const structuredData = {
                 <h3 class="mt-2 text-lg font-bold text-ink">{j.title}</h3>
                 <p class="mt-2 flex-1 text-sm leading-relaxed text-body">{j.copy}</p>
                 <div class="mt-5">
-                  <CTAButton href={j.cta.href} variant={j.featured ? 'primary' : 'outline'} class="w-full">
-                    {j.cta.label}
+                  <CTAButton href={j.href} variant={j.featured ? 'primary' : 'outline'} class="w-full">
+                    {j.ctaLabel}
                   </CTAButton>
                 </div>
               </div>
@@ -197,52 +180,43 @@ const structuredData = {
       <div class="space-y-14">
         {/* Strand detail sections */}
         <section aria-labelledby="party-detail">
-          <SectionHeading id="party-detail" as="h2">Party nights, dressed for Christmas</SectionHeading>
+          <SectionHeading id="party-detail" as="h2">{sec(copy, 'party-detail').heading}</SectionHeading>
           <div class="mt-4 max-w-3xl space-y-4 text-body">
             <p>
-              We don’t run separate “Christmas specials” — we don’t need to. Every one of our regular
-              party nights runs right through December with the full festive treatment: the boat
-              decorated bow to stern, festive extras on board, and Christmas songs woven into the set.
-              Whether it’s ABBA, Dolly, Elvis or a soul night, you get the same great cruise with all
-              the Christmas sparkle on top.
+              {sec(copy, 'party-detail').body?.[0]}
             </p>
             <p>
               <a href="/whats-on?month=2026-12" class="font-medium text-primary underline-offset-4 hover:underline">
-                See what’s sailing in December →
+                {str(copy, 'partyDetailLinkText')}
               </a>
             </p>
           </div>
         </section>
 
         <section aria-labelledby="private-detail">
-          <SectionHeading id="private-detail" as="h2">Your own Christmas party</SectionHeading>
+          <SectionHeading id="private-detail" as="h2">{sec(copy, 'private-detail').heading}</SectionHeading>
           <div class="mt-4 max-w-3xl space-y-4 text-body">
             <p>
-              The office Christmas do, sorted. Take the whole boat and it’s exclusively yours for the
-              night — decorated for Christmas, with a licensed bar, a dancefloor and Manchester’s
-              floodlit waterfront as your backdrop. It’s the highest-impact way to celebrate a team or
-              a big group, and it beats booking out the same tired function room.
+              {sec(copy, 'private-detail').body?.[0]}
             </p>
-            <p class="text-base text-subtle">Catering, drinks packages and festive extras — TBC from Simon (content-checklist.md).</p>
+            <p class="text-base text-subtle">{sec(copy, 'private-detail').note}</p>
             <p>
               <a href="/private-hire" class="font-medium text-primary underline-offset-4 hover:underline">
-                Enquire about a private Christmas party →
+                {str(copy, 'privateDetailLinkText')}
               </a>
             </p>
           </div>
         </section>
 
         <section aria-labelledby="santa-detail">
-          <SectionHeading id="santa-detail" as="h2">Santa cruises</SectionHeading>
+          <SectionHeading id="santa-detail" as="h2">{sec(copy, 'santa-detail').heading}</SectionHeading>
           <div class="mt-4 max-w-3xl space-y-4 text-body">
             <p>
-              Our one truly Christmas-specific event. Little ones meet Father Christmas on the water,
-              in a warm, festively decorated cabin, with a gift for every child — plus a
-              sensory-friendly SEN Santa cruise for children with additional needs.
+              {sec(copy, 'santa-detail').body?.[0]}
             </p>
             <p>
               <a href="/santa-cruise-manchester" class="font-medium text-primary underline-offset-4 hover:underline">
-                Meet Father Christmas on the water →
+                {str(copy, 'santaDetailLinkText')}
               </a>
             </p>
           </div>
@@ -253,8 +227,8 @@ const structuredData = {
           christmasAlbum && (
             <EventGalleryStrip
               album={christmasAlbum}
-              heading="Christmas on board"
-              lead="Real festive moments on the water — tap to browse"
+              heading={sec(copy, 'gallery').heading}
+              lead={sec(copy, 'gallery').body?.[0]}
             />
           )
         }
@@ -263,20 +237,19 @@ const structuredData = {
         <GettingHere />
 
         {/* FAQ */}
-        <FAQSection faqs={faqs} title="Christmas cruise FAQs" />
+        <FAQSection faqs={faqs} title={faqGroup(copy, 'main').title} />
 
         {/* Gift voucher cross-sell */}
         <section aria-labelledby="gift-vouchers">
           <div class="rounded-card bg-panel p-6 ring-1 ring-black/5 sm:flex sm:items-center sm:justify-between sm:gap-6">
             <div>
-              <h2 id="gift-vouchers" class="text-lg font-semibold text-ink">Can’t pick a date? Give a voucher</h2>
+              <h2 id="gift-vouchers" class="text-lg font-semibold text-ink">{sec(copy, 'gift-vouchers').heading}</h2>
               <p class="mt-1 text-sm leading-relaxed text-body">
-                A gift voucher is the easy Christmas present — they pick the cruise and the date that
-                suits them. Redeemable against any sailing.
+                {sec(copy, 'gift-vouchers').body?.[0]}
               </p>
             </div>
             <div class="mt-4 shrink-0 sm:mt-0">
-              <CTAButton href="/gift-vouchers" variant="outline">Gift vouchers</CTAButton>
+              <CTAButton href="/gift-vouchers" variant="outline">{str(copy, 'giftVouchersCtaLabel')}</CTAButton>
             </div>
           </div>
         </section>

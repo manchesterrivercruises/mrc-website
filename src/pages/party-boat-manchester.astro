@@ -9,6 +9,13 @@ import GettingHere from '../components/GettingHere.astro';
 import KeyFacts from '../components/KeyFacts.astro';
 import ProductCard from '../components/ProductCard.astro';
 import { getCollection } from 'astro:content';
+import copy from '../content/page-copy/party-boat-manchester.json';
+import { sec, list, faqGroup, faqs as faqItems, str } from '../lib/pageCopy';
+
+// EDITABLE COPY lives in the CMS (Page copy → party-boat-manchester) and is stored in
+// src/content/page-copy/party-boat-manchester.json. This template owns STRUCTURE ONLY
+// — layout, components, icons, every href (including the ?time=daytime What's On deep
+// link), the schema block and the events-collection teaser query below.
 
 // Occasion-led landing page. It does NOT re-list the full events catalogue (that's
 // /music-cruises-manchester) — the only shared block is a small teaser grid below.
@@ -42,88 +49,27 @@ const icons = {
   pin: '<path d="M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" /><path d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1 1 15 0Z" />',
 };
 
-const keyFacts = [
-  { text: 'Birthdays, hens, stags & work dos', icon: icons.users },
-  { text: 'Scheduled nights or private hire', icon: icons.calendar },
-  { text: 'Licensed bar onboard', icon: icons.sparkles },
-  { text: 'Salford Quays departure', icon: icons.pin },
-];
+// Icons are structural; only the fact labels come from the CMS, zipped by position.
+const factIcons = [icons.users, icons.calendar, icons.sparkles, icons.pin];
+const keyFacts = (copy.keyFacts ?? []).map((text, i) => ({ text, icon: factIcons[i] ?? icons.pin }));
 
 // Occasion-led content — the heart of this page, and the main thing that sets it apart
-// from the music-cruises catalogue.
-const occasions = [
-  {
-    id: 'birthdays',
-    title: 'Birthday boat parties',
-    copy: [
-      "Turn another year older into a night nobody forgets. Get your friends together on deck, raise a glass at the licensed bar and watch Manchester's floodlit waterfront slide past as you celebrate. It beats the same old bar — there's a dancefloor, a skyline and none of the end-of-night scramble for taxis home from a venue miles away.",
-      'From low-key gatherings to milestone bashes, a birthday afloat gives your group a space of its own for the evening.',
-    ],
-    highlights: [
-      'Space reserved for your group',
-      '18th, 21st, 30th, 40th & milestone birthdays',
-      'Bring a cake, balloons & banners (see FAQs)',
-      'Scheduled nights or the whole boat',
-    ],
-  },
-  {
-    id: 'hen-stag',
-    title: 'Hen & stag parties',
-    copy: [
-      "Give the bride- or groom-to-be a send-off with a difference. A boat party keeps the whole group together in one place — no splitting across bars, no queues, no cover charges — just your crew, the music and the river.",
-      'Start the celebration on the water and roll straight into the city when you dock, or take the whole boat for a private send-off entirely your own.',
-    ],
-    highlights: [
-      'Keep the whole group together all night',
-      'Unbeatable deck photos',
-      'Pre-drinks cruise through to full private hire',
-      'Central Salford Quays departure',
-    ],
-  },
-  {
-    id: 'work',
-    title: 'Work nights out & team socials',
-    copy: [
-      "Christmas do, summer social or a thank-you for the team — a boat party is the easy win that people actually turn up to. It's a shared experience that gets everyone talking (and dancing) well away from the usual restaurant table.",
-      'Join a scheduled party cruise for smaller teams, or hire a whole vessel for the department with optional catering.',
-    ],
-    highlights: [
-      'Great for team socials & Christmas dos',
-      'Scheduled nights or exclusive hire',
-      'Optional catering on private hire',
-      'Group bookings & invoicing — just ask',
-    ],
-  },
-];
+// from the music-cruises catalogue. The section IDs are anchors (structure); every word
+// comes from the CMS entry, keyed off the same id.
+const OCCASION_IDS = ['birthdays', 'hen-stag', 'work'];
+const occasions = OCCASION_IDS.map((id) => ({
+  id,
+  title: sec(copy, id).heading,
+  copy: sec(copy, id).body ?? [],
+  highlights: list(copy, `${id}-highlights`),
+}));
 
-const faqs = [
-  {
-    q: 'Can we bring balloons, banners and decorations?',
-    a: 'Small decorations for your group are usually welcome — balloons, banners and a birthday cake are no problem. We just ask no confetti, glitter or anything that could blow into the canal. Confirm the details when you book. (TBC)',
-  },
-  {
-    q: 'Do you take group bookings?',
-    a: 'Yes — party and music cruises are ideal for groups and we can reserve space for you together. For larger numbers, exclusive private hire of the whole boat is often the better fit. Group booking and invoicing details TBC.',
-  },
-  {
-    q: 'Can we bring our own drinks?',
-    a: 'There is a fully licensed bar onboard, so outside drinks are not usually permitted on scheduled party cruises. Drinks packages can be arranged for private hire. (TBC)',
-  },
-  {
-    q: "What's the difference between a scheduled party night and private hire?",
-    a: 'On a scheduled party night you book seats on a set date and share the boat with other guests — perfect for smaller groups. Private hire gives you the whole vessel exclusively, with your own guest list, music and timings. See our private hire page to enquire.',
-  },
-  {
-    q: 'Are there age restrictions?',
-    a: 'Evening party cruises are usually over-18s. Family-friendly daytime and seasonal events are also available. Exact restrictions vary by event. (TBC)',
-  },
-];
+const faqs = faqItems(copy);
 
 const SITE = site.url;
 // Title/meta stay targeted on "party boat Manchester".
-const pageTitle = 'Party Boat Manchester — Boat Parties on the Ship Canal';
-const pageDescription =
-  'Party boat hire and boat parties in Manchester on the Ship Canal — birthdays, hen and stag dos and work nights out. Take the whole boat with private hire, or join a scheduled party cruise. Licensed bar onboard. Book direct.';
+const pageTitle = copy.seoTitle!;
+const pageDescription = copy.seoDescription!;
 
 const structuredData = {
   '@context': 'https://schema.org',
@@ -146,16 +92,15 @@ const structuredData = {
     {/* Hero — dark navy, gold accents; occasion-led */}
     <section class="bg-dark text-white">
       <div class="mx-auto max-w-6xl px-4 py-20 sm:px-6 md:py-28 lg:px-8">
-        <p class="text-sm font-semibold uppercase tracking-[0.2em] text-accent">Celebrations on the water</p>
-        <h1 class="mt-3 text-4xl font-bold tracking-tight text-white sm:text-5xl md:text-6xl">Party Boat Manchester</h1>
+        <p class="text-sm font-semibold uppercase tracking-[0.2em] text-accent">{copy.eyebrow}</p>
+        <h1 class="mt-3 text-4xl font-bold tracking-tight text-white sm:text-5xl md:text-6xl">{copy.heading}</h1>
         <p class="mt-5 max-w-2xl text-lg leading-relaxed text-white/80">
-          Birthdays, hen and stag dos and work nights out on the Manchester Ship Canal. Take the whole
-          boat with private hire, or join a scheduled party cruise.
+          {copy.intro}
         </p>
         <div class="mt-8 flex flex-wrap items-center gap-x-6 gap-y-3">
-          <CTAButton href="/private-hire">Take the whole boat</CTAButton>
+          <CTAButton href="/private-hire">{str(copy, 'heroCtaLabel')}</CTAButton>
           <a href="#party-nights" class="text-sm font-medium text-white/90 underline-offset-4 hover:underline">
-            Or join a scheduled party night →
+            {str(copy, 'heroSecondaryLabel')}
           </a>
         </div>
       </div>
@@ -169,25 +114,23 @@ const structuredData = {
       <div class="space-y-12 md:space-y-14">
         {/* Occasion overview intro */}
         <section aria-labelledby="about">
-          <SectionHeading id="about">Whatever you're celebrating</SectionHeading>
+          <SectionHeading id="about">{sec(copy, 'about').heading}</SectionHeading>
           <div class="mt-6 max-w-3xl space-y-4 text-lg leading-relaxed text-body">
             <p>
-              A boat party on the Manchester Ship Canal turns any occasion into a proper night out —
-              dancing, a licensed bar and the city's floodlit waterfront gliding past your window.
-              There are two ways to do it: <strong>take the whole boat</strong> for your group with
-              private hire, or <strong>join a scheduled party night</strong> and share the dancefloor.
+              {str(copy, 'aboutBefore')} <strong>{str(copy, 'aboutEmphasis1')}</strong> {str(copy, 'aboutMid')}{' '}
+              <strong>{str(copy, 'aboutEmphasis2')}</strong> {str(copy, 'aboutAfter')}
             </p>
             <p>
-              In December, every night comes Christmas-decorated with festive extras — see{' '}
-              <a href="/christmas-cruises-manchester" class="font-medium text-primary underline-offset-4 hover:underline">Christmas on the water</a>.
+              {str(copy, 'christmasNoteBefore')}{' '}
+              <a href="/christmas-cruises-manchester" class="font-medium text-primary underline-offset-4 hover:underline">{str(copy, 'christmasNoteLinkText')}</a>{str(copy, 'christmasNoteAfter')}
             </p>
-            <p class="text-base text-subtle">Full details and packages — TBC from Simon (content-checklist.md).</p>
+            <p class="text-base text-subtle">{str(copy, 'aboutTbc')}</p>
             <p class="text-base text-subtle">
-              Buying for someone else?{' '}
+              {str(copy, 'giftNoteBefore')}{' '}
               <a href="/gift-vouchers" class="font-medium text-primary underline-offset-4 hover:underline">
-                Gift vouchers
+                {str(copy, 'giftNoteLinkText')}
               </a>{' '}
-              make a great present.
+              {str(copy, 'giftNoteAfter')}
             </p>
           </div>
         </section>
@@ -196,12 +139,12 @@ const structuredData = {
 
     {/* Private hire — equal billing, high on the page (not a footer callout) */}
     <CTASection
-      heading="Take the whole boat"
-      text="For bigger groups and private celebrations, hire a vessel exclusively — your guest list, your music, your timings, with optional catering. The whole boat, entirely yours for the evening."
+      heading={str(copy, 'privateHireCtaHeading')}
+      text={str(copy, 'privateHireCtaText')}
       primaryHref="/private-hire"
-      primaryLabel="Enquire about private hire"
+      primaryLabel={str(copy, 'privateHireCtaPrimaryLabel')}
       secondaryHref="#party-nights"
-      secondaryLabel="Or join a scheduled night"
+      secondaryLabel={str(copy, 'privateHireCtaSecondaryLabel')}
     />
 
     <div class="mx-auto max-w-6xl px-4 py-10 sm:px-6 md:py-12 lg:px-8">
@@ -220,7 +163,7 @@ const structuredData = {
                   </div>
                 </div>
                 <div class="rounded-card bg-panel p-6 ring-1 ring-black/5">
-                  <h3 class="text-sm font-semibold uppercase tracking-wider text-subtle">Perfect for</h3>
+                  <h3 class="text-sm font-semibold uppercase tracking-wider text-subtle">{str(copy, 'asideTitle')}</h3>
                   <ul class="mt-4 space-y-3">
                     {o.highlights.map((h) => (
                       <li class="flex gap-3 text-body">
@@ -239,26 +182,24 @@ const structuredData = {
             programme (2026): Decks on Deck + daytime ABBA sailings, with Dolly joining in 2027.
             Deep-links to What's On pre-filtered to daytime (?time=daytime). */}
         <section id="daytime-parties" aria-labelledby="daytime-parties-heading">
-          <SectionHeading id="daytime-parties-heading">Prefer a daytime party?</SectionHeading>
+          <SectionHeading id="daytime-parties-heading">{sec(copy, 'daytime').heading}</SectionHeading>
           <p class="mt-6 max-w-3xl text-body">
-            Not every party waits for dark. <strong class="font-semibold text-ink">Decks on Deck</strong>
-            is a daytime deck party — house and dance DJs in the open air — and our
-            <strong class="font-semibold text-ink"> ABBA</strong> cruise runs daytime as well as
-            evening, so you can pick the slot that suits your group. There’s more on the way too:
-            <strong class="font-semibold text-ink"> Dolly</strong> joins the daytime line-up in 2027.
+            {str(copy, 'daytimeBefore')} <strong class="font-semibold text-ink">{str(copy, 'daytimeEmphasis1')}</strong>
+            {' '}{str(copy, 'daytimeMid1')}
+            <strong class="font-semibold text-ink"> {str(copy, 'daytimeEmphasis2')}</strong> {str(copy, 'daytimeMid2')}
+            <strong class="font-semibold text-ink"> {str(copy, 'daytimeEmphasis3')}</strong> {str(copy, 'daytimeAfter')}
           </p>
           <div class="mt-8">
-            <CTAButton href="/whats-on?time=daytime">See daytime sailings</CTAButton>
+            <CTAButton href="/whats-on?time=daytime">{str(copy, 'daytimeCtaLabel')}</CTAButton>
           </div>
         </section>
 
         {/* Teaser grid — the ONLY block shared with /music-cruises-manchester. A small
             sample of party nights; the full categorised catalogue lives on that page. */}
         <section id="party-nights" aria-labelledby="party-nights-heading">
-          <SectionHeading id="party-nights-heading">Or join a scheduled party night</SectionHeading>
+          <SectionHeading id="party-nights-heading">{sec(copy, 'party-nights').heading}</SectionHeading>
           <p class="mt-6 max-w-3xl text-body">
-            Not the whole boat? Hop aboard one of our scheduled party and music cruises — the same
-            licensed bar and dancefloor, open to all. Here are a few coming up.
+            {sec(copy, 'party-nights').body?.[0]}
           </p>
           <div class="mt-8 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {
@@ -267,17 +208,17 @@ const structuredData = {
                   name={e.data.title}
                   desc={e.data.shortTagline ?? e.data.description}
                   href={`/tour/${e.id}`}
-                  linkText="View & book"
+                  linkText={str(copy, 'partyNightsLinkText')}
                 />
               ))
             }
           </div>
           <div class="mt-8">
-            <CTAButton href="/music-cruises-manchester" variant="outline">See all party & music nights</CTAButton>
+            <CTAButton href="/music-cruises-manchester" variant="outline">{str(copy, 'partyNightsCtaLabel')}</CTAButton>
           </div>
         </section>
 
-        <FAQSection faqs={faqs} title="Party boat FAQs" />
+        <FAQSection faqs={faqs} title={faqGroup(copy, 'main').title} />
 
         <GettingHere />
       </div>
@@ -286,6 +227,6 @@ const structuredData = {
 
   {/* Mobile sticky CTA — lead with the differentiating action (private hire enquiry). */}
   <div class="fixed inset-x-0 bottom-0 z-40 border-t border-black/10 bg-white/95 p-3 backdrop-blur md:hidden">
-    <CTAButton href="/private-hire" class="w-full">Take the whole boat</CTAButton>
+    <CTAButton href="/private-hire" class="w-full">{str(copy, 'mobileCtaLabel')}</CTAButton>
   </div>
 </BaseLayout>

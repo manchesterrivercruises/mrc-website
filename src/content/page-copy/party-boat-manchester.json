@@ -1,0 +1,147 @@
+{
+  "page": "party-boat-manchester",
+  "seoTitle": "Party Boat Manchester — Boat Parties on the Ship Canal",
+  "seoDescription": "Party boat hire and boat parties in Manchester on the Ship Canal — birthdays, hen and stag dos and work nights out. Take the whole boat with private hire, or join a scheduled party cruise. Licensed bar onboard. Book direct.",
+  "eyebrow": "Celebrations on the water",
+  "heading": "Party Boat Manchester",
+  "intro": "Birthdays, hen and stag dos and work nights out on the Manchester Ship Canal. Take the whole boat with private hire, or join a scheduled party cruise.",
+  "keyFacts": [
+    "Birthdays, hens, stags & work dos",
+    "Scheduled nights or private hire",
+    "Licensed bar onboard",
+    "Salford Quays departure"
+  ],
+  "sections": [
+    { "key": "about", "heading": "Whatever you're celebrating" },
+    {
+      "key": "birthdays",
+      "heading": "Birthday boat parties",
+      "body": [
+        "Turn another year older into a night nobody forgets. Get your friends together on deck, raise a glass at the licensed bar and watch Manchester's floodlit waterfront slide past as you celebrate. It beats the same old bar — there's a dancefloor, a skyline and none of the end-of-night scramble for taxis home from a venue miles away.",
+        "From low-key gatherings to milestone bashes, a birthday afloat gives your group a space of its own for the evening."
+      ]
+    },
+    {
+      "key": "hen-stag",
+      "heading": "Hen & stag parties",
+      "body": [
+        "Give the bride- or groom-to-be a send-off with a difference. A boat party keeps the whole group together in one place — no splitting across bars, no queues, no cover charges — just your crew, the music and the river.",
+        "Start the celebration on the water and roll straight into the city when you dock, or take the whole boat for a private send-off entirely your own."
+      ]
+    },
+    {
+      "key": "work",
+      "heading": "Work nights out & team socials",
+      "body": [
+        "Christmas do, summer social or a thank-you for the team — a boat party is the easy win that people actually turn up to. It's a shared experience that gets everyone talking (and dancing) well away from the usual restaurant table.",
+        "Join a scheduled party cruise for smaller teams, or hire a whole vessel for the department with optional catering."
+      ]
+    },
+    { "key": "daytime", "heading": "Prefer a daytime party?" },
+    {
+      "key": "party-nights",
+      "heading": "Or join a scheduled party night",
+      "body": [
+        "Not the whole boat? Hop aboard one of our scheduled party and music cruises — the same licensed bar and dancefloor, open to all. Here are a few coming up."
+      ]
+    }
+  ],
+  "lists": [
+    {
+      "key": "birthdays-highlights",
+      "items": [
+        "Space reserved for your group",
+        "18th, 21st, 30th, 40th & milestone birthdays",
+        "Bring a cake, balloons & banners (see FAQs)",
+        "Scheduled nights or the whole boat"
+      ]
+    },
+    {
+      "key": "hen-stag-highlights",
+      "items": [
+        "Keep the whole group together all night",
+        "Unbeatable deck photos",
+        "Pre-drinks cruise through to full private hire",
+        "Central Salford Quays departure"
+      ]
+    },
+    {
+      "key": "work-highlights",
+      "items": [
+        "Great for team socials & Christmas dos",
+        "Scheduled nights or exclusive hire",
+        "Optional catering on private hire",
+        "Group bookings & invoicing — just ask"
+      ]
+    }
+  ],
+  "faqGroups": [
+    {
+      "key": "main",
+      "title": "Party boat FAQs",
+      "items": [
+        {
+          "question": "Can we bring balloons, banners and decorations?",
+          "answer": "Small decorations for your group are usually welcome — balloons, banners and a birthday cake are no problem. We just ask no confetti, glitter or anything that could blow into the canal. Confirm the details when you book. (TBC)"
+        },
+        {
+          "question": "Do you take group bookings?",
+          "answer": "Yes — party and music cruises are ideal for groups and we can reserve space for you together. For larger numbers, exclusive private hire of the whole boat is often the better fit. Group booking and invoicing details TBC."
+        },
+        {
+          "question": "Can we bring our own drinks?",
+          "answer": "There is a fully licensed bar onboard, so outside drinks are not usually permitted on scheduled party cruises. Drinks packages can be arranged for private hire. (TBC)"
+        },
+        {
+          "question": "What's the difference between a scheduled party night and private hire?",
+          "answer": "On a scheduled party night you book seats on a set date and share the boat with other guests — perfect for smaller groups. Private hire gives you the whole vessel exclusively, with your own guest list, music and timings. See our private hire page to enquire."
+        },
+        {
+          "question": "Are there age restrictions?",
+          "answer": "Evening party cruises are usually over-18s. Family-friendly daytime and seasonal events are also available. Exact restrictions vary by event. (TBC)"
+        }
+      ]
+    }
+  ],
+  "strings": [
+    { "key": "heroCtaLabel", "value": "Take the whole boat" },
+    { "key": "heroSecondaryLabel", "value": "Or join a scheduled party night →" },
+    {
+      "key": "aboutBefore",
+      "value": "A boat party on the Manchester Ship Canal turns any occasion into a proper night out — dancing, a licensed bar and the city's floodlit waterfront gliding past your window. There are two ways to do it:"
+    },
+    { "key": "aboutEmphasis1", "value": "take the whole boat" },
+    { "key": "aboutMid", "value": "for your group with private hire, or" },
+    { "key": "aboutEmphasis2", "value": "join a scheduled party night" },
+    { "key": "aboutAfter", "value": "and share the dancefloor." },
+    { "key": "christmasNoteBefore", "value": "In December, every night comes Christmas-decorated with festive extras — see" },
+    { "key": "christmasNoteLinkText", "value": "Christmas on the water" },
+    { "key": "christmasNoteAfter", "value": "." },
+    { "key": "aboutTbc", "value": "Full details and packages — TBC from Simon (content-checklist.md)." },
+    { "key": "giftNoteBefore", "value": "Buying for someone else?" },
+    { "key": "giftNoteLinkText", "value": "Gift vouchers" },
+    { "key": "giftNoteAfter", "value": "make a great present." },
+    { "key": "asideTitle", "value": "Perfect for" },
+    { "key": "privateHireCtaHeading", "value": "Take the whole boat" },
+    {
+      "key": "privateHireCtaText",
+      "value": "For bigger groups and private celebrations, hire a vessel exclusively — your guest list, your music, your timings, with optional catering. The whole boat, entirely yours for the evening."
+    },
+    { "key": "privateHireCtaPrimaryLabel", "value": "Enquire about private hire" },
+    { "key": "privateHireCtaSecondaryLabel", "value": "Or join a scheduled night" },
+    { "key": "daytimeBefore", "value": "Not every party waits for dark." },
+    { "key": "daytimeEmphasis1", "value": "Decks on Deck" },
+    { "key": "daytimeMid1", "value": "is a daytime deck party — house and dance DJs in the open air — and our" },
+    { "key": "daytimeEmphasis2", "value": "ABBA" },
+    {
+      "key": "daytimeMid2",
+      "value": "cruise runs daytime as well as evening, so you can pick the slot that suits your group. There’s more on the way too:"
+    },
+    { "key": "daytimeEmphasis3", "value": "Dolly" },
+    { "key": "daytimeAfter", "value": "joins the daytime line-up in 2027." },
+    { "key": "daytimeCtaLabel", "value": "See daytime sailings" },
+    { "key": "partyNightsLinkText", "value": "View & book" },
+    { "key": "partyNightsCtaLabel", "value": "See all party & music nights" },
+    { "key": "mobileCtaLabel", "value": "Take the whole boat" }
+  ]
+}

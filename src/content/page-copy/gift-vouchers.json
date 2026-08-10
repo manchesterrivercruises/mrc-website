@@ -1,0 +1,147 @@
+{
+  "page": "gift-vouchers",
+  "seoTitle": "Gift Vouchers — Boat Trip Gifts in Manchester — Manchester River Cruises",
+  "seoDescription": "Gift vouchers for a Manchester boat trip — give a sightseeing cruise, music night or private hire on the Ship Canal. Buy online; they get a code to book any sailing. Perfect for Christmas, birthdays, Mother’s Day and Father’s Day.",
+  "eyebrow": "Gift vouchers",
+  "heading": "Give Manchester from the water",
+  "intro": "The gift of a cruise on the Manchester Ship Canal — a sightseeing tour, a party night or the whole boat. Buy online and they get a code to book the sailing that suits them.",
+  "keyFacts": [
+    "Redeemable against any sailing (TBC)",
+    "Delivered by email as a code (TBC)",
+    "Choose an amount or experience (TBC)",
+    "Valid for TBC months"
+  ],
+  "sections": [
+    {
+      "key": "buyGift",
+      "heading": "Buy a gift voucher",
+      "body": [
+        "Choose an amount and pay securely — the voucher arrives by email as a code to pass on. Denominations, validity and what it covers — TBC."
+      ]
+    },
+    {
+      "key": "occasions",
+      "heading": "A gift for every occasion",
+      "body": ["We run cruises all year round — so a voucher works for whatever’s coming up."]
+    },
+    { "key": "how", "heading": "How it works" },
+    {
+      "key": "giftBand",
+      "heading": "Give a day out they’ll remember",
+      "body": [
+        "A Manchester River Cruises gift voucher is the easy present that turns into a proper experience on the water. Buy in minutes; they book when they’re ready."
+      ]
+    },
+    {
+      "key": "experiences",
+      "heading": "Popular experiences to gift",
+      "body": ["Not sure what to choose? These are the ones people love to give."]
+    }
+  ],
+  "cards": [
+    {
+      "key": "occasions:christmas",
+      "name": "Christmas",
+      "desc": "The easy present that isn’t another jumper — a festive party night or a winter sightseeing cruise on the Ship Canal.",
+      "linkText": "Christmas on the water"
+    },
+    {
+      "key": "occasions:birthdays",
+      "name": "Birthdays",
+      "desc": "Give a birthday on the water — a party cruise with a licensed bar, or a relaxed daytime sightseeing trip.",
+      "linkText": "Party cruises"
+    },
+    {
+      "key": "occasions:mothers-day",
+      "name": "Mother's Day",
+      "desc": "Treat her to a scenic cruise through the heart of Manchester — a proper day out rather than a bunch of flowers.",
+      "linkText": "City River Tour"
+    },
+    {
+      "key": "occasions:fathers-day",
+      "name": "Father's Day",
+      "desc": "For the dad who has everything — the story of the docks and the ship canal, told from the water with live commentary.",
+      "linkText": "City River Tour"
+    },
+    {
+      "key": "steps:buy",
+      "name": "Buy online",
+      "desc": "Choose an amount (or a specific experience) and pay securely. Denominations and options — TBC."
+    },
+    {
+      "key": "steps:code",
+      "name": "They receive a code",
+      "desc": "The voucher arrives by email as a gift code to pass on. Delivery and personalisation details — TBC."
+    },
+    {
+      "key": "steps:book",
+      "name": "They book any sailing",
+      "desc": "The recipient redeems the code against a sailing that suits them. What the voucher can cover — TBC."
+    },
+    {
+      "key": "experiences:crt",
+      "name": "City River Tour",
+      "desc": "Our signature 60-minute sightseeing cruise through the heart of Manchester.",
+      "linkText": "View cruise"
+    },
+    {
+      "key": "experiences:music",
+      "name": "Music & Party Nights",
+      "desc": "Tribute nights, DJ cruises and party boats with a licensed bar.",
+      "linkText": "See events"
+    },
+    {
+      "key": "experiences:christmas",
+      "name": "Christmas on the water",
+      "desc": "Festive party nights and seasonal sailings through the winter.",
+      "linkText": "See your options"
+    },
+    {
+      "key": "experiences:private-hire",
+      "name": "Private Hire",
+      "desc": "The whole boat, exclusively yours, for a celebration to remember.",
+      "linkText": "Enquire"
+    }
+  ],
+  "faqGroups": [
+    {
+      "key": "main",
+      "title": "Gift voucher FAQs",
+      "items": [
+        {
+          "question": "How long is a gift voucher valid for?",
+          "answer": "Validity period — TBC. (Typically vouchers are valid for a set number of months from purchase.)"
+        },
+        {
+          "question": "How does the recipient redeem it?",
+          "answer": "The recipient enters their gift code at checkout when booking online. Exact redemption steps — TBC."
+        },
+        {
+          "question": "What amounts / denominations are available?",
+          "answer": "You’ll be able to choose from set amounts and/or a custom value. Available denominations — TBC."
+        },
+        {
+          "question": "Can a voucher be used against any cruise?",
+          "answer": "The intention is that vouchers can be redeemed against any sailing, subject to availability. Exactly which cruises and events are covered — TBC."
+        },
+        {
+          "question": "What happens if the recipient doesn’t use it in time?",
+          "answer": "Expiry and any extension policy — TBC."
+        },
+        {
+          "question": "Can I choose a specific experience rather than an amount?",
+          "answer": "Yes — you’ll be able to gift a specific cruise or a monetary amount. Options — TBC."
+        }
+      ]
+    }
+  ],
+  "strings": [
+    {
+      "key": "heroImageAlt",
+      "value": "A Manchester River Cruises boat on the Ship Canal at Salford Quays"
+    },
+    { "key": "buyVoucherLabel", "value": "Buy a gift voucher" },
+    { "key": "heroSecondaryLabel", "value": "See what's on →" },
+    { "key": "giftBandSecondaryLabel", "value": "Or book a cruise now" }
+  ]
+}
