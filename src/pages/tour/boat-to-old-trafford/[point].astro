@@ -8,9 +8,20 @@ import BookingPanel from '../../../components/BookingPanel.astro';
 import VentrataWidget from '../../../components/VentrataWidget.astro';
 import { site } from '../../../data/site';
 import { departurePoints, otherDeparturePoint } from '../../../data/mufcFerry';
+import copy from '../../../content/page-copy/boat-to-old-trafford-point.json';
+import { sec, str, fill } from '../../../lib/pageCopy';
 
 // One page per ferry departure point. Both routes arrive at Trafford Wharf; the
-// customer picks where to depart. Content is data-driven from src/data/mufcFerry.ts.
+// customer picks where to depart. The point DATA is code (src/data/mufcFerry.ts).
+//
+// EDITABLE COPY lives in the CMS (Page copy → boat-to-old-trafford-point) and is
+// stored in src/content/page-copy/boat-to-old-trafford-point.json. ONE entry serves
+// BOTH points: this is a single template rendered twice, so the copy is written once
+// with {name}/{location}/{otherName}/{otherLocation}/{price} placeholders that the
+// template fills from the data below (see lib/pageCopy → fill()). Editing the
+// sentence changes it for both departures, which is the intent — if the two ever
+// need genuinely different wording, they need separate entries, not a forked
+// template.
 export async function getStaticPaths() {
   return departurePoints.map((point) => ({ params: { point: point.slug }, props: { point } }));
 }
@@ -18,8 +29,18 @@ export async function getStaticPaths() {
 const { point } = Astro.props;
 const other = otherDeparturePoint(point.slug);
 
-// Matchday ferry price — TBC, confirm with Simon.
+// Matchday ferry price — TBC, confirm with Simon. Stays a NUMBER in code because the
+// schema.org offer below consumes it; the displayed "£12" is copy built from it.
 const PRICE_FROM = 12;
+
+// Values the copy's placeholders resolve against.
+const vars = {
+  name: point.name,
+  location: point.location,
+  price: PRICE_FROM,
+  otherName: other?.name ?? '',
+  otherLocation: other?.location ?? '',
+};
 
 const icons = {
   pin: '<path d="M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" /><path d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1 1 15 0Z" />',
@@ -29,17 +50,17 @@ const icons = {
     '<path d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5" />',
 };
 
-const keyFacts = [
-  { text: 'Departure address TBC', icon: icons.pin },
-  { text: 'Arrives Trafford Wharf', icon: icons.flag },
-  { text: 'Approx. 20 minutes', icon: icons.clock },
-  { text: 'Matchdays only', icon: icons.calendar },
-];
+// Icons are structural; only the fact labels come from the CMS, zipped by position.
+const factIcons = [icons.pin, icons.flag, icons.clock, icons.calendar];
+const keyFacts = (copy.keyFacts ?? []).map((text, i) => ({
+  text: fill(text, vars),
+  icon: factIcons[i] ?? icons.pin,
+}));
 
 const mapsQuery = encodeURIComponent(`${point.name} Manchester`);
 
-const pageTitle = `${point.name} Matchday Ferry to Old Trafford — Manchester River Cruises`;
-const pageDescription = `Catch the matchday ferry to Old Trafford from ${point.name} (${point.location}). Arrive at Trafford Wharf, a short walk from the ground. Book direct.`;
+const pageTitle = fill(copy.seoTitle!, vars);
+const pageDescription = fill(copy.seoDescription!, vars);
 
 const structuredData = {
   '@context': 'https://schema.org',
@@ -86,13 +107,13 @@ const crumbs = [
 
   <div class="pb-24 md:pb-0">
     <PageHero
-      eyebrow="Matchday ferry"
-      title={`Depart from ${point.name}`}
-      subtitle={`Board at ${point.location} and cruise to Trafford Wharf — the stadium end, beside IWM North and a short walk from Old Trafford.`}
+      eyebrow={copy.eyebrow}
+      title={fill(copy.heading!, vars)}
+      subtitle={fill(copy.intro!, vars)}
       heroImage="/images/boat-to-old-trafford-hero.webp"
-      heroImageAlt="A Manchester River Cruises boat on the Manchester Ship Canal carrying passengers on the open top deck, with the Salford Quays skyline and Millennium Footbridge behind."
+      heroImageAlt={str(copy, 'heroImageAlt')}
     >
-      <CTAButton href="#book">Book now</CTAButton>
+      <CTAButton href="#book">{str(copy, 'heroCtaLabel')}</CTAButton>
     </PageHero>
 
     {/* (Ferry hero image is now the PageHero background above — no separate framed copy.) */}
@@ -105,29 +126,26 @@ const crumbs = [
         <div class="space-y-16">
           {/* Boarding details */}
           <section aria-labelledby="boarding">
-            <SectionHeading id="boarding">Boarding at {point.name}</SectionHeading>
+            <SectionHeading id="boarding">{fill(sec(copy, 'boarding').heading!, vars)}</SectionHeading>
             <div class="mt-6 max-w-2xl space-y-4 text-lg leading-relaxed text-body">
               <p>
-                The {point.name} ferry departs from {point.location}. Please arrive in good time to
-                board ahead of departure.
+                {fill(sec(copy, 'boarding').body![0], vars)}
               </p>
               <p class="text-base text-subtle">
-                Exact boarding location, arrival time before departure and check-in details — TBC from Simon (content-checklist.md).
+                {fill(sec(copy, 'boarding').note!, vars)}
               </p>
             </div>
           </section>
 
           {/* Arriving at Trafford Wharf */}
           <section aria-labelledby="arrival">
-            <SectionHeading id="arrival">Arriving at Trafford Wharf</SectionHeading>
+            <SectionHeading id="arrival">{sec(copy, 'arrival').heading}</SectionHeading>
             <div class="mt-6 max-w-2xl space-y-4 text-lg leading-relaxed text-body">
               <p>
-                The ferry arrives at Trafford Wharf, at the stadium end of the ship canal beside IWM
-                North — a short walk from Old Trafford.
+                {sec(copy, 'arrival').body?.[0]}
               </p>
               <p class="text-base text-subtle">
-                What happens on arrival, the walk to the ground, and return-journey boarding after the
-                final whistle — TBC from Simon (content-checklist.md).
+                {sec(copy, 'arrival').note}
               </p>
             </div>
           </section>
@@ -135,11 +153,11 @@ const crumbs = [
           {/* Getting to this departure point — departure-specific, NOT the shared
               GettingHere component (which describes the Millennium Footbridge). */}
           <section aria-labelledby="getting-here">
-            <SectionHeading id="getting-here">Getting to {point.name}</SectionHeading>
+            <SectionHeading id="getting-here">{fill(sec(copy, 'gettingHere').heading!, vars)}</SectionHeading>
             <div class="mt-6 max-w-2xl space-y-4 text-lg leading-relaxed text-body">
-              <p>{point.name} is at {point.location}.</p>
+              <p>{fill(sec(copy, 'gettingHere').body![0], vars)}</p>
               <p class="text-base text-subtle">
-                Directions, nearest tram/parking and the exact boarding point for {point.name} — TBC from Simon (content-checklist.md).
+                {fill(sec(copy, 'gettingHere').note!, vars)}
               </p>
               <a
                 href={`https://www.google.com/maps/search/?api=1&query=${mapsQuery}`}
@@ -147,7 +165,7 @@ const crumbs = [
                 rel="noopener"
                 target="_blank"
               >
-                Open in Google Maps
+                {str(copy, 'mapsLinkLabel')}
               </a>
             </div>
           </section>
@@ -158,13 +176,13 @@ const crumbs = [
               <section aria-labelledby="other-point">
                 <div class="rounded-card bg-panel p-6 ring-1 ring-black/5 sm:flex sm:items-center sm:justify-between sm:gap-6">
                   <div>
-                    <h2 id="other-point" class="text-lg font-semibold text-ink">Prefer to depart from {other.name}?</h2>
+                    <h2 id="other-point" class="text-lg font-semibold text-ink">{fill(sec(copy, 'otherPoint').heading!, vars)}</h2>
                     <p class="mt-1 text-sm leading-relaxed text-body">
-                      The {other.name} ferry departs from {other.location} and also arrives at Trafford Wharf.
+                      {fill(sec(copy, 'otherPoint').body![0], vars)}
                     </p>
                   </div>
                   <div class="mt-4 shrink-0 sm:mt-0">
-                    <CTAButton href={`/tour/boat-to-old-trafford/${other.slug}`} variant="outline">Depart from {other.name}</CTAButton>
+                    <CTAButton href={`/tour/boat-to-old-trafford/${other.slug}`} variant="outline">{fill(str(copy, 'otherPointCtaLabel'), vars)}</CTAButton>
                   </div>
                 </div>
               </section>
@@ -174,7 +192,11 @@ const crumbs = [
 
         {/* Right — sticky booking panel */}
         <aside id="book" class="lg:sticky lg:top-6 lg:self-start scroll-mt-6">
-          <BookingPanel price={`£${PRICE_FROM}`} priceSuffix="per person" priceNote="Matchday service · price TBC">
+          <BookingPanel
+            price={fill(str(copy, 'bookingPrice'), vars)}
+            priceSuffix={str(copy, 'bookingPriceSuffix')}
+            priceNote={str(copy, 'bookingPriceNote')}
+          >
             {
               /* Ralli Quay → live embedded checkout. Stephenson's Bridge (no product
                  yet) → keep the "opens soon" panel and load no checkout script. */
@@ -185,7 +207,7 @@ const crumbs = [
                   slot="widget"
                   class="flex min-h-44 items-center justify-center rounded-card border border-dashed border-black/15 bg-panel p-6 text-center text-sm text-subtle"
                 >
-                  Booking opens once this departure is set up in Ventrata (TBC).
+                  {str(copy, 'bookingUnavailable')}
                 </div>
               )
             }
@@ -201,9 +223,9 @@ const crumbs = [
   <div class="fixed inset-x-0 bottom-0 z-40 border-t border-black/10 bg-white/95 p-3 backdrop-blur md:hidden">
     {
       point.productReady ? (
-        <CTAButton href="#book" class="w-full">Book now · from £{PRICE_FROM}</CTAButton>
+        <CTAButton href="#book" class="w-full">{fill(str(copy, 'mobileCtaLabel'), vars)}</CTAButton>
       ) : (
-        <p class="text-center text-sm font-medium text-subtle">Booking opens soon</p>
+        <p class="text-center text-sm font-medium text-subtle">{str(copy, 'mobileUnavailableLabel')}</p>
       )
     }
   </div>

@@ -110,3 +110,28 @@ export function faqs(copy: PageCopy, key = 'main'): { q: string; a: string }[] {
 export function str(copy: PageCopy, key: string): string {
   return ((copy.strings ?? []).find((s) => s.key === key) ?? fail(copy, 'string', key)).value;
 }
+
+/**
+ * Fill `{token}` placeholders in a piece of copy from a code-owned data source.
+ *
+ * Some pages are one template rendered per item — the two ferry departure points
+ * being the case in hand. Their wording is the same sentence with the point's name
+ * and location dropped in, and the CMS must hold the sentence, not one copy of it
+ * per point. So the copy carries tokens ("The {name} ferry departs from {location}.")
+ * and the template supplies the values, which stay in code (src/data/mufcFerry.ts).
+ *
+ * STRICT, like every other lookup here: an unknown token in the copy throws at BUILD
+ * time naming the token, rather than rendering a literal "{nmae}" to a customer. The
+ * editor can reword freely around a token; deleting one is caught by the build.
+ */
+export function fill(template: string, vars: Record<string, string | number>): string {
+  return template.replace(/\{(\w+)\}/g, (_m, token: string) => {
+    if (!(token in vars)) {
+      throw new Error(
+        `[page-copy] unknown placeholder "{${token}}" in copy: "${template}". ` +
+          `Known placeholders here: ${Object.keys(vars).join(', ') || '(none)'}.`,
+      );
+    }
+    return String(vars[token]);
+  });
+}
