@@ -141,9 +141,9 @@ const NIGHT_HREFS: Record<string, string> = {
   'nights:christmas': '/christmas-cruises-manchester',
 };
 
-// Fleet size — TODO: derive from the vessels collection once it is seeded, so it
-// cannot drift from the fleet itself.
-const FLEET_COUNT = 5;
+// Fleet size — DERIVED from the vessels collection, so the stat tile cannot drift
+// from the fleet itself. Add or retire a vessel in the CMS and this follows.
+const FLEET_COUNT = (await getCollection('vessels')).length;
 
 const statTiles = [
   { stat: str(copy, 'statPoiValue'), label: str(copy, 'statPoiLabel') },
