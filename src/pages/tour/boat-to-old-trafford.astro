@@ -10,6 +10,16 @@ import CTASection from '../../components/CTASection.astro';
 import MapTapActivate from '../../components/MapTapActivate.astro';
 import { site } from '../../data/site';
 import { departurePoints, TRAFFORD_WHARF, OLD_TRAFFORD } from '../../data/mufcFerry';
+import copy from '../../content/page-copy/boat-to-old-trafford.json';
+import { sec, faqGroup, faqs as faqItems, str, fill } from '../../lib/pageCopy';
+
+// EDITABLE COPY lives in the CMS (Page copy → boat-to-old-trafford) and is stored in
+// src/content/page-copy/boat-to-old-trafford.json. This template owns STRUCTURE ONLY —
+// layout, components, icons, every href, the schema block, and the map (its markers,
+// coordinates and popup labels are map data from src/data/mufcFerry.ts, not page copy).
+//
+// The two departure cards are ONE sentence rendered twice, so their copy carries
+// {name}/{location} placeholders filled from mufcFerry.ts — see lib/pageCopy → fill().
 
 const icons = {
   calendar:
@@ -19,12 +29,9 @@ const icons = {
   tag: '<path d="M9.568 3H5.25A2.25 2.25 0 0 0 3 5.25v4.318c0 .597.237 1.17.659 1.591l9.581 9.581c.699.699 1.78.872 2.607.33a18.095 18.095 0 0 0 5.223-5.223c.542-.827.369-1.908-.33-2.607L11.16 3.66A2.25 2.25 0 0 0 9.568 3Z" /><path d="M6 6h.008v.008H6V6Z" />',
 };
 
-const keyFacts = [
-  { text: 'Matchdays only', icon: icons.calendar },
-  { text: 'Approx. 20 minutes', icon: icons.clock },
-  { text: 'Arrives Trafford Wharf', icon: icons.pin },
-  { text: 'From £12 (TBC)', icon: icons.tag },
-];
+// Icons are structural; only the fact labels come from the CMS, zipped by position.
+const factIcons = [icons.calendar, icons.clock, icons.pin, icons.tag];
+const keyFacts = (copy.keyFacts ?? []).map((text, i) => ({ text, icon: factIcons[i] ?? icons.pin }));
 
 // Map markers — two departure points + the shared arrival and the stadium.
 // Markers only, no route lines.
@@ -35,18 +42,10 @@ const mapMarkers = [
   { name: OLD_TRAFFORD.name, lat: OLD_TRAFFORD.lat, lng: OLD_TRAFFORD.lng, emoji: '⚽', kind: 'Old Trafford stadium' },
 ];
 
-const faqs = [
-  { q: 'Where does the ferry arrive?', a: 'Both routes arrive at Trafford Wharf, at the stadium end beside IWM North — a short walk from Old Trafford.' },
-  { q: 'Which departure point should I choose?', a: "Choose whichever is most convenient for you: Ralli Quay (River Irwell near New Bailey, Salford) or Stephenson's Bridge (near Water Street). Both arrive at the same place." },
-  { q: 'How long does the crossing take?', a: 'Approximately 20 minutes each way. (TBC)' },
-  { q: 'Does the ferry run for every match?', a: 'The ferry runs on selected matchdays only. Check availability for your fixture when booking. (TBC)' },
-  { q: 'Is there a return service after the game?', a: 'Yes — the ferry returns from Trafford Wharf after the final whistle. Return boarding details TBC.' },
-  { q: 'Can I hire a boat for a private group on matchday?', a: 'Yes — private matchday hire is available for groups. Get in touch to enquire.' },
-];
+const faqs = faqItems(copy);
 
-const pageTitle = 'MUFC Ferry Service — Matchday Boat to Old Trafford';
-const pageDescription =
-  'Beat the matchday traffic and travel to Old Trafford by boat. Choose your departure — Ralli Quay or Stephenson’s Bridge — and arrive at Trafford Wharf, a short walk from the ground.';
+const pageTitle = copy.seoTitle!;
+const pageDescription = copy.seoDescription!;
 
 const structuredData = {
   '@context': 'https://schema.org',
@@ -95,13 +94,13 @@ const crumbs = [
   </style>
 
   <PageHero
-    eyebrow="Matchday by boat"
-    title="MUFC Ferry Service"
-    subtitle="Beat the matchday traffic and travel to Old Trafford by boat. Choose your departure point — both routes arrive at Trafford Wharf, a short walk from the ground."
+    eyebrow={copy.eyebrow}
+    title={copy.heading}
+    subtitle={copy.intro}
     heroImage="/images/boat-to-old-trafford-hero.webp"
-    heroImageAlt="A Manchester River Cruises boat on the Manchester Ship Canal carrying passengers on the open top deck, with the Salford Quays skyline and Millennium Footbridge behind."
+    heroImageAlt={str(copy, 'heroImageAlt')}
   >
-    <CTAButton href="#choose">Choose your departure</CTAButton>
+    <CTAButton href="#choose">{str(copy, 'heroCtaLabel')}</CTAButton>
   </PageHero>
 
   <KeyFacts facts={keyFacts} />
@@ -110,21 +109,20 @@ const crumbs = [
     <div class="space-y-16">
       {/* Choose your departure */}
       <section id="choose" aria-labelledby="choose-heading" class="scroll-mt-6">
-        <SectionHeading id="choose-heading">Choose your departure point</SectionHeading>
+        <SectionHeading id="choose-heading">{sec(copy, 'choose').heading}</SectionHeading>
         <p class="mt-6 max-w-3xl text-body">
-          Both ferry routes arrive at Trafford Wharf, at the stadium end beside IWM North — just a
-          short walk from Old Trafford. Pick whichever departure point suits you best.
+          {sec(copy, 'choose').body?.[0]}
         </p>
         <div class="mt-8 grid grid-cols-1 gap-4 sm:grid-cols-2">
           {
             departurePoints.map((p) => (
               <ProductCard
-                name={`Depart from ${p.name}`}
-                desc={`Departs ${p.location}. Arrives Trafford Wharf — a short walk from the ground.`}
+                name={fill(str(copy, 'departCardName'), { name: p.name })}
+                desc={fill(str(copy, 'departCardDesc'), { location: p.location })}
                 href={`/tour/boat-to-old-trafford/${p.slug}`}
-                linkText="View & book"
+                linkText={str(copy, 'departCardLinkText')}
                 image="/images/boat-to-old-trafford-card.webp"
-                imageAlt="A Manchester River Cruises boat on the Manchester Ship Canal carrying passengers on the open top deck, with the Salford Quays skyline behind."
+                imageAlt={str(copy, 'departCardImageAlt')}
               />
             ))
           }
@@ -133,27 +131,26 @@ const crumbs = [
 
       {/* Map — four markers, no route lines */}
       <section aria-labelledby="map-heading">
-        <SectionHeading id="map-heading">The route at a glance</SectionHeading>
+        <SectionHeading id="map-heading">{sec(copy, 'map').heading}</SectionHeading>
         <p class="mt-6 max-w-3xl text-body">
-          Two departure points, one destination. The map shows both departure points, the arrival at
-          Trafford Wharf and Old Trafford itself.
+          {sec(copy, 'map').body?.[0]}
         </p>
         <div id="ferry-map" class="mt-8 w-full overflow-hidden rounded-card ring-1 ring-black/5"></div>
         <noscript>
-          <p class="mt-2 text-sm text-subtle">Enable JavaScript to view the interactive map.</p>
+          <p class="mt-2 text-sm text-subtle">{str(copy, 'mapNoscript')}</p>
         </noscript>
       </section>
 
-      <FAQSection faqs={faqs} title="MUFC Ferry FAQs" />
+      <FAQSection faqs={faqs} title={faqGroup(copy, 'main').title} />
     </div>
   </div>
 
   {/* Private matchday hire callout */}
   <CTASection
-    heading="Travelling as a group?"
-    text="Hire a boat exclusively for your group on matchday — a stress-free, memorable way to arrive at the game together."
+    heading={str(copy, 'ctaHeading')}
+    text={str(copy, 'ctaText')}
     primaryHref="/private-hire"
-    primaryLabel="Enquire about private matchday hire"
+    primaryLabel={str(copy, 'ctaPrimaryLabel')}
   />
 
   {/* Leaflet — CSS is loaded above. Markers only, no route line. */}

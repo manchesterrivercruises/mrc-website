@@ -1,0 +1,63 @@
+{
+  "page": "boat-to-old-trafford-point",
+  "seoTitle": "{name} Matchday Ferry to Old Trafford — Manchester River Cruises",
+  "seoDescription": "Catch the matchday ferry to Old Trafford from {name} ({location}). Arrive at Trafford Wharf, a short walk from the ground. Book direct.",
+  "eyebrow": "Matchday ferry",
+  "heading": "Depart from {name}",
+  "intro": "Board at {location} and cruise to Trafford Wharf — the stadium end, beside IWM North and a short walk from Old Trafford.",
+  "keyFacts": [
+    "Departure address TBC",
+    "Arrives Trafford Wharf",
+    "Approx. 20 minutes",
+    "Matchdays only"
+  ],
+  "sections": [
+    {
+      "key": "boarding",
+      "heading": "Boarding at {name}",
+      "body": [
+        "The {name} ferry departs from {location}. Please arrive in good time to board ahead of departure."
+      ],
+      "note": "Exact boarding location, arrival time before departure and check-in details — TBC from Simon (content-checklist.md)."
+    },
+    {
+      "key": "arrival",
+      "heading": "Arriving at Trafford Wharf",
+      "body": [
+        "The ferry arrives at Trafford Wharf, at the stadium end of the ship canal beside IWM North — a short walk from Old Trafford."
+      ],
+      "note": "What happens on arrival, the walk to the ground, and return-journey boarding after the final whistle — TBC from Simon (content-checklist.md)."
+    },
+    {
+      "key": "gettingHere",
+      "heading": "Getting to {name}",
+      "body": ["{name} is at {location}."],
+      "note": "Directions, nearest tram/parking and the exact boarding point for {name} — TBC from Simon (content-checklist.md)."
+    },
+    {
+      "key": "otherPoint",
+      "heading": "Prefer to depart from {otherName}?",
+      "body": [
+        "The {otherName} ferry departs from {otherLocation} and also arrives at Trafford Wharf."
+      ]
+    }
+  ],
+  "strings": [
+    {
+      "key": "heroImageAlt",
+      "value": "A Manchester River Cruises boat on the Manchester Ship Canal carrying passengers on the open top deck, with the Salford Quays skyline and Millennium Footbridge behind."
+    },
+    { "key": "heroCtaLabel", "value": "Book now" },
+    { "key": "mapsLinkLabel", "value": "Open in Google Maps" },
+    { "key": "otherPointCtaLabel", "value": "Depart from {otherName}" },
+    { "key": "bookingPrice", "value": "£{price}" },
+    { "key": "bookingPriceSuffix", "value": "per person" },
+    { "key": "bookingPriceNote", "value": "Matchday service · price TBC" },
+    {
+      "key": "bookingUnavailable",
+      "value": "Booking opens once this departure is set up in Ventrata (TBC)."
+    },
+    { "key": "mobileCtaLabel", "value": "Book now · from £{price}" },
+    { "key": "mobileUnavailableLabel", "value": "Booking opens soon" }
+  ]
+}

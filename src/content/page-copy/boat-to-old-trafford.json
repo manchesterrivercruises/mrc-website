@@ -1,0 +1,86 @@
+{
+  "page": "boat-to-old-trafford",
+  "seoTitle": "MUFC Ferry Service — Matchday Boat to Old Trafford",
+  "seoDescription": "Beat the matchday traffic and travel to Old Trafford by boat. Choose your departure — Ralli Quay or Stephenson’s Bridge — and arrive at Trafford Wharf, a short walk from the ground.",
+  "eyebrow": "Matchday by boat",
+  "heading": "MUFC Ferry Service",
+  "intro": "Beat the matchday traffic and travel to Old Trafford by boat. Choose your departure point — both routes arrive at Trafford Wharf, a short walk from the ground.",
+  "keyFacts": [
+    "Matchdays only",
+    "Approx. 20 minutes",
+    "Arrives Trafford Wharf",
+    "From £12 (TBC)"
+  ],
+  "sections": [
+    {
+      "key": "choose",
+      "heading": "Choose your departure point",
+      "body": [
+        "Both ferry routes arrive at Trafford Wharf, at the stadium end beside IWM North — just a short walk from Old Trafford. Pick whichever departure point suits you best."
+      ]
+    },
+    {
+      "key": "map",
+      "heading": "The route at a glance",
+      "body": [
+        "Two departure points, one destination. The map shows both departure points, the arrival at Trafford Wharf and Old Trafford itself."
+      ]
+    }
+  ],
+  "faqGroups": [
+    {
+      "key": "main",
+      "title": "MUFC Ferry FAQs",
+      "items": [
+        {
+          "question": "Where does the ferry arrive?",
+          "answer": "Both routes arrive at Trafford Wharf, at the stadium end beside IWM North — a short walk from Old Trafford."
+        },
+        {
+          "question": "Which departure point should I choose?",
+          "answer": "Choose whichever is most convenient for you: Ralli Quay (River Irwell near New Bailey, Salford) or Stephenson's Bridge (near Water Street). Both arrive at the same place."
+        },
+        {
+          "question": "How long does the crossing take?",
+          "answer": "Approximately 20 minutes each way. (TBC)"
+        },
+        {
+          "question": "Does the ferry run for every match?",
+          "answer": "The ferry runs on selected matchdays only. Check availability for your fixture when booking. (TBC)"
+        },
+        {
+          "question": "Is there a return service after the game?",
+          "answer": "Yes — the ferry returns from Trafford Wharf after the final whistle. Return boarding details TBC."
+        },
+        {
+          "question": "Can I hire a boat for a private group on matchday?",
+          "answer": "Yes — private matchday hire is available for groups. Get in touch to enquire."
+        }
+      ]
+    }
+  ],
+  "strings": [
+    {
+      "key": "heroImageAlt",
+      "value": "A Manchester River Cruises boat on the Manchester Ship Canal carrying passengers on the open top deck, with the Salford Quays skyline and Millennium Footbridge behind."
+    },
+    { "key": "heroCtaLabel", "value": "Choose your departure" },
+    { "key": "departCardName", "value": "Depart from {name}" },
+    {
+      "key": "departCardDesc",
+      "value": "Departs {location}. Arrives Trafford Wharf — a short walk from the ground."
+    },
+    { "key": "departCardLinkText", "value": "View & book" },
+    {
+      "key": "departCardImageAlt",
+      "value": "A Manchester River Cruises boat on the Manchester Ship Canal carrying passengers on the open top deck, with the Salford Quays skyline behind."
+    },
+    { "key": "mapNoscript", "value": "Enable JavaScript to view the interactive map." },
+    { "key": "ctaHeading", "value": "Travelling as a group?" },
+    {
+      "key": "ctaText",
+      "value": "Hire a boat exclusively for your group on matchday — a stress-free, memorable way to arrive at the game together."
+    },
+    { "key": "ctaPrimaryLabel", "value": "Enquire about private matchday hire" }
+  ]
+}

@@ -1,0 +1,88 @@
+{
+  "page": "home",
+  "seoTitle": "Manchester River Cruises | Boat Tours, Events & Ferry from Salford Quays",
+  "seoDescription": "Sightseeing river cruises, live music and party nights, and matchday ferries on the Manchester Ship Canal from Salford Quays. Book direct with Manchester River Cruises.",
+  "eyebrow": "Manchester River Cruises",
+  "heading": "See Manchester from the Water",
+  "intro": "Sightseeing cruises, live music nights and matchday ferries from Salford Quays",
+  "sections": [
+    {
+      "key": "crt",
+      "heading": "The City River Tour",
+      "body": [
+        "Our signature sightseeing cruise glides along the historic Manchester Ship Canal from Salford Quays, with live commentary bringing the waterfront's landmarks and stories to life."
+      ]
+    },
+    {
+      "key": "findDate",
+      "heading": "Find your date",
+      "body": ["Tell us when you're free — see everything sailing that day."]
+    },
+    { "key": "comingUp", "heading": "Coming up" },
+    { "key": "nights", "heading": "Nights to remember" },
+    {
+      "key": "mufc",
+      "heading": "Matchday by boat",
+      "body": ["Skip the matchday traffic and arrive at Old Trafford by ferry along the Ship Canal."]
+    },
+    {
+      "key": "private",
+      "heading": "Make it yours",
+      "body": ["Charter a boat exclusively for your celebration, corporate event or private party."]
+    },
+    { "key": "discover", "heading": "Plan your day" },
+    { "key": "proof", "heading": "Why book with us" }
+  ],
+  "lists": [
+    {
+      "key": "cityFacts",
+      "items": ["60 minutes", "From £13", "Free cancellation"]
+    }
+  ],
+  "cards": [
+    {
+      "key": "nights:music",
+      "name": "Music Cruises",
+      "desc": "Live tribute and themed nights — ABBA, Elvis, Dolly, Adele, Soul and more.",
+      "linkText": "Music cruises"
+    },
+    {
+      "key": "nights:party",
+      "name": "Party Nights",
+      "desc": "Boat parties on the Ship Canal — dancing, drinks and the city skyline.",
+      "linkText": "Party nights"
+    },
+    {
+      "key": "nights:christmas",
+      "name": "Christmas on the water",
+      "desc": "Festive party nights and seasonal cruises through the winter.",
+      "linkText": "See your options"
+    }
+  ],
+  "strings": [
+    { "key": "heroCtaLabel", "value": "Book the City River Tour" },
+    { "key": "heroSecondaryLabel", "value": "What's On" },
+    {
+      "key": "heroImageAlt",
+      "value": "The City River Tour boat cruising past MediaCity at Salford Quays"
+    },
+    { "key": "trustStarsSuffix", "value": "stars" },
+    { "key": "trustReviewsSuffix", "value": "Google reviews" },
+    { "key": "crtImagePlaceholder", "value": "City River Tour photo (TBC)" },
+    { "key": "crtCtaLabel", "value": "Book the City River Tour" },
+    { "key": "comingUpSeeAllLinkLabel", "value": "See all dates →" },
+    { "key": "comingUpCtaLabel", "value": "See all dates" },
+    { "key": "mufcCtaLabel", "value": "Boat to Old Trafford" },
+    { "key": "privateCtaLabel", "value": "Private hire" },
+    { "key": "discoverAllLinkLabel", "value": "All guides →" },
+    { "key": "discoverLinkText", "value": "Read guide" },
+    { "key": "discoverImagePlaceholder", "value": "Image (TBC)" },
+    { "key": "proofReviewsBefore", "value": "from" },
+    { "key": "proofReviewsAfter", "value": "Google reviews" },
+    { "key": "statPoiValue", "value": "43" },
+    { "key": "statPoiLabel", "value": "Points of interest" },
+    { "key": "statFleetLabel", "value": "Vessels in the fleet" },
+    { "key": "statDepartingValue", "value": "Salford Quays" },
+    { "key": "statDepartingLabel", "value": "Departing from" }
+  ]
+}

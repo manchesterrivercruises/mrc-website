@@ -8,6 +8,8 @@ import CTAButton from '../components/CTAButton.astro';
 import CTASection from '../components/CTASection.astro';
 import FAQSection from '../components/FAQSection.astro';
 import GettingHere from '../components/GettingHere.astro';
+import copy from '../content/page-copy/groups.json';
+import { sec, list, faqGroup, faqs as faqItems, str } from '../lib/pageCopy';
 
 // Group Visits, School Trips & Coach Parties landing page.
 // Three audience sections (group bookings 10+, schools & youth, coach parties/trade),
@@ -15,6 +17,11 @@ import GettingHere from '../components/GettingHere.astro';
 // enquiry. Every unconfirmed operational claim carries a visible (TBC) marker for
 // Simon's content pass (content-checklist.md). School section is deliberately kept
 // alcohol-free / school-safe.
+//
+// EDITABLE COPY lives in the CMS (Page copy → groups) and is stored in
+// src/content/page-copy/groups.json. This template owns STRUCTURE ONLY — layout,
+// components, icons, every href, the section ids (they are anchors, not copy) and
+// the schema block.
 
 const icons = {
   users:
@@ -25,108 +32,50 @@ const icons = {
   pin: '<path d="M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" /><path d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1 1 15 0Z" />',
 };
 
-const keyFacts = [
-  { text: 'Groups of 10+ welcome', icon: icons.users },
-  { text: 'School & youth charters', icon: icons.academic },
-  { text: 'Coach parties & the trade', icon: icons.bus },
-  { text: 'Salford Quays departure', icon: icons.pin },
-];
+// Icons are structural; only the fact labels come from the CMS, zipped by position.
+const factIcons = [icons.users, icons.academic, icons.bus, icons.pin];
+const keyFacts = (copy.keyFacts ?? []).map((text, i) => ({ text, icon: factIcons[i] ?? icons.pin }));
 
-// Three audience sections — each with its own copy, benefits card and CTA.
-const audiences = [
+// Three audience sections. The section IDs are anchors (structure) and the CTA
+// destinations are routes — both stay here. Everything a reader sees is assembled
+// from the CMS entry, keyed off the same id.
+const AUDIENCES = [
   {
     id: 'group-bookings',
-    eyebrow: 'Group bookings',
-    title: 'Group bookings (10+)',
-    copy: [
-      'Bringing a group of ten or more? There are two easy ways aboard. Join a scheduled public sailing of our City River Tour at a group rate, or take a private charter of the whole boat for complete flexibility over your date, timings and route.',
-      'Public sailings suit sightseeing groups — social clubs, societies, community groups and work outings who want the tour itself. We reserve seats for your group together on a set departure. For full control of your date, timings and route, a private charter makes the vessel exclusively yours.',
-    ],
-    tbc: 'Group discount rate, organiser-goes-free policy and payment terms — TBC from Simon (content-checklist.md).',
-    asideTitle: 'Group organiser benefits',
-    highlights: [
-      'Group rates for parties of 10+ (TBC)',
-      'Organiser-goes-free policy (TBC)',
-      'Flexible payment terms (TBC)',
-      'Public sailing or private charter',
-    ],
-    cta: { label: 'Enquire about group rates', href: '/contact-us' },
-    secondary: { label: 'View the City River Tour', href: '/tour/city-river-tours' },
+    ctaHref: '/contact-us',
+    secondaryHref: '/tour/city-river-tours',
   },
   {
     id: 'schools',
-    eyebrow: 'Schools & youth groups',
-    title: 'School & youth groups',
-    copy: [
-      'School trips, college groups, scouts, guides and youth organisations sail as a private charter — the whole boat is yours, not a shared public sailing. That means one group, a tailored commentary pitched to your age range, and simple logistics from boarding to disembarking.',
-      'We don’t offer party or prom bookings for school and college groups — our school charters are daytime educational visits.',
-      'The Ship Canal is a floating history lesson: the Industrial Revolution and the age of the docks, the working waterway that built the city, and the MediaCity regeneration that transformed it. It is a hands-on complement to the classroom — geography, history and local studies all on one route.',
-    ],
-    tbc: 'Risk assessment documentation, teacher planning visits and adult-to-pupil ratio guidance — TBC from Simon (content-checklist.md).',
-    asideTitle: 'For teachers & group leaders',
-    highlights: [
-      'Whole-boat private charter — one group only',
-      'Commentary tailored to your age range',
-      'Risk assessment documentation on request (TBC)',
-      'Teacher planning visit welcome (TBC)',
-      'Adult-to-pupil ratio guidance (TBC)',
-    ],
-    cta: { label: 'Enquire about a school charter', href: '/private-hire#enquire' },
-    secondary: null,
+    ctaHref: '/private-hire#enquire',
+    secondaryHref: null,
   },
   {
     id: 'coach-parties',
-    eyebrow: 'Coach parties & tour operators',
-    title: 'Coach parties & tour operators',
-    copy: [
-      'We welcome coach parties and tour operators aboard the City River Tour. Whether you are building a Manchester day out or slotting a river cruise into a wider itinerary, our sightseeing tour is an easy, memorable inclusion — around an hour on the water with live commentary.',
-      'Coaches can set down close to the Millennium Footbridge boarding point; we will advise on the nearest drop-off and parking when you book. Pre-booked group rates and invoice payment are available for the trade.',
-    ],
-    tbc: 'Exact coach drop-off and parking arrangements, driver/courier-goes-free policy, group rates and invoice terms — TBC from Simon (content-checklist.md).',
-    asideTitle: 'For coach operators & the trade',
-    highlights: [
-      'Coach drop-off near the boarding point (TBC)',
-      'Parking guidance provided (TBC)',
-      'Driver & courier go free (TBC)',
-      'Pre-booked group rates (TBC)',
-      'Invoice payment available (TBC)',
-    ],
-    cta: { label: 'Trade & coach enquiries', href: '/contact-us' },
-    secondary: { label: 'View the City River Tour', href: '/tour/city-river-tours' },
+    ctaHref: '/contact-us',
+    secondaryHref: '/tour/city-river-tours',
   },
-];
+] as const;
 
-const faqs = [
-  {
-    q: 'What is the minimum group size?',
-    a: 'Group rates apply to parties of 10 or more on a scheduled City River Tour; school, youth and other private charters take the whole boat. Exact minimums and boat capacity — TBC.',
-  },
-  {
-    q: 'What happens if the weather is bad?',
-    a: 'The boat has a heated indoor cabin, so cruises run in most weather. If conditions affect sailing we contact the group organiser to rearrange. Full weather and cancellation policy — TBC.',
-  },
-  {
-    q: 'Are groups accessible for wheelchair users and less mobile guests?',
-    a: 'Step-free boarding is available where tides allow, and we will talk through your group’s needs before you sail. Full accessibility details — TBC. See our Accessibility page.',
-  },
-  {
-    q: 'How do deposits and payment work for groups?',
-    a: 'Group and charter bookings can be arranged with a deposit and balance, and invoice payment is available for schools and the trade. Deposit amounts and payment terms — TBC.',
-  },
-  {
-    q: 'Can we have a tailored commentary or itinerary?',
-    a: 'Yes — private charters (including school and youth groups) can have commentary pitched to the group, and we can talk through timings and route. Confirmed when you book. (TBC)',
-  },
-  {
-    q: 'Do group organisers or drivers go free?',
-    a: 'We plan to offer organiser and driver/courier-goes-free arrangements; the exact policy is being confirmed. (TBC)',
-  },
-];
+const audiences = AUDIENCES.map((a) => ({
+  id: a.id,
+  eyebrow: str(copy, `${a.id}-eyebrow`),
+  title: sec(copy, a.id).heading,
+  copy: sec(copy, a.id).body ?? [],
+  tbc: sec(copy, a.id).note,
+  asideTitle: str(copy, `${a.id}-asideTitle`),
+  highlights: list(copy, `${a.id}-highlights`),
+  cta: { label: str(copy, `${a.id}-ctaLabel`), href: a.ctaHref },
+  secondary: a.secondaryHref
+    ? { label: str(copy, `${a.id}-secondaryLabel`), href: a.secondaryHref }
+    : null,
+}));
+
+const faqs = faqItems(copy);
 
 const SITE = site.url;
-const pageTitle = 'Group Visits, School Trips & Coach Parties — Manchester River Cruises';
-const pageDescription =
-  'Group visits, school trips and coach parties on the Manchester Ship Canal. Group rates on the City River Tour, or a private charter for schools, youth groups and tour operators from Salford Quays. Enquire today.';
+const pageTitle = copy.seoTitle!;
+const pageDescription = copy.seoDescription!;
 
 // Schema.org: TouristAttraction (the group offer) + LocalBusiness (NAP) + FAQPage
 // (built from the visible Q&A above), emitted as one @graph.
@@ -170,14 +119,14 @@ const structuredData = {
   <div>
     {/* Hero — owned fleet/deck imagery behind the navy overlay */}
     <PageHero
-      eyebrow="Group visits, schools & coach parties"
-      title="Group Visits, School Trips & Coach Parties"
-      subtitle="Bring a group aboard the Manchester Ship Canal. Group rates on the City River Tour, or a private charter for schools, youth groups and the coach trade — all from Salford Quays."
+      eyebrow={copy.eyebrow}
+      title={copy.heading}
+      subtitle={copy.intro}
       heroImage="/images/city-river-tour-hero.webp"
-      heroImageAlt="A Manchester River Cruises vessel on the Ship Canal at Salford Quays"
+      heroImageAlt={str(copy, 'heroImageAlt')}
     >
-      <CTAButton href="/contact-us">Enquire about a group visit</CTAButton>
-      <CTAButton href="/whats-on" variant="outline">See What's On</CTAButton>
+      <CTAButton href="/contact-us">{str(copy, 'heroCtaLabel')}</CTAButton>
+      <CTAButton href="/whats-on" variant="outline">{str(copy, 'heroSecondaryLabel')}</CTAButton>
     </PageHero>
 
     {/* Key facts strip */}
@@ -186,15 +135,14 @@ const structuredData = {
     {/* Intro */}
     <div class="mx-auto max-w-6xl px-4 py-10 sm:px-6 md:py-12 lg:px-8">
       <section aria-labelledby="about">
-        <SectionHeading id="about">Three ways to bring a group aboard</SectionHeading>
+        <SectionHeading id="about">{sec(copy, 'about').heading}</SectionHeading>
         <div class="mt-6 max-w-3xl space-y-4 text-lg leading-relaxed text-body">
           <p>
-            Whether you are organising a social club outing, a school trip or a coach tour, there is a
-            simple way aboard: join a scheduled City River Tour at a <strong>group rate</strong>, or take
-            the whole boat with a <strong>private charter</strong> for full flexibility.
+            {str(copy, 'aboutBefore')} <strong>{str(copy, 'aboutEmphasis1')}</strong>{str(copy, 'aboutMid')}{' '}
+            <strong>{str(copy, 'aboutEmphasis2')}</strong> {str(copy, 'aboutAfter')}
           </p>
           <p class="text-base text-subtle">
-            Full group, school and trade details — TBC from Simon (content-checklist.md).
+            {sec(copy, 'about').note}
           </p>
         </div>
       </section>
@@ -216,15 +164,15 @@ const structuredData = {
                     ))}
                     {a.id === 'group-bookings' && (
                       <p class="rounded-card bg-primary/5 p-4 text-base ring-1 ring-primary/15">
-                        Planning a party? Our evening{' '}
+                        {str(copy, 'partyCalloutBefore')}{' '}
                         <a href="/party-boat-manchester" class="font-medium text-primary underline-offset-4 hover:underline">
-                          party nights
+                          {str(copy, 'partyCalloutLink1')}
                         </a>{' '}
-                        and{' '}
+                        {str(copy, 'partyCalloutMid')}{' '}
                         <a href="/private-hire" class="font-medium text-primary underline-offset-4 hover:underline">
-                          private charters
+                          {str(copy, 'partyCalloutLink2')}
                         </a>{' '}
-                        are built for celebrations →
+                        {str(copy, 'partyCalloutAfter')}
                       </p>
                     )}
                     <p class="text-base text-subtle">{a.tbc}</p>
@@ -263,18 +211,18 @@ const structuredData = {
 
     {/* Enquiry CTA band */}
     <CTASection
-      heading="Planning a group visit?"
-      text="Tell us your group size, preferred date and what you have in mind — a social outing, a school trip or a coach tour — and we will help you choose between a group rate on a public sailing and a private charter."
+      heading={str(copy, 'ctaHeading')}
+      text={str(copy, 'ctaText')}
       primaryHref="/contact-us"
-      primaryLabel="Enquire about a group visit"
+      primaryLabel={str(copy, 'ctaPrimaryLabel')}
       secondaryHref="/whats-on"
-      secondaryLabel="See What's On"
+      secondaryLabel={str(copy, 'ctaSecondaryLabel')}
     />
 
     {/* FAQ (schema emitted above) + Getting Here */}
     <div class="mx-auto max-w-6xl px-4 py-12 sm:px-6 md:py-16 lg:px-8">
       <div class="space-y-12 md:space-y-16">
-        <FAQSection faqs={faqs} title="Group visits FAQs" />
+        <FAQSection faqs={faqs} title={faqGroup(copy, 'main').title} />
         <GettingHere />
       </div>
     </div>

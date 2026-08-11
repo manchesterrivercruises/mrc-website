@@ -1,0 +1,123 @@
+{
+  "page": "christmas-cruises-manchester",
+  "seoTitle": "Christmas Cruises & Christmas Party Boat Manchester — Manchester River Cruises",
+  "seoDescription": "Christmas on the Manchester Ship Canal from Salford Quays: party nights that run through December fully decorated with festive extras, private Christmas parties for your office or group, and family Santa cruises. Book direct.",
+  "eyebrow": "Christmas on the water",
+  "heading": "Christmas Cruises Manchester",
+  "intro": "Three ways to celebrate on the Manchester Ship Canal this December — a decked-out party night, your own private do, or a Santa cruise for the family.",
+  "keyFacts": [
+    "Party nights, private hire & Santa cruises",
+    "Fully decorated all through December",
+    "Millennium Footbridge, Salford Quays",
+    "Book early — December sells out"
+  ],
+  "sections": [
+    { "key": "strands", "heading": "What's Christmas like on the water?" },
+    {
+      "key": "party-detail",
+      "heading": "Party nights, dressed for Christmas",
+      "body": [
+        "We don’t run separate “Christmas specials” — we don’t need to. Every one of our regular party nights runs right through December with the full festive treatment: the boat decorated bow to stern, festive extras on board, and Christmas songs woven into the set. Whether it’s ABBA, Dolly, Elvis or a soul night, you get the same great cruise with all the Christmas sparkle on top."
+      ]
+    },
+    {
+      "key": "private-detail",
+      "heading": "Your own Christmas party",
+      "body": [
+        "The office Christmas do, sorted. Take the whole boat and it’s exclusively yours for the night — decorated for Christmas, with a licensed bar, a dancefloor and Manchester’s floodlit waterfront as your backdrop. It’s the highest-impact way to celebrate a team or a big group, and it beats booking out the same tired function room."
+      ],
+      "note": "Catering, drinks packages and festive extras — TBC from Simon (content-checklist.md)."
+    },
+    {
+      "key": "santa-detail",
+      "heading": "Santa cruises",
+      "body": [
+        "Our one truly Christmas-specific event. Little ones meet Father Christmas on the water, in a warm, festively decorated cabin, with a gift for every child — plus a sensory-friendly SEN Santa cruise for children with additional needs."
+      ]
+    },
+    {
+      "key": "gallery",
+      "heading": "Christmas on board",
+      "body": ["Real festive moments on the water — tap to browse"]
+    },
+    {
+      "key": "gift-vouchers",
+      "heading": "Can’t pick a date? Give a voucher",
+      "body": [
+        "A gift voucher is the easy Christmas present — they pick the cruise and the date that suits them. Redeemable against any sailing."
+      ]
+    }
+  ],
+  "cards": [
+    {
+      "key": "journeys:party-nights",
+      "name": "Party nights, dressed for Christmas",
+      "desc": "All our regular party nights — ABBA, Dolly, Elvis, Soul and more — get the full Christmas treatment through December: the boat decorated bow to stern, festive extras on board and Christmas songs in the mix. Same great nights, in full festive dress.",
+      "linkText": "See December party nights"
+    },
+    {
+      "key": "journeys:private-party",
+      "name": "Your own Christmas party",
+      "desc": "The whole boat, exclusively yours — the standout way to do the office Christmas do or a big group celebration. Your own decorated boat, your own night on the water, with a licensed bar and the floodlit waterfront gliding past. December dates go fast, so get yours locked in.",
+      "linkText": "Plan a private Christmas party"
+    },
+    {
+      "key": "journeys:santa",
+      "name": "Santa cruises",
+      "desc": "The one truly Christmas-specific event: a magical family cruise where little ones meet Father Christmas himself on the water, with a festively decorated cabin and a gift for every child. Pure festive magic for the countdown to Christmas.",
+      "linkText": "Meet Father Christmas"
+    }
+  ],
+  "faqGroups": [
+    {
+      "key": "main",
+      "title": "Christmas cruise FAQs",
+      "items": [
+        {
+          "question": "Do you run special Christmas events?",
+          "answer": "Our regular party nights run right through December with the full Christmas treatment — the boat decorated bow to stern, festive extras on board and Christmas songs mixed into the night. The one Christmas-specific event is our family Santa cruise. For a do of your own, hire the whole boat."
+        },
+        {
+          "question": "Can I book a private Christmas party?",
+          "answer": "Yes — hire the whole boat for your office party or group celebration, with the boat decorated for Christmas. Catering, drinks packages and festive extras — TBC from Simon. Enquire via our private hire page; December books up early."
+        },
+        {
+          "question": "When should I book for December?",
+          "answer": "December is our busiest month and party nights and private dates sell out, so book as early as you can. Exact deadlines — TBC."
+        },
+        {
+          "question": "What should I wear?",
+          "answer": "Dress warmly (and festively!). There is a heated indoor cabin, but the open deck can be cold in winter. (TBC)"
+        },
+        {
+          "question": "Are the Christmas cruises accessible?",
+          "answer": "Step-free boarding is available where tides allow, and our sensory-friendly SEN Santa cruise is designed for children with additional needs. Full accessibility details — TBC."
+        }
+      ]
+    }
+  ],
+  "strings": [
+    { "key": "heroCtaLabel", "value": "See your options" },
+    { "key": "heroCtaNote", "value": "Fully decorated all through December" },
+    { "key": "featuredBadge", "value": "Most-booked for groups" },
+    { "key": "journeys:party-nights-eyebrow", "value": "Party nights" },
+    { "key": "journeys:private-party-eyebrow", "value": "Private hire" },
+    { "key": "journeys:santa-eyebrow", "value": "Family" },
+    {
+      "key": "journeys:party-nights-imageAlt",
+      "value": "A tribute act performing under coloured stage lights on a party cruise"
+    },
+    {
+      "key": "journeys:private-party-imageAlt",
+      "value": "The boat cabin dressed for a private celebration with decorations and laid tables"
+    },
+    {
+      "key": "journeys:santa-imageAlt",
+      "value": "A child at the wheel of the boat alongside Father Christmas"
+    },
+    { "key": "partyDetailLinkText", "value": "See what’s sailing in December →" },
+    { "key": "privateDetailLinkText", "value": "Enquire about a private Christmas party →" },
+    { "key": "santaDetailLinkText", "value": "Meet Father Christmas on the water →" },
+    { "key": "giftVouchersCtaLabel", "value": "Gift vouchers" }
+  ]
+}

@@ -8,6 +8,13 @@ import CTAButton from '../components/CTAButton.astro';
 import ProductCard from '../components/ProductCard.astro';
 import FAQSection from '../components/FAQSection.astro';
 import VentrataWidget from '../components/VentrataWidget.astro';
+import copy from '../content/page-copy/gift-vouchers.json';
+import { sec, cards, card, faqGroup, faqs as faqItems, str } from '../lib/pageCopy';
+
+// EDITABLE COPY lives in the CMS (Page copy → gift-vouchers) and is stored in
+// src/content/page-copy/gift-vouchers.json. This template owns STRUCTURE ONLY —
+// layout, components, icons, every href, the schema block, and every Ventrata gift
+// widget (their mode/config is booking machinery, not copy).
 
 // Gift vouchers landing page — a conversion page for the "gift voucher boat trip Manchester"
 // intent. The centrepiece is Ventrata's product-less gift widget (mode="embedded" gift →
@@ -26,82 +33,38 @@ const icons = {
 };
 
 // Gifting reassurances — TBC where the operational detail is unconfirmed.
-const keyFacts = [
-  { text: 'Redeemable against any sailing (TBC)', icon: icons.gift },
-  { text: 'Delivered by email as a code (TBC)', icon: icons.mail },
-  { text: 'Choose an amount or experience (TBC)', icon: icons.ticket },
-  { text: 'Valid for TBC months', icon: icons.calendar },
-];
+// Icons are structural; only the fact labels come from the CMS, zipped by position.
+const factIcons = [icons.gift, icons.mail, icons.ticket, icons.calendar];
+const keyFacts = (copy.keyFacts ?? []).map((text, i) => ({ text, icon: factIcons[i] ?? icons.gift }));
 
-// Occasions we actually run cruises for — each ties the gift to a real experience.
-const occasions = [
-  {
-    title: 'Christmas',
-    copy: 'The easy present that isn’t another jumper — a festive party night or a winter sightseeing cruise on the Ship Canal.',
-    href: '/christmas-cruises-manchester',
-    linkText: 'Christmas on the water',
-  },
-  {
-    title: 'Birthdays',
-    copy: 'Give a birthday on the water — a party cruise with a licensed bar, or a relaxed daytime sightseeing trip.',
-    href: '/party-boat-manchester',
-    linkText: 'Party cruises',
-  },
-  {
-    title: "Mother's Day",
-    copy: 'Treat her to a scenic cruise through the heart of Manchester — a proper day out rather than a bunch of flowers.',
-    href: '/tour/city-river-tours',
-    linkText: 'City River Tour',
-  },
-  {
-    title: "Father's Day",
-    copy: 'For the dad who has everything — the story of the docks and the ship canal, told from the water with live commentary.',
-    href: '/tour/city-river-tours',
-    linkText: 'City River Tour',
-  },
-];
+// Card destinations stay in code, keyed off the card key the CMS holds.
+const CARD_HREFS: Record<string, string> = {
+  'occasions:christmas': '/christmas-cruises-manchester',
+  'occasions:birthdays': '/party-boat-manchester',
+  'occasions:mothers-day': '/tour/city-river-tours',
+  'occasions:fathers-day': '/tour/city-river-tours',
+  'experiences:crt': '/tour/city-river-tours',
+  'experiences:music': '/music-cruises-manchester',
+  'experiences:christmas': '/christmas-cruises-manchester',
+  'experiences:private-hire': '/private-hire',
+};
 
-// How it works — 3 steps. Specifics TBC for Simon's content pass.
-const steps = [
-  {
-    n: '1',
-    title: 'Buy online',
-    copy: 'Choose an amount (or a specific experience) and pay securely. Denominations and options — TBC.',
-  },
-  {
-    n: '2',
-    title: 'They receive a code',
-    copy: 'The voucher arrives by email as a gift code to pass on. Delivery and personalisation details — TBC.',
-  },
-  {
-    n: '3',
-    title: 'They book any sailing',
-    copy: 'The recipient redeems the code against a sailing that suits them. What the voucher can cover — TBC.',
-  },
-];
+const occasions = cards(copy, 'occasions');
 
-const faqs = [
-  { q: 'How long is a gift voucher valid for?', a: 'Validity period — TBC. (Typically vouchers are valid for a set number of months from purchase.)' },
-  { q: 'How does the recipient redeem it?', a: 'The recipient enters their gift code at checkout when booking online. Exact redemption steps — TBC.' },
-  { q: 'What amounts / denominations are available?', a: 'You’ll be able to choose from set amounts and/or a custom value. Available denominations — TBC.' },
-  { q: 'Can a voucher be used against any cruise?', a: 'The intention is that vouchers can be redeemed against any sailing, subject to availability. Exactly which cruises and events are covered — TBC.' },
-  { q: 'What happens if the recipient doesn’t use it in time?', a: 'Expiry and any extension policy — TBC.' },
-  { q: 'Can I choose a specific experience rather than an amount?', a: 'Yes — you’ll be able to gift a specific cruise or a monetary amount. Options — TBC.' },
-];
+// How it works — 3 steps. The step NUMBERS are list markers (structure); the wording
+// is CMS copy. Specifics TBC for Simon's content pass.
+const STEP_KEYS = ['steps:buy', 'steps:code', 'steps:book'];
+const steps = STEP_KEYS.map((key, i) => ({ n: `${i + 1}`, ...card(copy, key) }));
+
+const faqs = faqItems(copy);
 
 // Popular experiences to gift — the cross-sell strip.
-const experiences = [
-  { name: 'City River Tour', desc: 'Our signature 60-minute sightseeing cruise through the heart of Manchester.', href: '/tour/city-river-tours', linkText: 'View cruise' },
-  { name: 'Music & Party Nights', desc: 'Tribute nights, DJ cruises and party boats with a licensed bar.', href: '/music-cruises-manchester', linkText: 'See events' },
-  { name: 'Christmas on the water', desc: 'Festive party nights and seasonal sailings through the winter.', href: '/christmas-cruises-manchester', linkText: 'See your options' },
-  { name: 'Private Hire', desc: 'The whole boat, exclusively yours, for a celebration to remember.', href: '/private-hire', linkText: 'Enquire' },
-];
+const experiences = cards(copy, 'experiences');
 
 const SITE = site.url;
 // Meta targeting the "gift voucher boat trip Manchester" family.
-const pageTitle = 'Gift Vouchers — Boat Trip Gifts in Manchester — Manchester River Cruises';
-const pageDescription =
-  'Gift vouchers for a Manchester boat trip — give a sightseeing cruise, music night or private hire on the Ship Canal. Buy online; they get a code to book any sailing. Perfect for Christmas, birthdays, Mother’s Day and Father’s Day.';
+const pageTitle = copy.seoTitle!;
+const pageDescription = copy.seoDescription!;
 
 // Schema.org: WebPage + FAQPage (built from the visible Q&A). Amounts/denominations are TBC, so no
 // priced Product/Offer is claimed (an honest fallback until pricing is confirmed).
@@ -134,15 +97,15 @@ const structuredData = {
   <div>
     {/* Hero — owned imagery behind the navy overlay; gift-mode CTA leads. */}
     <PageHero
-      eyebrow="Gift vouchers"
-      title="Give Manchester from the water"
-      subtitle="The gift of a cruise on the Manchester Ship Canal — a sightseeing tour, a party night or the whole boat. Buy online and they get a code to book the sailing that suits them."
+      eyebrow={copy.eyebrow}
+      title={copy.heading}
+      subtitle={copy.intro}
       heroImage="/images/city-river-tour-hero.webp"
-      heroImageAlt="A Manchester River Cruises boat on the Ship Canal at Salford Quays"
+      heroImageAlt={str(copy, 'heroImageAlt')}
     >
-      <VentrataWidget mode="popup" gift href="#gift-widget" label="Buy a gift voucher" />
+      <VentrataWidget mode="popup" gift href="#gift-widget" label={str(copy, 'buyVoucherLabel')} />
       <a href="/whats-on" class="text-sm font-medium text-white/90 underline-offset-4 hover:underline">
-        See what's on →
+        {str(copy, 'heroSecondaryLabel')}
       </a>
     </PageHero>
 
@@ -158,10 +121,9 @@ const structuredData = {
       aria-labelledby="buy-gift"
       class="mx-auto max-w-3xl scroll-mt-24 px-4 py-12 sm:px-6 md:py-16 lg:px-8"
     >
-      <SectionHeading id="buy-gift">Buy a gift voucher</SectionHeading>
+      <SectionHeading id="buy-gift">{sec(copy, 'buyGift').heading}</SectionHeading>
       <p class="mt-4 text-body">
-        Choose an amount and pay securely — the voucher arrives by email as a code to pass on.
-        Denominations, validity and what it covers — TBC.
+        {sec(copy, 'buyGift').body?.[0]}
       </p>
       <div class="mt-8">
         <VentrataWidget mode="embedded" gift minHeightClass="min-h-[44rem]" />
@@ -172,18 +134,18 @@ const structuredData = {
       <div class="space-y-16">
         {/* Occasions */}
         <section aria-labelledby="occasions">
-          <SectionHeading id="occasions">A gift for every occasion</SectionHeading>
+          <SectionHeading id="occasions">{sec(copy, 'occasions').heading}</SectionHeading>
           <p class="mt-4 max-w-3xl text-body">
-            We run cruises all year round — so a voucher works for whatever’s coming up.
+            {sec(copy, 'occasions').body?.[0]}
           </p>
           <div class="mt-8 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
             {
               occasions.map((o) => (
                 <div class="flex flex-col rounded-card bg-panel p-6 ring-1 ring-black/5">
-                  <h3 class="font-semibold text-ink">{o.title}</h3>
-                  <p class="mt-2 flex-1 text-sm leading-relaxed text-body">{o.copy}</p>
+                  <h3 class="font-semibold text-ink">{o.name}</h3>
+                  <p class="mt-2 flex-1 text-sm leading-relaxed text-body">{o.desc}</p>
                   <a
-                    href={o.href}
+                    href={CARD_HREFS[o.key]}
                     class="mt-4 text-sm font-medium text-primary underline-offset-4 hover:underline"
                   >
                     {o.linkText} →
@@ -196,7 +158,7 @@ const structuredData = {
 
         {/* How it works */}
         <section aria-labelledby="how">
-          <SectionHeading id="how">How it works</SectionHeading>
+          <SectionHeading id="how">{sec(copy, 'how').heading}</SectionHeading>
           <ol class="mt-8 grid grid-cols-1 gap-6 sm:grid-cols-3">
             {
               steps.map((s) => (
@@ -207,14 +169,14 @@ const structuredData = {
                   >
                     {s.n}
                   </span>
-                  <h3 class="mt-4 font-semibold text-ink">{s.title}</h3>
-                  <p class="mt-2 text-sm leading-relaxed text-body">{s.copy}</p>
+                  <h3 class="mt-4 font-semibold text-ink">{s.name}</h3>
+                  <p class="mt-2 text-sm leading-relaxed text-body">{s.desc}</p>
                 </li>
               ))
             }
           </ol>
           <div class="mt-8">
-            <VentrataWidget mode="popup" gift href="#gift-widget" label="Buy a gift voucher" />
+            <VentrataWidget mode="popup" gift href="#gift-widget" label={str(copy, 'buyVoucherLabel')} />
           </div>
         </section>
       </div>
@@ -223,14 +185,13 @@ const structuredData = {
     {/* Gift CTA band — dark navy, gift-mode trigger */}
     <section class="bg-dark text-white">
       <div class="mx-auto max-w-6xl px-4 py-16 text-center sm:px-6 md:py-20 lg:px-8">
-        <h2 class="text-2xl font-bold tracking-tight sm:text-3xl">Give a day out they’ll remember</h2>
+        <h2 class="text-2xl font-bold tracking-tight sm:text-3xl">{sec(copy, 'giftBand').heading}</h2>
         <p class="mx-auto mt-3 max-w-2xl text-lg leading-relaxed text-white/80">
-          A Manchester River Cruises gift voucher is the easy present that turns into a proper
-          experience on the water. Buy in minutes; they book when they’re ready.
+          {sec(copy, 'giftBand').body?.[0]}
         </p>
         <div class="mt-8 flex flex-wrap items-center justify-center gap-4">
-          <VentrataWidget mode="popup" gift href="#gift-widget" label="Buy a gift voucher" />
-          <CTAButton href="/tour/city-river-tours" variant="outline">Or book a cruise now</CTAButton>
+          <VentrataWidget mode="popup" gift href="#gift-widget" label={str(copy, 'buyVoucherLabel')} />
+          <CTAButton href="/tour/city-river-tours" variant="outline">{str(copy, 'giftBandSecondaryLabel')}</CTAButton>
         </div>
       </div>
     </section>
@@ -239,14 +200,14 @@ const structuredData = {
       <div class="space-y-16">
         {/* Popular experiences to gift */}
         <section aria-labelledby="experiences">
-          <SectionHeading id="experiences">Popular experiences to gift</SectionHeading>
-          <p class="mt-4 max-w-3xl text-body">Not sure what to choose? These are the ones people love to give.</p>
+          <SectionHeading id="experiences">{sec(copy, 'experiences').heading}</SectionHeading>
+          <p class="mt-4 max-w-3xl text-body">{sec(copy, 'experiences').body?.[0]}</p>
           <div class="mt-8 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-            {experiences.map((e) => <ProductCard name={e.name} desc={e.desc} href={e.href} linkText={e.linkText} />)}
+            {experiences.map((e) => <ProductCard name={e.name} desc={e.desc} href={CARD_HREFS[e.key]} linkText={e.linkText} />)}
           </div>
         </section>
 
-        <FAQSection faqs={faqs} title="Gift voucher FAQs" />
+        <FAQSection faqs={faqs} title={faqGroup(copy, 'main').title} />
       </div>
     </div>
   </div>
@@ -254,6 +215,6 @@ const structuredData = {
   {/* Mobile sticky CTA — anchors to the embedded gift widget (gift has no pop-up trigger), mirroring
       the product pages' mobile sticky Book Now. */}
   <div class="fixed inset-x-0 bottom-0 z-40 border-t border-black/10 bg-white/95 p-3 backdrop-blur md:hidden">
-    <VentrataWidget mode="popup" gift href="#gift-widget" label="Buy a gift voucher" class="w-full" />
+    <VentrataWidget mode="popup" gift href="#gift-widget" label={str(copy, 'buyVoucherLabel')} class="w-full" />
   </div>
 </BaseLayout>

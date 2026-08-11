@@ -128,6 +128,75 @@ for (const slug of onDisk) {
   }
 }
 
+// ---- Collection: vessels -----------------------------------------------------------------
+// Unlike page copy, vessels are read by Astro's getCollection at build time, not imported
+// as JSON. So this checks the OTHER half: that Keystatic's reader sees the same fleet the
+// site renders, and — critically — that a CMS edit round-trips. An edit that Keystatic can
+// read but not write back identically would silently corrupt a vessel on the first save.
+console.log('\n=== collection: vessels → src/content/vessels/*.yaml ===');
+const VDIR = 'src/content/vessels';
+const vOnDisk = fs
+  .readdirSync(VDIR)
+  .filter((f) => f.endsWith('.yaml'))
+  .map((f) => f.replace(/\.yaml$/, ''))
+  .sort();
+const vInReader = (await reader.collections.vessels.list()).slice().sort();
+check(`entry list (${vOnDisk.length} vessels)`, vInReader, vOnDisk);
+
+for (const slug of vOnDisk) {
+  const entry = await reader.collections.vessels.read(slug);
+  if (!entry) {
+    console.log(`  FAIL ${slug}: reader returned null`);
+    failures++;
+    continue;
+  }
+  const raw = fs.readFileSync(path.join(VDIR, `${slug}.yaml`), 'utf8');
+  const problems = [];
+
+  if (!entry.name) problems.push('name is empty');
+  if (!entry.description) problems.push('description is empty');
+  // The reader must see the same name the YAML declares, or the admin is editing a
+  // different record than the site renders.
+  const nameInFile = (raw.match(/^name:\s*(.+)$/m) || [, ''])[1].trim();
+  if (nameInFile !== entry.name) problems.push(`name "${entry.name}" != file "${nameInFile}"`);
+  // A heroImage must be a real file — a stale path renders a broken image on a named vessel.
+  if (entry.heroImage) {
+    const onDisk = path.join('public', entry.heroImage.replace(/^\//, ''));
+    if (!fs.existsSync(onDisk)) problems.push(`heroImage missing on disk: ${entry.heroImage}`);
+    if (!entry.heroImageAlt) problems.push('heroImage set but heroImageAlt is empty');
+  }
+
+  if (problems.length) {
+    failures++;
+    console.log(`  FAIL ${slug}: ${problems.join('; ')}`);
+  } else {
+    const img = entry.heroImage ? 'photo' : 'no photo';
+    console.log(`  OK   ${slug.padEnd(20)} ${entry.name} (${img}, capacity ${entry.capacity ?? 'TBC'})`);
+  }
+}
+
+// ---- Round-trip: a CMS edit must write back cleanly ---------------------------------------
+// Simulates what the admin does on Save: read the entry, change a field, write the file in
+// the same shape, read it back, then restore. Proves an edit survives the CMS, which is the
+// whole point of seeding the collection.
+console.log('\n=== round-trip: edit a vessel and read it back ===');
+{
+  const probe = path.join(VDIR, 'melody.yaml');
+  const original = fs.readFileSync(probe, 'utf8');
+  try {
+    const before = await reader.collections.vessels.read('melody');
+    fs.writeFileSync(probe, original.replace(/^bestFor:.*$/m, 'bestFor: ROUND-TRIP PROBE'));
+    const after = await reader.collections.vessels.read('melody');
+    check('bestFor changes through the reader', after?.bestFor, 'ROUND-TRIP PROBE');
+    check('other fields untouched', after?.name, before?.name);
+    check('description untouched', after?.description, before?.description);
+  } finally {
+    fs.writeFileSync(probe, original);
+  }
+  const restored = await reader.collections.vessels.read('melody');
+  check('restored cleanly', restored?.bestFor, 'Sightseeing tours & events');
+}
+
 console.log(
   failures === 0
     ? '\nPASS — every CMS entry resolves to the file the site imports.'

@@ -163,7 +163,8 @@ export default config({
 
         keyFacts: fields.array(fields.text({ label: 'Fact' }), {
           label: 'Key facts strip',
-          description: 'Short facts shown in the strip under the hero. Each pairs with a fixed icon by position.',
+          description:
+            'Short facts shown in the strip under the hero. Each pairs with a fixed icon by position. ⚠ PRICES: a price written here is display copy only — it does NOT drive checkout. Ventrata is the source of truth; if you change one, confirm it matches Ventrata.',
           itemLabel: (p) => p.value,
         }),
 
@@ -193,7 +194,12 @@ export default config({
             key: fields.text({ label: 'Key', description: 'Code reference — do not change.', validation: { isRequired: true } }),
             items: fields.array(fields.text({ label: 'Item' }), { label: 'Items', itemLabel: (p) => p.value }),
           }),
-          { label: 'Lists (bullets, pills, checklists)', itemLabel: (p) => p.fields.key.value || 'List' },
+          {
+            label: 'Lists (bullets, pills, checklists)',
+            description:
+              '⚠ PRICES: a price written in a list item is display copy only — it does NOT drive checkout. Ventrata is the source of truth; if you change one, confirm it matches Ventrata.',
+            itemLabel: (p) => p.fields.key.value || 'List',
+          },
         ),
 
         cards: fields.array(
@@ -445,13 +451,40 @@ export default config({
       format: { data: 'yaml' },
       columns: ['name'],
       schema: {
-        name: fields.slug({ name: { label: 'Name' } }),
-        description: fields.text({ label: 'Description', multiline: true, validation: { isRequired: true } }),
-        capacity: fields.integer({ label: 'Capacity' }),
-        features: fields.array(fields.text({ label: 'Feature' }), { label: 'Features', itemLabel: (p) => p.value }),
-        heroImage: fields.image({ label: 'Hero image', directory: 'public/images/vessels', publicPath: '/images/vessels' }),
-        heroImageAlt: fields.text({ label: 'Hero image alt' }),
-        order: fields.integer({ label: 'Order' }),
+        name: fields.slug({
+          name: {
+            label: 'Name',
+            description: 'The vessel name as shown on /our-vessels, e.g. "Princess Katherine".',
+          },
+        }),
+        description: fields.text({
+          label: 'Description',
+          description: 'A short paragraph about the boat. Clear the "TBC" line once the real description lands.',
+          multiline: true,
+          validation: { isRequired: true },
+        }),
+        bestFor: fields.text({
+          label: 'Best for',
+          description: 'One line — what this vessel is used for, e.g. "Sightseeing tours & private hire".',
+        }),
+        capacity: fields.integer({
+          label: 'Capacity',
+          description: 'Maximum passengers. Leave blank until confirmed — the page shows "TBC" rather than a guess.',
+        }),
+        features: fields.array(fields.text({ label: 'Feature' }), {
+          label: 'Features',
+          description: 'On-board features (bar, heated cabin, open deck…). Leave empty until confirmed — the page shows a TBC line.',
+          itemLabel: (p) => p.value,
+        }),
+        heroImage: fields.image({
+          label: 'Hero image',
+          directory: 'public/images/vessels',
+          publicPath: '/images/vessels',
+          description:
+            'A photo of THIS vessel. Leave blank unless the boat in the shot is definitely this one — a generic fleet photo here mislabels the vessel. Stored as-is: size it down first (≤1600px, ideally WebP).',
+        }),
+        heroImageAlt: fields.text({ label: 'Hero image alt', multiline: true }),
+        order: fields.integer({ label: 'Order', description: 'Lower sorts first on /our-vessels.' }),
       },
     }),
 

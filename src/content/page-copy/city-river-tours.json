@@ -1,0 +1,148 @@
+{
+  "page": "city-river-tours",
+  "seoTitle": "City River Tour — Manchester River Cruises",
+  "seoDescription": "A 60-minute sightseeing cruise along the Manchester Ship Canal from Salford Quays, with live commentary past MediaCity, IWM North and Old Trafford. From £13 per adult, free cancellation — book direct.",
+  "heading": "City River Tour — Manchester Ship Canal",
+  "keyFacts": [
+    "60 minutes",
+    "From £13 per person",
+    "Millennium Footbridge, Salford Quays",
+    "Free cancellation"
+  ],
+  "sections": [
+    {
+      "key": "routeMap",
+      "heading": "Explore the route",
+      "body": [
+        "This is a non-landing sightseeing cruise — you'll see all of this from the comfort of the boat, with live commentary throughout.",
+        "Follow the full Manchester Ship Canal route — tap a number for details, or read the sights in order below."
+      ]
+    },
+    {
+      "key": "overview",
+      "heading": "About the cruise",
+      "body": [
+        "The City River Tour is our signature sightseeing cruise and the best way to see Manchester and Salford from the water. Settle into the heated cabin or take in the views from the deck as our crew share the stories behind the waterway."
+      ],
+      "note": "Full description, highlights and what's included — TBC from Simon (content-checklist.md)."
+    },
+    {
+      "key": "included",
+      "heading": "What's included",
+      "note": "Final inclusions TBC."
+    },
+    {
+      "key": "route",
+      "heading": "Your route",
+      "body": [
+        "The cruise follows the Manchester Ship Canal with live commentary at each landmark."
+      ],
+      "note": "Full route itinerary — 43 points of interest with live commentary from the GPS commentary app — TBC from Simon."
+    },
+    {
+      "key": "dayOut",
+      "heading": "Make a day of it",
+      "body": ["Combine your cruise with these nearby attractions."]
+    }
+  ],
+  "lists": [
+    {
+      "key": "included",
+      "items": [
+        "Live onboard commentary",
+        "Heated indoor cabin and open-air deck",
+        "Licensed bar onboard",
+        "Approx. 1 hour return cruise"
+      ]
+    }
+  ],
+  "cards": [
+    {
+      "key": "crossSell:santa",
+      "name": "Cruise with Father Christmas",
+      "desc": "A magical festive cruise the whole family will love"
+    },
+    {
+      "key": "crossSell:abba",
+      "name": "ABBA Cruise",
+      "desc": "Dance the night away on the water to the greatest ABBA hits"
+    },
+    {
+      "key": "crossSell:ferry",
+      "name": "Boat to Old Trafford",
+      "desc": "The best way to arrive on matchday"
+    },
+    {
+      "key": "dayOut:iwm",
+      "name": "IWM North",
+      "desc": "Free entry to Daniel Libeskind's iconic war museum, just steps from the boarding point."
+    },
+    {
+      "key": "dayOut:lowry",
+      "name": "The Lowry",
+      "desc": "Theatre, gallery and waterfront dining right at Salford Quays."
+    },
+    {
+      "key": "dayOut:corrie",
+      "name": "Coronation Street Tour",
+      "desc": "Walk the cobbles of the world's longest-running soap."
+    },
+    {
+      "key": "dayOut:oldTrafford",
+      "name": "Old Trafford Stadium Tour",
+      "desc": "Behind-the-scenes access to the Theatre of Dreams."
+    },
+    {
+      "key": "dayOut:nells",
+      "name": "Nell's Pizza",
+      "desc": "Acclaimed sourdough pizza a short walk from the quays."
+    },
+    {
+      "key": "dayOut:ordsall",
+      "name": "Ordsall Hall",
+      "desc": "One of the finest Tudor manor houses in the north of England, free entry."
+    }
+  ],
+  "faqGroups": [
+    {
+      "key": "main",
+      "items": [
+        {
+          "question": "Where does the City River Tour depart from?",
+          "answer": "Cruises depart from the Millennium Footbridge at Salford Quays (M50 3RB), beside MediaCityUK."
+        },
+        {
+          "question": "How long is the cruise?",
+          "answer": "Approximately 60 minutes return. (TBC)"
+        },
+        {
+          "question": "Is the boat accessible?",
+          "answer": "Accessibility details to be confirmed. (TBC)"
+        },
+        {
+          "question": "What is your cancellation policy?",
+          "answer": "Free cancellation — full policy TBC."
+        }
+      ]
+    }
+  ],
+  "strings": [
+    { "key": "ratingSrBefore", "value": "Rated" },
+    { "key": "ratingSrAfter", "value": "out of 5 stars" },
+    { "key": "reviewsLinkLabel", "value": "Google reviews" },
+    { "key": "topRatedBadge", "value": "Top Rated" },
+    { "key": "cancellationBadge", "value": "24-hour cancellation" },
+    { "key": "routeStopsSummaryBefore", "value": "View all" },
+    { "key": "routeStopsSummaryAfter", "value": "sights along the route" },
+    {
+      "key": "mapNoscript",
+      "value": "Enable JavaScript to view the interactive route map. The full list of sights is below."
+    },
+    { "key": "bookingPrice", "value": "£13" },
+    { "key": "bookingPriceNote", "value": "Adults £13 · Seniors £11" },
+    { "key": "crossSellHeading", "value": "You might also enjoy" },
+    { "key": "groupsPointerBefore", "value": "Booking for a group, school or coach party?" },
+    { "key": "groupsPointerLinkText", "value": "See group visits & school trips" },
+    { "key": "groupsPointerAfter", "value": "for group rates and private charters." }
+  ]
+}

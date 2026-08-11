@@ -1,0 +1,144 @@
+{
+  "page": "groups",
+  "seoTitle": "Group Visits, School Trips & Coach Parties — Manchester River Cruises",
+  "seoDescription": "Group visits, school trips and coach parties on the Manchester Ship Canal. Group rates on the City River Tour, or a private charter for schools, youth groups and tour operators from Salford Quays. Enquire today.",
+  "eyebrow": "Group visits, schools & coach parties",
+  "heading": "Group Visits, School Trips & Coach Parties",
+  "intro": "Bring a group aboard the Manchester Ship Canal. Group rates on the City River Tour, or a private charter for schools, youth groups and the coach trade — all from Salford Quays.",
+  "keyFacts": [
+    "Groups of 10+ welcome",
+    "School & youth charters",
+    "Coach parties & the trade",
+    "Salford Quays departure"
+  ],
+  "sections": [
+    { "key": "about", "heading": "Three ways to bring a group aboard", "note": "Full group, school and trade details — TBC from Simon (content-checklist.md)." },
+    {
+      "key": "group-bookings",
+      "heading": "Group bookings (10+)",
+      "body": [
+        "Bringing a group of ten or more? There are two easy ways aboard. Join a scheduled public sailing of our City River Tour at a group rate, or take a private charter of the whole boat for complete flexibility over your date, timings and route.",
+        "Public sailings suit sightseeing groups — social clubs, societies, community groups and work outings who want the tour itself. We reserve seats for your group together on a set departure. For full control of your date, timings and route, a private charter makes the vessel exclusively yours."
+      ],
+      "note": "Group discount rate, organiser-goes-free policy and payment terms — TBC from Simon (content-checklist.md)."
+    },
+    {
+      "key": "schools",
+      "heading": "School & youth groups",
+      "body": [
+        "School trips, college groups, scouts, guides and youth organisations sail as a private charter — the whole boat is yours, not a shared public sailing. That means one group, a tailored commentary pitched to your age range, and simple logistics from boarding to disembarking.",
+        "We don’t offer party or prom bookings for school and college groups — our school charters are daytime educational visits.",
+        "The Ship Canal is a floating history lesson: the Industrial Revolution and the age of the docks, the working waterway that built the city, and the MediaCity regeneration that transformed it. It is a hands-on complement to the classroom — geography, history and local studies all on one route."
+      ],
+      "note": "Risk assessment documentation, teacher planning visits and adult-to-pupil ratio guidance — TBC from Simon (content-checklist.md)."
+    },
+    {
+      "key": "coach-parties",
+      "heading": "Coach parties & tour operators",
+      "body": [
+        "We welcome coach parties and tour operators aboard the City River Tour. Whether you are building a Manchester day out or slotting a river cruise into a wider itinerary, our sightseeing tour is an easy, memorable inclusion — around an hour on the water with live commentary.",
+        "Coaches can set down close to the Millennium Footbridge boarding point; we will advise on the nearest drop-off and parking when you book. Pre-booked group rates and invoice payment are available for the trade."
+      ],
+      "note": "Exact coach drop-off and parking arrangements, driver/courier-goes-free policy, group rates and invoice terms — TBC from Simon (content-checklist.md)."
+    }
+  ],
+  "lists": [
+    {
+      "key": "group-bookings-highlights",
+      "items": [
+        "Group rates for parties of 10+ (TBC)",
+        "Organiser-goes-free policy (TBC)",
+        "Flexible payment terms (TBC)",
+        "Public sailing or private charter"
+      ]
+    },
+    {
+      "key": "schools-highlights",
+      "items": [
+        "Whole-boat private charter — one group only",
+        "Commentary tailored to your age range",
+        "Risk assessment documentation on request (TBC)",
+        "Teacher planning visit welcome (TBC)",
+        "Adult-to-pupil ratio guidance (TBC)"
+      ]
+    },
+    {
+      "key": "coach-parties-highlights",
+      "items": [
+        "Coach drop-off near the boarding point (TBC)",
+        "Parking guidance provided (TBC)",
+        "Driver & courier go free (TBC)",
+        "Pre-booked group rates (TBC)",
+        "Invoice payment available (TBC)"
+      ]
+    }
+  ],
+  "faqGroups": [
+    {
+      "key": "main",
+      "title": "Group visits FAQs",
+      "items": [
+        {
+          "question": "What is the minimum group size?",
+          "answer": "Group rates apply to parties of 10 or more on a scheduled City River Tour; school, youth and other private charters take the whole boat. Exact minimums and boat capacity — TBC."
+        },
+        {
+          "question": "What happens if the weather is bad?",
+          "answer": "The boat has a heated indoor cabin, so cruises run in most weather. If conditions affect sailing we contact the group organiser to rearrange. Full weather and cancellation policy — TBC."
+        },
+        {
+          "question": "Are groups accessible for wheelchair users and less mobile guests?",
+          "answer": "Step-free boarding is available where tides allow, and we will talk through your group’s needs before you sail. Full accessibility details — TBC. See our Accessibility page."
+        },
+        {
+          "question": "How do deposits and payment work for groups?",
+          "answer": "Group and charter bookings can be arranged with a deposit and balance, and invoice payment is available for schools and the trade. Deposit amounts and payment terms — TBC."
+        },
+        {
+          "question": "Can we have a tailored commentary or itinerary?",
+          "answer": "Yes — private charters (including school and youth groups) can have commentary pitched to the group, and we can talk through timings and route. Confirmed when you book. (TBC)"
+        },
+        {
+          "question": "Do group organisers or drivers go free?",
+          "answer": "We plan to offer organiser and driver/courier-goes-free arrangements; the exact policy is being confirmed. (TBC)"
+        }
+      ]
+    }
+  ],
+  "strings": [
+    { "key": "heroImageAlt", "value": "A Manchester River Cruises vessel on the Ship Canal at Salford Quays" },
+    { "key": "heroCtaLabel", "value": "Enquire about a group visit" },
+    { "key": "heroSecondaryLabel", "value": "See What's On" },
+    {
+      "key": "aboutBefore",
+      "value": "Whether you are organising a social club outing, a school trip or a coach tour, there is a simple way aboard: join a scheduled City River Tour at a"
+    },
+    { "key": "aboutEmphasis1", "value": "group rate" },
+    { "key": "aboutMid", "value": ", or take the whole boat with a" },
+    { "key": "aboutEmphasis2", "value": "private charter" },
+    { "key": "aboutAfter", "value": "for full flexibility." },
+    { "key": "group-bookings-eyebrow", "value": "Group bookings" },
+    { "key": "group-bookings-asideTitle", "value": "Group organiser benefits" },
+    { "key": "group-bookings-ctaLabel", "value": "Enquire about group rates" },
+    { "key": "group-bookings-secondaryLabel", "value": "View the City River Tour" },
+    { "key": "schools-eyebrow", "value": "Schools & youth groups" },
+    { "key": "schools-asideTitle", "value": "For teachers & group leaders" },
+    { "key": "schools-ctaLabel", "value": "Enquire about a school charter" },
+    { "key": "coach-parties-eyebrow", "value": "Coach parties & tour operators" },
+    { "key": "coach-parties-asideTitle", "value": "For coach operators & the trade" },
+    { "key": "coach-parties-ctaLabel", "value": "Trade & coach enquiries" },
+    { "key": "coach-parties-secondaryLabel", "value": "View the City River Tour" },
+    { "key": "partyCalloutBefore", "value": "Planning a party? Our evening" },
+    { "key": "partyCalloutLink1", "value": "party nights" },
+    { "key": "partyCalloutMid", "value": "and" },
+    { "key": "partyCalloutLink2", "value": "private charters" },
+    { "key": "partyCalloutAfter", "value": "are built for celebrations →" },
+    { "key": "ctaHeading", "value": "Planning a group visit?" },
+    {
+      "key": "ctaText",
+      "value": "Tell us your group size, preferred date and what you have in mind — a social outing, a school trip or a coach tour — and we will help you choose between a group rate on a public sailing and a private charter."
+    },
+    { "key": "ctaPrimaryLabel", "value": "Enquire about a group visit" },
+    { "key": "ctaSecondaryLabel", "value": "See What's On" }
+  ]
+}

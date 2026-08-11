@@ -57,8 +57,8 @@ Keystatic is installed and wired against the existing Content Collections. New d
 | Collection | In Keystatic? | Notes |
 |---|---|---|
 | **Gallery albums** | ✅ Full | The driving use case. Cover + per-image are **in-CMS uploads** (`fields.image` → `public/images/gallery/`). Plus per-image alt (required), caption, credit, width/height, orientation, tags, `isFeatured`, `usage` (multiselect); album order, category, related albums, booking CTA, SEO, draft. |
-| **Vessels** | ✅ Full | Empty collection — new fleet pages are created here. |
-| **Attractions** | ✅ Full | Empty collection. |
+| **Vessels** | ✅ Full | **Seeded** — Princess Katherine, Isabella, Melody, Georgina, Joyce Too. `/our-vessels` renders from this collection. Capacities and features are deliberately blank (unconfirmed); only Isabella has a matched photo. |
+| **Attractions** | ✅ Full | **Still empty, and nothing reads it.** Modelled for the City River Tour's "Make a day of it" block; those cards are currently hardcoded copy. Seeding it is pending the second-tour decision — see `docs/second-tour.md`. |
 | **Events** | ⏳ Body follow-up | **Hero image is an in-CMS upload** (`fields.image` → `public/images/events/`); rendered markdown bodies still pending — see "Events & Discover follow-up" below. |
 | **Discover guides** | ⏳ Follow-up | Same — need `@astrojs/markdoc`. |
 
@@ -228,23 +228,29 @@ both singletons use `format: { data: 'json' }` and not YAML — Vite imports `.j
 
 ### Extracting a page's copy into the CMS — the recipe
 
-Pilot: **Private Hire** (`src/pages/private-hire.astro` → `src/content/pages/private-hire.json`,
-Keystatic → "Page: Private Hire"). Follow the same five steps for any other bespoke page.
+Pilot: **Private Hire** (`src/pages/private-hire.astro` → `src/content/page-copy/private-hire.json`).
+The pilot originally used one singleton per page; that was replaced by the **Page copy
+collection** before the other extractions landed — the steps below are the current recipe.
 
 1. **Split copy from structure.** Copy = anything a reader sees: headings, paragraphs, list
-   items, button labels, FAQ items, SEO title/description. Structure = layout, components,
-   icons, CSS classes, **every `href`**, and forms. Only copy moves.
-2. **Create the JSON** at `src/content/pages/<page>.json` with the current strings *verbatim* —
-   including any `(TBC)` markers, which stay as ordinary editable text so Simon can clear them
-   in the CMS as real copy lands.
-3. **Add a Keystatic singleton** with `path: 'src/content/pages/<page>'` and
-   `format: { data: 'json' }`. ⚠ That path resolves to `src/content/pages/<page>.json` — **not**
-   `<page>/index.json`. Getting this wrong makes the admin silently show empty fields and save to
-   a second file the site never reads.
-4. **Import it in the template** (`import copy from '../content/pages/<page>.json'`) and replace
-   each literal with `{copy.field}`.
-5. **Verify losslessly** — build before and after, and diff the rendered *text* and JSON-LD, not
-   the raw HTML (JSX reformatting changes whitespace but not output).
+   items, button labels, FAQ items, image alt text, SEO title/description. Structure = layout,
+   components, icons, CSS classes, **every `href`**, widgets and forms. Only copy moves.
+2. **Create the JSON** at `src/content/page-copy/<page>.json` with the current strings *verbatim*
+   — including any `(TBC)` markers, which stay as ordinary editable text so Simon can clear them
+   in the CMS as real copy lands. The `"page"` value MUST equal the filename; the template
+   imports the file directly, so a drifting slug breaks the import.
+3. **No new Keystatic config is needed** — the `pageCopy` collection already covers
+   `src/content/page-copy/*`. Fit the page to the shared shape (`sections`, `lists`, `cards`,
+   `faqGroups`, `strings`) rather than inventing fields.
+4. **Import it in the template** (`import copy from '../content/page-copy/<page>.json'`) and
+   read it through `src/lib/pageCopy.ts` — `sec()`, `para()`, `list()`, `cards()`, `card()`,
+   `faqs()`, `str()`, `fill()`. Every lookup is strict: a missing key throws at build time naming
+   the page and key, so a typo fails the build instead of rendering an empty heading.
+5. **Verify losslessly** — build before and after, and diff the rendered *text*, JSON-LD,
+   meta/link/image attributes and every anchor href+label, not the raw HTML (JSX reformatting
+   changes whitespace but not output).
+6. **Run `node scripts/verify-cms-wiring.mjs`** — it reads the new entry through Keystatic's own
+   reader and asserts it matches the file the site imports.
 
 Three sub-patterns the pilot establishes:
 
@@ -273,25 +279,36 @@ replaced the per-page singleton approach, which would have buried the sidebar.
 | `/salford-quays` | `salford-quays` |
 | `/events` | `events` |
 | `/music-cruises-manchester` | `music-cruises-manchester` |
+| `/` (homepage) | `home` |
+| `/tour/city-river-tours` | `city-river-tours` |
+| `/tour/boat-to-old-trafford` | `boat-to-old-trafford` |
+| `/tour/boat-to-old-trafford/<point>` | `boat-to-old-trafford-point` (**one entry serves both departure points** — see below) |
+| `/groups` | `groups` |
+| `/christmas-cruises-manchester` | `christmas-cruises-manchester` |
+| `/gift-vouchers` | `gift-vouchers` |
+| `/party-boat-manchester` | `party-boat-manchester` |
 
-**Not yet extracted — copy still lives in the `.astro` template:**
+**Nothing is queued.** Every bespoke page whose copy was ever earmarked for extraction is done.
 
-`/` (homepage) · `/tour/city-river-tours` · `/tour/boat-to-old-trafford` (+ its two departure
-point pages) · `/groups` · `/christmas-cruises-manchester` · `/gift-vouchers` ·
-`/party-boat-manchester`
+**One template rendered many times → ONE entry with placeholders.** The two ferry departure
+points are the same page rendered twice, so their entry writes each sentence once with
+`{name}` / `{location}` / `{otherName}` / `{otherLocation}` / `{price}` placeholders, filled from
+`src/data/mufcFerry.ts` by `fill()` in `src/lib/pageCopy.ts`. Editing a sentence changes it for
+both departures — that is the intent. If the two ever need genuinely different wording they need
+separate entries, not a forked template. `fill()` is strict: an unknown placeholder throws at
+build time naming the token, so a mistyped `{nmae}` fails the build rather than reaching a
+customer.
 
-These are the largest and most intricate templates on the site (the homepage and City River Tour
-alone are ~900 lines between them, and both interleave copy with live OCTO/Ventrata feeds), so
-they are the ones where a careless extraction does the most damage. They follow the same recipe —
-the work is queued, not blocked.
+**Code-only, and deliberately so:** `/whats-on` (a live availability feed with no standing copy),
+`/santa-cruise-manchester`, `/private-boat-hire-manchester`, `/getting-here`, `/accessibility`,
+`/gallery`, `/discover`, `/privacy-policy` and `/terms-conditions`. The last two are legal text
+that should change only under review, not in a CMS field.
 
-Also still code-only, and **deliberately so**: `/whats-on` (a live availability feed with no
-standing copy), `/santa-cruise-manchester`, `/private-boat-hire-manchester`, `/getting-here`,
-`/accessibility`, `/our-vessels`, `/gallery`, `/discover`, `/privacy-policy` and
-`/terms-conditions`. The last two are legal text that should change only under review, not in a
-CMS field.
+`/our-vessels` is also code-only **as a page** — its heading, labels and CTA stay in the template
+— but the fleet itself is no longer hardcoded: the five vessels render from the **Vessels
+collection** (Content → Vessels). The content on that page was always the boats, not the chrome.
 
-**To change copy on a not-yet-extracted page:** send the wording to Claude Code (or note it in
+**To change copy on a code-only page:** send the wording to Claude Code (or note it in
 `docs/content-checklist.md`) and it ships as a normal PR — usually minutes.
 
 Product/event pages (`/tour/<slug>`) are **already** fully editable via the Events collection —
@@ -315,7 +332,10 @@ many pages are extracted:
 - **Icons, CSS and component choice.** Where copy pairs with a fixed icon (the key-facts strips),
   the CMS holds the labels and the template zips them against a code-owned icon array by position.
 - **Derived values** — anything computed from another source stays computed, so it cannot drift:
-  the review score/count from `site.ts`, the fleet count from the vessel list, `phoneHref` from
+  the review score/count from `site.ts` (the City River Tour's visible rating block reads it too,
+  so the page and its `aggregateRating` cannot disagree), the homepage fleet count from the
+  vessels collection, the City River Tour's "View all N sights" from `tour-stops.json`,
+  `phoneHref` from
   `phone`, `addressDisplay` from the address parts.
 
 ### Admin sidebar organisation
@@ -385,9 +405,18 @@ moving any singleton. It catches the `<path>.json` vs `<path>/index.json` trap d
    a dependency change, so it needs sign-off per the stack rules. **Confirm the GitHub-mode admin
    works in production before Simon relies on the CMS**, since that path was never exercised
    locally for these two singletons.
-5. **Finish the page extractions.** Nine pages are done (see the table above). Still to do:
-   the homepage, `/tour/city-river-tours`, the ferry landing + its two departure-point pages,
-   `/groups`, `/christmas-cruises-manchester`, `/gift-vouchers` and `/party-boat-manchester`.
-   Same recipe throughout. Each must be verified lossless before it lands — build before and after,
-   and diff the rendered TEXT, JSON-LD and meta/link/image attributes rather than raw bytes (moving
-   copy into JSON reflows the JSX, so whitespace changes legitimately while output must not).
+5. ~~**Finish the page extractions.**~~ ✅ **DONE.** All seventeen entries are in place; the
+   outstanding list is empty. Every page was verified lossless before it landed — build before and
+   after, then diff the rendered TEXT, JSON-LD, meta/link/image attributes and every anchor
+   href+label, rather than raw bytes (moving copy into JSON reflows the JSX, so whitespace changes
+   legitimately while output must not). Across all six extraction commits the diff was zero on all
+   66 pages.
+
+6. **Seed the attractions collection.** Not started, and deliberately so — the decision is
+   pending on the second tour (`docs/second-tour.md`). With one departure point a collection buys
+   little over the six hardcoded day-out cards; with two, "what's nearby" becomes genuinely
+   per-departure and the collection needs a `location` tag (`quays` | `city-centre`).
+
+7. **Vessel content.** The five entries exist but carry TBC descriptions, no capacities, no
+   feature lists and — apart from Isabella — no photography. Those are content asks for Simon, not
+   code (`docs/content-checklist.md`).

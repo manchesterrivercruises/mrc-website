@@ -70,6 +70,11 @@ const vessels = defineCollection({
   schema: z.object({
     name: z.string(),
     description: z.string(),
+    // Who/what the vessel is used for — the one-line summary shown on /our-vessels.
+    bestFor: z.string().optional(),
+    // Both stay OPTIONAL and are currently unset for the whole fleet: real capacities
+    // and feature lists are still TBC from Simon (docs/content-checklist.md). The page
+    // renders an honest "TBC" for an absent value rather than inventing one.
     capacity: z.number().optional(),
     features: z.array(z.string()).optional(),
     heroImage: z.string().optional(),
