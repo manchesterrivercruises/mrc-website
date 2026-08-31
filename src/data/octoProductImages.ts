@@ -13,8 +13,9 @@ export const PRODUCT_IMAGES: Record<string, string> = {
   '458c8d36-8268-481d-ae47-491b41508b8e': '/images/boat-to-old-trafford-card.webp',
   // Santa Cruise
   '6cabf36f-f48f-48c7-83c0-c964983a9dff': '/images/events/santa-cruise-card.webp',
-  // ABBA
-  '50a5eb12-f9ad-4b1f-9a70-e880bd28152b': '/images/events/abba-tribute-cruise-card.webp',
+  // ABBA — owned album photo (gallery/abba-night). The promo artwork it replaced is still
+  // used by the Christmas hub's December party-nights card.
+  '50a5eb12-f9ad-4b1f-9a70-e880bd28152b': '/images/gallery/abba-night/guests-in-abba-costume-at-the-boarding-point-card.webp',
   // Back to the 90s
   'fb15c1fc-84f9-455b-a6d6-e8de0db30b3d': '/images/events/back-to-the-90s-card.webp',
   // Boat Tropicana

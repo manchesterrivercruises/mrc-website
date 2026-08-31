@@ -4,6 +4,7 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
 import { site } from '../../data/site';
 import SectionHeading from '../../components/SectionHeading.astro';
 import ProductCard from '../../components/ProductCard.astro';
+import { siteImages } from '../../data/siteImages';
 
 // One page per Discover guide, generated from the `discover` content collection.
 // Content lives in src/content/discover/*.md — layout stays here in the template.
@@ -75,6 +76,10 @@ const structuredData = {
           name="City River Tour"
           desc="Our signature 60-minute sightseeing cruise along the Manchester Ship Canal from Salford Quays."
           href="/tour/city-river-tours"
+          image={siteImages.cityRiverTourCard.src}
+          imageAlt={siteImages.cityRiverTourCard.alt}
+          imageWidth={siteImages.cityRiverTourCard.width}
+          imageHeight={siteImages.cityRiverTourCard.height}
         />
       </div>
     </section>

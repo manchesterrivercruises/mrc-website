@@ -3,6 +3,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 import { site } from '../data/site';
 import SectionHeading from '../components/SectionHeading.astro';
 import ProductCard from '../components/ProductCard.astro';
+import { siteImages } from '../data/siteImages';
 import copy from '../content/page-copy/plan-your-visit.json';
 import { sec, cards } from '../lib/pageCopy';
 
@@ -25,7 +26,18 @@ const LINK_HREFS: Record<string, string> = {
   gallery: '/gallery',
   groups: '/groups',
 };
-const links = cards(copy, 'links').map((c) => ({ ...c, href: LINK_HREFS[c.key.split(':')[1]] }));
+// Only the links whose subject we can honestly photograph carry art: the boarding point,
+// the gallery itself and an event night. 'accessibility', 'faq', 'gift-vouchers' and
+// 'groups' have no photographable subject and keep their placeholder tile.
+const LINK_IMAGES = {
+  'getting-here': siteImages.boardingPoint,
+  gallery: siteImages.galleryCard,
+  'whats-on': siteImages.whatsOnCard,
+} as const;
+const links = cards(copy, 'links').map((c) => {
+  const k = c.key.split(':')[1];
+  return { ...c, href: LINK_HREFS[k], img: LINK_IMAGES[k as keyof typeof LINK_IMAGES] };
+});
 
 const structuredData = {
   '@context': 'https://schema.org',
@@ -47,7 +59,20 @@ const structuredData = {
     </p>
 
     <div class="mt-10 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-      {links.map((l) => <ProductCard name={l.name} desc={l.desc} href={l.href} linkText={l.linkText} />)}
+      {
+        links.map((l) => (
+          <ProductCard
+            name={l.name}
+            desc={l.desc}
+            href={l.href}
+            linkText={l.linkText}
+            image={l.img?.src}
+            imageAlt={l.img?.alt}
+            imageWidth={l.img?.width}
+            imageHeight={l.img?.height}
+          />
+        ))
+      }
     </div>
 
     {/* What to bring */}

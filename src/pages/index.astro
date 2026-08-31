@@ -12,6 +12,7 @@ import DateFinder from '../components/DateFinder.astro';
 import SocialBand from '../components/SocialBand.astro';
 import PageHero from '../components/PageHero.astro';
 import { site } from '../data/site';
+import { siteImages } from '../data/siteImages';
 import copy from '../content/page-copy/home.json';
 import { sec, list, cards, str } from '../lib/pageCopy';
 
@@ -29,10 +30,13 @@ import { sec, list, cards, str } from '../lib/pageCopy';
 const HERO_HREF = '/tour/city-river-tours';
 const HERO_IMAGE = '/images/city-river-tour-hero.webp';
 const HERO_IMAGE_CARD = '/images/city-river-tour-card.webp';
+// The CRT feature sits beside the "our signature cruise" copy, so it shows the EXPERIENCE —
+// passengers on the open top deck as the boat passes MediaCity — rather than a second
+// exterior of the boat, which would repeat the hero directly above it.
 const CRT_FEATURE_IMAGE =
-  '/images/gallery/city-river-tour/sightseeing-boat-arched-footbridge-aerial.webp';
+  '/images/gallery/city-river-tour/open-top-deck-passengers-mediacity.webp';
 const CRT_FEATURE_IMAGE_CARD =
-  '/images/gallery/city-river-tour/sightseeing-boat-arched-footbridge-aerial-card.webp';
+  '/images/gallery/city-river-tour/open-top-deck-passengers-mediacity-card.webp';
 
 // Google review figures — sourced from src/data/site.ts (single source of truth).
 const RATING = site.rating.value;
@@ -146,6 +150,14 @@ const NIGHT_HREFS: Record<string, string> = {
   'nights:christmas': '/christmas-cruises-manchester',
 };
 
+// Card art per night category. Each is an owned photograph OF that category — a tribute
+// singer, a DJ set, a Santa cruise — not a stand-in borrowed from a different product.
+const NIGHT_IMAGES = {
+  'nights:music': siteImages.musicCruises,
+  'nights:party': siteImages.partyNights,
+  'nights:christmas': siteImages.christmasOnTheWater,
+} as const;
+
 // Fleet size — DERIVED from the vessels collection, so the stat tile cannot drift
 // from the fleet itself. Add or retire a vessel in the CMS and this follows.
 const FLEET_COUNT = (await getCollection('vessels')).length;
@@ -215,7 +227,7 @@ const structuredData = {
     heroImageAlt={str(copy, 'heroImageAlt')}
   >
     <CTAButton href={HERO_HREF}>{str(copy, 'heroCtaLabel')}</CTAButton>
-    <CTAButton href="/whats-on" variant="outline">{str(copy, 'heroSecondaryLabel')}</CTAButton>
+    <CTAButton href="/whats-on" variant="outline-inverse">{str(copy, 'heroSecondaryLabel')}</CTAButton>
     <span class="flex w-full items-center gap-2 text-sm text-white/80">
       <StarRating rating={RATING} size="h-4 w-4" />
       <span><span class="font-semibold text-white">{RATING} {str(copy, 'trustStarsSuffix')}</span> · {REVIEW_COUNT} {str(copy, 'trustReviewsSuffix')}</span>
@@ -229,9 +241,9 @@ const structuredData = {
         src={CRT_FEATURE_IMAGE}
         srcset={`${CRT_FEATURE_IMAGE_CARD} 800w, ${CRT_FEATURE_IMAGE} 1600w`}
         sizes="(min-width: 1024px) 50vw, calc(100vw - 2rem)"
-        alt="Aerial view of a Manchester River Cruises sightseeing boat cruising the Manchester Ship Canal toward a steel arched footbridge, with the Deansgate Square towers on the skyline under a blue sky"
+        alt={str(copy, 'crtImageAlt')}
         width="1600"
-        height="1200"
+        height="1066"
         loading="lazy"
         decoding="async"
         data-img-fallback
@@ -327,7 +339,16 @@ const structuredData = {
     <div class="mt-8 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
       {
         cards(copy, 'nights').map((c) => (
-          <ProductCard name={c.name} desc={c.desc} href={NIGHT_HREFS[c.key]} linkText={c.linkText} />
+          <ProductCard
+            name={c.name}
+            desc={c.desc}
+            href={NIGHT_HREFS[c.key]}
+            linkText={c.linkText}
+            image={NIGHT_IMAGES[c.key as keyof typeof NIGHT_IMAGES]?.src}
+            imageAlt={NIGHT_IMAGES[c.key as keyof typeof NIGHT_IMAGES]?.alt}
+            imageWidth={NIGHT_IMAGES[c.key as keyof typeof NIGHT_IMAGES]?.width}
+            imageHeight={NIGHT_IMAGES[c.key as keyof typeof NIGHT_IMAGES]?.height}
+          />
         ))
       }
     </div>

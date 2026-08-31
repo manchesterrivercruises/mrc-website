@@ -9,6 +9,10 @@ interface Props {
   linkText?: string;
   image?: string; // when set, an <img> is rendered; otherwise the placeholder tile
   imageAlt?: string;
+  // Real intrinsic pixel dimensions of `image` (see src/data/siteImages.ts). Emitted as
+  // width/height so the browser reserves the box before the file lands.
+  imageWidth?: number;
+  imageHeight?: number;
   imageLabel?: string;
   class?: string;
   [key: string]: unknown;
@@ -20,6 +24,8 @@ const {
   linkText = 'Find out more',
   image,
   imageAlt,
+  imageWidth,
+  imageHeight,
   imageLabel = 'Image (TBC)',
   class: className = '',
   ...rest
@@ -41,6 +47,8 @@ const external = href.startsWith('http');
           <img
             src={image}
             alt={imageAlt ?? name}
+            width={imageWidth ?? 800}
+            height={imageHeight ?? 450}
             loading="lazy"
             data-img-fallback
             class="h-full w-full object-cover"

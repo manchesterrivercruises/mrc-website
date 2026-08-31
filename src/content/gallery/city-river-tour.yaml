@@ -3,9 +3,9 @@ slug: city-river-tour
 order: 1
 summary: Our signature sightseeing cruise, from Salford Quays to Old Trafford — the landmarks, the commentary and the views along the way.
 category: route
-# OWNED cover asset (processed WebP in public/images/). images[] below are still TEMP hotlink placeholders — Jeff fills the album out.
+# Fully OWNED album — cover and every images[] entry is a processed WebP in public/images/.
 coverImage: /images/city-river-tour-hero.webp
-coverAlt: "The City River Tour boat passing beneath the Millennium Footbridge on a sunny day, with passengers on the open top deck and Old Trafford in the distance."
+coverAlt: "A Manchester River Cruises sightseeing boat with a full open top deck of passengers passing beneath the white arched Millennium Footbridge at Salford Quays on a sunny day."
 images:
   # OWNED assets — processed WebP in public/images/gallery/city-river-tour/, real PhotoSwipe dims.
   - src: /images/gallery/city-river-tour/sightseeing-boat-arched-footbridge-aerial.webp
@@ -50,28 +50,51 @@ images:
     alt: The Imperial War Museum North's angular silver form seen from the water
     orientation: landscape
     tags: [landmark, iwm]
-  - src: /images/gallery/city-river-tour/04.webp
-    alt: The Lowry theatre and footbridge reflected in the quayside water
+  # OWNED — curated 2026-08-31 from the raw shoot tree and processed per
+  # docs/image-conventions.md. These are the route landmarks the onboard commentary covers.
+  - src: /images/gallery/city-river-tour/the-lowry-quays-theatre-from-the-water.webp
+    width: 1600
+    height: 1067
+    alt: "The Lowry's curved glass Quays Theatre bar seen from the water, its wide oval canopies overhanging the quayside railings with the ITV building and Salford Quays offices beyond"
+    caption: "The Lowry from the water."
     orientation: landscape
+    usage: [gallery, product-page]
     tags: [landmark, lowry]
-  - src: /images/gallery/city-river-tour/05.webp
-    alt: Old Trafford stadium viewed from the canal on the return leg
-    caption: The Theatre of Dreams from the water.
+  - src: /images/gallery/city-river-tour/old-trafford-from-the-ship-canal.webp
+    width: 1600
+    height: 1067
+    alt: "Old Trafford's steel roof trusses and red 'MANCHESTER UNITED' lettering rising above the trees on the far bank of the Manchester Ship Canal"
+    caption: "The Theatre of Dreams from the water."
     orientation: landscape
+    isFeatured: true
+    usage: [gallery, product-page]
     tags: [landmark, old-trafford]
-  - src: /images/gallery/city-river-tour/06.webp
-    alt: A family seated in the heated indoor cabin watching the view through large windows
-    orientation: portrait
-    tags: [guests, cabin]
-  - src: /images/gallery/city-river-tour/07.webp
-    alt: The skipper at the wheel guiding the boat along the ship canal
-    credit: Photo by MRC crew
-    orientation: portrait
-    tags: [crew]
-  - src: /images/gallery/city-river-tour/08.webp
-    alt: Golden-hour light over the water as the boat approaches Salford Quays
+  - src: /images/gallery/city-river-tour/coronation-street-set-from-the-canal.webp
+    width: 1600
+    height: 1067
+    alt: "The ITV Coronation Street production site seen across the Manchester Ship Canal, the 'CORONATION ST.' street sign and the ITV logo mounted on its dark brick and grey-panelled frontage"
+    caption: "Coronation Street's home on the canal bank."
     orientation: landscape
-    tags: [scenery, sunset]
+    isFeatured: true
+    usage: [gallery, product-page]
+    tags: [landmark, coronation-street]
+  - src: /images/gallery/city-river-tour/mediacityuk-waterfront-from-the-water.webp
+    width: 1600
+    height: 781
+    alt: "A wide view across the water of the MediaCityUK waterfront — the curved glass BBC building, the studio blocks and the apartment towers reflected in the still basin under a clear blue sky"
+    caption: "MediaCityUK across the basin."
+    orientation: landscape
+    usage: [gallery, product-page]
+    tags: [landmark, mediacity, skyline]
+  - src: /images/gallery/city-river-tour/ordsall-chord-arch-over-the-irwell.webp
+    width: 1600
+    height: 1067
+    alt: "The weathered-steel arch of the Ordsall Chord railway bridge spanning the River Irwell, the Deansgate Square towers rising behind and the boat's wake trailing beneath"
+    caption: "Under the Ordsall Chord on the River Irwell."
+    orientation: landscape
+    isFeatured: true
+    usage: [gallery, product-page]
+    tags: [landmark, bridge, irwell]
 relatedAlbums: [manchester-ship-canal, salford-quays, old-trafford-ferry, our-boats]
 relatedProduct: /tour/city-river-tours
 bookingCtaLabel: Book the City River Tour

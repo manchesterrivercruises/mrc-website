@@ -64,11 +64,11 @@
     { "key": "heroSecondaryLabel", "value": "What's On" },
     {
       "key": "heroImageAlt",
-      "value": "The City River Tour boat cruising past MediaCity at Salford Quays"
+      "value": "A Manchester River Cruises sightseeing boat with a full open top deck of passengers passing beneath the white arched Millennium Footbridge at Salford Quays"
     },
     { "key": "trustStarsSuffix", "value": "stars" },
     { "key": "trustReviewsSuffix", "value": "Google reviews" },
-    { "key": "crtImagePlaceholder", "value": "City River Tour photo (TBC)" },
+    { "key": "crtImageAlt", "value": "Passengers on the open top deck of a City River Tour boat taking photos as it passes MediaCityUK and the Imperial Point tower at Salford Quays on a sunny day" },
     { "key": "crtCtaLabel", "value": "Book the City River Tour" },
     { "key": "comingUpSeeAllLinkLabel", "value": "See all dates →" },
     { "key": "comingUpCtaLabel", "value": "See all dates" },

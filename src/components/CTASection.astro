@@ -21,7 +21,8 @@ const hasSecondary = secondaryHref && secondaryLabel;
     {text && <p class="mx-auto mt-3 max-w-2xl text-lg leading-relaxed text-white/80">{text}</p>}
     <div class="mt-8 flex flex-wrap items-center justify-center gap-4">
       <CTAButton href={primaryHref}>{primaryLabel}</CTAButton>
-      {hasSecondary && <CTAButton href={secondaryHref} variant="outline">{secondaryLabel}</CTAButton>}
+      {/* Dark band, so the secondary must be the inverse outline — see CTAButton.astro. */}
+      {hasSecondary && <CTAButton href={secondaryHref} variant="outline-inverse">{secondaryLabel}</CTAButton>}
     </div>
   </div>
 </section>

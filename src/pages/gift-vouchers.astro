@@ -6,6 +6,7 @@ import KeyFacts from '../components/KeyFacts.astro';
 import SectionHeading from '../components/SectionHeading.astro';
 import CTAButton from '../components/CTAButton.astro';
 import ProductCard from '../components/ProductCard.astro';
+import { siteImages } from '../data/siteImages';
 import FAQSection from '../components/FAQSection.astro';
 import VentrataWidget from '../components/VentrataWidget.astro';
 import copy from '../content/page-copy/gift-vouchers.json';
@@ -47,6 +48,14 @@ const CARD_HREFS: Record<string, string> = {
   'experiences:music': '/music-cruises-manchester',
   'experiences:christmas': '/christmas-cruises-manchester',
   'experiences:private-hire': '/private-hire',
+};
+
+// Card art for the four gift experiences — each an owned photo of that experience.
+const EXPERIENCE_IMAGES: Record<string, typeof siteImages.cityRiverTourCard> = {
+  'experiences:crt': siteImages.cityRiverTourCard,
+  'experiences:music': siteImages.musicCruises,
+  'experiences:christmas': siteImages.christmasOnTheWater,
+  'experiences:private-hire': siteImages.privateHire,
 };
 
 const occasions = cards(copy, 'occasions');
@@ -191,7 +200,7 @@ const structuredData = {
         </p>
         <div class="mt-8 flex flex-wrap items-center justify-center gap-4">
           <VentrataWidget mode="popup" gift href="#gift-widget" label={str(copy, 'buyVoucherLabel')} />
-          <CTAButton href="/tour/city-river-tours" variant="outline">{str(copy, 'giftBandSecondaryLabel')}</CTAButton>
+          <CTAButton href="/tour/city-river-tours" variant="outline-inverse">{str(copy, 'giftBandSecondaryLabel')}</CTAButton>
         </div>
       </div>
     </section>
@@ -203,7 +212,20 @@ const structuredData = {
           <SectionHeading id="experiences">{sec(copy, 'experiences').heading}</SectionHeading>
           <p class="mt-4 max-w-3xl text-body">{sec(copy, 'experiences').body?.[0]}</p>
           <div class="mt-8 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-            {experiences.map((e) => <ProductCard name={e.name} desc={e.desc} href={CARD_HREFS[e.key]} linkText={e.linkText} />)}
+            {
+              experiences.map((e) => (
+                <ProductCard
+                  name={e.name}
+                  desc={e.desc}
+                  href={CARD_HREFS[e.key]}
+                  linkText={e.linkText}
+                  image={EXPERIENCE_IMAGES[e.key]?.src}
+                  imageAlt={EXPERIENCE_IMAGES[e.key]?.alt}
+                  imageWidth={EXPERIENCE_IMAGES[e.key]?.width}
+                  imageHeight={EXPERIENCE_IMAGES[e.key]?.height}
+                />
+              ))
+            }
           </div>
         </section>
 

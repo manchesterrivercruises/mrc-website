@@ -8,6 +8,7 @@ import FAQSection from '../../components/FAQSection.astro';
 import BookingPanel from '../../components/BookingPanel.astro';
 import VentrataWidget from '../../components/VentrataWidget.astro';
 import ProductCard from '../../components/ProductCard.astro';
+import { siteImages } from '../../data/siteImages';
 import GettingHere from '../../components/GettingHere.astro';
 import PageHero from '../../components/PageHero.astro';
 import EventGalleryStrip from '../../components/EventGalleryStrip.astro';
@@ -202,7 +203,16 @@ const crumbs = [
           <section aria-labelledby="more">
             <SectionHeading id="more">More nights on the water</SectionHeading>
             <div class="mt-8 sm:max-w-sm">
-              <ProductCard name="Events & Special Cruises" desc="See every music night, party cruise and seasonal event on the Ship Canal." href="/events" linkText="All events" />
+              <ProductCard
+                name="Events & Special Cruises"
+                desc="See every music night, party cruise and seasonal event on the Ship Canal."
+                href="/events"
+                linkText="All events"
+                image={siteImages.musicCruises.src}
+                imageAlt={siteImages.musicCruises.alt}
+                imageWidth={siteImages.musicCruises.width}
+                imageHeight={siteImages.musicCruises.height}
+              />
             </div>
           </section>
         </div>

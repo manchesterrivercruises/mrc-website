@@ -7,6 +7,7 @@ import FAQSection from '../components/FAQSection.astro';
 import GettingHere from '../components/GettingHere.astro';
 import KeyFacts from '../components/KeyFacts.astro';
 import ProductCard from '../components/ProductCard.astro';
+import { siteImages } from '../data/siteImages';
 import copy from '../content/page-copy/events.json';
 import { sec, cards, faqGroup, faqs, str } from '../lib/pageCopy';
 
@@ -37,7 +38,20 @@ const CATEGORY_HREFS: Record<string, string> = {
   santa: '/santa-cruise-manchester',
   seasonal: '/whats-on',
 };
-const categories = cards(copy, 'categories').map((c) => ({ ...c, href: CATEGORY_HREFS[c.key.split(':')[1]] }));
+// Card art per category — owned photography OF that category. 'seasonal' is deliberately
+// absent: we have no photograph of a seasonal special, so that card keeps its placeholder
+// tile rather than borrowing a night that isn't it (docs/photo-inventory.md → Shot list).
+const CATEGORY_IMAGES = {
+  'live-music': siteImages.liveMusic,
+  dj: siteImages.djEvents,
+  family: siteImages.familyEvents,
+  christmas: siteImages.christmasOnTheWater,
+  santa: siteImages.santaCruiseCard,
+} as const;
+const categories = cards(copy, 'categories').map((c) => {
+  const k = c.key.split(':')[1];
+  return { ...c, href: CATEGORY_HREFS[k], img: CATEGORY_IMAGES[k as keyof typeof CATEGORY_IMAGES] };
+});
 const steps = cards(copy, 'steps');
 const faqItems = faqs(copy);
 
@@ -85,7 +99,20 @@ const structuredData = {
         <section aria-labelledby="categories">
           <SectionHeading id="categories">{sec(copy, 'categories').heading}</SectionHeading>
           <div class="mt-8 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {categories.map((c) => <ProductCard name={c.name} desc={c.desc} href={c.href} linkText={c.linkText} />)}
+            {
+              categories.map((c) => (
+                <ProductCard
+                  name={c.name}
+                  desc={c.desc}
+                  href={c.href}
+                  linkText={c.linkText}
+                  image={c.img?.src}
+                  imageAlt={c.img?.alt}
+                  imageWidth={c.img?.width}
+                  imageHeight={c.img?.height}
+                />
+              ))
+            }
           </div>
         </section>
 

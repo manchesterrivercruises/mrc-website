@@ -6,6 +6,7 @@ import BookingPanel from '../../components/BookingPanel.astro';
 import VentrataWidget from '../../components/VentrataWidget.astro';
 import ProductCard from '../../components/ProductCard.astro';
 import AttractionCard from '../../components/AttractionCard.astro';
+import { siteImages } from '../../data/siteImages';
 import FAQSection from '../../components/FAQSection.astro';
 import ReviewStrip from '../../components/ReviewStrip.astro';
 import GettingHere from '../../components/GettingHere.astro';
@@ -92,6 +93,23 @@ const CROSS_SELL_HREFS: Record<string, string> = {
   'crossSell:santa': '/santa-cruise-manchester',
   'crossSell:abba': '/tour/mamma-mia-cruise-abba-tribute',
   'crossSell:ferry': '/tour/boat-to-old-trafford',
+};
+const CROSS_SELL_IMAGES = {
+  'crossSell:santa': siteImages.santaCruiseCard,
+  'crossSell:abba': siteImages.abbaCruiseCard,
+  'crossSell:ferry': siteImages.ferryCard,
+} as const;
+
+// "Make a day of it" art. Only attractions we have our OWN photograph of are filled — IWM
+// North, Old Trafford and the Coronation Street set are all shot from the ship canal on the
+// tour itself; The Lowry is shot from the quayside plaza. Nell's Pizza and Ordsall Hall are
+// third-party venues we hold no photography of, so they keep the placeholder tile
+// (docs/photo-inventory.md → Shot list).
+const DAY_OUT_IMAGES: Partial<Record<string, typeof siteImages.iwmNorth>> = {
+  'dayOut:iwm': siteImages.iwmNorth,
+  'dayOut:lowry': siteImages.theLowry,
+  'dayOut:corrie': siteImages.coronationStreet,
+  'dayOut:oldTrafford': siteImages.oldTrafford,
 };
 
 const faqs = faqItems(copy);
@@ -391,6 +409,10 @@ const crumbs = [
                   name={p.name}
                   desc={p.desc}
                   href={CROSS_SELL_HREFS[p.key]}
+                  image={CROSS_SELL_IMAGES[p.key as keyof typeof CROSS_SELL_IMAGES]?.src}
+                  imageAlt={CROSS_SELL_IMAGES[p.key as keyof typeof CROSS_SELL_IMAGES]?.alt}
+                  imageWidth={CROSS_SELL_IMAGES[p.key as keyof typeof CROSS_SELL_IMAGES]?.width}
+                  imageHeight={CROSS_SELL_IMAGES[p.key as keyof typeof CROSS_SELL_IMAGES]?.height}
                   class="cross-sell-item"
                   style={`animation-delay:${i * 5}s`}
                 />
@@ -476,7 +498,19 @@ const crumbs = [
         <SectionHeading id="day-out">{sec(copy, 'dayOut').heading}</SectionHeading>
         <p class="mt-4 max-w-2xl text-body">{sec(copy, 'dayOut').body?.[0]}</p>
         <div class="mt-8 grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-3">
-          {cards(copy, 'dayOut').map((item) => <AttractionCard name={item.name} desc={item.desc} href={DAY_OUT_HREFS[item.key]} />)}
+{
+            cards(copy, 'dayOut').map((item) => (
+              <AttractionCard
+                name={item.name}
+                desc={item.desc}
+                href={DAY_OUT_HREFS[item.key]}
+                image={DAY_OUT_IMAGES[item.key]?.src}
+                imageAlt={DAY_OUT_IMAGES[item.key]?.alt}
+                imageWidth={DAY_OUT_IMAGES[item.key]?.width}
+                imageHeight={DAY_OUT_IMAGES[item.key]?.height}
+              />
+            ))
+          }
         </div>
       </div>
     </section>
