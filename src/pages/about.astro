@@ -7,6 +7,7 @@ import TrustStrip from '../components/TrustStrip.astro';
 import BookDirect from '../components/BookDirect.astro';
 import CTASection from '../components/CTASection.astro';
 import { site } from '../data/site';
+import { siteImages } from '../data/siteImages';
 import copy from '../content/page-copy/about.json';
 import { sec, list, str } from '../lib/pageCopy';
 
@@ -98,7 +99,7 @@ const structuredData = {
         </div>
       </section>
 
-      {/* Our team — lightweight: one intro block + a single photo placeholder */}
+      {/* Our team — one intro block beside a photograph of the crew onboard. */}
       <section aria-labelledby="team">
         <SectionHeading id="team">{sec(copy, 'team').heading}</SectionHeading>
         <div class="mt-6 grid gap-8 md:grid-cols-2 md:items-center">
@@ -106,9 +107,15 @@ const structuredData = {
             <p>{sec(copy, 'team').body?.[0]}</p>
             <p class="text-base text-subtle">{sec(copy, 'team').note}</p>
           </div>
-          <div class="flex aspect-[4/3] items-center justify-center rounded-card bg-panel text-xs text-subtle">
-            {str(copy, 'teamPhotoPlaceholder')}
-          </div>
+          <img
+            src={siteImages.crewTeam.src}
+            alt={str(copy, 'teamPhotoAlt')}
+            width={siteImages.crewTeam.width}
+            height={siteImages.crewTeam.height}
+            loading="lazy"
+            data-img-fallback
+            class="aspect-[4/3] w-full rounded-card object-cover ring-1 ring-black/5"
+          />
         </div>
       </section>
 

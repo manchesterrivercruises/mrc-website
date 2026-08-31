@@ -7,6 +7,7 @@ import FAQSection from '../components/FAQSection.astro';
 import GettingHere from '../components/GettingHere.astro';
 import KeyFacts from '../components/KeyFacts.astro';
 import ProductCard from '../components/ProductCard.astro';
+import { siteImages } from '../data/siteImages';
 import { getCollection } from 'astro:content';
 import copy from '../content/page-copy/music-cruises-manchester.json';
 import { sec, card, faqGroup, faqs, str } from '../lib/pageCopy';
@@ -103,7 +104,7 @@ const structuredData = {
           <div class="mt-8 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {
               liveMusicNights.map((e) => (
-                <ProductCard name={e.data.title} desc={e.data.shortTagline ?? e.data.description} href={`/tour/${e.id}`} linkText={str(copy, 'eventCardLinkText')} />
+                <ProductCard name={e.data.title} desc={e.data.shortTagline ?? e.data.description} href={`/tour/${e.id}`} linkText={str(copy, 'eventCardLinkText')} image={e.data.heroImage} imageAlt={e.data.heroImageAlt} />
               ))
             }
           </div>
@@ -117,7 +118,7 @@ const structuredData = {
           <div class="mt-8 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {
               djNights.map((e) => (
-                <ProductCard name={e.data.title} desc={e.data.shortTagline ?? e.data.description} href={`/tour/${e.id}`} linkText={str(copy, 'eventCardLinkText')} />
+                <ProductCard name={e.data.title} desc={e.data.shortTagline ?? e.data.description} href={`/tour/${e.id}`} linkText={str(copy, 'eventCardLinkText')} image={e.data.heroImage} imageAlt={e.data.heroImageAlt} />
               ))
             }
           </div>
@@ -130,7 +131,7 @@ const structuredData = {
         <section aria-labelledby="also">
           <SectionHeading id="also">{sec(copy, 'also').heading}</SectionHeading>
           <div class="mt-8 sm:max-w-sm">
-            <ProductCard name={card(copy, 'crossSell:crt').name} desc={card(copy, 'crossSell:crt').desc} href="/tour/city-river-tours" />
+            <ProductCard name={card(copy, 'crossSell:crt').name} desc={card(copy, 'crossSell:crt').desc} href="/tour/city-river-tours" image={siteImages.cityRiverTourCard.src} imageAlt={siteImages.cityRiverTourCard.alt} imageWidth={siteImages.cityRiverTourCard.width} imageHeight={siteImages.cityRiverTourCard.height} />
           </div>
         </section>
 

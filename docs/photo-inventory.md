@@ -17,10 +17,11 @@ This tracks real photography as it is gathered against each album/subject.
 > **Gaps remaining** below) — most importantly **City River Tour** (signature product) and
 > **ABBA Night**, plus a thin **Private Hire** set. Some events are promotional graphics only.
 
-A handful of images remain **TEMP hotlinks** from the live site (marked `# TEMP` in
-frontmatter, served from `optimise2.assets-servd.host`) where no owned photo exists yet —
-these still must be replaced before launch. The collection will switch to Astro's
-`image()`/`<Image>` pipeline once the last owned assets land (see `docs/image-conventions.md`).
+> **Update 2026-08-31 — every TEMP hotlink is gone.** The last one (the Adele event card) now
+> points at an owned album frame, so **nothing on the site is served from a third-party host any
+> more** — every rendered image is a processed WebP under `public/images/`. The collection will
+> switch to Astro's `image()`/`<Image>` pipeline once the last owned assets land (see
+> `docs/image-conventions.md`).
 
 Each `gallery` image carries optional **`isFeatured`** (hero-grade candidate) and **`usage`**
 (`gallery` | `product-page` | `homepage` | `og-image` | `ota-listing` | `event-card` |
@@ -33,8 +34,8 @@ sync when you add or reclassify assets.
 
 | Album / category | Owned photos | Minimum needed | Met? | Hero-grade landscape? | Alt done? | Rights confirmed? | Notes / gaps |
 |---|---|---|---|---|---|---|---|
-| City River Tour · route | 2 (+ hotlink/placeholder images) | 10+ (2–3 hero-grade) | ⬜ | ✅ | ✅ | ✅ | **PRIORITY 1 (eased).** First owned photography added 2026-07-10 — a drone aerial of the boat cruising past the arched footbridge (hero-grade) + an on-board open-deck shot at MediaCity. Still wants a fuller set to replace the remaining hotlinks. |
-| ABBA Night · live-music | 0 (1 owned card cover + hotlink/placeholder) | 8–10 (1 hero-grade) | ⬜ | ⬜ | ✅ | ✅ | **PRIORITY 2.** No ABBA shoot existed in the source tree — needs a real tribute-night shoot (performer mid-song, packed cabin). |
+| City River Tour · route | 10 | 10+ (2–3 hero-grade) | ✅ | ✅ | ✅ | ✅ | **Album complete (2026-08-31).** The five remaining placeholder slots were filled from the raw tree with the route landmarks the onboard commentary actually covers: The Lowry from the water, Old Trafford from the ship canal, the ITV Coronation Street site, the MediaCityUK waterfront and the Ordsall Chord arch over the Irwell. They join the 2026-07-10 drone aerial + open-deck frame and three earlier site images. |
+| ABBA Night · live-music | 0 (cover and `01` are the same promo ARTWORK, not a photo) | 8–10 (1 hero-grade) | ⬜ | ⬜ | ✅ | ✅ | **PRIORITY 1 — the only album with no photography at all.** The whole raw tree was re-swept 2026-08-31: the sole ABBA asset anywhere is the 500×350 promo thumbnail. `01`'s alt was corrected to describe the artwork (it had been captioned as a photo of two tribute singers). Slots 02–08 stay placeholders — see the Shot list. |
 | Private Hire · private-hire | 2 (+2 review hotlinks) | 8–10 (1 hero-grade) | ◑ | ✅ | ✅ | ✅ | Valentine's-dressed cabin (cover) + Isabella at a Salford Quays sunset (2026-07-10). Still needs weddings / corporate / celebration real photos. |
 | Old Trafford Ferry · route | 4 (+ owned cover) | 8–10 | ◑ | ✅ | ✅ | ✅ | Matchday supporters onboard, ferry on the canal, + ferry approaching with open-deck supporters and supporters crossing the footbridge (2026-07-10). A stadium-approach/arrival frame would still help (matchday-access dependent; avoid club trademarks). |
 | Father Christmas Cruises · seasonal | 6 (+ owned cover) | 8–10 (2–3 hero-grade) | ✅ | ✅ | ✅ | ✅ | Renamed from "Christmas Cruises" — every shot is Father Christmas Cruise material, so the album now matches the product slug (`father-christmas-cruise`). Santa & elf, child steering with Santa, grotto decor, + Santa with two elves, children with presents (2025, evening) and elf entertainers (2026-07-10). |
@@ -45,7 +46,7 @@ sync when you add or reclassify assets.
 | Soul River · live-music | 4 | 8–10 (1 hero-grade) | ✅ | ✅ | ✅ | ✅ | NEW album. Male + female singers, guest candids. 75-photo set. |
 | Rollin on the River · live-music | 4 | 8–10 (1 hero-grade) | ✅ | ✅ | ✅ | ✅ | NEW album (Tina Turner tribute). Performer + guest engagement + dancing. 110-photo set. |
 | Boat Tropicana · dj-night | 4 | 8–10 (1 hero-grade) | ✅ | ✅ | ✅ | ✅ | NEW album (80s party). DJ + dancefloor + neon fancy dress. 101-photo set. |
-| Our Boats · boats | 7 | 8–10 | ✅ | ✅ | ✅ | ✅ | Boat at Salford Quays (cover), fleet at footbridge, skipper at helm, rosé, dog, crew at the bar, + drone aerial of the boat moored (2026-07-10). Vessels collection still EMPTY — no per-vessel pages. |
+| Our Boats · boats | 7 | 8–10 | ✅ | ✅ | ✅ | ✅ | Boat at Salford Quays (cover), fleet at footbridge, skipper at helm, rosé, dog, crew at the bar, + drone aerial of the boat moored (2026-07-10). The vessels collection now exists and `/our-vessels` renders from it, but **only Isabella has a matched photo** — see the Shot list. `crew-at-the-onboard-bar` now also carries the /about "Our team" slot, and `boats-moored-at-millennium-footbridge` the `/getting-here` boarding photo. |
 | Manchester Ship Canal · route | 6 | 8–10 | ✅ | ✅ | ✅ | ✅ | Sunset-from-bow (cover), IWM North, red Irwell bridge, city towers, street art, + canal & Deansgate Square towers under a dramatic sky (2026-07-10). Want more locks / heritage variety. |
 | Salford Quays · route | 7 | 8–10 | ✅ | ✅ | ✅ | ✅ | Golden-hour drone aerial (NEW cover, hero-grade), footbridge-skyline blue hour, purple footbridge, aerial sunset, rainbow, golden-hour sunset, boat cruising MediaCity. Feeds getting-here + Discover heroes. |
 
@@ -102,13 +103,135 @@ has been removed, and the Adele set (previously held back) is now usable.
 - **High Res** used throughout; **Low Res** folders skipped as exact duplicates.
 - `._*` files are macOS AppleDouble metadata, not images — skipped.
 
+## Placeholder fill pass — 2026-08-31
+
+Audited **every image placeholder in the built site** and classified each one: fillable from the
+processed library, fillable from the raw tree, or genuinely unfillable.
+
+**Sweep:** `node scripts/ingest-images.mjs --source "C:/MRC Website" --recurse` over the whole
+tree — 1,445 sources scanned, 1,003 staged as new, 130 content-dupes of already-published assets,
+312 dupes within the batch, 0 failures. Curation was by eye afterwards, as the tool intends.
+
+**Result:** 111 image placeholder slots before → **27 after**.
+
+- **84 filled.** 74 from the already-processed library (the slots simply were not wired to it) and
+  10 from six newly-curated raw frames.
+- **6 new processed assets** (card + large WebP each), all shot by us:
+  `the-lowry-quays-theatre-from-the-water`, `old-trafford-from-the-ship-canal`,
+  `coronation-street-set-from-the-canal`, `mediacityuk-waterfront-from-the-water` and
+  `ordsall-chord-arch-over-the-irwell` (all in `gallery/city-river-tour/`), plus
+  `attractions/the-lowry-theatre-and-gallery`.
+- **Highest-traffic slots cleared:** the homepage hero and City River Tour feature, the whole
+  `/tour/city-river-tours` cross-sell and three of its six attraction cards, the `/getting-here`
+  boarding-point photo, every Discover guide card and hero, and every event card grid on
+  `/music-cruises-manchester`, `/party-boat-manchester` and `/events`.
+- **New shared registry:** `src/data/siteImages.ts` holds the owned assets used by slots that have
+  no collection behind them (hero, category cards, wayfinding cards, attraction cards), each with
+  real dimensions and the same alt string the gallery YAML uses for that file.
+- **Rule applied throughout:** a slot is filled ONLY where the photograph genuinely IS the
+  subject. Nothing was filled with a near-miss — no unnamed boat under a named vessel, no borrowed
+  night under a different event, no stand-in for a third-party venue.
+
+## Shot list — the 27 placeholders still on the live build
+
+These are the slots that survived the audit because **no matching photograph exists anywhere**.
+Each row is a shot brief: where it goes, what the frame must contain, and how it will be cropped.
+Card slots crop to **16:9** and render around 400–500px wide, so shoot landscape with the subject
+off the extreme edges; supply ~2× (1600px) so the card and large variants come from one file.
+
+### Vessels — 6 slots, one shoot fixes all of them
+
+`/our-vessels` (4 cards) and `/private-hire` (2 cards) are blocked on the same thing: we have no
+photograph in which a named boat is identifiable. **Do not** fill these with a generic fleet shot —
+a card headed "Melody" showing an unnamed hull is a mislabel, not a placeholder.
+
+| Slot | The frame must show | Orientation / crop |
+|---|---|---|
+| Princess Katherine (`/our-vessels`, `/private-hire`) | The whole vessel on the water, **name legible** on the bow or transom, ideally with passengers aboard | 16:9 landscape; keep the name well inside the frame so the card crop cannot cut it |
+| Melody (`/our-vessels`, `/private-hire`) | As above. Melody has indoor seating throughout and no open top deck — the frame should make that readable | 16:9 landscape |
+| Georgina (`/our-vessels`) | As above; smaller-group boat, so a moored quayside three-quarter view works | 16:9 landscape |
+| Joyce Too (`/our-vessels`) | As above | 16:9 landscape |
+
+### ABBA Night album — 7 slots (`/gallery/abba-night`)
+
+The only ABBA asset we hold is the promo artwork. One tribute night covers all seven, plus a
+hero-grade frame to replace `01` (currently the artwork doing duty as a photo).
+
+| Slot | The frame must show | Orientation / crop |
+|---|---|---|
+| `01` (replace artwork) | The tribute act mid-song under stage lighting — hero-grade, clean background | landscape, 16:9-safe; also wanted for the event card and OG image |
+| `02` | The whole cabin on its feet, arms raised, during a singalong | landscape |
+| `03` | A guest in sequins / 70s costume with friends, before or early in the sailing | **portrait** |
+| `04` | Cocktails on the bar in the foreground with the act performing behind | landscape |
+| `05` | The boat itself lit up on the canal after dark, reflections in the water | landscape — **doubles as the festive-night exterior below** |
+| `06` | A singer reaching out to the crowd from the edge of the performance space | **portrait** |
+| `07` | Guests toasting on the open deck after dark | landscape |
+| `08` | Wide shot of the packed floor with the Salford Quays skyline through the windows | landscape |
+
+### Seasonal and family events — 4 slots
+
+| Page / slot | The frame must show | Orientation / crop |
+|---|---|---|
+| `/events` → "Seasonal Specials" card | Any non-Christmas seasonal sailing in progress — a Mother's/Father's Day table, Halloween costumes, an Easter family group | 16:9 landscape |
+| `/whats-on` → Father's Day Cruise card | A daytime family sailing: dads and children on the open deck, daylight, relaxed | 16:9 landscape, daytime |
+| `/whats-on` → Mother's Day Cruise card | A daytime family sailing: tables laid, flowers, a multi-generation group | 16:9 landscape, daytime |
+| `/whats-on` → Pirates & Mermaids card | Children in pirate / mermaid costume onboard, mid-activity (parental consent needed) | 16:9 landscape |
+
+### Plan-your-visit wayfinding cards — 4 slots (`/plan-your-visit`)
+
+The only cards on that page with no photographable subject today. Each brief is what would make
+the card honest rather than decorative; if a shot is not worth the trip, dropping the image from
+the card is a legitimate alternative.
+
+| Slot | The frame must show | Orientation / crop |
+|---|---|---|
+| Accessibility | Step-free boarding actually happening — a wheelchair user or pushchair crossing the gangway at the Millennium Footbridge, crew assisting | 16:9 landscape; gangway and boat side both in frame |
+| FAQ | A crew member talking a passenger through boarding at the quayside — the "ask us anything" moment | 16:9 landscape |
+| Gift Vouchers | A voucher (printed or on a phone) held at the boarding point with a boat behind | 16:9 landscape; keep the voucher readable at card size |
+| Groups & Schools | A school or group party boarding, or seated together in the cabin (consent required) | 16:9 landscape |
+
+### Third-party venues — 6 slots
+
+We hold no photography of any of these and they are other people's businesses. Either shoot the
+exterior from the public quayside ourselves, or drop the image from the card and let the text and
+walking time carry it.
+
+| Page / slot | The frame must show | Orientation / crop |
+|---|---|---|
+| `/tour/city-river-tours` → Nell's Pizza | The venue frontage, recognisable, from the public footway | 16:9 landscape |
+| `/tour/city-river-tours` → Ordsall Hall | The Tudor black-and-white frontage of the hall | 16:9 landscape |
+| `/whats-on` → Kargo | The waterfront container-bar frontage at the Quays | 16:9 landscape |
+| `/whats-on` → The Alchemist | The venue frontage at MediaCityUK | 16:9 landscape |
+| `/whats-on` → Nell's Pizza | The same frame as the City River Tour card — one shot covers both | 16:9 landscape |
+| `/whats-on` → Holiday Inn MediaCity | The hotel frontage | 16:9 landscape |
+
+### Still outstanding, but not a placeholder tile
+
+- **Festive night exterior** (time-sensitive, December only) — the decorated boat lit up on the
+  water after dark. Blocks the `christmas-on-the-water` album that does not exist yet, and is the
+  same frame as ABBA slot `05` above. The Christmas hub currently leans on the Santa album and
+  event card art, which is honest but thin.
+
+### Not images — do not confuse these with photo gaps
+
+Two dashed placeholder tiles remain in the build and are **not** image slots: `/getting-here`
+carries a Google Maps `<iframe>` embed placeholder, and
+`/tour/boat-to-old-trafford/stephensons-bridge` carries a Ventrata booking-widget placeholder
+(that departure has no product ID yet). Two further tiles are **runtime** fallbacks in the What's
+On strip and the date finder — they appear only for a product with no card image, which is
+correct behaviour, not a gap.
+
 ## Gaps remaining — Jeff's shoot / selection list
 
+> Superseded in part by the **Shot list** above, which is the per-slot brief. This section is the
+> album-level view.
+
 **Still needs a real shoot (no owned photography):**
-- **City River Tour** — PRIORITY 1 (eased). Now has 2 owned (drone aerial + on-board deck, added 2026-07-10); still wants a fuller set + more hero-grade landscapes to replace the remaining hotlinks.
-- **ABBA Night** — PRIORITY 2. No ABBA shoot existed in the source tree.
-- **Vessels** — the `vessels` content collection is empty; no per-vessel pages exist. The
-  Isabella has photos but no vessel page to hang them on.
+- **ABBA Night** — PRIORITY 1, and now the only album with zero photography. Re-confirmed against
+  the whole raw tree on 2026-08-31.
+- **Vessels** — the `vessels` collection exists and `/our-vessels` renders from it, but four of
+  the five boats have no identifiable photograph. Nothing in the raw tree names a hull except
+  Isabella. This is a shoot, not a selection problem.
 - **Christmas on the water (the wider festive offer)** — **time-sensitive, December only.** A
   decorated boat lit at night (exterior landscape), a December party night in full swing, a private
   Christmas do. None of this exists: every shot in the old "Christmas Cruises" album turned out to
@@ -133,8 +256,11 @@ Wizards & Fairies, Mother's/Father's Day. Give these real albums if/when shot.
 
 **Available to expand (already-owned, not yet ingested):** the full High Res event sets
 (hundreds more frames across Adele/Elvis/Soul/Tina/80s/Santa), the 2025 Meet-Santa set, more
-`General/` + `General/Drone/` scenery, and the Adele 66-set. Curated to the best few this pass;
-more can be pulled in without another shoot.
+`General/` + `General/Drone/` scenery, and the Adele 66-set. Curated to the best few each pass;
+more can be pulled in without another shoot. The 2026-08-31 sweep staged **1,003 new frames** and
+only six were promoted — the rest of that pool (landmark folders for Media City, the Lowry, the
+bridges, the Turning Basin, Graffiti Palace and the drone sets) is there whenever an album wants
+depth. Re-run `scripts/ingest-images.mjs` to regenerate the staging dir; it is git-ignored.
 
 ## How to use this tracker
 

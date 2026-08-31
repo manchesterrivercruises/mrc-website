@@ -209,6 +209,8 @@ const structuredData = {
                   desc={e.data.shortTagline ?? e.data.description}
                   href={`/tour/${e.id}`}
                   linkText={str(copy, 'partyNightsLinkText')}
+                  image={e.data.heroImage}
+                  imageAlt={e.data.heroImageAlt}
                 />
               ))
             }

@@ -3,18 +3,21 @@ slug: abba-night
 order: 4
 summary: Sequins, singalongs and Dancing Queen on the water — snapshots from our ABBA tribute nights on the Ship Canal.
 category: live-music
-# OWNED cover asset (processed WebP in public/images/). images[] below are still TEMP hotlink placeholders — Jeff fills the album out.
+# Cover is the event's promo artwork. There is NO ABBA photography anywhere in the source
+# tree — images[] 02-08 stay placeholders until the shoot happens (docs/photo-inventory.md).
 coverImage: /images/events/abba-tribute-cruise-card.webp
 coverAlt: "'ABBA Disco' promotional artwork — a giant multicoloured mirrorball above the illuminated Salford Quays waterfront and Millennium Footbridge at night."
 images:
-  # TEMP: hotlinked from the live manchesterrivercruises.com for review — not an owned asset.
+  # The ONLY asset this album has: the event's own promotional artwork (the same frame as the
+  # cover). No ABBA night has ever been photographed — every entry below is a placeholder and
+  # the shoot is specced in docs/photo-inventory.md → Shot list.
   - src: /images/gallery/abba-night/01.webp
     width: 800
     height: 543
-    alt: Two ABBA tribute singers in white flared costumes performing under coloured stage lights
-    caption: Take a chance on us — the ABBA tribute in full swing.
+    alt: "'ABBA Disco' promotional artwork — a giant multicoloured mirrorball above the illuminated Salford Quays waterfront and Millennium Footbridge at night"
+    caption: The ABBA Disco cruise artwork.
     orientation: landscape
-    tags: [performer, tribute]
+    tags: [artwork]
   - src: /images/gallery/abba-night/02.webp
     alt: The whole deck on its feet with arms raised during Dancing Queen
     orientation: landscape

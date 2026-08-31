@@ -1,4 +1,5 @@
 ---
+import { getCollection } from 'astro:content';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import SectionHeading from '../components/SectionHeading.astro';
 import CTAButton from '../components/CTAButton.astro';
@@ -14,6 +15,15 @@ import { site } from '../data/site';
 // docs/content-management.md → "Extracting a page's copy into the CMS" for the recipe.
 import copy from '../content/page-copy/private-hire.json';
 import { sec, list, faqs, faqGroup, str } from '../lib/pageCopy';
+
+// Vessel card art comes from the vessels collection, matched on the boat's name, so a
+// named card can only ever show that named boat. Vessels without a matched photo keep the
+// placeholder tile — a generic fleet shot under a name would mislabel the boat.
+const vesselImages = new Map(
+  (await getCollection('vessels'))
+    .filter((v) => v.data.heroImage)
+    .map((v) => [v.data.name, { src: v.data.heroImage!, alt: v.data.heroImageAlt ?? v.data.name }]),
+);
 
 const icons = {
   sparkles:
@@ -131,7 +141,18 @@ const structuredData = {
         <section aria-labelledby="vessels">
           <SectionHeading id="vessels">{sec(copy, 'vessels').heading}</SectionHeading>
           <div class="mt-8 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {list(copy, 'hireVessels').map((name) => <ProductCard name={name} desc={str(copy, 'vesselCardDesc')} href="/our-vessels" linkText="View fleet" />)}
+{
+              list(copy, 'hireVessels').map((name) => (
+                <ProductCard
+                  name={name}
+                  desc={str(copy, 'vesselCardDesc')}
+                  href="/our-vessels"
+                  linkText="View fleet"
+                  image={vesselImages.get(name)?.src}
+                  imageAlt={vesselImages.get(name)?.alt}
+                />
+              ))
+            }
           </div>
         </section>
 

@@ -5,6 +5,7 @@ import SectionHeading from '../components/SectionHeading.astro';
 import BookingPanel from '../components/BookingPanel.astro';
 import VentrataWidget from '../components/VentrataWidget.astro';
 import ProductCard from '../components/ProductCard.astro';
+import { siteImages } from '../data/siteImages';
 import FAQSection from '../components/FAQSection.astro';
 import CTAButton from '../components/CTAButton.astro';
 import GettingHere from '../components/GettingHere.astro';
@@ -142,7 +143,15 @@ const structuredData = {
         <section aria-labelledby="also">
           <SectionHeading id="also">Also popular</SectionHeading>
           <div class="mt-8 sm:max-w-sm">
-            <ProductCard name="City River Tour" desc="Our signature 60-minute sightseeing cruise along the Manchester Ship Canal." href="/tour/city-river-tours" />
+            <ProductCard
+              name="City River Tour"
+              desc="Our signature 60-minute sightseeing cruise along the Manchester Ship Canal."
+              href="/tour/city-river-tours"
+              image={siteImages.cityRiverTourCard.src}
+              imageAlt={siteImages.cityRiverTourCard.alt}
+              imageWidth={siteImages.cityRiverTourCard.width}
+              imageHeight={siteImages.cityRiverTourCard.height}
+            />
           </div>
         </section>
       </div>

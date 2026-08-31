@@ -39,7 +39,7 @@
   "strings": [
     { "key": "vesselNote", "value": "Description and passenger capacity — TBC." },
     { "key": "fleetCtaLabel", "value": "View our vessels" },
-    { "key": "teamPhotoPlaceholder", "value": "Team photo (TBC)" },
+    { "key": "teamPhotoAlt", "value": "Two smiling Manchester River Cruises crew members behind the boat's bar, spirits and optics lined up on the wall behind them" },
     { "key": "trustYearsValue", "value": "TBC" },
     { "key": "trustYearsLabel", "value": "Years operating" },
     { "key": "trustReviewsLabel", "value": "Google reviews" },
