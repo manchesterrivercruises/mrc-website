@@ -1,9 +1,15 @@
 ---
-// Primary (gold fill) or outline (navy border) call-to-action button.
+// Primary (gold fill) or outline call-to-action button.
 // Renders an <a> when href is given, otherwise a <button>.
+//
+// VARIANT CHOICE IS SURFACE-DEPENDENT: 'outline' is navy-on-transparent and only reads on a
+// light surface (white / bg-panel). On a dark navy surface — bg-dark, <PageHero>, <CTASection>
+// — it is navy on navy and effectively invisible, so use 'outline-inverse' (white border and
+// label) there. See the .btn-outline-inverse block in src/styles/global.css for the measured
+// contrast figures.
 interface Props {
   href?: string;
-  variant?: 'primary' | 'outline';
+  variant?: 'primary' | 'outline' | 'outline-inverse';
   class?: string;
   [key: string]: unknown;
 }
