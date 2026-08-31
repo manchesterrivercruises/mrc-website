@@ -72,6 +72,7 @@ export default defineConfig({
   // configured, or shows a graceful "not configured" gate when it isn't (replaces the old
   // static redirect, which would have pointed at the crashing route).
   vite: {
-    plugins: [tailwindcss()],
+    // Tailwind v4's plugin is typed against a different Vite copy than Astro 5 bundles.
+    plugins: /** @type {any} */ ([tailwindcss()]),
   },
 });

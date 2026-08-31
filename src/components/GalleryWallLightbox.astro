@@ -21,7 +21,9 @@
     });
 
     lightbox.on('uiRegister', () => {
-      lightbox.pswp.ui.registerElement({
+      const pswp = lightbox.pswp;
+      if (!pswp?.ui) return;
+      pswp.ui.registerElement({
         name: 'mrc-caption',
         appendTo: 'root',
         onInit: (elc) => {
@@ -36,8 +38,8 @@
             background: 'rgba(0,0,0,.5)',
             font: '14px/1.5 system-ui, sans-serif',
           });
-          lightbox.pswp.on('change', () => {
-            const a = lightbox.pswp.currSlide?.data?.element as HTMLElement | undefined;
+          pswp.on('change', () => {
+            const a = pswp.currSlide?.data?.element as HTMLElement | undefined;
             elc.replaceChildren();
             if (!a) {
               elc.style.display = 'none';

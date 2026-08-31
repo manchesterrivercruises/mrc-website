@@ -34,6 +34,16 @@ npm run build
 
 # Preview production build
 npm run preview
+
+# Typecheck (same as the PR CI job)
+npm run check
+
+# Confirm Keystatic reads the same files the site imports (Node >= 22; the npm
+# script passes --experimental-strip-types so it works on 22.6–22.17 too)
+npm run verify-cms-wiring
+
+# Pre-cutover only: fail if "TBC" remains in dist HTML (not part of every build)
+npm run build && npm run launch-gate
 ```
 
 ---

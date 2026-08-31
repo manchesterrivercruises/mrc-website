@@ -103,7 +103,7 @@ const bookConfig = bookProductID ? JSON.stringify({ productID: bookProductID }) 
     // Reset to a clean closed state when crossing to desktop, so the desktop nav (md:flex)
     // shows and returning to mobile starts collapsed.
     const desktop = window.matchMedia('(min-width: 768px)');
-    const syncToDesktop = (e) => { if (e.matches) close(); };
+    const syncToDesktop = (e: MediaQueryListEvent) => { if (e.matches) close(); };
     desktop.addEventListener('change', syncToDesktop);
   }
 </script>
