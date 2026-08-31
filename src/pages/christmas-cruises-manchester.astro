@@ -22,7 +22,9 @@ import { sec, cards, faqGroup, faqs as faqItems, str } from '../lib/pageCopy';
 // songs mixed in). So this page does NOT embed a product/booking widget and claims no Event/Product
 // schema — it points to /whats-on (party nights), /private-hire (your own do) and the Santa page.
 const albums = await getAlbums();
-const christmasAlbum = albums.find((a) => a.data.slug === 'christmas-cruises' || a.id === 'christmas-cruises');
+const christmasAlbum = albums.find(
+  (a) => a.data.slug === 'father-christmas-cruise' || a.id === 'father-christmas-cruise',
+);
 
 const icons = {
   calendar:
