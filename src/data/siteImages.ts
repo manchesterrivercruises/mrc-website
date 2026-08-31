@@ -11,6 +11,11 @@
 // wherever it appears. Cards render at ~400–500px, so the 800px `-card` variant is the right
 // source; heroes use the 1600px large variant.
 //
+// NOT here: the homepage hero, the homepage City River Tour feature and the /getting-here
+// boarding photo. Those pages declare their own `*_IMAGE` / `*_IMAGE_CARD` constant pairs so
+// they can emit a responsive `srcset`; duplicating the paths here would give the same asset two
+// sources of truth.
+//
 // A slot with NO genuine subject match stays absent here on purpose — the component then
 // renders its honest placeholder tile rather than a near-miss photo. The outstanding shots
 // are specced in docs/photo-inventory.md → "Shot list".
@@ -29,23 +34,11 @@ const img = (src: string, width: number, height: number, alt: string): SiteImage
 
 export const siteImages = {
   // ── Staple products ────────────────────────────────────────────────────────
-  cityRiverTourHero: img(
-    '/images/city-river-tour-hero.webp',
-    1600,
-    1200,
-    'A Manchester River Cruises sightseeing boat with a full open top deck of passengers passing beneath the white arched Millennium Footbridge on the Manchester Ship Canal at Salford Quays',
-  ),
   cityRiverTourCard: img(
     '/images/city-river-tour-card.webp',
     800,
     600,
     'A Manchester River Cruises sightseeing boat with a full open top deck of passengers passing beneath the white arched Millennium Footbridge at Salford Quays',
-  ),
-  cityRiverTourOnDeck: img(
-    '/images/gallery/city-river-tour/open-top-deck-passengers-mediacity.webp',
-    1600,
-    1066,
-    'Passengers on the open top deck of a City River Tour boat taking photos as it passes MediaCityUK and the Imperial Point tower at Salford Quays on a sunny day',
   ),
   ferryCard: img(
     '/images/boat-to-old-trafford-card.webp',
@@ -116,12 +109,6 @@ export const siteImages = {
     '/images/gallery/our-boats/boats-moored-at-millennium-footbridge-card.webp',
     800,
     600,
-    'Two Manchester River Cruises boats moored at the Salford Quays boarding point beside the Millennium Footbridge and The Lowry on a sunny day',
-  ),
-  boardingPointLarge: img(
-    '/images/gallery/our-boats/boats-moored-at-millennium-footbridge.webp',
-    1600,
-    1200,
     'Two Manchester River Cruises boats moored at the Salford Quays boarding point beside the Millennium Footbridge and The Lowry on a sunny day',
   ),
   crewTeam: img(
