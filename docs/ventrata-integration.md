@@ -276,7 +276,8 @@ preselect the date. Findings:
 
 1. Open a **sold-out "Join waitlist"** link (e.g. Dolly) — the current failing case.
 2. Open a **"Book this date"** link for an **AVAILABLE** date (use the date finder to find one).
-3. For each, read the `console.debug` line **`[MRC][ventrata] auto-open config → {…}`**:
+3. For each, inspect the checkout `data-config` on the page (or the object passed to
+   `window.Ventrata` in a breakpoint) — diagnostics no longer `console.debug` in production:
    - Config shows the right `dateToPreselect` **and** the available date **preselects** → the
      sold-out date is simply refused (Ventrata side) → the diagnosis is #1; drop date-preselect
      from waitlist links (or wire the waitlist feature).
@@ -321,9 +322,9 @@ vouchers must still be **enabled in the dashboard** ("Allow Gift Voucher" checkb
 form) for the flow to appear.
 
 **On-device QA:** open `/gift-vouchers`; the gift widget should render inline (not a product chooser).
-The debug line `[MRC][ventrata] gift-flow config → {"features":{"gifts":{"mode":"simple"}}}` (from
-`FLOW_DEBUG_SCRIPT`) confirms the exact config. If the embed shows a product chooser instead of a gift
-purchase, check "Allow Gift Voucher" is enabled in the dashboard.
+Inspect the embed's `data-config` — it must be `{"features":{"gifts":{"mode":"simple"}}}`. If the
+embed shows a product chooser instead of a gift purchase, check "Allow Gift Voucher" is enabled in
+the dashboard.
 
 ### Ventrata support questions — RESOLVED log
 
@@ -390,7 +391,8 @@ Capabilities: `Octo-Capabilities: octo/pricing` — **required on every request*
 `Octo-Capabilities` header (or `_capabilities` query param) declaring the capabilities it
 needs — otherwise the API returns `400 BAD_REQUEST` / `CAPABILITIES` ("Every request must
 specify what capabilities they require…"). We send `octo/pricing`, which also enriches the
-response with pricing. All three Netlify Functions include this header.
+response with pricing. Every OCTO call from `netlify/lib/octo.ts` and `products.ts` includes
+this header.
 
 ### Request field names — confirmed (2026-07-06)
 
@@ -458,54 +460,53 @@ Note: the correct calendar endpoint is `/octo/availability/calendar` — not `/o
 
 ## Netlify Functions
 
-Three functions proxy all OCTO API calls. The frontend never calls Ventrata directly.
+Public functions the frontend calls. The browser never talks to Ventrata OCTO
+directly. The unused `availability` / `availability-calendar` **proxies** were
+removed — OCTO `/availability` and `/availability/calendar` are still called
+**server-side** from `day-finder` and `event-days` via `netlify/lib/octo.ts`.
 
 ```
-/.netlify/functions/products
-/.netlify/functions/availability
-/.netlify/functions/availability-calendar
+/.netlify/functions/products          # OCTO /products (allowlisted fields)
+/.netlify/functions/day-finder        # homepage date finder (browser-facing)
+/.netlify/functions/event-days        # What's On feed (browser-facing)
+/.netlify/functions/reviews           # Google Places reviews (browser-facing)
 ```
+
+Browser-facing functions (`day-finder`, `event-days`, `reviews`) use
+`withGuard(..., { requireSiteOrigin: true })`: a request is rejected unless its
+`Origin` **or** `Referer` matches the exact-origin allowlist. That raises the bar
+against casual curl/bot quota burn; it is **not** a guarantee (both headers are
+attacker-controlled). Durable global limiting is a Netlify account-level setting
+— see `docs/launch-checklist.md`.
 
 ### Caching policy
 
 | Data | Cache TTL |
 |------|-----------|
 | Products | 1 hour |
-| Availability | 1–3 minutes (stale-while-revalidate) |
+| Day-finder (month view) | 60 min Blobs + 10 min CDN |
+| Day-finder (day view) | 10 min |
+| Event-days | 15 min |
+| Reviews | 12 h |
 
-Availability is micro-cached to protect against traffic spikes (matchdays, Christmas booking surges).
 Final booking availability is always confirmed inside the Ventrata checkout widget.
 
-All three send the mandatory `Octo-Capabilities: octo/pricing` header (see above).
+All OCTO calls send the mandatory `Octo-Capabilities: octo/pricing` header (see above).
 
 ### products function
 
 ```typescript
 // GET /octo/products
 // Header: Octo-Capabilities: octo/pricing (required)
-// Returns all active products with their options
+// Returns allowlisted products with a projected field set
 // Cache: 1 hour
 ```
 
-### availability function
+### day-finder / event-days
 
-```typescript
-// POST /octo/availability
-// Header: Octo-Capabilities: octo/pricing (required)
-// Body: { productId, optionId, localDateStart, localDateEnd }   // dates: YYYY-MM-DD
-// Returns: availability slots with capacity (each slot has localDateTimeStart/End)
-// Cache: 1-3 minutes SWR
-```
-
-### availability-calendar function
-
-```typescript
-// POST /octo/availability/calendar
-// Header: Octo-Capabilities: octo/pricing (required)
-// Body: { productId, optionId, localDateStart, localDateEnd }   // dates: YYYY-MM-DD
-// Returns: month-view date availability (per-date localDate + availabilityLocalStartTimes)
-// Cache: 1-3 minutes SWR
-```
+These fan out to `/octo/availability/calendar` (month / event-day windows) and
+`/octo/availability` (a selected day's slots) with bounded concurrency. They
+return a **trimmed** JSON shape, never raw OCTO.
 
 ---
 

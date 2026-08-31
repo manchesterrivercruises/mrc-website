@@ -100,7 +100,8 @@ function json(payload: unknown): Response {
   });
 }
 
-export default withGuard(async (request: Request): Promise<Response> => {
+export default withGuard(
+  async (request: Request): Promise<Response> => {
   if (request.method !== 'GET') return jsonError('Method not allowed', 405);
 
   const key = process.env.VENTRATA_OCTO_KEY;
@@ -200,4 +201,6 @@ export default withGuard(async (request: Request): Promise<Response> => {
     console.error('day-finder: failed —', (e as Error).message);
     return jsonError('Upstream service error', 502);
   }
-});
+},
+  { requireSiteOrigin: true },
+);

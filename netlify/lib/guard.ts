@@ -1,21 +1,24 @@
-// Shared guard for the OCTO proxy functions:
+// Shared guard for the OCTO / reviews proxy functions:
 //   - CORS locked to an EXACT-match origin allowlist (no wildcards / suffix matching)
+//   - optional Origin/Referer gate for browser-facing endpoints (requireSiteOrigin)
 //   - a simple in-memory per-IP rate limiter (~30 req/min) returning 429.
 //
 // The rate-limit state is in-memory and therefore PER WARM INSTANCE — it resets on
 // cold start and is not shared across concurrent instances. That's fine here: it's a
 // basic abuse throttle in front of already-cached, read-only proxies, not a hard quota.
-// For durable limiting use a shared store (e.g. Netlify Blobs / Upstash).
+// Durable / global limiting is a Netlify account-level rate-limit setting (see the
+// launch checklist). A shared store (Blobs / Upstash) is the code-side alternative.
 
 // Exact origins only. The previous `*.netlify.app` suffix match was too broad — ANY
 // Netlify site (including attacker-controlled ones) matched it — so it is removed.
 // One optional extra exact origin can be supplied via the STAGING_ORIGIN env var
-// (documented in .env.example) for deploy previews or the dress-rehearsal subdomain,
-// without a code change. It must be a full exact origin; wildcards are not honoured.
+// (documented in .env.example) for a deploy-preview URL, without a code change.
+// It must be a full exact origin; wildcards are not honoured.
 const ALLOWED_ORIGINS = new Set(
   [
     'https://www.manchesterrivercruises.com',
     'https://manchesterrivercruises.com',
+    'https://new.manchesterrivercruises.com', // dress-rehearsal / cutover subdomain
     'https://exquisite-gnome-3ca601.netlify.app', // current Netlify staging site
     process.env.STAGING_ORIGIN, // optional extra exact origin (may be undefined)
   ].filter((o): o is string => typeof o === 'string' && o.length > 0),
@@ -68,14 +71,41 @@ export function jsonError(message: string, status: number, origin: string | null
 
 type Handler = (request: Request) => Promise<Response>;
 
+export type GuardOptions = {
+  // Browser-facing endpoints (day-finder, event-days, reviews). Reject unless Origin
+  // OR Referer matches the allowlist. This RAISES THE BAR against casual curl/bot
+  // quota burn — it does not guarantee anything: both headers are attacker-controlled
+  // and privacy browsers may strip them (those clients then get 403). Durable global
+  // limiting is a Netlify account-level setting; see docs/launch-checklist.md.
+  requireSiteOrigin?: boolean;
+};
+
+function requestFromAllowedSite(request: Request): boolean {
+  const origin = request.headers.get('origin');
+  if (origin && originAllowed(origin)) return true;
+  const referer = request.headers.get('referer');
+  if (referer) {
+    try {
+      if (originAllowed(new URL(referer).origin)) return true;
+    } catch {
+      /* invalid Referer */
+    }
+  }
+  return false;
+}
+
 // Wrap a function handler with origin locking + rate limiting + CORS response headers.
-export function withGuard(handler: Handler): Handler {
+export function withGuard(handler: Handler, options: GuardOptions = {}): Handler {
   return async (request: Request): Promise<Response> => {
     const origin = request.headers.get('origin');
 
     // Block cross-origin calls from anywhere but our own sites. Same-origin requests
-    // (and server-to-server) send no Origin header and are allowed through.
+    // (and server-to-server) send no Origin header and are allowed through UNLESS
+    // requireSiteOrigin is set.
     if (origin && !originAllowed(origin)) {
+      return jsonError('Forbidden origin', 403, null);
+    }
+    if (options.requireSiteOrigin && !requestFromAllowedSite(request)) {
       return jsonError('Forbidden origin', 403, null);
     }
 

@@ -39,7 +39,8 @@ function capText(text: string | undefined): string {
   return s.length > TEXT_CAP ? `${s.slice(0, TEXT_CAP).trimEnd()}…` : s;
 }
 
-export default withGuard(async (request: Request): Promise<Response> => {
+export default withGuard(
+  async (request: Request): Promise<Response> => {
   if (request.method !== 'GET') {
     return jsonError('Method not allowed', 405);
   }
@@ -105,4 +106,6 @@ export default withGuard(async (request: Request): Promise<Response> => {
     console.error('reviews: failed to reach the Google Places API');
     return jsonError('Upstream service error', 502);
   }
-});
+},
+  { requireSiteOrigin: true },
+);

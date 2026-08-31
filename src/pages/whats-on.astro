@@ -95,8 +95,7 @@ const HYDRATE_SCRIPT = `
       cards.forEach(function (c) { grid.appendChild(c); });
       if (typeof window.__applyWhatsOnFilters === 'function') window.__applyWhatsOnFilters();
     })
-    .catch(function (err) {
-      if (window.console && console.debug) console.debug('What\\u2019s On: live feed unavailable —', err);
+    .catch(function () {
       // keep the server-rendered product-link cards (the crawlable fallback)
     });
 
