@@ -9,7 +9,7 @@ the project owner's call. Cross-references: `docs/ventrata-integration.md`, `doc
 
 **AI chat assistant.** A site chat widget backed by the Claude API through a Netlify function,
 grounded **only** in this site's own content plus **live OCTO availability** read through the
-existing availability functions (`day-finder` / `availability`) — no open-web answers. It answers
+existing `day-finder` / `event-days` functions — no open-web answers. It answers
 "what's on / when / how much / is X available", then **deep-links into Ventrata checkout** via the
 established marketing-link pattern (`?openWidget=true&date=…`) for the relevant product. It **never
 handles payment or PII** — booking always happens in the Ventrata widget. Guardrails: refuse
@@ -88,9 +88,15 @@ images under one directory + `fields.image`, a small sharp build step over an up
 migrate the gallery to Astro's `image()` pipeline. Removes the manual "process + place, then paste
 path" step.
 
-**Astro major upgrade.** Take the **deferred Dependabot major bumps** (Astro + integrations) on a
-branch, run the full build + Keystatic/Markdoc verification, and merge once green. Batched
-deliberately out of the launch window; revisit once the site is stable in production.
+**Astro major upgrade.** Take the **deferred Dependabot major bumps** (Astro + `@astrojs/netlify`
+and other `@astrojs/*` integrations) on a branch, run the full build + Keystatic/Markdoc
+verification, and merge once green. Batched deliberately out of the launch window; revisit once
+the site is stable in production. See `docs/launch-checklist.md` → "Post-launch".
+
+**VentrataWidget refactor.** Split `src/components/VentrataWidget.astro` (~630 lines: loader,
+embedded, popup, gift, date-preselect, focus handling) into mode-specific files after launch.
+Keep the site-wide-once loader in `<Header>` (AGENTS rule 9) — this is a readability split, not a
+behaviour change.
 
 **i18n revisit.** Reassess internationalisation **against real post-launch GA4 language data** — if a
 meaningful share of traffic is non-English, scope translated routes/content; if not, defer. Decision

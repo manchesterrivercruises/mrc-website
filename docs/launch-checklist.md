@@ -7,6 +7,7 @@ Complete every item before switching the domain to the new site.
 ## Pre-launch — build complete
 
 - [ ] All pages built and reviewed on mobile and desktop
+- [x] PR CI — `.github/workflows/ci.yml` runs `astro check`, `npm run build`, and `npm run verify-cms-wiring` on every pull request (Node 22). Netlify production stays on Node 20. `npm run launch-gate` is **not** in that workflow.
 - [ ] All Ventrata widget embed codes in place with live product IDs
 - [x] Ventrata widget env set to "live" (not "test") — `VENTRATA_ENV` in `src/data/ventrata.ts`.
   > ⚠ **Widget QA now runs against LIVE checkout — real bookings and card charges are
@@ -30,6 +31,35 @@ Complete every item before switching the domain to the new site.
 - [ ] Manage My Booking page live and linked from footer
 - [ ] **Re-enforce Content-Security-Policy (LAUNCH BLOCKER)** — see section below
 - [ ] **Apple Pay domain association file (LAUNCH BLOCKER)** — replace `public/.well-known/apple-developer-merchantid-domain-association.placeholder` with the real file (exact name, no extension) from Ventrata/the payment provider, then verify it returns HTTP 200 post-cutover. See `public/.well-known/README.md` and `docs/ventrata-integration.md`.
+- [ ] **TBC launch gate (LAUNCH BLOCKER)** — `npm run build && npm run launch-gate` must exit 0. See section below. Do this **before** flipping `public/robots.txt`.
+
+---
+
+## OCTO function origin gate and rate limiting
+
+Browser-facing Netlify functions (`day-finder`, `event-days`, `reviews`) reject a request unless its `Origin` **or** `Referer` matches the exact-origin allowlist in `netlify/lib/guard.ts` (`www`, bare domain, `new.` subdomain, current Netlify staging, optional `STAGING_ORIGIN`). `products.ts` is left without that flag (server-to-server / no-Origin callers).
+
+This **raises the bar** against casual curl/bot quota burn. It does **not** guarantee anything: both headers are attacker-controlled, and privacy browsers may strip them (those clients then get 403). The in-memory per-IP limiter (~30 req/min) is per warm instance only.
+
+**Global option:** Netlify **account-level rate limiting** (Team settings → Rate limiting / WAF). That is the durable control across instances and cold starts. Enable it on the production site before public traffic if OCTO quota or function cost is a concern. A shared store (Blobs / Upstash) is the code-side alternative, not currently implemented.
+
+The unused `availability` / `availability-calendar` **browser proxies** were removed (OCTO `/availability` is still called server-side from `day-finder` / `event-days` via `netlify/lib/octo.ts`).
+
+---
+
+## TBC launch gate
+
+Copy still contains `TBC` placeholders (boarding times, accessibility, vessel details, some FAQ answers, ProductCard image fallbacks). Those strings are crawlable once robots allow indexing.
+
+`npm run launch-gate` walks `dist/**/*.html` and **fails if the string `TBC` appears anywhere**. It is **not** wired into `npm run build` or the PR CI workflow — it would fail every build today.
+
+Before flipping `public/robots.txt`:
+
+```bash
+npm run build && npm run launch-gate
+```
+
+Clear every hit (CMS page-copy, vessel YAML, component fallbacks such as `imageLabel = 'Image (TBC)'`) and re-run until it exits 0.
 
 ---
 
@@ -86,6 +116,8 @@ Fold these concrete directive changes into `netlify.toml` when re-enforcing:
 ## Launch robots.txt
 
 The live `public/robots.txt` is currently the **pre-launch** version (`User-agent: * / Disallow: /`) so the staging build stays out of the index. **Do not change it until cutover.**
+
+**Gate before this flip:** `npm run build && npm run launch-gate` must be green (no `TBC` in built HTML). See "TBC launch gate" above.
 
 At go-live, replace `public/robots.txt` with the block below. It allows all crawlers, explicitly welcomes the major AI crawlers, and points to the sitemap index emitted by `@astrojs/sitemap`:
 
@@ -154,6 +186,15 @@ Ventrata redirects only fire on 404s, not live page changes.
 - [ ] Check private hire enquiry form submissions arriving
 - [ ] Verify GA4 tracking across all pages
 - [ ] Check 301 redirects working for top traffic URLs
+
+---
+
+## Post-launch (not cutover blockers)
+
+These are recorded so they are not mistaken for launch work. Do **not** take them in the cutover window.
+
+- **`@astrojs/netlify` major bump** (and the batched Astro + `@astrojs/*` majors Dependabot already ignores). Held until the site is stable in production. See `docs/post-launch-roadmap.md` → Platform, and `.github/dependabot.yml`.
+- **`VentrataWidget.astro` refactor.** The shared checkout component is a ~630-line mega-file (loader + embedded + popup + gift + date-preselect + focus handling). Split by mode after launch; behaviour must stay identical (exactly one loader per page, rule 9).
 
 ---
 

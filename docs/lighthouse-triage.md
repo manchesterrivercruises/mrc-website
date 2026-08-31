@@ -43,10 +43,15 @@ changes, confirmed against the **built** HTML in `dist/`.
 **Verified in `dist/tour/city-river-tours.html`:** the preload sits inside `<head>`; the `<img>`
 carries `srcset`, `sizes`, `loading="eager"`, and `fetchpriority="high"`.
 
-**Homepage (the other key page):** its hero is currently a **placeholder box** (no real image —
-`src/pages/index.astro` "swap for a real WebP asset"), so the homepage LCP is the `<h1>` text and
-there is nothing to preload yet. **When the real hero WebP lands, give it the same treatment**
-(eager + `fetchpriority="high"` + a `<head>` preload + responsive `srcset`).
+**Homepage (the other key page):** LCP is now the City River Tour **PageHero** image
+(`/images/city-river-tour-hero.webp`) with a dark overlay for heading legibility (same treatment as
+event pages). It is `loading="eager"` + `fetchpriority="high"`, with explicit width/height, a
+responsive `srcset` (card 800w + hero 1600w), and a matching `<link rel="preload" as="image">` in
+`<head>` (`slot="head"`) whose `imagesrcset`/`imagesizes` mirror the `<img>`. The CRT feature tile
+uses the owned aerial WebP (`sightseeing-boat-arched-footbridge-aerial.webp` + card variant). The
+dead `heroProduct.image` `.jpg` reference is gone.
+
+Fourth-review (2026-08-31): the previous "placeholder box / LCP is the `<h1>`" note is obsolete.
 
 ---
 
@@ -101,9 +106,9 @@ visible text; the popup renders a labelled `CTAButton`).
   `gap-3` → added `py-1.5` (targets ≥24px) with `gap-1`.
 - **Touch targets — ReviewStrip carousel dots** (`ReviewStrip.astro`): 8×8px → content-box padding
   gives a 24px hit box while the visual dot stays 8px (`background-clip: content-box`).
-- **Contrast — homepage hero placeholder** (`index.astro`): `text-white/40` (~3.5:1) → `text-white/70`.
-  (Off the audited page, but same codebase; the placeholder box disappears once a real hero image
-  lands.)
+- **Contrast — homepage hero** (`index.astro`): the placeholder `text-white/40` (~3.5:1) was raised
+  to `text-white/70` and is now obsolete — the homepage uses a real CRT hero image with the
+  PageHero overlay, so heading contrast is overlay + white text, not faint placeholder copy.
 
 **Not fixable — third-party (report-only, for the Ventrata/Leaflet feedback list):**
 - Anything inside the **Ventrata checkout `<iframe>`** — its own inputs, roles, contrast, and target
