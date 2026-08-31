@@ -73,7 +73,17 @@ const businessSchema = {
   name: site.name,
   url: site.url,
   image: new URL('/images/logo-colour.png', siteURL).href,
+  email: site.email,
+  telephone: site.phone,
+  address: { '@type': 'PostalAddress', ...site.address },
+  geo: { '@type': 'GeoCoordinates', ...site.geo },
   sameAs: Object.values(site.socials),
+  aggregateRating: {
+    '@type': 'AggregateRating',
+    ratingValue: site.rating.value,
+    reviewCount: site.rating.count,
+    bestRating: 5,
+  },
 };
 
 // Global image-error fallback: any <img data-img-fallback> that fails to load (e.g. a temp

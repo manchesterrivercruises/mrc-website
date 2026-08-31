@@ -77,8 +77,8 @@ const SITE = site.url;
 const pageTitle = copy.seoTitle!;
 const pageDescription = copy.seoDescription!;
 
-// Schema.org: TouristAttraction (the group offer) + LocalBusiness (NAP) + FAQPage
-// (built from the visible Q&A above), emitted as one @graph.
+// Schema.org: TouristAttraction (the group offer) + FAQPage. LocalBusiness NAP is
+// emitted once site-wide from BaseLayout (`#business`).
 const structuredData = {
   '@context': 'https://schema.org',
   '@graph': [
@@ -89,14 +89,6 @@ const structuredData = {
       url: `${SITE}/groups`,
       touristType: ['Groups', 'School trips', 'Coach parties'],
       availableLanguage: 'English',
-      address: { '@type': 'PostalAddress', ...site.address },
-      geo: { '@type': 'GeoCoordinates', ...site.geo },
-    },
-    {
-      '@type': 'LocalBusiness',
-      name: site.name,
-      url: SITE,
-      email: site.email,
       address: { '@type': 'PostalAddress', ...site.address },
       geo: { '@type': 'GeoCoordinates', ...site.geo },
     },
@@ -112,8 +104,8 @@ const structuredData = {
 };
 ---
 
-<BaseLayout title={pageTitle} description={pageDescription}>
-  {/* Schema.org structured data (TouristAttraction + LocalBusiness + FAQPage) */}
+<BaseLayout title={pageTitle} description={pageDescription} image="/images/city-river-tour-hero.webp">
+  {/* Schema.org structured data (TouristAttraction + FAQPage) */}
   <script type="application/ld+json" is:inline set:html={JSON.stringify(structuredData)} />
 
   <div>

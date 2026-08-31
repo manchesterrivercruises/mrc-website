@@ -101,11 +101,7 @@ const structuredData = {
         availability: 'https://schema.org/InStock',
         validFrom: today,
       },
-      provider: {
-        '@type': 'LocalBusiness',
-        name: 'Manchester River Cruises',
-        url: SITE,
-      },
+      provider: { '@id': `${SITE}#business` },
     },
   ],
 };
@@ -128,6 +124,7 @@ const crumbs = [
   description={pageDescription}
   bookProductID="ef45d8bd-529c-4dae-9c35-cd1b8e4e0a75"
   breadcrumbs={crumbs}
+  image="/images/city-river-tour-hero.webp"
 >
   {/* Ventrata checkout loader now ships site-wide via <Header> (AGENTS rule 9). */}
 

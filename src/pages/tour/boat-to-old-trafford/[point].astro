@@ -70,7 +70,7 @@ const structuredData = {
   url: `${site.url}/tour/boat-to-old-trafford/${point.slug}`,
   departureBoatTerminal: { '@type': 'BoatTerminal', name: point.name },
   arrivalBoatTerminal: { '@type': 'BoatTerminal', name: 'Trafford Wharf' },
-  provider: { '@type': 'LocalBusiness', name: site.name, url: site.url },
+  provider: { '@id': `${site.url}#business` },
   // Only emit an InStock offer for a departure that is actually bookable — Stephenson's
   // Bridge (productReady: false) has no Ventrata product, so a priced InStock offer would
   // be dishonest structured data. Omit offers entirely until it's live.
@@ -98,6 +98,7 @@ const crumbs = [
   description={pageDescription}
   bookProductID={point.productReady ? point.ventrataProductId : undefined}
   breadcrumbs={crumbs}
+  image="/images/boat-to-old-trafford-hero.webp"
 >
   {/* Ventrata checkout loader now ships site-wide via <Header> (AGENTS rule 9). The header
       Book Now opens this point's product where it has one, else the all-products chooser. */}

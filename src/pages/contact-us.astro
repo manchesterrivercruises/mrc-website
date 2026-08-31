@@ -31,21 +31,12 @@ const structuredData = {
   '@context': 'https://schema.org',
   '@graph': [
     { '@type': 'ContactPage', name: 'Contact Us', description: pageDescription, url: `${SITE}/contact-us` },
-    {
-      '@type': 'LocalBusiness',
-      name: site.name,
-      url: site.url,
-      email: site.email,
-      telephone: site.phone,
-      address: { '@type': 'PostalAddress', ...site.address },
-      geo: { '@type': 'GeoCoordinates', ...site.geo },
-    },
   ],
 };
 ---
 
 <BaseLayout title={pageTitle} description={pageDescription}>
-  {/* Schema.org structured data (ContactPage + LocalBusiness) */}
+  {/* Schema.org structured data (ContactPage; LocalBusiness is site-wide in BaseLayout) */}
   <script type="application/ld+json" is:inline set:html={JSON.stringify(structuredData)} />
 
   <style is:global>

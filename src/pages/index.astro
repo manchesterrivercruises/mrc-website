@@ -169,11 +169,11 @@ const structuredData = {
       url: SITE,
     },
     {
-      '@type': ['TouristAttraction', 'LocalBusiness'],
+      '@type': 'TouristAttraction',
       name: site.name,
       description: pageDescription,
       url: SITE,
-      email: site.email,
+      image: `${SITE}${HERO_IMAGE}`,
       address: { '@type': 'PostalAddress', ...site.address },
       geo: { '@type': 'GeoCoordinates', ...site.geo },
       aggregateRating: { '@type': 'AggregateRating', ratingValue: RATING, reviewCount: REVIEW_COUNT, bestRating: 5 },

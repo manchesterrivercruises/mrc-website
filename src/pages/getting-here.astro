@@ -7,24 +7,29 @@ import CTAButton from '../components/CTAButton.astro';
 // Standalone, detailed Getting Here page. The shared <GettingHere /> component is the SUMMARY
 // version embedded on product pages; this page expands on it with full travel detail.
 const SITE = site.url;
-const pageTitle = 'Getting Here — Manchester River Cruises';
+const pageTitle = 'Getting Here | Millennium Footbridge, Salford Quays M50 3RB';
 const pageDescription =
-  'How to get to Manchester River Cruises at the Millennium Footbridge, Salford Quays (M50 3RB) — by tram, car, taxi and bike, with parking options and directions.';
+  'How to get to Manchester River Cruises. Board under the Millennium Footbridge, Salford Quays M50 3RB. Metrolink, parking, and taxi information.';
+
+const boardingPhoto = '/images/gallery/our-boats/boats-moored-at-millennium-footbridge.webp';
+const boardingPhotoCard = '/images/gallery/our-boats/boats-moored-at-millennium-footbridge-card.webp';
 
 const placeholderTile =
   'flex items-center justify-center rounded-card border border-dashed border-black/15 bg-panel p-8 text-center text-sm text-subtle';
 
 const structuredData = {
   '@context': 'https://schema.org',
-  '@type': 'WebPage',
-  name: 'Getting Here',
+  '@type': 'Place',
+  name: 'Manchester River Cruises — Millennium Footbridge boarding point',
   description: pageDescription,
   url: `${SITE}/getting-here`,
+  address: { '@type': 'PostalAddress', ...site.address },
+  geo: { '@type': 'GeoCoordinates', ...site.geo },
 };
 ---
 
-<BaseLayout title={pageTitle} description={pageDescription}>
-  {/* Schema.org structured data (WebPage) */}
+<BaseLayout title={pageTitle} description={pageDescription} image={boardingPhoto}>
+  {/* Schema.org structured data (Place + GeoCoordinates) */}
   <script type="application/ld+json" is:inline set:html={JSON.stringify(structuredData)} />
 
   <div class="mx-auto max-w-6xl px-4 py-16 sm:px-6 md:py-20 lg:px-8">
@@ -34,11 +39,22 @@ const structuredData = {
       MediaCityUK — a short walk from The Lowry and the Imperial War Museum North.
     </p>
 
-    {/* Map embed + boarding photo placeholders */}
+    {/* Map embed placeholder + owned boarding-point photo */}
     <div class="mt-8 grid gap-4 sm:grid-cols-2">
       {/* Google Maps embed placeholder — the <iframe> embed drops in here. */}
       <div class={`aspect-video ${placeholderTile}`}>Google Maps embed loads here (TBC)</div>
-      <div class={`aspect-video ${placeholderTile}`}>Boarding point photo (TBC)</div>
+      <img
+        src={boardingPhoto}
+        srcset={`${boardingPhotoCard} 800w, ${boardingPhoto} 1600w`}
+        sizes="(min-width: 640px) 50vw, calc(100vw - 2rem)"
+        alt="Manchester River Cruises boats moored at the Salford Quays boarding point beside the Millennium Footbridge and The Lowry"
+        width="1600"
+        height="1200"
+        loading="lazy"
+        decoding="async"
+        data-img-fallback
+        class="aspect-video w-full rounded-card object-cover ring-1 ring-black/5"
+      />
     </div>
 
     <div class="mt-12 grid gap-10 md:grid-cols-2">
