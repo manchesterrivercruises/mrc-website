@@ -11,7 +11,6 @@ import GettingHere from '../components/GettingHere.astro';
 import KeyFacts from '../components/KeyFacts.astro';
 
 // Santa Cruise product — booking panel + mobile sticky CTA.
-// Ventrata checkout widget/script wired in a later step; placeholder for now.
 const SANTA_CRUISE_ID = '6cabf36f-f48f-48c7-83c0-c964983a9dff';
 
 const icons = {
@@ -38,7 +37,7 @@ const faqs = [
 ];
 
 const SITE = site.url;
-const pageTitle = 'Santa Cruise Manchester — Meet Father Christmas on the Water';
+const pageTitle = 'Santa Cruise Manchester | Kids Christmas Boat Trip | Manchester River Cruises';
 const pageDescription =
   'Santa Cruise Manchester — a magical festive cruise on the Manchester Ship Canal where children meet Father Christmas onboard. Families welcome, from £16. Book direct.';
 
@@ -72,7 +71,7 @@ const structuredData = {
 };
 ---
 
-<BaseLayout title={pageTitle} description={pageDescription}>
+<BaseLayout title={pageTitle} description={pageDescription} bookProductID={SANTA_CRUISE_ID} image="/images/events/santa-cruise-card.webp">
   {/* Schema.org structured data (TouristAttraction + Event) */}
   <script type="application/ld+json" is:inline set:html={JSON.stringify(structuredData)} />
 

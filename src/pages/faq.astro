@@ -1,6 +1,5 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
-import { site } from '../data/site';
 import FAQSection from '../components/FAQSection.astro';
 import CTAButton from '../components/CTAButton.astro';
 import copy from '../content/page-copy/faq.json';
@@ -21,7 +20,6 @@ const FAQ_GROUPS = [
   { key: 'accessibility', id: 'accessibility' },
 ].map((g) => ({ ...g, title: faqGroup(copy, g.key).title, items: faqs(copy, g.key) }));
 
-const SITE = site.url;
 const pageTitle = copy.seoTitle!;
 const pageDescription = copy.seoDescription!;
 

@@ -1,5 +1,7 @@
-// Single source of truth for the Ventrata CHECKOUT wiring (the client-side widget). Flip
-// VENTRATA_ENV to 'live' at launch — that one change switches every checkout on the site.
+// Single source of truth for the Ventrata CHECKOUT wiring (the client-side widget).
+// From checkout-QA onward the policy is 'live' — every checkout on the site uses live
+// Ventrata. Widget QA can create real bookings; cancel and refund test bookings
+// immediately (see launch checklist). Flip to 'test' only for an isolated local experiment.
 //
 // This is the DOM-SAFE checkout widget key (confirmed safe in the DOM by Ventrata). It is
 // NOT the OCTO connection key, which must never reach the client (AGENTS rules 1–2) and

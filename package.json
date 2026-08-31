@@ -8,7 +8,10 @@
     "start": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
-    "astro": "astro"
+    "astro": "astro",
+    "check": "astro check",
+    "verify-cms-wiring": "node --experimental-strip-types --disable-warning=ExperimentalWarning scripts/verify-cms-wiring.mjs",
+    "launch-gate": "node scripts/launch-gate.mjs"
   },
   "dependencies": {
     "@astrojs/markdoc": "^0.15.11",
@@ -23,5 +26,9 @@
     "react": "^19.2.7",
     "react-dom": "^19.2.8",
     "tailwindcss": "^4.3.3"
+  },
+  "devDependencies": {
+    "@astrojs/check": "^0.9.10",
+    "typescript": "^5.9.3"
   }
 }

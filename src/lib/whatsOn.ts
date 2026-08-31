@@ -76,7 +76,7 @@ export function buildProductMeta(events: CollectionEntry<'events'>[]): ProductMe
   for (const e of sortedEvents) {
     const pid = e.data.ventrataProductId;
     if (!pid) continue;
-    // Prefer an owned local heroImage (or a temp hotlink) — both are displayable.
+    // Prefer an owned local heroImage, else the owned PRODUCT_IMAGES map.
     const hero =
       e.data.heroImage && (isOwnedImage(e.data.heroImage) || isRealImage(e.data.heroImage))
         ? e.data.heroImage

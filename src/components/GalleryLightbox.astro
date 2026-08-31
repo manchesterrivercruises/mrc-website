@@ -19,7 +19,9 @@
 
     // Minimal caption from each link's data-pswp-caption — no extra plugin dependency.
     lightbox.on('uiRegister', () => {
-      lightbox.pswp.ui.registerElement({
+      const pswp = lightbox.pswp;
+      if (!pswp?.ui) return;
+      pswp.ui.registerElement({
         name: 'mrc-caption',
         appendTo: 'root',
         onInit: (elc) => {
@@ -34,8 +36,8 @@
             background: 'rgba(0,0,0,.5)',
             font: '14px/1.5 system-ui, sans-serif',
           });
-          lightbox.pswp.on('change', () => {
-            const a = lightbox.pswp.currSlide?.data?.element;
+          pswp.on('change', () => {
+            const a = pswp.currSlide?.data?.element;
             const cap = (a && a.getAttribute('data-pswp-caption')) || '';
             elc.textContent = cap;
             elc.style.display = cap ? 'block' : 'none';

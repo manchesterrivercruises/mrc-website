@@ -51,22 +51,12 @@ const structuredData = {
   '@context': 'https://schema.org',
   '@graph': [
     { '@type': 'AboutPage', name: pageTitle, description: pageDescription, url: `${site.url}/about` },
-    {
-      '@type': 'LocalBusiness',
-      name: site.name,
-      url: site.url,
-      email: site.email,
-      telephone: site.phone,
-      address: { '@type': 'PostalAddress', ...site.address },
-      geo: { '@type': 'GeoCoordinates', ...site.geo },
-      aggregateRating: { '@type': 'AggregateRating', ratingValue: site.rating.value, reviewCount: site.rating.count, bestRating: 5 },
-    },
   ],
 };
 ---
 
 <BaseLayout title={pageTitle} description={pageDescription}>
-  {/* Schema.org structured data (AboutPage + LocalBusiness) */}
+  {/* Schema.org structured data (AboutPage; LocalBusiness is site-wide in BaseLayout) */}
   <script type="application/ld+json" is:inline set:html={JSON.stringify(structuredData)} />
 
   <PageHero

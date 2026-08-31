@@ -34,6 +34,16 @@ npm run build
 
 # Preview production build
 npm run preview
+
+# Typecheck (same as the PR CI job)
+npm run check
+
+# Confirm Keystatic reads the same files the site imports (Node >= 22; the npm
+# script passes --experimental-strip-types so it works on 22.6–22.17 too)
+npm run verify-cms-wiring
+
+# Pre-cutover only: fail if "TBC" remains in dist HTML (not part of every build)
+npm run build && npm run launch-gate
 ```
 
 ---
@@ -45,7 +55,7 @@ See `.env.example` for all required variables.
 Key variables:
 - `VENTRATA_OCTO_KEY` — server-side only, never in client code
 - `VENTRATA_CHECKOUT_API_KEY` — safe in DOM, used in widget script tag
-- `VENTRATA_ENV` — set to `test` during development, `live` before launch
+- `VENTRATA_ENV` — `'live'` from checkout-QA onward (`src/data/ventrata.ts`; this example var is not read by the site)
 
 ---
 
@@ -64,10 +74,11 @@ Key variables:
 │   │   └── discover/     Editorial guide pages
 │   └── styles/           Global styles / design tokens
 ├── netlify/
-│   └── functions/        Netlify Functions (OCTO API proxy)
+│   └── functions/        Netlify Functions (OCTO / reviews proxies)
 │       ├── products.ts
-│       ├── availability.ts
-│       └── availability-calendar.ts
+│       ├── day-finder.ts
+│       ├── event-days.ts
+│       └── reviews.ts
 ├── public/               Static assets
 ├── docs/                 Project documentation (read by AI tools)
 ├── CLAUDE.md             Instructions for Claude Code

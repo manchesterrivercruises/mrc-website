@@ -90,6 +90,8 @@ const keyFacts = [
 // FAQSection expects { q, a }[]; map the collection's { question, answer } shape.
 const faqItems = faqs.map((f) => ({ q: f.question, a: f.answer }));
 
+const ogImage = heroImage || undefined;
+
 const SITE = site.url;
 const pageTitle = `${title} — Manchester River Cruises`;
 
@@ -122,7 +124,13 @@ const crumbs = [
 ];
 ---
 
-<BaseLayout title={pageTitle} description={description} bookProductID={ventrataProductId} breadcrumbs={crumbs}>
+<BaseLayout
+  title={pageTitle}
+  description={description}
+  bookProductID={ventrataProductId}
+  breadcrumbs={crumbs}
+  image={ogImage}
+>
   {/* Ventrata checkout loader now ships site-wide via <Header> (AGENTS rule 9). */}
 
   {/* Schema.org structured data (Product — dates live in Ventrata, so not an Event) */}

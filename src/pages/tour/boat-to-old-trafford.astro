@@ -55,14 +55,7 @@ const structuredData = {
   description: pageDescription,
   url: `${site.url}/tour/boat-to-old-trafford`,
   areaServed: 'Manchester',
-  provider: {
-    '@type': 'LocalBusiness',
-    name: site.name,
-    url: site.url,
-    email: site.email,
-    address: { '@type': 'PostalAddress', ...site.address },
-    geo: { '@type': 'GeoCoordinates', ...site.geo },
-  },
+  provider: { '@id': `${site.url}#business` },
 };
 // Explicit trail: the matchday ferry is not an event, so it must not inherit the /tour/
 // namespace Events crumb. Point pages nest beneath this one.
@@ -72,7 +65,7 @@ const crumbs = [
 ];
 ---
 
-<BaseLayout title={pageTitle} description={pageDescription} breadcrumbs={crumbs}>
+<BaseLayout title={pageTitle} description={pageDescription} breadcrumbs={crumbs} image="/images/boat-to-old-trafford-hero.webp">
   {/* Schema.org structured data (Service) */}
   <script type="application/ld+json" is:inline set:html={JSON.stringify(structuredData)} />
 

@@ -22,7 +22,8 @@
 //
 // The checkout API key below is the DOM-SAFE checkout widget key (confirmed by
 // Ventrata) — NOT the OCTO connection key, which must never reach the client
-// (AGENTS rules 1–2). Keep env="test" until launch, then switch to "live".
+// (AGENTS rules 1–2). VENTRATA_ENV is 'live' from checkout-QA onward; see
+// src/data/ventrata.ts.
 // ─────────────────────────────────────────────────────────────────────────────
 import CTAButton from './CTAButton.astro';
 import { VENTRATA_ENV, VENTRATA_CHECKOUT_KEY, VENTRATA_CHECKOUT_SRC } from '../data/ventrata';
@@ -95,30 +96,8 @@ const embeddedConfig = gift
   : JSON.stringify({ productID, embedded: true, ...calendarFirstConfig });
 // POPUP: gift → the product-less gift trigger; otherwise a product checkout.
 const popupConfig = gift ? giftConfig : JSON.stringify({ productID, ...calendarFirstConfig });
-
-// FLOW_DEBUG_SCRIPT logs the exact data-config on any [data-vt-flow] element (embedded gift <aside>
-// or gift pop-up trigger). `flow` is the marker written to data-vt-flow.
-const flow = gift ? 'gift' : null; // marker + debug label
 const popupConfigOut = popupConfig;
-
-// Logs the EXACT data-config on each gift widget ([data-vt-flow]) so ONE device check confirms the
-// gift `gifts:{mode:"simple"}` shape opens the gift flow — mirrors the auto-open
-// `console.debug('[MRC][ventrata] auto-open config →', …)` diagnostic. Self-dedupes so multiple gift
-// widgets on a page log once each. Remove after on-device flow QA.
-const FLOW_DEBUG_SCRIPT = `
-(function () {
-  if (window.__mrcFlowDebug) return;
-  window.__mrcFlowDebug = true;
-  function log() {
-    var els = document.querySelectorAll('[data-vt-flow]');
-    for (var i = 0; i < els.length; i++) {
-      try { console.debug('[MRC][ventrata] ' + els[i].getAttribute('data-vt-flow') + '-flow config →', els[i].getAttribute('data-config')); } catch (e) {}
-    }
-  }
-  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', log);
-  else log();
-})();
-`;
+const flow = gift ? 'gift' : null;
 
 // Loader CSS + observer JS injected via set:html. IMPORTANT: Astro does NOT evaluate
 // `{...}` inside `script`/`style` tag bodies — a `script`-wrapped `{`…`}` emits the
@@ -441,9 +420,6 @@ const OBSERVER_SCRIPT = `
         cfg.features = { calendarFirst: { enabled: true } }; // no date → open on the calendar step
       }
 
-      // TEMPORARY DIAGNOSTIC — remove after on-device QA. Logs the EXACT config handed to the trigger.
-      try { console.debug('[MRC][ventrata] auto-open config →', JSON.stringify(cfg)); } catch (e) {}
-
       // PRIMARY: window.Ventrata(cfg) — Ventrata's global open() (support-confirmed 2026-07-16) works
       // for dynamically-created triggers, so it reliably preselects the date (the old client-created
       // ventrata-checkout button was bound at load and ignored a dynamic config). FALLBACK: inject a
@@ -504,7 +480,6 @@ const OBSERVER_SCRIPT = `
         var thief = document.activeElement;
         if (!isWidgetIframe(thief)) return;
         if (Date.now() - lastTabAt < 700) return; // user tabbed into the widget — leave it
-        try { console.debug('[MRC][ventrata] focus theft neutralised — activeElement was', thief && thief.tagName, thief); } catch (e) {}
         try { if (thief.blur) thief.blur(); } catch (e) {}
         try { focusTarget.setAttribute('tabindex', '-1'); focusTarget.focus({ preventScroll: true }); } catch (e) {}
         try { window.scrollTo(lastDocScroll.x, lastDocScroll.y); } catch (e) {} // undo the jump
@@ -564,13 +539,14 @@ const OBSERVER_SCRIPT = `
     <Fragment>
       {/* Warm the connections the checkout needs — the widget script host and the Ventrata API
           the widget calls (connect-src in netlify.toml) — so the TLS handshake overlaps parsing
-          instead of starting when the deferred module runs. Booking pages only (loader mode). */}
+          instead of starting when the deferred module runs. Loader mode ships site-wide via
+          <Header> (exactly once per page). */}
       <link rel="preconnect" href="https://cdn.checkout.ventrata.com" crossorigin />
       <link rel="preconnect" href="https://api.ventrata.com" crossorigin />
 
-      {/* Checkout script — loaded only on this page, never globally (AGENTS rule 9).
+      {/* Checkout script — loaded EXACTLY ONCE per page via <Header> (AGENTS rule 9).
           type="module" so it defers; is:inline so Astro keeps the external src +
-          data-config intact instead of trying to bundle it. */}
+          data-config intact instead of trying to bundle it. Never add a second loader. */}
       <script is:inline type="module" src={VENTRATA_CHECKOUT_SRC} data-config={checkoutConfig} />
 
       {/* Hide the loading skeleton once the embedded widget renders. Ventrata mounts its
@@ -585,9 +561,9 @@ const OBSERVER_SCRIPT = `
           those bodies LITERALLY, so nothing runs). Injects the evaluated strings above. */}
       <style is:global set:html={SKELETON_CSS} />
 
-      {/* Ventrata checkout pop-up observer — ships ONLY on booking pages. Toggles
-          `ventrata-open` on <html> so the pop-up owns the screen (styling in global.css).
-          Identity-based detection; DOMContentLoaded-guarded because it lives in <head>. */}
+      {/* Ventrata checkout pop-up observer — ships with the site-wide loader in <Header>.
+          Toggles `ventrata-open` on <html> so the pop-up owns the screen (styling in
+          global.css). Identity-based detection; DOMContentLoaded-guarded. */}
       <script is:inline set:html={OBSERVER_SCRIPT} />
     </Fragment>
   )
@@ -604,8 +580,6 @@ const OBSERVER_SCRIPT = `
       >
         <div class="widget-loading">{gift ? 'Loading gift options' : 'Loading availability'}&hellip;</div>
       </aside>
-      {/* One-device diagnostic for the gift-flow config (dashboard-sourced gifts:{mode:"simple"}). */}
-      {flow && <script is:inline set:html={FLOW_DEBUG_SCRIPT} />}
     </Fragment>
   )
 }
@@ -622,8 +596,6 @@ const OBSERVER_SCRIPT = `
       >
         {label}
       </CTAButton>
-      {/* One-device diagnostic for a gift trigger's config — self-dedupes. */}
-      {flow && <script is:inline set:html={FLOW_DEBUG_SCRIPT} />}
     </Fragment>
   )
 }

@@ -59,22 +59,14 @@ const structuredData = {
       serviceType: 'Private boat hire',
       areaServed: 'Manchester',
       url: `${SITE}/private-hire`,
-      provider: { '@type': 'LocalBusiness', name: site.name, url: SITE },
-    },
-    {
-      '@type': 'LocalBusiness',
-      name: site.name,
-      url: SITE,
-      email: site.email,
-      address: { '@type': 'PostalAddress', ...site.address },
-      geo: { '@type': 'GeoCoordinates', ...site.geo },
+      provider: { '@id': `${SITE}#business` },
     },
   ],
 };
 ---
 
 <BaseLayout title={pageTitle} description={pageDescription}>
-  {/* Schema.org structured data (Service + LocalBusiness) */}
+  {/* Schema.org structured data (Service; LocalBusiness is site-wide in BaseLayout) */}
   <script type="application/ld+json" is:inline set:html={JSON.stringify(structuredData)} />
 
   <style is:global>

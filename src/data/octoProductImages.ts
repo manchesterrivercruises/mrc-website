@@ -1,11 +1,10 @@
 // Card images keyed by Ventrata productId, for the DateFinder departures panel (and the
 // buildProductMeta fallback for City River Tour / the ferry, which aren't events).
 //
-// OWNED assets (processed WebP in public/images/…) for products we have photography for;
-// a handful of events without owned imagery keep a TEMP hotlink (optimise2.assets-servd.host,
-// NOT owned — replace before launch). Products with neither render a placeholder tile.
-// Every consumer must apply the shared img-error fallback (data-img-fallback) so a broken
-// hotlink degrades to the branded placeholder.
+// OWNED assets (processed WebP in public/images/…) for products we have photography for.
+// Products with neither an entry here nor a collection heroImage render a placeholder tile.
+// Every consumer must apply the shared img-error fallback (data-img-fallback) so a missing
+// file degrades to the branded placeholder.
 export const PRODUCT_IMAGES: Record<string, string> = {
   // ── Owned (processed) ──
   // City River Tour
@@ -36,9 +35,7 @@ export const PRODUCT_IMAGES: Record<string, string> = {
   '8c425994-25e9-4bc3-bce3-1181951142c8': '/images/events/soul-river-cruise-card.webp',
   // Swinging on the River
   'ee4143b6-9c32-4db2-9d1f-807c858696fa': '/images/events/swinging-on-the-river-card.webp',
-
-  // ── TEMP hotlink (no owned asset yet — NOT owned, replace before launch) ──
-  // Adele — kept as a temp hotlink; relies on the img-error fallback if it breaks.
+  // Adele — owned album card (gallery/adele-night)
   '99a19bc1-64d3-4f69-bd68-fb44348053a6':
-    'https://optimise2.assets-servd.host/river-cruises/production/images/Adele-Thumbnail-1200-630.webp?w=800&h=543&q=80&fm=webp&fit=crop&crop=focalpoint&fp-x=0.5&fp-y=0.5&dm=1778758996&s=57ec4847393b8dbb440de2033a0451b9',
+    '/images/gallery/adele-night/adele-tribute-among-the-guests-card.webp',
 };

@@ -76,7 +76,7 @@ const structuredData = {
       name: 'Gift Vouchers — Manchester River Cruises',
       description: pageDescription,
       url: `${SITE}/gift-vouchers`,
-      about: { '@type': 'LocalBusiness', name: site.name, url: SITE },
+      about: { '@id': `${SITE}#business` },
     },
     {
       '@type': 'FAQPage',
@@ -90,7 +90,7 @@ const structuredData = {
 };
 ---
 
-<BaseLayout title={pageTitle} description={pageDescription}>
+<BaseLayout title={pageTitle} description={pageDescription} image="/images/city-river-tour-hero.webp">
   {/* Schema.org structured data (WebPage + FAQPage) */}
   <script type="application/ld+json" is:inline set:html={JSON.stringify(structuredData)} />
 

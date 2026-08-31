@@ -365,8 +365,7 @@
 #                it the map tiles render scattered/unpositioned. (Fonts are self-hosted,
 #                so no Google Fonts stylesheet origin is needed.)
 #   img-src    : self; data: (Leaflet controls); tile.openstreetmap.org (map tiles);
-#                optimise2.assets-servd.host (TEMP hotlinked What's On images — drop
-#                when self-hosted); ventrata + GTM/GA beacons.
+#                ventrata + GTM/GA beacons. (Craft CDN hotlinks retired.)
 #   font-src   : self only — Inter woff2 is self-hosted from /fonts/ (no Google Fonts CDN).
 #   connect-src: self (/.netlify/functions proxies); api.ventrata.com +
 #                cdn.checkout.ventrata.com + *.ventrata.com (the checkout widget
@@ -397,7 +396,7 @@
     Referrer-Policy = "strict-origin-when-cross-origin"
     Permissions-Policy = "camera=(), microphone=(), geolocation=()"
     Strict-Transport-Security = "max-age=31536000; includeSubDomains"
-    Content-Security-Policy-Report-Only = "default-src 'self'; script-src 'self' https://cdn.checkout.ventrata.com https://unpkg.com https://www.googletagmanager.com 'sha256-Cj3srLBQY5lfMIkYVWwpCIdsVAU0CIrHEOoAp1t6rGI=' 'sha256-OEdWaK1xkzztypcSbAY6orLcxm0Shn5ZdtweyF8ndMc=' 'sha256-a6M7W2m2norr1ec6Pe3NGcHfQn+geKiKpToxIbslI4M=' 'sha256-f5yfxw++p/treber8qTOWs/piZsTEauvxWyZXXlj5Uw=' 'sha256-nDg10GKA5OMDMIPPaD0f2NoUEnsHrAPdhcRFr8MFk0Q=' 'sha256-xsxCcGvieqKvl/XM4KtLiO5nSu97ySvf7LRYnG3bIi0='; style-src 'self' 'unsafe-inline' https://unpkg.com; img-src 'self' data: https://tile.openstreetmap.org https://optimise2.assets-servd.host https://cdn.checkout.ventrata.com https://www.googletagmanager.com https://www.google-analytics.com; font-src 'self'; connect-src 'self' https://api.ventrata.com https://cdn.checkout.ventrata.com https://*.ventrata.com https://www.googletagmanager.com https://www.google-analytics.com; frame-src 'self' https://cdn.checkout.ventrata.com https://*.ventrata.com https://www.googletagmanager.com; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'; upgrade-insecure-requests"
+    Content-Security-Policy-Report-Only = "default-src 'self'; script-src 'self' https://cdn.checkout.ventrata.com https://unpkg.com https://www.googletagmanager.com 'sha256-Cj3srLBQY5lfMIkYVWwpCIdsVAU0CIrHEOoAp1t6rGI=' 'sha256-OEdWaK1xkzztypcSbAY6orLcxm0Shn5ZdtweyF8ndMc=' 'sha256-a6M7W2m2norr1ec6Pe3NGcHfQn+geKiKpToxIbslI4M=' 'sha256-f5yfxw++p/treber8qTOWs/piZsTEauvxWyZXXlj5Uw=' 'sha256-nDg10GKA5OMDMIPPaD0f2NoUEnsHrAPdhcRFr8MFk0Q=' 'sha256-xsxCcGvieqKvl/XM4KtLiO5nSu97ySvf7LRYnG3bIi0='; style-src 'self' 'unsafe-inline' https://unpkg.com; img-src 'self' data: https://tile.openstreetmap.org https://cdn.checkout.ventrata.com https://www.googletagmanager.com https://www.google-analytics.com; font-src 'self'; connect-src 'self' https://api.ventrata.com https://cdn.checkout.ventrata.com https://*.ventrata.com https://www.googletagmanager.com https://www.google-analytics.com; frame-src 'self' https://cdn.checkout.ventrata.com https://*.ventrata.com https://www.googletagmanager.com; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'; upgrade-insecure-requests"
 
 # --- Keystatic CMS admin: never index -----------------------------------------
 # The admin UI (/keystatic) + API (/api/keystatic) and the /admin redirect are gated by

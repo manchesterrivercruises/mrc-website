@@ -113,7 +113,7 @@ const REVIEWS_SCRIPT = `
   fetch('/.netlify/functions/reviews', { headers: { Accept: 'application/json' } })
     .then(function (res) { if (!res.ok) throw new Error('HTTP ' + res.status); return res.json(); })
     .then(function (data) {
-      if (!data || typeof data !== 'object') { console.debug('ReviewStrip: unexpected payload', data); return; }
+      if (!data || typeof data !== 'object') return;
 
       // Drive the aggregate from the fetched values (live count, not the hardcoded fallback).
       // Accept the trimmed shape ({rating,count}) or raw Google field names.
@@ -126,7 +126,7 @@ const REVIEWS_SCRIPT = `
       if (countEl && count !== null) countEl.textContent = count.toLocaleString() + ' Google reviews';
 
       var reviews = Array.isArray(data.reviews) ? data.reviews : [];
-      if (!reviews.length) { console.debug('ReviewStrip: payload had no reviews array', data); return; }
+      if (!reviews.length) return;
 
       var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
@@ -250,10 +250,8 @@ const REVIEWS_SCRIPT = `
         root.addEventListener('keydown', stop, { once: true });
       }
     })
-    .catch(function (err) {
-      // Not user-visible — the static server-rendered aggregate stays. Log the reason
-      // (fetch/network/CORS/shape) so a silent failure is diagnosable.
-      if (window.console && console.debug) console.debug('ReviewStrip: live reviews unavailable —', err);
+    .catch(function () {
+      // Not user-visible — the static server-rendered aggregate stays.
     });
 })();
 `;

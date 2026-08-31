@@ -186,8 +186,7 @@ const DATEFINDER_SCRIPT = `
       availByMonth[key] = states;
       everLoaded = true;
       renderCalendar();
-    }).catch(function(err){
-      if (window.console && console.debug) console.debug('DateFinder: month load failed', err);
+    }).catch(function(){
       if (everLoaded){ renderCalendar(); return; } // a month loaded before: keep finder, this one empty
       // Nothing ever loaded (function likely down): revert to the static fallback CTA (graceful).
       app.hidden = true; if (fallback) fallback.hidden = false;
@@ -206,8 +205,7 @@ const DATEFINDER_SCRIPT = `
     daySkeleton();
     get('date='+cur).then(function(data){
       renderDepartures(cur, Array.isArray(data.departures)?data.departures:[]);
-    }).catch(function(err){
-      if (window.console && console.debug) console.debug('DateFinder: day load failed', err);
+    }).catch(function(){
       panelEl.innerHTML='';
       var p=document.createElement('p'); p.className='text-sm text-subtle'; p.textContent='Sorry, we could not load departures. ';
       var a=document.createElement('a'); a.href='/whats-on'; a.className='font-medium text-primary hover:underline'; a.textContent="Browse What's On";
@@ -269,7 +267,6 @@ const DATEFINDER_SCRIPT = `
             // enhancement only (NOT on ordinary Book Now). See docs → "Deep-link preselect keys".
             var cfg = { productID: pid, dateToPreselect: date, preselectFirstUnit: 1 };
             if (time) cfg.timeslotToPreselect = time;
-            try { console.debug('[MRC][ventrata] window.Ventrata open \\u2192', JSON.stringify(cfg)); } catch(e){}
             window.Ventrata(cfg);
           }
           // else: let the href navigate to the product page (graceful fallback)

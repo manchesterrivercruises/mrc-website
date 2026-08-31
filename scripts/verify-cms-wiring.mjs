@@ -13,9 +13,13 @@
 // resolves to site-settings.json (NOT site-settings/index.json), and a page-copy entry whose
 // `page` slug drifts from its filename silently breaks the template's import.
 //
+//   npm run verify-cms-wiring
 //   node scripts/verify-cms-wiring.mjs
 //
-// Requires Node >= 22 (imports the TypeScript config directly via type stripping).
+// Requires Node >= 22. On 22.6–22.17 type stripping needs --experimental-strip-types
+// (the npm script passes that flag). 22.18+ enables it by default. Netlify production
+// remains NODE_VERSION=20 (netlify.toml); this check runs in PR CI on Node 22, not
+// on the Netlify build.
 
 import fs from 'node:fs';
 import path from 'node:path';

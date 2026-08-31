@@ -10,6 +10,7 @@ import StarRating from '../components/StarRating.astro';
 import VentrataWidget from '../components/VentrataWidget.astro';
 import DateFinder from '../components/DateFinder.astro';
 import SocialBand from '../components/SocialBand.astro';
+import PageHero from '../components/PageHero.astro';
 import { site } from '../data/site';
 import copy from '../content/page-copy/home.json';
 import { sec, list, cards, str } from '../lib/pageCopy';
@@ -21,30 +22,34 @@ import { sec, list, cards, str } from '../lib/pageCopy';
 
 // ─────────────────────────────────────────────────────────────────────────────
 // FEATURED HERO PRODUCT — manual config, NEVER API-selected (AGENTS.md rule 5).
-// Defaults to City River Tour. The DESTINATION and image path stay here; the hero
-// wording (heading/intro/CTA label/image alt) is CMS copy. Do not wire either to
-// the OCTO API.
+// City River Tour is the homepage hero. Destination and owned imagery stay here;
+// the wording (heading/intro/CTA label/image alt) is CMS copy. Do not wire either
+// to the OCTO API.
 // ─────────────────────────────────────────────────────────────────────────────
-const heroProduct = {
-  href: '/tour/city-river-tours',
-  image: '/images/hero-city-river-tour.jpg', // placeholder — real WebP asset TBC
-};
+const HERO_HREF = '/tour/city-river-tours';
+const HERO_IMAGE = '/images/city-river-tour-hero.webp';
+const HERO_IMAGE_CARD = '/images/city-river-tour-card.webp';
+const CRT_FEATURE_IMAGE =
+  '/images/gallery/city-river-tour/sightseeing-boat-arched-footbridge-aerial.webp';
+const CRT_FEATURE_IMAGE_CARD =
+  '/images/gallery/city-river-tour/sightseeing-boat-arched-footbridge-aerial-card.webp';
 
 // Google review figures — sourced from src/data/site.ts (single source of truth).
 const RATING = site.rating.value;
 const REVIEW_COUNT = site.rating.count;
 
 // ─── WHAT'S ON STRIP — LIVE OCTO event-day feed ───────────────────────────────
-// Soonest 4 event-days (excluding City River Tour — it has its own section) come from
-// /.netlify/functions/event-days, hydrated client-side. The server-rendered core below is a
-// crawlable fallback of the soonest event products (no fabricated dates); on feed failure it
-// stays — never stale mock data. See src/lib/whatsOn.ts.
+// Soonest 6 event-days (excluding City River Tour — it has its own section; brief § homepage
+// "What's On strip") come from /.netlify/functions/event-days, hydrated client-side. The
+// server-rendered core below is a crawlable fallback of the soonest event products (no
+// fabricated dates); on feed failure it stays — never stale mock data. See src/lib/whatsOn.ts.
+const STRIP_COUNT = 6;
 const woEvents = await getCollection('events', ({ data }) => !data.draft);
 const woProducts = buildProductMeta(woEvents);
 const STRIP_META = metaMap(woProducts);
-const stripFallback = woProducts.filter((p) => p.productId !== CITY_RIVER_TOUR_ID).slice(0, 4);
+const stripFallback = woProducts.filter((p) => p.productId !== CITY_RIVER_TOUR_ID).slice(0, STRIP_COUNT);
 
-// Client hydration for the strip — soonest 4 non-CRT event-days. set:html (Astro emits
+// Client hydration for the strip — soonest 6 non-CRT event-days. set:html (Astro emits
 // `{`…`}` script bodies literally). META injected below.
 const STRIP_SCRIPT = `
 (function () {
@@ -58,7 +63,7 @@ const STRIP_SCRIPT = `
     .then(function (data) {
       var days = (data && Array.isArray(data.eventDays) ? data.eventDays : [])
         .filter(function (d) { return d.productId !== CRT && META[d.productId] && d.date; })
-        .slice(0, 4);
+        .slice(0, ${STRIP_COUNT});
       if (!days.length) return; // keep crawlable fallback
       grid.textContent = '';
       days.forEach(function (d) { grid.appendChild(buildCard(META[d.productId], d)); });
@@ -164,11 +169,11 @@ const structuredData = {
       url: SITE,
     },
     {
-      '@type': ['TouristAttraction', 'LocalBusiness'],
+      '@type': 'TouristAttraction',
       name: site.name,
       description: pageDescription,
       url: SITE,
-      email: site.email,
+      image: `${SITE}${HERO_IMAGE}`,
       address: { '@type': 'PostalAddress', ...site.address },
       geo: { '@type': 'GeoCoordinates', ...site.geo },
       aggregateRating: { '@type': 'AggregateRating', ratingValue: RATING, reviewCount: REVIEW_COUNT, bestRating: 5 },
@@ -177,43 +182,61 @@ const structuredData = {
 };
 ---
 
-<BaseLayout title={pageTitle} description={pageDescription}>
-  {/* Ventrata checkout loader now ships site-wide via <Header> (AGENTS rule 9). */}
+<BaseLayout
+  title={pageTitle}
+  description={pageDescription}
+  bookProductID={CITY_RIVER_TOUR_ID}
+  image={HERO_IMAGE}
+>
+  {/* Ventrata checkout loader now ships site-wide via <Header> (AGENTS rule 9).
+      bookProductID opens City River Tour from the persistent Book Now (rule 9). */}
 
-  {/* Schema.org structured data (WebSite + TouristAttraction/LocalBusiness w/ aggregateRating) */}
+  {/* LCP preload — discovers the hero in <head>. imagesrcset/imagesizes mirror the
+      PageHero <img> candidate: mobile takes the 800px card, desktop the 1600px hero. */}
+  <link
+    slot="head"
+    rel="preload"
+    as="image"
+    href={HERO_IMAGE}
+    imagesrcset={`${HERO_IMAGE_CARD} 800w, ${HERO_IMAGE} 1600w`}
+    imagesizes="100vw"
+    fetchpriority="high"
+  />
+
+  {/* Schema.org structured data (WebSite + TouristAttraction w/ aggregateRating) */}
   <script type="application/ld+json" is:inline set:html={JSON.stringify(structuredData)} />
 
-  {/* 1. HERO ─────────────────────────────────────────────────────────────── */}
-  <section class="bg-dark text-white">
-    <div class="mx-auto grid max-w-6xl gap-10 px-4 py-20 sm:px-6 md:py-28 lg:grid-cols-2 lg:items-center lg:gap-12 lg:px-8">
-      <div>
-        <p class="text-sm font-semibold uppercase tracking-[0.2em] text-accent">{copy.eyebrow}</p>
-        <h1 class="mt-3 text-4xl font-bold tracking-tight text-white sm:text-5xl md:text-6xl">{copy.heading}</h1>
-        <p class="mt-5 max-w-xl text-lg leading-relaxed text-white/80">{copy.intro}</p>
-        <div class="mt-8 flex flex-wrap items-center gap-4">
-          <CTAButton href={heroProduct.href}>{str(copy, 'heroCtaLabel')}</CTAButton>
-          <CTAButton href="/whats-on" variant="outline">{str(copy, 'heroSecondaryLabel')}</CTAButton>
-        </div>
-        {/* Trust line — the score and review count are DERIVED from site.ts and stay in
-            code; only the words around them are CMS copy. */}
-        <div class="mt-6 flex items-center gap-2 text-sm text-white/80">
-          <StarRating rating={RATING} size="h-4 w-4" />
-          <span><span class="font-semibold text-white">{RATING} {str(copy, 'trustStarsSuffix')}</span> · {REVIEW_COUNT} {str(copy, 'trustReviewsSuffix')}</span>
-        </div>
-      </div>
-      {/* Hero image placeholder — swap for a real WebP asset */}
-      <div class="flex aspect-[4/3] items-center justify-center rounded-card bg-white/5 text-xs text-white/70 ring-1 ring-white/10 lg:aspect-[5/4]">
-        {str(copy, 'heroImageAlt')}
-      </div>
-    </div>
-  </section>
+  {/* 1. HERO — owned CRT photography, event-page overlay treatment (PageHero) */}
+  <PageHero
+    eyebrow={copy.eyebrow}
+    title={copy.heading!}
+    subtitle={copy.intro}
+    heroImage={HERO_IMAGE}
+    heroImageAlt={str(copy, 'heroImageAlt')}
+  >
+    <CTAButton href={HERO_HREF}>{str(copy, 'heroCtaLabel')}</CTAButton>
+    <CTAButton href="/whats-on" variant="outline">{str(copy, 'heroSecondaryLabel')}</CTAButton>
+    <span class="flex w-full items-center gap-2 text-sm text-white/80">
+      <StarRating rating={RATING} size="h-4 w-4" />
+      <span><span class="font-semibold text-white">{RATING} {str(copy, 'trustStarsSuffix')}</span> · {REVIEW_COUNT} {str(copy, 'trustReviewsSuffix')}</span>
+    </span>
+  </PageHero>
 
   {/* 2. CITY RIVER TOUR FEATURE (always present regardless of hero config) ─── */}
   <section aria-labelledby="crt" class="mx-auto max-w-6xl px-4 py-16 sm:px-6 md:py-20 lg:px-8">
     <div class="grid gap-10 lg:grid-cols-2 lg:items-center lg:gap-12">
-      <div class="flex aspect-[16/10] items-center justify-center rounded-card bg-panel text-xs text-subtle">
-        {str(copy, 'crtImagePlaceholder')}
-      </div>
+      <img
+        src={CRT_FEATURE_IMAGE}
+        srcset={`${CRT_FEATURE_IMAGE_CARD} 800w, ${CRT_FEATURE_IMAGE} 1600w`}
+        sizes="(min-width: 1024px) 50vw, calc(100vw - 2rem)"
+        alt="Aerial view of a Manchester River Cruises sightseeing boat cruising the Manchester Ship Canal toward a steel arched footbridge, with the Deansgate Square towers on the skyline under a blue sky"
+        width="1600"
+        height="1200"
+        loading="lazy"
+        decoding="async"
+        data-img-fallback
+        class="aspect-[16/10] w-full rounded-card object-cover ring-1 ring-black/5"
+      />
       <div>
         <SectionHeading id="crt">{sec(copy, 'crt').heading}</SectionHeading>
         <p class="mt-6 text-lg leading-relaxed text-body">{sec(copy, 'crt').body?.[0]}</p>
@@ -273,8 +296,8 @@ const structuredData = {
         <a href="/whats-on" class="text-sm font-medium text-primary hover:underline">{str(copy, 'comingUpSeeAllLinkLabel')}</a>
       </div>
       {/* Server-rendered crawlable core: soonest event products (no fabricated dates) — the
-          no-JS / feed-failure fallback. Hydrated with the soonest 4 live event-days. */}
-      <div data-strip-grid class="mt-8 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          no-JS / feed-failure fallback. Hydrated with the soonest 6 live event-days. */}
+      <div data-strip-grid class="mt-8 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {
           stripFallback.map((p) => (
             <EventCard

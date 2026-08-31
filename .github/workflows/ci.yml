@@ -1,0 +1,40 @@
+# PR gate: typecheck, production build, and Keystatic wiring.
+#
+# Node 22 is required for `npm run verify-cms-wiring` (it imports the TypeScript
+# Keystatic config via Node's type stripping; the npm script passes
+# --experimental-strip-types for 22.6–22.17). Netlify production stays on
+# NODE_VERSION=20 (netlify.toml); the static Astro build is compatible with both.
+# `npm run launch-gate` is a pre-cutover check, NOT part of this workflow — it
+# would fail today while TBC placeholders remain in copy.
+name: CI
+
+on:
+  pull_request:
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  check:
+    name: astro check, build, CMS wiring
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+
+      - name: Install
+        run: npm ci
+
+      - name: Astro check
+        run: npx astro check
+
+      - name: Build
+        run: npm run build
+
+      - name: Verify CMS wiring
+        run: npm run verify-cms-wiring
