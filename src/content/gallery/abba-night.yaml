@@ -3,54 +3,80 @@ slug: abba-night
 order: 4
 summary: Sequins, singalongs and Dancing Queen on the water — snapshots from our ABBA tribute nights on the Ship Canal.
 category: live-music
-# Cover is the event's promo artwork. There is NO ABBA photography anywhere in the source
-# tree — images[] 02-08 stay placeholders until the shoot happens (docs/photo-inventory.md).
-coverImage: /images/events/abba-tribute-cruise-card.webp
-coverAlt: "'ABBA Disco' promotional artwork — a giant multicoloured mirrorball above the illuminated Salford Quays waterfront and Millennium Footbridge at night."
+# Fully OWNED album as of 2026-08-31 — cover and every images[] entry is a processed WebP in
+# public/images/, from the first real ABBA shoot. The promo artwork that stood in for the cover
+# (and for image 01) is out of the album now; the file itself stays because the Christmas hub
+# still uses it for its December party-nights card, where night-time artwork suits better than
+# a daytime summer photo.
+coverImage: /images/gallery/abba-night/guests-in-abba-costume-at-the-boarding-point.webp
+coverAlt: "A group of guests in ABBA-inspired costumes — blue sequinned flares, silver dresses, white platform boots and a floral 70s minidress — posing together on the quayside beneath the white arched Millennium Footbridge, with a Manchester River Cruises boat moored behind them."
 images:
-  # The ONLY asset this album has: the event's own promotional artwork (the same frame as the
-  # cover). No ABBA night has ever been photographed — every entry below is a placeholder and
-  # the shoot is specced in docs/photo-inventory.md → Shot list.
-  - src: /images/gallery/abba-night/01.webp
-    width: 800
-    height: 543
-    alt: "'ABBA Disco' promotional artwork — a giant multicoloured mirrorball above the illuminated Salford Quays waterfront and Millennium Footbridge at night"
-    caption: The ABBA Disco cruise artwork.
+  - src: /images/gallery/abba-night/guests-in-abba-costume-at-the-boarding-point.webp
+    width: 1600
+    height: 1200
+    alt: "A group of guests in ABBA-inspired costumes — blue sequinned flares, silver dresses, white platform boots and a floral 70s minidress — posing together on the quayside beneath the white arched Millennium Footbridge, with a Manchester River Cruises boat moored behind them"
+    caption: "Dressed for the occasion, before boarding at Salford Quays."
     orientation: landscape
-    tags: [artwork]
-  - src: /images/gallery/abba-night/02.webp
-    alt: The whole deck on its feet with arms raised during Dancing Queen
-    orientation: landscape
+    isFeatured: true
+    usage: [gallery, product-page, event-card, homepage, og-image]
+    tags: [guests, costume, footbridge, boarding]
+  - src: /images/gallery/abba-night/abba-tribute-duo-arms-raised.webp
+    width: 1600
+    height: 2133
+    alt: "The two ABBA tribute singers in white satin costumes with purple and green trim, both smiling with their microphones raised above their heads, under fairy lights in the boat's cabin"
+    caption: "The tribute act in full flow."
+    orientation: portrait
+    isFeatured: true
+    usage: [gallery, product-page, event-card]
+    tags: [performer, tribute]
+  - src: /images/gallery/abba-night/abba-tribute-duo-singing-together.webp
+    width: 1600
+    height: 2133
+    alt: "The two ABBA tribute singers in white satin costumes and white knee-high boots singing into their microphones side by side in the boat's cabin, fairy lights strung along the wall behind them"
+    orientation: portrait
+    usage: [gallery, product-page]
+    tags: [performer, tribute]
+  - src: /images/gallery/abba-night/abba-tribute-singing-to-the-cabin.webp
+    width: 1600
+    height: 2133
+    alt: "The blonde ABBA tribute singer mid-song with her microphone while the second singer laughs beside her, a guest with bright orange hair watching from the foreground of the cabin"
+    caption: "Singing to a full cabin."
+    orientation: portrait
+    usage: [gallery, product-page]
+    tags: [performer, tribute, crowd]
+  - src: /images/gallery/abba-night/guests-dancing-arms-around-each-other.webp
+    width: 1600
+    height: 2133
+    alt: "Guests in a floral 70s dress and an iridescent silver dress dancing with their arms around each other, one arm raised, under green and purple party lights in the packed cabin"
+    caption: "Dancing Queen, and everybody up."
+    orientation: portrait
+    usage: [gallery, product-page]
     tags: [crowd, dancing]
-  - src: /images/gallery/abba-night/03.webp
-    alt: A guest wearing a sequinned jumpsuit posing with friends before the cruise
+  - src: /images/gallery/abba-night/guests-celebrating-under-party-lights.webp
+    width: 1600
+    height: 2133
+    alt: "A group of guests hugging and laughing mid-dance under pink and green party lights, tables of champagne glasses behind them and a Manchester River Cruises crew member in a green polo shirt to one side"
     orientation: portrait
-    tags: [guests]
-  - src: /images/gallery/abba-night/04.webp
-    alt: Cocktails lined up on the bar with the tribute act performing behind
-    orientation: landscape
-    tags: [bar]
-  - src: /images/gallery/abba-night/05.webp
-    alt: The illuminated boat reflected in the still water of the canal at night
-    credit: Photo by MRC crew
-    orientation: landscape
-    tags: [boat, night, skyline]
-  - src: /images/gallery/abba-night/06.webp
-    alt: A singer reaching out to the crowd from the edge of the stage
+    usage: [gallery]
+    tags: [crowd, dancing, bar]
+  - src: /images/gallery/abba-night/guests-mingling-in-the-cabin.webp
+    width: 1600
+    height: 2133
+    alt: "Guests in 70s outfits — sequinned blue, silver and white — standing and chatting between the cabin tables, the canal and quayside visible through the boat's blue-framed windows"
     orientation: portrait
-    tags: [performer]
-  - src: /images/gallery/abba-night/07.webp
-    alt: Friends toasting with sparklers on the open deck
-    caption: Every night is a party on the water.
-    orientation: landscape
-    tags: [guests, night]
-  - src: /images/gallery/abba-night/08.webp
-    alt: Wide shot of the packed dancefloor with the Salford Quays skyline beyond
-    orientation: landscape
-    tags: [crowd, skyline]
+    usage: [gallery]
+    tags: [guests, cabin]
+  - src: /images/gallery/abba-night/guests-in-70s-outfits-laughing.webp
+    width: 1152
+    height: 2048
+    alt: "Three guests laughing together in 70s party outfits — a floral minidress, an iridescent silver jacket and a sequinned white cap — under the fairy lights strung along the boat's cabin windows"
+    caption: "Every night is a party on the water."
+    orientation: portrait
+    usage: [gallery]
+    tags: [guests, costume]
 relatedAlbums: [dolly-night, adele-night, boat-tropicana, private-hire]
 relatedProduct: /tour/mamma-mia-cruise-abba-tribute
 bookingCtaLabel: Book the next ABBA Cruise
 bookingCtaUrl: /tour/mamma-mia-cruise-abba-tribute
 seoTitle: ABBA Cruise Photos — ABBA Tribute Boat Party Manchester
-seoDescription: Photos from our ABBA tribute cruises on the Manchester Ship Canal — the tribute act, a packed dancefloor and the skyline after dark. Book the next ABBA Cruise.
+seoDescription: Photos from our ABBA tribute cruises on the Manchester Ship Canal — the tribute act, a packed dancefloor and guests in full 70s costume. Book the next ABBA Cruise.

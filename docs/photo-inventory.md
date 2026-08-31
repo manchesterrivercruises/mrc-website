@@ -35,7 +35,7 @@ sync when you add or reclassify assets.
 | Album / category | Owned photos | Minimum needed | Met? | Hero-grade landscape? | Alt done? | Rights confirmed? | Notes / gaps |
 |---|---|---|---|---|---|---|---|
 | City River Tour · route | 10 | 10+ (2–3 hero-grade) | ✅ | ✅ | ✅ | ✅ | **Album complete (2026-08-31).** The five remaining placeholder slots were filled from the raw tree with the route landmarks the onboard commentary actually covers: The Lowry from the water, Old Trafford from the ship canal, the ITV Coronation Street site, the MediaCityUK waterfront and the Ordsall Chord arch over the Irwell. They join the 2026-07-10 drone aerial + open-deck frame and three earlier site images. |
-| ABBA Night · live-music | 0 (cover and `01` are the same promo ARTWORK, not a photo) | 8–10 (1 hero-grade) | ⬜ | ⬜ | ✅ | ✅ | **PRIORITY 1 — the only album with no photography at all.** The whole raw tree was re-swept 2026-08-31: the sole ABBA asset anywhere is the 500×350 promo thumbnail. `01`'s alt was corrected to describe the artwork (it had been captioned as a photo of two tribute singers). Slots 02–08 stay placeholders — see the Shot list. |
+| ABBA Night · live-music | 8 | 8–10 (1 hero-grade) | ✅ | ✅ | ✅ | ✅ | **Album complete (2026-08-31)** — was the last album with zero photography. A real shoot landed the same day and all eight entries are now owned photographs: the tribute duo (three frames), guests dancing and celebrating under the party lights, guests in the cabin, and a group in full ABBA costume on the quayside under the Millennium Footbridge (the only landscape → cover, `isFeatured`, and the event card). The promo artwork is out of the album; the file stays for the Christmas hub's December party-nights card. |
 | Private Hire · private-hire | 2 (+2 review hotlinks) | 8–10 (1 hero-grade) | ◑ | ✅ | ✅ | ✅ | Valentine's-dressed cabin (cover) + Isabella at a Salford Quays sunset (2026-07-10). Still needs weddings / corporate / celebration real photos. |
 | Old Trafford Ferry · route | 4 (+ owned cover) | 8–10 | ◑ | ✅ | ✅ | ✅ | Matchday supporters onboard, ferry on the canal, + ferry approaching with open-deck supporters and supporters crossing the footbridge (2026-07-10). A stadium-approach/arrival frame would still help (matchday-access dependent; avoid club trademarks). |
 | Father Christmas Cruises · seasonal | 6 (+ owned cover) | 8–10 (2–3 hero-grade) | ✅ | ✅ | ✅ | ✅ | Renamed from "Christmas Cruises" — every shot is Father Christmas Cruise material, so the album now matches the product slug (`father-christmas-cruise`). Santa & elf, child steering with Santa, grotto decor, + Santa with two elves, children with presents (2025, evening) and elf entertainers (2026-07-10). |
@@ -113,6 +113,8 @@ tree — 1,445 sources scanned, 1,003 staged as new, 130 content-dupes of alread
 312 dupes within the batch, 0 failures. Curation was by eye afterwards, as the tool intends.
 
 **Result:** 111 image placeholder slots before → **27 after**.
+(Then **20** — the ABBA shoot later the same day closed that album's 7 slots. See the next
+section; the Shot list below is kept current at 20.)
 
 - **84 filled.** 74 from the already-processed library (the slots simply were not wired to it) and
   10 from six newly-curated raw frames.
@@ -132,7 +134,41 @@ tree — 1,445 sources scanned, 1,003 staged as new, 130 content-dupes of alread
   subject. Nothing was filled with a near-miss — no unnamed boat under a named vessel, no borrowed
   night under a different event, no stand-in for a third-party venue.
 
-## Shot list — the 27 placeholders still on the live build
+## ABBA night shoot — ingested 2026-08-31
+
+The gap that had sat at PRIORITY 1 since the first sweep is closed. A shoot landed in
+`ABBA/` — 16 HEIC stills, 3 JPEGs, 22 video clips.
+
+**Tool change:** the ingest walker only matched `jpg|png|webp`, so a folder of iPhone `.HEIC`
+files scanned as four images. `scripts/ingest-images.mjs` now accepts `heic|heif` too. sharp
+reads HEIC *containers* but its prebuilt libvips cannot decode HEVC-coded image data ("Support
+for this compression format has not been built in"), so the 16 stills were transcoded to JPEG
+first through the Windows WIC decoder (`System.Windows.Media.Imaging.BitmapDecoder`, which
+applies the container's orientation) and the ingest ran over those. **If a future drop is HEIC,
+that transcode step is still needed** — the extension change alone is not sufficient.
+
+**Sweep:** 19 candidates → 17 staged new, 1 content-dupe of the published promo artwork, 2 dupes
+within the batch, 0 failures. Curated by eye to **8 keepers**, skipping five near-identical
+performer frames, a tight crop dominated by a radiator, two hen-party frames that are mostly
+backs of heads and not ABBA-themed, and a higher-resolution copy of the promo artwork (still
+artwork, not photography).
+
+**What the 8 cover:** one landscape group shot on the quayside in full ABBA costume (cover +
+`isFeatured` + the event card), three of the tribute duo performing in the cabin, and four
+crowd/atmosphere frames — dancing under the party lights, celebrating with the crew and
+champagne, mingling between the tables, and three guests laughing in 70s outfits.
+
+**Also upgraded off the artwork:** the ABBA event page hero and its What's On / date-finder card
+image, plus the City River Tour page's ABBA cross-sell tile, all now use the real photograph.
+`<PageHero>` gained a second fallback while doing this — a `-card.webp` now also resolves to
+the album's plain `.webp` large, not just a sibling `-hero.webp`, so album-backed event heroes
+serve 1600px instead of upscaling the 800px card. That fixes the Adele hero too.
+
+**Still wanted for ABBA:** every performer frame is portrait, so the event card and OG image lean
+on the quayside group shot. A **landscape** frame of the duo mid-song under stage lighting would
+be the one addition worth making, along with anything shot after dark — this set is all daytime.
+
+## Shot list — the 20 placeholders still on the live build
 
 These are the slots that survived the audit because **no matching photograph exists anywhere**.
 Each row is a shot brief: where it goes, what the frame must contain, and how it will be cropped.
@@ -151,22 +187,6 @@ a card headed "Melody" showing an unnamed hull is a mislabel, not a placeholder.
 | Melody (`/our-vessels`, `/private-hire`) | As above. Melody has indoor seating throughout and no open top deck — the frame should make that readable | 16:9 landscape |
 | Georgina (`/our-vessels`) | As above; smaller-group boat, so a moored quayside three-quarter view works | 16:9 landscape |
 | Joyce Too (`/our-vessels`) | As above | 16:9 landscape |
-
-### ABBA Night album — 7 slots (`/gallery/abba-night`)
-
-The only ABBA asset we hold is the promo artwork. One tribute night covers all seven, plus a
-hero-grade frame to replace `01` (currently the artwork doing duty as a photo).
-
-| Slot | The frame must show | Orientation / crop |
-|---|---|---|
-| `01` (replace artwork) | The tribute act mid-song under stage lighting — hero-grade, clean background | landscape, 16:9-safe; also wanted for the event card and OG image |
-| `02` | The whole cabin on its feet, arms raised, during a singalong | landscape |
-| `03` | A guest in sequins / 70s costume with friends, before or early in the sailing | **portrait** |
-| `04` | Cocktails on the bar in the foreground with the act performing behind | landscape |
-| `05` | The boat itself lit up on the canal after dark, reflections in the water | landscape — **doubles as the festive-night exterior below** |
-| `06` | A singer reaching out to the crowd from the edge of the performance space | **portrait** |
-| `07` | Guests toasting on the open deck after dark | landscape |
-| `08` | Wide shot of the packed floor with the Salford Quays skyline through the windows | landscape |
 
 ### Seasonal and family events — 4 slots
 
@@ -208,9 +228,11 @@ walking time carry it.
 ### Still outstanding, but not a placeholder tile
 
 - **Festive night exterior** (time-sensitive, December only) — the decorated boat lit up on the
-  water after dark. Blocks the `christmas-on-the-water` album that does not exist yet, and is the
-  same frame as ABBA slot `05` above. The Christmas hub currently leans on the Santa album and
-  event card art, which is honest but thin.
+  water after dark. Blocks the `christmas-on-the-water` album that does not exist yet. The
+  Christmas hub currently leans on the Santa album and event card art, which is honest but thin.
+- **Anything on an ABBA night after dark.** The 2026-08-31 shoot is complete but entirely
+  daytime; an evening sailing would give that album its night-time register and, with the boat
+  lit from outside, could cover the festive exterior above in the same trip.
 
 ### Not images — do not confuse these with photo gaps
 
@@ -227,9 +249,7 @@ correct behaviour, not a gap.
 > album-level view.
 
 **Still needs a real shoot (no owned photography):**
-- **ABBA Night** — PRIORITY 1, and now the only album with zero photography. Re-confirmed against
-  the whole raw tree on 2026-08-31.
-- **Vessels** — the `vessels` collection exists and `/our-vessels` renders from it, but four of
+- **Vessels** — **PRIORITY 1** now that ABBA has been shot. The `vessels` collection exists and `/our-vessels` renders from it, but four of
   the five boats have no identifiable photograph. Nothing in the raw tree names a hull except
   Isabella. This is a shoot, not a selection problem.
 - **Christmas on the water (the wider festive offer)** — **time-sensitive, December only.** A

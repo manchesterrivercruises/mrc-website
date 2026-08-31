@@ -46,7 +46,10 @@ if (!SOURCE) {
   process.exit(1);
 }
 
-const IMG_RE = /\.(jpe?g|png|webp)$/i;
+// HEIC/HEIF included: phone drops from the crew arrive as .HEIC straight off an iPhone.
+// sharp decodes them (libvips heif loader) and we always transcode to WebP, so they need no
+// special handling beyond being seen by the walker.
+const IMG_RE = /\.(jpe?g|png|webp|heic|heif)$/i;
 const SKIP_DIR = /(^|\/|\\)(low res)($|\/|\\)/i; // Low Res folders are exact dupes of High Res
 
 function walk(dir, recurse) {

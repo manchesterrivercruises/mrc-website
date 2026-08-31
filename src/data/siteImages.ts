@@ -54,10 +54,10 @@ export const siteImages = {
     'A Manchester River Cruises boat with passengers on the open top deck cruising Salford Quays past the Central Bay waterfront and the MediaCityUK apartment towers under a grey sky',
   ),
   abbaCruiseCard: img(
-    '/images/events/abba-tribute-cruise-card.webp',
+    '/images/gallery/abba-night/guests-in-abba-costume-at-the-boarding-point-card.webp',
     800,
-    543,
-    "'ABBA Disco' promotional artwork — a giant multicoloured mirrorball above the illuminated Salford Quays waterfront and Millennium Footbridge at night",
+    600,
+    'A group of guests in ABBA-inspired costumes — blue sequinned flares, silver dresses, white platform boots and a floral 70s minidress — posing together on the quayside beneath the white arched Millennium Footbridge, with a Manchester River Cruises boat moored behind them',
   ),
   santaCruiseCard: img(
     '/images/events/santa-cruise-card.webp',

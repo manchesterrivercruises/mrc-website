@@ -25,12 +25,16 @@ const { eyebrow, title, subtitle, heroImage, heroImageAlt } = Astro.props;
 const hasCta = Astro.slots.has('default');
 const hasMedia = Astro.slots.has('media');
 
-// Prefer a full-size `-hero.webp` variant over a `-card.webp` when one exists (some events only
-// have the card — used as-is; the heavy overlay masks the lower resolution).
+// Prefer a full-size variant over a `-card.webp` when one exists — either a sibling
+// `-hero.webp` (the /images/events/ naming) or the album's plain `.webp` large (the
+// /images/gallery/<album>/ naming, where the card is simply the 800px cut of the same frame).
+// Events that only ship a card are used as-is; the heavy overlay masks the lower resolution.
 function resolveHero(src: string): string {
   if (src.endsWith('-card.webp')) {
-    const full = src.replace(/-card\.webp$/, '-hero.webp');
-    if (existsSync(`${process.cwd()}/public${full}`)) return full;
+    const candidates = [src.replace(/-card\.webp$/, '-hero.webp'), src.replace(/-card\.webp$/, '.webp')];
+    for (const full of candidates) {
+      if (existsSync(`${process.cwd()}/public${full}`)) return full;
+    }
   }
   return src;
 }
