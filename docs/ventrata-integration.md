@@ -466,15 +466,24 @@ removed — OCTO `/availability` and `/availability/calendar` are still called
 **server-side** from `day-finder` and `event-days` via `netlify/lib/octo.ts`.
 
 ```
-/.netlify/functions/products          # OCTO /products (allowlisted fields)
+/.netlify/functions/products          # OCTO /products (allowlisted fields) — NO caller today
 /.netlify/functions/day-finder        # homepage date finder (browser-facing)
 /.netlify/functions/event-days        # What's On feed (browser-facing)
 /.netlify/functions/reviews           # Google Places reviews (browser-facing)
 ```
 
-Browser-facing functions (`day-finder`, `event-days`, `reviews`) use
-`withGuard(..., { requireSiteOrigin: true })`: a request is rejected unless its
-`Origin` **or** `Referer` matches the exact-origin allowlist. That raises the bar
+**All four** functions use `withGuard(..., { requireSiteOrigin: true })`: a request is
+rejected unless its `Origin` **or** `Referer` matches the exact-origin allowlist.
+
+`products` was the odd one out until 2026-09-01 — it had `withGuard` (so CORS + rate
+limiting) but not the Origin/Referer gate, because it is not browser-facing. It is still
+**not called from anywhere in the site**; it was gated rather than deleted because
+`docs/ventrata-integration.md` publishes it as part of the function surface and CLAUDE.md's
+build sequence (step 7) specifies it. Being uncalled is not the same as being unreachable:
+the URL is public and proxies OCTO with our server-side key, so leaving it open was free
+quota burn for anyone who found it. If it is still uncalled at launch, deleting it is the
+better end state — the unused `availability` / `availability-calendar` proxies were removed
+for exactly that reason. That raises the bar
 against casual curl/bot quota burn; it is **not** a guarantee (both headers are
 attacker-controlled). Durable global limiting is a Netlify account-level setting
 — see `docs/launch-checklist.md`.
