@@ -141,6 +141,18 @@ const gtmId = process.env.GTM_CONTAINER_ID;
       )
     }
 
+    {/* Icons — generated from the brand roundel by scripts/make-favicons.mjs. The SVG is
+        listed first so modern browsers prefer it; favicon.ico stays for the address bar and
+        for older clients that ignore rel="icon" type hints. apple-touch-icon ships an opaque
+        white ground because iOS composites away transparency. */}
+    <link rel="icon" href="/favicon.ico" sizes="32x32" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="icon" href="/favicon-96.png" type="image/png" sizes="96x96" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="manifest" href="/site.webmanifest" />
+    {/* Brand navy for the mobile browser chrome (Android address bar, iOS 15+ Safari). */}
+    <meta name="theme-color" content="#1a2744" />
+
     <title>{title}</title>
     <meta name="description" content={description} />
     <link rel="canonical" href={canonicalURL} />
