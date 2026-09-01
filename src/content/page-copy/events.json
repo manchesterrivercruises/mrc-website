@@ -1,10 +1,10 @@
 {
   "page": "events",
-  "seoTitle": "Events & Special Cruises Manchester — Music, Party & Family Cruises",
-  "seoDescription": "Event cruises on the Manchester Ship Canal — live music tribute nights, boat parties, Christmas and Santa cruises, kids events and seasonal specials. Licensed bar onboard. Book direct.",
+  "seoTitle": "Events & Special Cruises Manchester — Live Music, DJ & Seasonal Cruises",
+  "seoDescription": "Event cruises on the Manchester Ship Canal — live music tribute nights, DJ boat parties, and seasonal specials including the Cruise with Father Christmas, Mother's Day and Father's Day. Licensed bar onboard. Book direct.",
   "eyebrow": "What's on the water",
   "heading": "Events & Special Cruises",
-  "intro": "Live music, party nights and family events on the Manchester Ship Canal.",
+  "intro": "Live music, DJ party nights and seasonal specials on the Manchester Ship Canal.",
   "keyFacts": [
     "Evening & weekend events",
     "From £20 (TBC)",
@@ -23,9 +23,9 @@
     { "key": "how", "heading": "How events work" },
     {
       "key": "private",
-      "heading": "Want the whole boat?",
+      "heading": "Your own party — the whole boat",
       "body": [
-        "Hire a boat exclusively for your own event — private parties, celebrations and corporate occasions, tailored around you."
+        "Not on the calendar? Hire a boat exclusively for your own event — private parties, celebrations and corporate occasions, on a date and route that suit you."
       ]
     }
   ],
@@ -43,27 +43,9 @@
       "linkText": "See dates"
     },
     {
-      "key": "categories:family",
-      "name": "Family Events",
-      "desc": "Family adventures afloat — Pirates & Mermaids and cruises with Father Christmas.",
-      "linkText": "See dates"
-    },
-    {
-      "key": "categories:christmas",
-      "name": "Christmas on the water",
-      "desc": "Festive party nights and seasonal cruises through November, December and January.",
-      "linkText": "See your options"
-    },
-    {
-      "key": "categories:santa",
-      "name": "Santa Cruise",
-      "desc": "A magical festive cruise with a visit from Father Christmas — a family favourite.",
-      "linkText": "Santa cruise"
-    },
-    {
       "key": "categories:seasonal",
       "name": "Seasonal Specials",
-      "desc": "Occasion cruises through the year — Mother's Day and Father's Day.",
+      "desc": "Occasion cruises through the year — Cruise with Father Christmas, Mother's Day and Father's Day.",
       "linkText": "See dates"
     },
     {

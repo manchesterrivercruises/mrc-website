@@ -32,7 +32,11 @@ const events = defineCollection({
     description: z.string(),
     shortTagline: z.string().optional(),
     ventrataProductId: z.string().optional(),
-    category: z.enum(['live-music', 'dj-night', 'family', 'seasonal']).optional(),
+    // Customer-facing categories are Live Music, DJ Events and Seasonal Specials (Simon's
+    // 2026-09-01 simplification). 'family' was retired as a category — Santa, Mother's Day,
+    // Father's Day and the shelved family cruises all sit under 'seasonal'. The SLUGS are
+    // stable ('dj-night' still means "DJ Events"); only the labels moved.
+    category: z.enum(['live-music', 'dj-night', 'seasonal']).optional(),
     // When the event sails. Timing is an ATTRIBUTE, not a category — an event can run daytime,
     // evening or both. Decks on Deck = daytime; ABBA = both; most events = evening (the default).
     // Dolly joins the daytime programme in 2027 (flip to 'both' then).
@@ -101,9 +105,9 @@ const gallery = defineCollection({
     // the end (999) and then sort by title. See src/lib/gallery.ts → getAlbums.
     order: z.number().optional(),
     summary: z.string(),
-    // Events taxonomy (live-music / dj-night / family / seasonal) + gallery-specific
-    // categories. Drives the wall filter pills.
-    category: z.enum(['live-music', 'dj-night', 'family', 'seasonal', 'boats', 'route', 'private-hire']),
+    // Events taxonomy (live-music / dj-night / seasonal) + gallery-specific categories.
+    // Drives the wall filter pills. Kept in step with the events enum above.
+    category: z.enum(['live-music', 'dj-night', 'seasonal', 'boats', 'route', 'private-hire']),
     coverImage: z.string(),
     coverAlt: z.string(),
     images: z

@@ -56,7 +56,7 @@ Re-save any CMS bookmarks.
 | `elvis-rocks-cruise` | `elvis-rocks` | sitemap |
 | `fathers-day-cruise` | `fathers-day` | sitemap |
 | `mothers-day-cruise` | `mothering-sunday` | sitemap |
-| `pirates-and-mermaids` | `pirates-and-mermaid-cruise` | **Simon / GA only — not in sitemap** |
+| `pirates-and-mermaids` | `pirates-and-mermaid-cruise` | **Simon / GA only — not in sitemap.** Event shelved 2026-09-01 → interim net, see flag 7 |
 | `santa-cruise` | `father-christmas-cruise` | sitemap |
 | `soul-river-cruise` | `soul-river` | sitemap |
 | `swinging-on-the-river` | `swing-cruise-live-music` | sitemap + Simon |
@@ -95,7 +95,14 @@ Music"). The product template and both flagship pages now pass explicit trails.
    GA shows it earning 517 sessions and £1,236, so launching would 404 real demand. An interim
    301 to `/whats-on` covers it and is **self-healing** — `force` is omitted, so Netlify serves
    the real page the moment the event is published. **Publishing the event is the actual fix.**
-6. **An "Elves" cruise may exist with no successor.** The legacy `/kids-takeover` page advertises
+6. **Pirates & Mermaids is shelved for this year** (`draft: true`, 2026-09-01), so
+   `/tour/pirates-and-mermaid-cruise` no longer renders. GA puts it at **£5.6k over 2.5 years**
+   — the highest-value event URL in this table — so an interim 301 to `/whats-on` covers it,
+   exactly as Wizards does. It is **self-healing**: `force` is omitted, so Netlify serves the
+   real page again the moment the event is un-drafted. Republishing the event IS the fix; no
+   redirect edit is needed. This makes **two** deliberate 2-hop legacy paths
+   (`/cruises/pirates-and-mermaids` → `/tour/pirates-and-mermaid-cruise` → `/whats-on`).
+7. **An "Elves" cruise may exist with no successor.** The legacy `/kids-takeover` page advertises
    "Pirates to Wizards, Elves to Mermaids". Pirates and Wizards both turned out to have
    sitemap-invisible URLs; Elves may too. Only the GA export can settle it.
 
@@ -228,9 +235,11 @@ DNS cutover.
 ## Still outstanding
 
 1. **The GA/GSC export is still not in the repo.** It drove the Pirates and Wizards pairings
-   second-hand and is the only way to settle flags 2 and 6, malformed/historic slug variants, and
+   second-hand and is the only way to settle flags 2 and 7, malformed/historic slug variants, and
    any blog section the Craft sitemap never listed.
-2. **Publish the Wizards & Fairies event** — the interim redirect is a net, not a fix.
+2. **Publish the Wizards & Fairies event** — the interim redirect is a net, not a fix. The same
+   now applies to **Pirates & Mermaids**, shelved 2026-09-01 (flag 6): its net is live and
+   self-healing, but the event returning is the real resolution.
 3. **Simon's review of `/terms-conditions`** — the clause wording, deposit percentage, payment
    windows and refund periods. (`/salford-quays` is resolved — see §2.)
 4. `/help` vs `/faq` — decide from GSC impressions.

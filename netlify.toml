@@ -218,6 +218,23 @@
   to = "/whats-on"
   status = 301
 
+# --- Pirates & Mermaids: interim net while the event is shelved ----------------
+# Shelved for this year (draft: true, 2026-09-01) — the product is not running, so
+# /tour/pirates-and-mermaid-cruise stops building. The legacy path is the single
+# highest-value event URL we hold (GA: £5.6k over 2.5 years), so leaving it to 404
+# would be the most expensive possible way to shelve a product.
+# SELF-HEALING, exactly as the Wizards rule above: `force` is omitted, so republishing
+# the event makes the real page exist and Netlify serves it INSTEAD of this rule. No
+# cleanup needed here — un-drafting the event IS the fix. See docs/url-parity.md.
+#
+# NOTE the resulting 2-hop for the legacy Craft path, which is deliberate and matches
+# Wizards: /cruises/pirates-and-mermaids → /tour/pirates-and-mermaid-cruise → /whats-on.
+# Pointing the first hop straight at /whats-on would silently become WRONG on republish.
+[[redirects]]
+  from = "/tour/pirates-and-mermaid-cruise"
+  to = "/whats-on"
+  status = 301
+
 # --- Retired legacy category facets (Craft `tourCategory` / `tourEvent`) -------
 # Thin listing pages that shared the /tour/ namespace with real products. None of
 # these slugs collides with an adopted product slug (verified against the full

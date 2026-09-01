@@ -10,8 +10,7 @@ export type Album = CollectionEntry<'gallery'>;
 export const CATEGORY_LABELS: Record<Album['data']['category'], string> = {
   'live-music': 'Live Music',
   'dj-night': 'DJ Events',
-  family: 'Family',
-  seasonal: 'Seasonal',
+  seasonal: 'Seasonal Specials',
   boats: 'Our Boats',
   route: 'Route & Scenery',
   'private-hire': 'Private Hire',
@@ -89,7 +88,7 @@ export function resolveRelated(album: Album, all: Album[], limit = 4): Album[] {
     all.filter((a) => !seen.has(a.data.slug) && pred(a)).sort(byOrder).forEach(add);
   };
 
-  const EVENT: string[] = ['live-music', 'dj-night', 'family', 'seasonal'];
+  const EVENT: string[] = ['live-music', 'dj-night', 'seasonal'];
   const SCENE: string[] = ['route', 'boats', 'private-hire'];
 
   album.data.relatedAlbums.map((s) => bySlug.get(s)).forEach(add); // 1. curated

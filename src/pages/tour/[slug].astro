@@ -43,18 +43,19 @@ const {
   heroImageAlt,
 } = entry.data;
 
+// Singular, per-page phrasing of the three customer-facing categories. The stored slugs are
+// stable ('dj-night' still means "DJ Events"); only the wording moved.
 const categoryLabels: Record<string, string> = {
   'live-music': 'Live music cruise',
   // "DJ event" not "DJ night" — some (e.g. Decks on Deck) sail daytime; the dj-night slug stays.
   'dj-night': 'DJ event',
-  family: 'Family event',
-  seasonal: 'Seasonal cruise',
+  seasonal: 'Seasonal special',
 };
 const eyebrow = (category && categoryLabels[category]) ?? 'Event cruise';
 
-// Per-page-appropriate mini-gallery copy: daytime/family events aren't "nights on the water".
+// Per-page-appropriate mini-gallery copy: seasonal sailings (Santa, Mother's/Father's Day) are
+// daytime family occasions, so "nights on the water" would be wrong on those pages.
 const galleryCopy: Record<string, { heading: string; lead: string }> = {
-  family: { heading: 'Aboard the cruise', lead: 'Real days out on the water — tap to browse' },
   seasonal: { heading: 'Aboard the cruise', lead: 'Real moments on the water — tap to browse' },
 };
 const eventGallery = galleryCopy[category ?? ''] ?? {
