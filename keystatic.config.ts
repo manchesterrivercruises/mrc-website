@@ -272,10 +272,9 @@ export default config({
           label: 'Category',
           description: 'Drives the gallery-wall filter pills.',
           options: [
-            { label: 'Live music', value: 'live-music' },
-            { label: 'DJ night', value: 'dj-night' },
-            { label: 'Family', value: 'family' },
-            { label: 'Seasonal', value: 'seasonal' },
+            { label: 'Live Music', value: 'live-music' },
+            { label: 'DJ Events', value: 'dj-night' },
+            { label: 'Seasonal Specials', value: 'seasonal' },
             { label: 'Boats', value: 'boats' },
             { label: 'Route', value: 'route' },
             { label: 'Private hire', value: 'private-hire' },
@@ -370,12 +369,15 @@ export default config({
         }),
         category: fields.select({
           label: 'Category',
-          description: 'Events taxonomy (shared with the gallery filter).',
+          description:
+            'Events taxonomy (shared with the gallery filter). Three customer-facing categories: ' +
+            'Live Music, DJ Events, and Seasonal Specials — which holds Santa, Mother\'s Day, ' +
+            "Father's Day and the family cruises. The stored values are stable slugs; renaming a " +
+            'label here does not move any event.',
           options: [
-            { label: 'Live music', value: 'live-music' },
-            { label: 'DJ night', value: 'dj-night' },
-            { label: 'Family', value: 'family' },
-            { label: 'Seasonal', value: 'seasonal' },
+            { label: 'Live Music', value: 'live-music' },
+            { label: 'DJ Events', value: 'dj-night' },
+            { label: 'Seasonal Specials', value: 'seasonal' },
           ],
           defaultValue: 'live-music',
         }),

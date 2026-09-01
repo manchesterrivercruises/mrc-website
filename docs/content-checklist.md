@@ -80,13 +80,21 @@ built and they are excluded from all listings**. Reactivate by flipping the flag
 
 | Product | Slug | Status |
 |---------|------|--------|
+| Pirates & Mermaids | pirates-and-mermaid-cruise | **Shelved for this year (draft, 2026-09-01).** Product ID `e264599a-9a49-4f3a-a693-fd31f962f8ac` on file — a live Ventrata product, so republishing is a one-line flag flip. Its legacy URL is protected by a self-healing 301 (docs/url-parity.md flag 6). |
 | Club Classics | club-classics-cruise | Dormant (draft) — product ID `46688aed-c6e3-4d6d-933b-efcba00d34fe` on file |
 | Broadway Boat Party | broadway-boat-party | Dormant (draft) — full Ventrata product ID still TBC (only `d8b67a96` supplied; not in the 19-product list above) |
 | Wizards & Fairies | wizards-and-fairies | Dormant (draft) — full Ventrata product ID still TBC (only `093a89af` supplied; not in the 19-product list above) |
 | Halloween Boat Party | halloween-boat-party | Dormant (draft) — full Ventrata product ID still TBC (only `aec4cd6b` supplied; not in the 19-product list above) |
 
 Before reactivating Broadway, Wizards & Fairies or Halloween, confirm the product
-exists in Ventrata and replace the partial ID with the full product ID.
+exists in Ventrata and replace the partial ID with the full product ID. Pirates & Mermaids
+needs no such check — its full product ID is already on file.
+
+**Category note (2026-09-01).** Customer-facing event categories are now just three: Live Music,
+DJ Events and **Seasonal Specials**. Family is no longer a category — Santa, Mother's Day,
+Father's Day and the shelved family cruises (Pirates, Wizards) all carry `category: seasonal`.
+Whole-boat private hire is deliberately NOT a category (it has no dates to filter); `/events`
+routes to `/private-hire` with its own section instead.
 
 ---
 
