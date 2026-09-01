@@ -99,7 +99,14 @@ const structuredData = {
 };
 ---
 
-<BaseLayout title={pageTitle} description={pageDescription} image="/images/city-river-tour-hero.webp">
+{/* bookGift: every CTA on this page buys a voucher, so the persistent Book Now must too —
+    landing a gift-shopper on the all-products chooser is the wrong journey. */}
+<BaseLayout
+  title={pageTitle}
+  description={pageDescription}
+  image="/images/city-river-tour-hero.webp"
+  bookGift
+>
   {/* Schema.org structured data (WebPage + FAQPage) */}
   <script type="application/ld+json" is:inline set:html={JSON.stringify(structuredData)} />
 
@@ -205,7 +212,9 @@ const structuredData = {
       </div>
     </section>
 
-    <div class="mx-auto max-w-6xl px-4 py-12 sm:px-6 md:py-16 lg:px-8">
+    {/* pb-24 on mobile clears the fixed sticky Book Now bar, which would otherwise overlay
+        the end of this last section. Released at md, where the sticky bar is hidden. */}
+    <div class="mx-auto max-w-6xl px-4 pt-12 pb-24 sm:px-6 md:py-16 lg:px-8">
       <div class="space-y-16">
         {/* Popular experiences to gift */}
         <section aria-labelledby="experiences">

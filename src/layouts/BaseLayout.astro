@@ -13,6 +13,7 @@ interface Props {
   ogType?: string; // og:type, e.g. "website" | "article"
   breadcrumbs?: Crumb[]; // override the auto-derived breadcrumb trail
   bookProductID?: string; // page primary product → header Book Now opens it (else the chooser)
+  bookGift?: boolean; // header Book Now opens the product-less gift flow (gift-vouchers)
 }
 
 const {
@@ -23,6 +24,7 @@ const {
   ogType = 'website',
   breadcrumbs,
   bookProductID,
+  bookGift,
 } = Astro.props;
 
 // PUBLIC PATH — the URL we actually want to advertise, which is NOT Astro.url.pathname.
@@ -221,7 +223,7 @@ const gtmId = process.env.GTM_CONTAINER_ID;
     >
       Skip to content
     </a>
-    <Header bookProductID={bookProductID} />
+    <Header bookProductID={bookProductID} bookGift={bookGift} />
     <main id="main" class="flex-grow bg-white">
       <slot />
     </main>
