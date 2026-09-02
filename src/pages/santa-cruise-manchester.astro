@@ -158,8 +158,10 @@ const structuredData = {
     </div>
   </div>
 
-  {/* Mobile sticky Book Now (Santa Cruise) — scrolls to the booking panel; no Ventrata script yet. */}
+  {/* Mobile sticky Book Now (Santa Cruise) — opens the Ventrata pop-up for the Santa product.
+      (It previously scrolled to the panel with a comment claiming no Ventrata script was loaded;
+      the script has shipped site-wide via <Header> since AGENTS rule 9, so that was stale.) */}
   <div class="fixed inset-x-0 bottom-0 z-40 border-t border-black/10 bg-white/95 p-3 backdrop-blur md:hidden">
-    <CTAButton href="#book" class="w-full">Book Now</CTAButton>
+    <VentrataWidget mode="popup" productID={SANTA_CRUISE_ID} label="Book Now" href="#book" class="w-full" />
   </div>
 </BaseLayout>

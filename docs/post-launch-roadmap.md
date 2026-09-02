@@ -81,6 +81,31 @@ before building. Needs auth (staff-only), and careful PII handling (server-side 
 
 ## Platform
 
+### CI on push to `main` — Keystatic commits currently deploy unchecked
+
+**The gap.** `.github/workflows/ci.yml` runs on `pull_request` only. Every check we have —
+`astro check`, the production build, `check-schema`, `verify-cms-wiring` — therefore runs on
+*our* PRs and on nothing else.
+
+But Keystatic is configured with GitHub storage on the `main` branch, so **every content save
+Simon makes in the CMS is a direct commit to `main` that auto-deploys** (see CLAUDE.md → Deploy
+flow). Those commits never pass through a PR, so they reach production with **zero checks**. A
+save that breaks a required frontmatter field, or drops a referenced image, fails the Netlify
+build — or worse, builds and ships something wrong.
+
+**The fix.** Add a `push: branches: [main]` trigger to the same workflow. The steps do not
+need to change; it is the same job on a second trigger.
+
+**Why it is post-launch, not now.** It is a detection improvement, not a prevention one — CI
+failing after the fact does not stop the Netlify deploy that ran in parallel. Doing it properly
+means deciding what happens *when* it fails (alert Simon? auto-revert? a Netlify build hook that
+gates on the check?), and that decision needs a real content-editing pattern to reason about.
+Ship it, watch how the CMS is actually used, then wire the response.
+
+**Interim mitigation.** Netlify's own build failing is the current backstop: a save that breaks
+the build does not publish. That covers hard failures but not soft ones (a page that builds with
+a placeholder or a broken image).
+
 **Keystatic in-CMS image upload + optimisation pipeline.** Let editors upload images directly in
 Keystatic (rather than pasting paths), with a **build-time WebP optimisation** step (card + large
 variants, as the ingest tool produces). Options in `docs/content-management.md`: consolidate gallery

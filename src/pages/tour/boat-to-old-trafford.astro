@@ -10,6 +10,7 @@ import CTASection from '../../components/CTASection.astro';
 import MapTapActivate from '../../components/MapTapActivate.astro';
 import { site } from '../../data/site';
 import { departurePoints, TRAFFORD_WHARF, OLD_TRAFFORD } from '../../data/mufcFerry';
+import { MUFC_FERRY_ID } from '../../lib/whatsOn';
 import copy from '../../content/page-copy/boat-to-old-trafford.json';
 import { sec, faqGroup, faqs as faqItems, str, fill } from '../../lib/pageCopy';
 
@@ -65,7 +66,16 @@ const crumbs = [
 ];
 ---
 
-<BaseLayout title={pageTitle} description={pageDescription} breadcrumbs={crumbs} image="/images/boat-to-old-trafford-hero.webp">
+{/* bookProductID: the hub's primary product is the ferry itself, so the persistent Book Now
+    opens it rather than the all-products chooser. The two departure-point pages already do
+    this for their own point. */}
+<BaseLayout
+  title={pageTitle}
+  description={pageDescription}
+  breadcrumbs={crumbs}
+  image="/images/boat-to-old-trafford-hero.webp"
+  bookProductID={MUFC_FERRY_ID}
+>
   {/* Schema.org structured data (Service) */}
   <script type="application/ld+json" is:inline set:html={JSON.stringify(structuredData)} />
 

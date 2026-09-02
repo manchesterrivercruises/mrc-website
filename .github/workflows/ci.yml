@@ -36,5 +36,11 @@ jobs:
       - name: Build
         run: npm run build
 
+      # Schema-only TBC gate. Distinct from launch-gate (which fails on TBC anywhere in the
+      # HTML and cannot pass until cutover): visible "(TBC)" is honest, the same text inside
+      # JSON-LD is a false claim to a search engine, so that subset is enforced from today.
+      - name: Structured data (no TBC in JSON-LD)
+        run: npm run check-schema
+
       - name: Verify CMS wiring
         run: npm run verify-cms-wiring

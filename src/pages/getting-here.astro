@@ -14,9 +14,6 @@ const pageDescription =
 const boardingPhoto = '/images/gallery/our-boats/boats-moored-at-millennium-footbridge.webp';
 const boardingPhotoCard = '/images/gallery/our-boats/boats-moored-at-millennium-footbridge-card.webp';
 
-const placeholderTile =
-  'flex items-center justify-center rounded-card border border-dashed border-black/15 bg-panel p-8 text-center text-sm text-subtle';
-
 const structuredData = {
   '@context': 'https://schema.org',
   '@type': 'Place',
@@ -39,10 +36,31 @@ const structuredData = {
       MediaCityUK — a short walk from The Lowry and the Imperial War Museum North.
     </p>
 
-    {/* Map embed placeholder + owned boarding-point photo */}
+    {/* Google Maps embed + owned boarding-point photo */}
     <div class="mt-8 grid gap-4 sm:grid-cols-2">
-      {/* Google Maps embed placeholder — the <iframe> embed drops in here. */}
-      <div class={`aspect-video ${placeholderTile}`}>Google Maps embed loads here (TBC)</div>
+      {/* Google Maps embed for the boarding point.
+          - The keyless `?q=…&output=embed` form: no API key to leak, rotate or bill, and no
+            Maps JS API quota. It renders the same interactive map.
+          - loading="lazy" keeps the Maps payload off the critical path; the map is below the
+            fold on every viewport.
+          - referrerpolicy no-referrer-when-downgrade matches Google's own embed snippet.
+          - title is required for a11y: an untitled iframe is an unlabelled landmark.
+          ⚠ CSP — needs frame-src https://maps.google.com https://www.google.com. BOTH: the
+            src is maps.google.com, which 301s to www.google.com/maps/embed (confirmed), and
+            frame-src is enforced against the redirect target too. Nothing else is needed —
+            our CSP does NOT govern subresources INSIDE a cross-origin iframe (the tiles,
+            fonts and XHRs load under Google's own document and policy), so no img-src or
+            connect-src entry is required. Neither origin is in the Report-Only policy yet;
+            recorded in docs/launch-checklist.md so the enforce step includes them, otherwise
+            enforcing CSP silently blanks this map. */}
+      <iframe
+        title="Map showing the Manchester River Cruises boarding point at the Millennium Footbridge, Salford Quays"
+        src="https://maps.google.com/maps?q=Millennium%20Footbridge%2C%20The%20Quays%2C%20Salford%20M50%203RB&z=16&output=embed"
+        loading="lazy"
+        referrerpolicy="no-referrer-when-downgrade"
+        class="aspect-video w-full rounded-card ring-1 ring-black/5"
+        style="border:0"
+      ></iframe>
       <img
         src={boardingPhoto}
         srcset={`${boardingPhotoCard} 800w, ${boardingPhoto} 1600w`}

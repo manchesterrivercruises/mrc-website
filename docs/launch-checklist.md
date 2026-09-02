@@ -61,6 +61,23 @@ npm run build && npm run launch-gate
 
 Clear every hit (CMS page-copy, vessel YAML, component fallbacks such as `imageLabel = 'Image (TBC)'`) and re-run until it exits 0.
 
+### The schema half is ALREADY enforced
+
+`npm run check-schema` (scripts/check-schema.mjs) is the strict subset of this gate, and it runs in
+PR CI **today**. It fails if `TBC` appears inside any emitted JSON-LD value, and if any JSON-LD
+block does not parse.
+
+The split is deliberate. Visible "(TBC)" is honest — a reader sees the detail is provisional.
+The same string inside `<script type="application/ld+json">` is a factual claim made to a search
+engine, and Google requires structured data to reflect real page content. So schema is zero-
+tolerance from now, while visible copy stays tolerated until cutover.
+
+Pages build their FAQ schema through `schemaSafeFaqs()` (src/lib/pageCopy.ts), which drops
+unconfirmed answers from the schema while leaving them on the page — and omits the `FAQPage`
+node entirely if nothing survives, since an empty `mainEntity` asserts an FAQ that does not
+exist. **As TBC answers get confirmed they rejoin the schema automatically**, with no code
+change.
+
 ---
 
 ## Re-enforce Content-Security-Policy
@@ -92,6 +109,26 @@ Before cutover:
       `Content-Security-Policy` in `netlify.toml` (enforce).
 - [ ] Re-verify the full booking + payment flow and maps work with the policy
       **enforced** on a deploy preview before promoting to production.
+
+### Google Maps embed — origins to add before enforcing (added 2026-09-02)
+
+`/getting-here` now carries a real Google Maps embed (it replaced a "(TBC)" placeholder tile).
+It needs **two** frame-src origins:
+
+```
+frame-src … https://maps.google.com https://www.google.com
+```
+
+Both, not one: the iframe `src` is `maps.google.com`, which **301s to
+`www.google.com/maps/embed`** (confirmed by request), and `frame-src` is enforced against the
+redirect target as well as the initial URL. Allowing only the first blanks the map.
+
+Nothing else is required. Our CSP does **not** govern subresources *inside* a cross-origin
+iframe — the map tiles, fonts and XHRs load under Google's own document and its own policy —
+so no `img-src` or `connect-src` entry is needed for the embed.
+
+⚠ These are **not** in the Report-Only policy yet, so the report-only console will not warn
+about them. Enforcing without adding them silently blanks the map.
 
 ### Confirmed origins from live violation harvest (report-only console, 2026-07-15)
 
@@ -169,12 +206,40 @@ Ventrata redirects only fire on 404s, not live page changes.
 - [ ] Ventrata product IDs all live (not placeholders)
 - [ ] **Ventrata dashboard toggles enabled** — Allow Gift Voucher (gift flow) and Waitlists (sold-out
   "Notify me" step). See `docs/ventrata-integration.md` → "Ventrata dashboard settings to enable".
-- [ ] DNS updated at domain registrar — CNAME to Netlify
+- [ ] **DNS at the registrar — both records.** `www` CNAME to the Netlify site, and the
+  **apex** (`manchesterrivercruises.com`) pointed at Netlify too. The apex cannot be a CNAME
+  (RFC 1034), so use Netlify DNS (an ALIAS/ANAME on their nameservers) or the registrar's
+  own apex-flattening record. Getting only `www` up means every apex link and bookmark —
+  including the ones in the legacy 301 map — fails to resolve.
+- [ ] **Apex → www redirect confirmed at Netlify.** `www` is canonical everywhere on this
+  site (`site` in `astro.config.mjs`, every canonical, the sitemap), so the apex must 301 to
+  it. Netlify does this automatically once the apex is registered as a domain alias with
+  `www` set primary — verify it rather than assume: `curl -sI https://manchesterrivercruises.com`
+  should return 301 with `location: https://www.manchesterrivercruises.com/`.
+- [ ] **HTTP → HTTPS forced at Netlify.** Enable "Force HTTPS" once the certificate is live.
+  HSTS is already sent (`max-age=31536000; includeSubDomains`), but HSTS only protects a
+  browser that has *already* seen an HTTPS response — the first plain-HTTP hit still needs a
+  server-side 301. Check all four entry points: apex and www, HTTP and HTTPS.
 - [ ] SSL certificate provisioned (automatic on Netlify)
 - [ ] manchesterrivercruises.com confirmed live on new site
 - [ ] Notify current developer — Craft CMS site to be decommissioned
 - [ ] New sitemap submitted to Google Search Console
 - [ ] Google Search Console monitoring set up for crawl errors
+- [ ] **Rich Results Test on the five schema-bearing page types.** Run
+  <https://search.google.com/test/rich-results> against the LIVE URLs — a local build can pass
+  while production differs (redirects, CSP, or a Netlify transform). One page per schema shape,
+  because they fail independently:
+
+  | Page | URL | What must validate |
+  |---|---|---|
+  | Homepage | `/` | `WebSite` + `TouristAttraction`/`LocalBusiness` with `aggregateRating` |
+  | City River Tour | `/tour/city-river-tours` | the flagship product page + breadcrumbs |
+  | FAQ | `/faq` | `FAQPage` — confirm it lists only CONFIRMED answers (see the TBC gate below) |
+  | Ferry | `/tour/boat-to-old-trafford` | product + `BreadcrumbList` on a nested route |
+  | Santa | `/santa-cruise-manchester` | the seasonal landing page's schema |
+
+  `npm run check-schema` already guarantees every block parses and asserts no TBC value, but it
+  cannot tell you whether Google *accepts* the shape — that is what this step is for.
 
 ---
 

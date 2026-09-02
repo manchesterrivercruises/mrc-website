@@ -9,7 +9,7 @@ import KeyFacts from '../components/KeyFacts.astro';
 import EventGalleryStrip from '../components/EventGalleryStrip.astro';
 import { getAlbums } from '../lib/gallery';
 import copy from '../content/page-copy/christmas-cruises-manchester.json';
-import { sec, cards, faqGroup, faqs as faqItems, str } from '../lib/pageCopy';
+import { cards, faqGroup, faqs as faqItems, schemaSafeFaqs, sec, str } from '../lib/pageCopy';
 
 // EDITABLE COPY lives in the CMS (Page copy → christmas-cruises-manchester) and is
 // stored in src/content/page-copy/christmas-cruises-manchester.json. This template
@@ -86,6 +86,7 @@ const pageDescription = copy.seoDescription!;
 // Schema.org — TouristAttraction + FAQPage ONLY. No Product/Offer/InStock: this hub sells no single
 // dated product (party dates live in Ventrata; the Santa product lives on its own page), so a Product
 // with a price/InStock offer here would be dishonest — and was deliberately removed in this pass.
+const schemaFaqs = schemaSafeFaqs(faqs);
 const structuredData = {
   '@context': 'https://schema.org',
   '@graph': [
@@ -99,14 +100,21 @@ const structuredData = {
       address: { '@type': 'PostalAddress', ...site.address },
       geo: { '@type': 'GeoCoordinates', ...site.geo },
     },
-    {
-      '@type': 'FAQPage',
-      mainEntity: faqs.map((f) => ({
-        '@type': 'Question',
-        name: f.q,
-        acceptedAnswer: { '@type': 'Answer', text: f.a },
-      })),
-    },
+    // FAQPage only when at least one answer is CONFIRMED — see schemaSafeFaqs. Every question
+    // still renders on the page; a "(TBC)" answer is honest to a reader but would be a false
+    // claim to a search engine, and an FAQPage with an empty mainEntity is worse than none.
+    ...(schemaFaqs.length
+      ? [
+          {
+            '@type': 'FAQPage',
+            mainEntity: schemaFaqs.map((f) => ({
+              '@type': 'Question',
+              name: f.q,
+              acceptedAnswer: { '@type': 'Answer', text: f.a },
+            })),
+          },
+        ]
+      : []),
   ],
 };
 ---

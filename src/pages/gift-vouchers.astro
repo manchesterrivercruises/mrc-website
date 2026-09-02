@@ -10,7 +10,7 @@ import { siteImages } from '../data/siteImages';
 import FAQSection from '../components/FAQSection.astro';
 import VentrataWidget from '../components/VentrataWidget.astro';
 import copy from '../content/page-copy/gift-vouchers.json';
-import { sec, cards, card, faqGroup, faqs as faqItems, str } from '../lib/pageCopy';
+import { card, cards, faqGroup, faqs as faqItems, schemaSafeFaqs, sec, str } from '../lib/pageCopy';
 
 // EDITABLE COPY lives in the CMS (Page copy → gift-vouchers) and is stored in
 // src/content/page-copy/gift-vouchers.json. This template owns STRUCTURE ONLY —
@@ -77,6 +77,7 @@ const pageDescription = copy.seoDescription!;
 
 // Schema.org: WebPage + FAQPage (built from the visible Q&A). Amounts/denominations are TBC, so no
 // priced Product/Offer is claimed (an honest fallback until pricing is confirmed).
+const schemaFaqs = schemaSafeFaqs(faqs);
 const structuredData = {
   '@context': 'https://schema.org',
   '@graph': [
@@ -87,19 +88,33 @@ const structuredData = {
       url: `${SITE}/gift-vouchers`,
       about: { '@id': `${SITE}#business` },
     },
-    {
-      '@type': 'FAQPage',
-      mainEntity: faqs.map((f) => ({
-        '@type': 'Question',
-        name: f.q,
-        acceptedAnswer: { '@type': 'Answer', text: f.a },
-      })),
-    },
+    // FAQPage only when at least one answer is CONFIRMED — see schemaSafeFaqs. Every question
+    // still renders on the page; a "(TBC)" answer is honest to a reader but would be a false
+    // claim to a search engine, and an FAQPage with an empty mainEntity is worse than none.
+    ...(schemaFaqs.length
+      ? [
+          {
+            '@type': 'FAQPage',
+            mainEntity: schemaFaqs.map((f) => ({
+              '@type': 'Question',
+              name: f.q,
+              acceptedAnswer: { '@type': 'Answer', text: f.a },
+            })),
+          },
+        ]
+      : []),
   ],
 };
 ---
 
-<BaseLayout title={pageTitle} description={pageDescription} image="/images/city-river-tour-hero.webp">
+{/* bookGift: every CTA on this page buys a voucher, so the persistent Book Now must too —
+    landing a gift-shopper on the all-products chooser is the wrong journey. */}
+<BaseLayout
+  title={pageTitle}
+  description={pageDescription}
+  image="/images/city-river-tour-hero.webp"
+  bookGift
+>
   {/* Schema.org structured data (WebPage + FAQPage) */}
   <script type="application/ld+json" is:inline set:html={JSON.stringify(structuredData)} />
 
@@ -205,7 +220,9 @@ const structuredData = {
       </div>
     </section>
 
-    <div class="mx-auto max-w-6xl px-4 py-12 sm:px-6 md:py-16 lg:px-8">
+    {/* pb-24 on mobile clears the fixed sticky Book Now bar, which would otherwise overlay
+        the end of this last section. Released at md, where the sticky bar is hidden. */}
+    <div class="mx-auto max-w-6xl px-4 pt-12 pb-24 sm:px-6 md:py-16 lg:px-8">
       <div class="space-y-16">
         {/* Popular experiences to gift */}
         <section aria-labelledby="experiences">

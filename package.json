@@ -11,7 +11,8 @@
     "astro": "astro",
     "check": "astro check",
     "verify-cms-wiring": "node --experimental-strip-types --disable-warning=ExperimentalWarning scripts/verify-cms-wiring.mjs",
-    "launch-gate": "node scripts/launch-gate.mjs"
+    "launch-gate": "node scripts/launch-gate.mjs",
+    "check-schema": "node scripts/check-schema.mjs"
   },
   "dependencies": {
     "@astrojs/markdoc": "^0.15.11",
@@ -25,6 +26,7 @@
     "photoswipe": "^5.4.4",
     "react": "^19.2.7",
     "react-dom": "^19.2.8",
+    "sharp": "^0.34.5",
     "tailwindcss": "^4.3.3"
   },
   "devDependencies": {

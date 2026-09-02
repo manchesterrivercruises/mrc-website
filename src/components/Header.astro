@@ -6,12 +6,22 @@ interface Props {
   /** Primary product for this page — the header Book Now opens that product's checkout.
       Omit on generic pages to open Ventrata's all-products chooser instead. */
   bookProductID?: string;
+  /** Open Ventrata's product-less GIFT flow instead of a product checkout. For /gift-vouchers,
+      where "Book Now" landing on the all-products chooser is the wrong journey — the whole page
+      is about buying a voucher. Mutually exclusive with bookProductID; gift wins if both are set. */
+  bookGift?: boolean;
 }
-const { bookProductID } = Astro.props;
+const { bookProductID, bookGift } = Astro.props;
 
-// data-config for the header Book Now trigger: a specific product where the page has one,
-// else an empty object → Ventrata's all-products chooser (dashboard controls its order).
-const bookConfig = bookProductID ? JSON.stringify({ productID: bookProductID }) : '{}';
+// data-config for the header Book Now trigger:
+//   gift          → the product-less gift flow (same verbatim shape VentrataWidget emits)
+//   a product ID  → that product's checkout
+//   neither       → {} = Ventrata's all-products chooser (dashboard controls its order)
+const bookConfig = bookGift
+  ? JSON.stringify({ features: { gifts: { mode: 'simple' } } })
+  : bookProductID
+    ? JSON.stringify({ productID: bookProductID })
+    : '{}';
 ---
 
 <header class="sticky top-0 z-50 border-b border-white/10 bg-dark text-white">
@@ -37,7 +47,7 @@ const bookConfig = bookProductID ? JSON.stringify({ productID: bookProductID }) 
           product it opens that product; otherwise the all-products chooser. href="/whats-on"
           is the no-JS fallback (Ventrata intercepts the click when its script is active). */}
       <a
-        href="/whats-on"
+        href={bookGift ? '/gift-vouchers#gift-widget' : '/whats-on'}
         ventrata-checkout
         data-config={bookConfig}
         class="btn btn-primary text-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"

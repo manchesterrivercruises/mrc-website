@@ -234,8 +234,24 @@ const crumbs = [
   </div>
 
   {/* Mobile sticky Book Now — scrolls to the booking panel */}
+  {/* Mobile sticky Book Now. With a Ventrata product this OPENS the checkout pop-up — the
+      same behaviour as the City River Tour page — rather than scrolling to the panel and
+      making the visitor tap twice. Events with no product ID yet keep the scroll-to-panel
+      anchor, which is the honest fallback. */}
   <div class="fixed inset-x-0 bottom-0 z-40 border-t border-black/10 bg-white/95 p-3 backdrop-blur md:hidden">
-    <CTAButton href="#book" class="w-full">Book now{priceFrom != null ? ` · from £${priceFrom}` : ''}</CTAButton>
+    {
+      ventrataProductId ? (
+        <VentrataWidget
+          mode="popup"
+          productID={ventrataProductId}
+          label={`Book now${priceFrom != null ? ` · from £${priceFrom}` : ''}`}
+          href="#book"
+          class="w-full"
+        />
+      ) : (
+        <CTAButton href="#book" class="w-full">Book now{priceFrom != null ? ` · from £${priceFrom}` : ''}</CTAButton>
+      )
+    }
   </div>
 </BaseLayout>
 

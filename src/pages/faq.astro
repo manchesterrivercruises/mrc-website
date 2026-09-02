@@ -3,7 +3,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 import FAQSection from '../components/FAQSection.astro';
 import CTAButton from '../components/CTAButton.astro';
 import copy from '../content/page-copy/faq.json';
-import { faqGroup, faqs, str } from '../lib/pageCopy';
+import { faqGroup, faqs, schemaSafeFaqs, str } from '../lib/pageCopy';
 
 // EDITABLE COPY lives in the CMS (Page copy → faq) and is stored in
 // src/content/page-copy/faq.json. This template owns STRUCTURE ONLY — layout, components,
@@ -23,22 +23,28 @@ const FAQ_GROUPS = [
 const pageTitle = copy.seoTitle!;
 const pageDescription = copy.seoDescription!;
 
-// FAQPage schema built from every Q&A on the page.
+// FAQPage schema built from the Q&A on the page whose answers are CONFIRMED. Every question
+// still renders visually — schemaSafeFaqs only filters what we assert to search engines.
 const allFaqs = FAQ_GROUPS.flatMap((g) => g.items);
-const structuredData = {
-  '@context': 'https://schema.org',
-  '@type': 'FAQPage',
-  mainEntity: allFaqs.map((f) => ({
-    '@type': 'Question',
-    name: f.q,
-    acceptedAnswer: { '@type': 'Answer', text: f.a },
-  })),
-};
+const schemaFaqs = schemaSafeFaqs(allFaqs);
+// Null when no answer is confirmed — an FAQPage with an empty mainEntity asserts an FAQ
+// that, as far as a search engine is concerned, does not exist.
+const structuredData = schemaFaqs.length
+  ? {
+      '@context': 'https://schema.org',
+      '@type': 'FAQPage',
+      mainEntity: schemaFaqs.map((f) => ({
+        '@type': 'Question',
+        name: f.q,
+        acceptedAnswer: { '@type': 'Answer', text: f.a },
+      })),
+    }
+  : null;
 ---
 
 <BaseLayout title={pageTitle} description={pageDescription}>
-  {/* Schema.org structured data (FAQPage) */}
-  <script type="application/ld+json" is:inline set:html={JSON.stringify(structuredData)} />
+  {/* Schema.org structured data (FAQPage) — omitted entirely when no answer is confirmed. */}
+  {structuredData && <script type="application/ld+json" is:inline set:html={JSON.stringify(structuredData)} />}
 
   <div class="mx-auto max-w-3xl px-4 py-16 sm:px-6 md:py-20">
     <h1 class="text-3xl font-bold tracking-tight text-ink sm:text-4xl">{copy.heading}</h1>

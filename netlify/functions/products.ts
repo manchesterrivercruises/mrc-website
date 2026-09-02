@@ -3,6 +3,11 @@
 // The OCTO connection key (VENTRATA_OCTO_KEY) is SERVER-SIDE ONLY. It is never sent
 // to the client — the browser only ever talks to this function, never to Ventrata.
 // Cache: products change rarely, so cache for 1 hour.
+//
+// Guarded with { requireSiteOrigin: true } like every other OCTO proxy here. Nothing in the
+// site calls this endpoint today (it is listed in docs/ventrata-integration.md as part of the
+// function surface, and CLAUDE.md's build sequence step 7 specifies it), but it is publicly
+// reachable, so it is gated rather than left open.
 
 import { withGuard, jsonError } from '../lib/guard';
 import { filterProductsResponse } from '../lib/products';
@@ -63,4 +68,10 @@ export default withGuard(async (request: Request): Promise<Response> => {
     console.error('products: failed to reach the OCTO API');
     return jsonError('Upstream service error', 502);
   }
-});
+},
+  // Same Origin/Referer allowlist as day-finder / event-days / reviews. This endpoint has no
+  // caller in the site today, but it is a PUBLIC URL that proxies OCTO with our server-side
+  // key, so an ungated instance is free quota burn for anyone who finds it. Gating costs
+  // nothing and is the correct posture whenever it is wired up.
+  { requireSiteOrigin: true },
+);

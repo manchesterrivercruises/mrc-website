@@ -1,0 +1,75 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import CTAButton from '../components/CTAButton.astro';
+
+// Branded 404. Astro emits this as /404.html and the Netlify adapter wires it as the site's
+// not-found page, so it is served WITH a real 404 status — a soft-404 (200 + "not found" copy)
+// would let Google index every mistyped URL as a valid page.
+//
+// Deliberately search-free: the site has no search index, and a search box that cannot search
+// is a worse dead end than a good set of links. Instead this offers the two journeys that
+// recover the most lost visitors — the flagship product and the live dates listing — plus the
+// same primary destinations as the header nav, so a mistyped legacy URL still lands somewhere
+// useful. The header and footer come from BaseLayout, so full navigation is present regardless.
+//
+// prerender is left at the project default (static): the page must exist as a file for Netlify
+// to serve it on any unmatched path.
+
+const links = [
+  { label: "What's On", href: '/whats-on', desc: 'Every upcoming sailing and event date.' },
+  { label: 'Events & Special Cruises', href: '/events', desc: 'Live music, DJ nights and seasonal specials.' },
+  { label: 'Boat to Old Trafford', href: '/tour/boat-to-old-trafford', desc: 'Matchday ferry along the Ship Canal.' },
+  { label: 'Private Hire', href: '/private-hire', desc: 'The whole boat, for your own occasion.' },
+  { label: 'Plan Your Visit', href: '/plan-your-visit', desc: 'Getting here, accessibility and FAQs.' },
+  { label: 'Gallery', href: '/gallery', desc: 'Photos from the cruises and the canal.' },
+];
+---
+
+<BaseLayout
+  title="Page not found — Manchester River Cruises"
+  description="That page could not be found. Browse upcoming sailings, the City River Tour, or plan your visit to Manchester River Cruises at Salford Quays."
+>
+  {/* Keep 404s out of the index entirely — they carry no content worth ranking, and a
+      mistyped URL should never compete with the real page. */}
+  <meta slot="head" name="robots" content="noindex, follow" />
+
+  <section class="bg-dark text-white">
+    <div class="mx-auto max-w-3xl px-4 py-20 text-center sm:px-6 md:py-28 lg:px-8">
+      <p class="text-sm font-semibold uppercase tracking-[0.2em] text-accent">Error 404</p>
+      <h1 class="mt-3 text-4xl font-bold tracking-tight text-white sm:text-5xl">
+        This page may have sailed
+      </h1>
+      <p class="mx-auto mt-5 max-w-xl text-lg leading-relaxed text-white/80">
+        We couldn't find that page. It may have moved, or the link may be out of date — but the
+        boats are still running, so let's get you back on board.
+      </p>
+      <div class="mt-8 flex flex-wrap items-center justify-center gap-4">
+        <CTAButton href="/tour/city-river-tours">Book the City River Tour</CTAButton>
+        <CTAButton href="/whats-on" variant="outline-inverse">See what's on</CTAButton>
+      </div>
+    </div>
+  </section>
+
+  <div class="mx-auto max-w-4xl px-4 py-16 sm:px-6 md:py-20 lg:px-8">
+    <h2 class="text-center text-xl font-semibold text-ink">Or head somewhere else</h2>
+    <ul class="mt-8 grid grid-cols-1 gap-4 sm:grid-cols-2">
+      {
+        links.map((l) => (
+          <li>
+            <a
+              href={l.href}
+              class="group block h-full rounded-card bg-panel p-5 ring-1 ring-black/5 transition hover:ring-primary/40 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+            >
+              <strong class="block text-ink group-hover:underline">{l.label}</strong>
+              <span class="mt-1 block text-sm leading-relaxed text-subtle">{l.desc}</span>
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+    <p class="mt-10 text-center text-sm text-subtle">
+      Still stuck? <a href="/contact-us" class="font-medium text-primary hover:underline">Get in touch</a> and we'll
+      point you the right way.
+    </p>
+  </div>
+</BaseLayout>

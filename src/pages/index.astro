@@ -203,8 +203,10 @@ const structuredData = {
   {/* Ventrata checkout loader now ships site-wide via <Header> (AGENTS rule 9).
       bookProductID opens City River Tour from the persistent Book Now (rule 9). */}
 
-  {/* LCP preload — discovers the hero in <head>. imagesrcset/imagesizes mirror the
-      PageHero <img> candidate: mobile takes the 800px card, desktop the 1600px hero. */}
+  {/* LCP preload — discovers the hero in <head>, earlier than the in-body <link> PageHero
+      would emit. imagesrcset/imagesizes MIRROR the PageHero <img> exactly (same two candidates,
+      same sizes) so the preload and the image are one resource, not two. PageHero is passed
+      preload={false} so this is the page's ONLY hero preload. */}
   <link
     slot="head"
     rel="preload"
@@ -224,7 +226,9 @@ const structuredData = {
     title={copy.heading!}
     subtitle={copy.intro}
     heroImage={HERO_IMAGE}
+    heroImageCard={HERO_IMAGE_CARD}
     heroImageAlt={str(copy, 'heroImageAlt')}
+    preload={false}
   >
     <CTAButton href={HERO_HREF}>{str(copy, 'heroCtaLabel')}</CTAButton>
     <CTAButton href="/whats-on" variant="outline-inverse">{str(copy, 'heroSecondaryLabel')}</CTAButton>

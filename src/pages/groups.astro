@@ -9,7 +9,7 @@ import CTASection from '../components/CTASection.astro';
 import FAQSection from '../components/FAQSection.astro';
 import GettingHere from '../components/GettingHere.astro';
 import copy from '../content/page-copy/groups.json';
-import { sec, list, faqGroup, faqs as faqItems, str } from '../lib/pageCopy';
+import { faqGroup, faqs as faqItems, list, schemaSafeFaqs, sec, str } from '../lib/pageCopy';
 
 // Group Visits, School Trips & Coach Parties landing page.
 // Three audience sections (group bookings 10+, schools & youth, coach parties/trade),
@@ -79,6 +79,7 @@ const pageDescription = copy.seoDescription!;
 
 // Schema.org: TouristAttraction (the group offer) + FAQPage. LocalBusiness NAP is
 // emitted once site-wide from BaseLayout (`#business`).
+const schemaFaqs = schemaSafeFaqs(faqs);
 const structuredData = {
   '@context': 'https://schema.org',
   '@graph': [
@@ -92,14 +93,21 @@ const structuredData = {
       address: { '@type': 'PostalAddress', ...site.address },
       geo: { '@type': 'GeoCoordinates', ...site.geo },
     },
-    {
-      '@type': 'FAQPage',
-      mainEntity: faqs.map((f) => ({
-        '@type': 'Question',
-        name: f.q,
-        acceptedAnswer: { '@type': 'Answer', text: f.a },
-      })),
-    },
+    // FAQPage only when at least one answer is CONFIRMED — see schemaSafeFaqs. Every question
+    // still renders on the page; a "(TBC)" answer is honest to a reader but would be a false
+    // claim to a search engine, and an FAQPage with an empty mainEntity is worse than none.
+    ...(schemaFaqs.length
+      ? [
+          {
+            '@type': 'FAQPage',
+            mainEntity: schemaFaqs.map((f) => ({
+              '@type': 'Question',
+              name: f.q,
+              acceptedAnswer: { '@type': 'Answer', text: f.a },
+            })),
+          },
+        ]
+      : []),
   ],
 };
 ---
