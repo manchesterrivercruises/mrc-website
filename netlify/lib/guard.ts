@@ -72,6 +72,15 @@ export function jsonError(message: string, status: number, origin: string | null
 type Handler = (request: Request) => Promise<Response>;
 
 export type GuardOptions = {
+  // Exact set of query-string keys this endpoint accepts. When present, a request carrying ANY
+  // other key is rejected 400 BEFORE the handler runs — so before any upstream call, any Blobs
+  // read, and before the response gets a cacheable status.
+  //
+  // This is a cost control as much as an input check. Unknown keys are part of the CDN cache
+  // key, so `?cb=1`, `?cb=2`, … are unlimited distinct cache entries that all miss and all pay
+  // the full upstream fan-out. Ignoring unknown keys silently would leave that amplification
+  // open to any anonymous caller. An endpoint that takes no query at all should pass [].
+  allowedQueryKeys?: readonly string[];
   // Browser-facing endpoints (day-finder, event-days, reviews). Reject unless Origin
   // OR Referer matches the allowlist. This RAISES THE BAR against casual curl/bot
   // quota burn — it does not guarantee anything: both headers are attacker-controlled
@@ -107,6 +116,16 @@ export function withGuard(handler: Handler, options: GuardOptions = {}): Handler
     }
     if (options.requireSiteOrigin && !requestFromAllowedSite(request)) {
       return jsonError('Forbidden origin', 403, null);
+    }
+
+    // Unknown query keys → 400, before any upstream work. See allowedQueryKeys.
+    if (options.allowedQueryKeys) {
+      const allowed = new Set(options.allowedQueryKeys);
+      for (const key of new URL(request.url).searchParams.keys()) {
+        if (!allowed.has(key)) {
+          return jsonError('Invalid request', 400, origin);
+        }
+      }
     }
 
     // CORS preflight.

@@ -37,11 +37,23 @@ Complete every item before switching the domain to the new site.
 
 ## OCTO function origin gate and rate limiting
 
-Browser-facing Netlify functions (`day-finder`, `event-days`, `reviews`) reject a request unless its `Origin` **or** `Referer` matches the exact-origin allowlist in `netlify/lib/guard.ts` (`www`, bare domain, `new.` subdomain, current Netlify staging, optional `STAGING_ORIGIN`). `products.ts` is left without that flag (server-to-server / no-Origin callers).
+All remaining Netlify functions (`day-finder`, `event-days`, `reviews`) reject a request unless its `Origin` **or** `Referer` matches the exact-origin allowlist in `netlify/lib/guard.ts` (`www`, bare domain, `new.` subdomain, current Netlify staging, optional `STAGING_ORIGIN`). (`products.ts` was deleted — it had no caller.)
 
-This **raises the bar** against casual curl/bot quota burn. It does **not** guarantee anything: both headers are attacker-controlled, and privacy browsers may strip them (those clients then get 403). The in-memory per-IP limiter (~30 req/min) is per warm instance only.
+Every function also declares `allowedQueryKeys` and **rejects an unknown query key with 400 before any upstream call**. That closes a cache-busting amplification: unknown keys form part of the CDN cache key, so `?cb=1`, `?cb=2`, … were unlimited distinct entries that all missed and all paid the full upstream fan-out.
 
-**Global option:** Netlify **account-level rate limiting** (Team settings → Rate limiting / WAF). That is the durable control across instances and cold starts. Enable it on the production site before public traffic if OCTO quota or function cost is a concern. A shared store (Blobs / Upstash) is the code-side alternative, not currently implemented.
+Each function is also backed by a **Netlify Blobs cache** (`netlify/lib/cache.ts`) behind the CDN, so a CDN miss reads one aggregated blob rather than re-paying an ~19-product OCTO fan-out or a *billed* Google Places call.
+
+This all **raises the bar** against casual curl/bot quota burn. It does **not** guarantee anything: both headers are attacker-controlled, and privacy browsers may strip them (those clients then get 403). The in-memory per-IP limiter (~30 req/min) is per warm instance only — it resets on cold start and is not shared across concurrent instances.
+
+### ⛔ LAUNCH BLOCKER — enable Netlify account-level rate limiting
+
+- [ ] **Enable account-level rate limiting on the production site** (Team settings → Rate limiting / WAF) **before public traffic.**
+
+This was previously written up as a "global option… if OCTO quota or function cost is a concern". It is not optional. Everything above is either per-instance (the in-memory limiter, which an attacker defeats by simply spreading requests across cold starts) or defeatable by forging a header (the Origin/Referer gate). **Account-level limiting is the only control here that is durable across instances and not attacker-controlled** — without it there is no real ceiling on what an anonymous caller can spend of our OCTO quota and Google Places billing.
+
+The Blobs cache lowers the cost of each miss but does not cap the request rate, and Places is billed per request on a genuine miss.
+
+A shared store (Blobs / Upstash) counter is the code-side alternative if the account-level control turns out not to be available on the plan — but it is strictly a fallback, not a substitute, since it still runs after the request has reached us.
 
 The unused `availability` / `availability-calendar` **browser proxies** were removed (OCTO `/availability` is still called server-side from `day-finder` / `event-days` via `netlify/lib/octo.ts`).
 

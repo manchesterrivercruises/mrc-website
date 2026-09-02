@@ -109,6 +109,10 @@ export async function readAvailabilityInput(request: Request): Promise<Validatio
 
 const MONTH_RE = /^\d{4}-\d{2}$/;
 
+// How far ahead the day view will answer for. 400 days ≈ 13 months — past the furthest date
+// any product is on sale, with room for a full year's advance booking.
+const MAX_FUTURE_DAYS = 400;
+
 export type DayFinderResult =
   | { ok: true; value: { mode: 'month'; month: string } | { mode: 'day'; date: string } }
   | { ok: false; status: number; message: string };
@@ -128,7 +132,21 @@ export function readDayFinderQuery(url: URL): DayFinderResult {
     return { ok: true, value: { mode: 'month', month } };
   }
 
-  // date — reuse the strict ISO-date parser (rejects impossible calendar dates).
-  if (parseIsoDate(date as string) === null) return bad;
+  // date — strict ISO parse (rejects impossible calendar dates), then BOUND THE WINDOW.
+  //
+  // Month mode has always been bounded (year 2024–2032). Date mode was not: any well-formed
+  // date was accepted, so `?date=1970-01-01` through `?date=9999-12-31` were all distinct,
+  // cacheable, upstream-hitting requests — an unbounded key space an anonymous caller could
+  // walk to force endless cache misses. Bound it to the window a real visitor can act on:
+  // yesterday (timezone slack — the client may be a day behind UTC) to ~13 months ahead,
+  // comfortably past the furthest bookable sailing.
+  const dateTs = parseIsoDate(date as string);
+  if (dateTs === null) return bad;
+  const todayTs = Date.UTC(
+    new Date().getUTCFullYear(),
+    new Date().getUTCMonth(),
+    new Date().getUTCDate(),
+  );
+  if (dateTs < todayTs - MS_PER_DAY || dateTs > todayTs + MAX_FUTURE_DAYS * MS_PER_DAY) return bad;
   return { ok: true, value: { mode: 'day', date: date as string } };
 }
