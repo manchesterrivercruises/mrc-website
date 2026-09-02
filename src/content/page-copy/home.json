@@ -79,7 +79,7 @@
     { "key": "discoverImagePlaceholder", "value": "Image (TBC)" },
     { "key": "proofReviewsBefore", "value": "from" },
     { "key": "proofReviewsAfter", "value": "Google reviews" },
-    { "key": "statPoiValue", "value": "43" },
+    { "key": "statPoiValue", "value": "40+" },
     { "key": "statPoiLabel", "value": "Points of interest" },
     { "key": "statFleetLabel", "value": "Vessels in the fleet" },
     { "key": "statDepartingValue", "value": "Salford Quays" },

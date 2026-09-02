@@ -21,7 +21,7 @@
       "heading": "Explore the route",
       "body": [
         "This is a non-landing sightseeing cruise — you'll see all of this from the comfort of the boat, with live commentary throughout.",
-        "Follow the full Manchester Ship Canal route — tap a number for details, or read the sights in order below."
+        "Follow the route along the Manchester Ship Canal — tap a landmark for details, or read the sights in order below. Your guide covers over 40 points of interest live as you pass them."
       ]
     },
     {
@@ -43,7 +43,7 @@
       "body": [
         "The cruise follows the Manchester Ship Canal with live commentary at each landmark."
       ],
-      "note": "43 points of interest with live GPS commentary. The 12 highlights are flagged on the map and listed first below."
+      "note": "Over 40 points of interest are narrated live on board. The map shows the 12 landmarks the route is built around."
     },
     {
       "key": "dayOut",
@@ -139,7 +139,7 @@
     { "key": "topRatedBadge", "value": "Top Rated" },
     { "key": "cancellationBadge", "value": "24-hour cancellation" },
     { "key": "routeStopsSummaryBefore", "value": "View all" },
-    { "key": "routeStopsSummaryAfter", "value": "sights along the route" },
+    { "key": "routeStopsSummaryAfter", "value": "landmarks along the route" },
     {
       "key": "mapNoscript",
       "value": "Enable JavaScript to view the interactive route map. The full list of sights is below."
