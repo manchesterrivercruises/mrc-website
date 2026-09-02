@@ -1,4 +1,5 @@
 // @ts-check
+import fs from 'node:fs';
 import { defineConfig } from 'astro/config';
 import netlify from '@astrojs/netlify';
 import sitemap from '@astrojs/sitemap';
@@ -27,10 +28,13 @@ if (rawKeystaticSecret && !keystaticSecretOk) {
 }
 const keystaticEnabled = process.argv.includes('dev') || keystaticSecretOk;
 
+// Canonical origin — shared by `site` and the sitemap root-slash fix below so they cannot drift.
+const SITE_ORIGIN = 'https://www.manchesterrivercruises.com';
+
 // https://astro.build/config
 export default defineConfig({
   // `site` is the canonical origin — the sitemap uses it for absolute URLs.
-  site: 'https://www.manchesterrivercruises.com',
+  site: SITE_ORIGIN,
   // ── URL FORM: unslashed, to match the legacy Craft site exactly ──────────────
   // The legacy site emitted every URL WITHOUT a trailing slash (`/whats-on`), and that
   // is the form Google has indexed. Astro's default `directory` format emits
@@ -67,6 +71,36 @@ export default defineConfig({
       // Keep the Keystatic admin UI + API and the /admin entry out of the public sitemap.
       filter: (page) => !/\/(keystatic|admin)(\/|$)/.test(page) && !page.includes('/api/keystatic'),
     }),
+    // The sitemap's homepage entry must be the SAME STRING as the canonical BaseLayout renders.
+    // It was not: the canonical is "https://…com/" (a root canonical conventionally carries its
+    // slash) while the sitemap emitted "https://…com". Every other URL already agrees — unslashed
+    // in both, per docs/url-parity.md §6 — so the root is the single exception.
+    //
+    // This cannot be done with sitemap()'s own `serialize`: that hook is handed the URL WITH the
+    // slash and the strip happens downstream of it, so serialize sees nothing to fix (verified by
+    // logging what it receives). Patch the emitted XML instead, where the strings are final.
+    // Scoped to the exact origin string, so it can never touch another entry.
+    {
+      name: 'mrc:sitemap-root-slash',
+      hooks: {
+        'astro:build:done': ({ dir, logger }) => {
+          const from = '<loc>' + SITE_ORIGIN + '</loc>';
+          const to = '<loc>' + SITE_ORIGIN + '/</loc>';
+          let patched = 0;
+          for (const file of fs.readdirSync(dir)) {
+            if (!/^sitemap.*\.xml$/.test(file)) continue;
+            const p = new URL(file, dir);
+            const before = fs.readFileSync(p, 'utf8');
+            const after = before.split(from).join(to);
+            if (after !== before) {
+              fs.writeFileSync(p, after);
+              patched++;
+            }
+          }
+          if (patched) logger.info('homepage <loc> aligned to the canonical trailing-slash form');
+        },
+      },
+    },
   ],
   // /admin is served by src/pages/admin.astro — it bounces to /keystatic when the CMS is
   // configured, or shows a graceful "not configured" gate when it isn't (replaces the old

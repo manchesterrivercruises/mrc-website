@@ -46,7 +46,10 @@ const venues = [
 ];
 
 const SITE = site.url;
-const pageTitle = "What's On — Manchester River Cruises";
+// Title shape per docs/seo-pages.md → What's On: pipe-separated, keyword-led. "Upcoming
+// Cruises & Events" is the query this page competes for; the bare brand suffix it had was
+// spending the most valuable characters on a term we already rank for.
+const pageTitle = "What's On | Upcoming Cruises & Events | Manchester River Cruises";
 const pageDescription =
   'Upcoming departures and events on the Manchester Ship Canal — City River Tour sightseeing cruises, live music and party nights, and Boat to Old Trafford matchday ferries. Book direct.';
 
@@ -191,7 +194,7 @@ const HYDRATE_SCRIPT = `
 `;
 ---
 
-<BaseLayout title={pageTitle} description={pageDescription}>
+<BaseLayout title={pageTitle} description={pageDescription} image="/images/gallery/rollin-on-the-river/tina-tribute-and-the-crowd.webp">
   {/* Honest ItemList of the real product pages (no fabricated dates/prices). */}
   <script type="application/ld+json" is:inline set:html={JSON.stringify(structuredData)} />
 

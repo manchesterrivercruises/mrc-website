@@ -106,6 +106,22 @@ export function faqs(copy: PageCopy, key = 'main'): { q: string; a: string }[] {
   return faqGroup(copy, key).items.map((i) => ({ q: i.question, a: i.answer }));
 }
 
+/**
+ * FAQ items that are SAFE TO EMIT AS SCHEMA — i.e. whose answer is actually confirmed.
+ *
+ * Several answers are deliberately marked "(TBC)" while Simon confirms the detail. Showing
+ * that to a reader is honest (they can see it is provisional); putting it in FAQPage JSON-LD
+ * is not — structured data is a factual claim to a search engine, and Google's own policy
+ * requires schema to reflect real page content. So the visible Q&A keeps its marker and the
+ * schema simply omits the entry until the answer is real.
+ *
+ * Deliberately matches "TBC" anywhere in the answer, not just "(TBC)": a half-answer with a
+ * trailing "exact times TBC" is just as unconfirmed as a bare one.
+ */
+export function schemaSafeFaqs<T extends { q: string; a: string }>(items: T[]): T[] {
+  return items.filter((i) => !/\bTBC\b/i.test(i.a));
+}
+
 /** A one-off label or sentence that doesn't belong to a section. */
 export function str(copy: PageCopy, key: string): string {
   return ((copy.strings ?? []).find((s) => s.key === key) ?? fail(copy, 'string', key)).value;

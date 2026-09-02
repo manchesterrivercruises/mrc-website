@@ -32,7 +32,9 @@ const structuredData = {
 };
 ---
 
-<BaseLayout title={pageTitle} description={description} ogType="article">
+{/* image: the guide's own hero, so a shared Discover link previews the place it is about.
+    Guides without a hero fall through to BaseLayout's default. */}
+<BaseLayout title={pageTitle} description={description} ogType="article" image={heroImage}>
   {/* Schema.org structured data (Article) */}
   <script type="application/ld+json" is:inline set:html={JSON.stringify(structuredData)} />
 
