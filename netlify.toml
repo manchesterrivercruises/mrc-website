@@ -369,8 +369,9 @@
 # The Content-Security-Policy is built from what the site actually loads (audited
 # from the built HTML). Each allowance:
 #   script-src : 'self' (Astro's bundled JS); cdn.checkout.ventrata.com (checkout
-#                widget); unpkg.com (Leaflet 1.9.4 CSS/JS used by the route + ferry
-#                maps); www.googletagmanager.com (GTM, wired later). The six sha256
+#                widget); www.googletagmanager.com (GTM, wired later). Leaflet is
+#                SELF-HOSTED at /vendor/leaflet (scripts/vendor-leaflet.mjs), so
+#                unpkg.com is no longer needed here at all. The six sha256
 #                hashes are Astro's INLINE scripts: the Ventrata-modal observer, the
 #                What's On filter, the two Leaflet inits, and the contact +
 #                private-hire form success reveals. No 'unsafe-inline'.
@@ -378,9 +379,9 @@
 #                node -e "const fs=require('fs'),p=require('path'),c=require('crypto');(function w(d){for(const e of fs.readdirSync(d,{withFileTypes:true})){const f=p.join(d,e.name);if(e.isDirectory())w(f);else if(f.endsWith('.html'))for(const m of fs.readFileSync(f,'utf8').matchAll(/<script\b([^>]*)>([\s\S]*?)<\/script>/gi)){if(/\bsrc=|ld\+json/.test(m[1]))continue;console.log('sha256-'+c.createHash('sha256').update(m[2]).digest('base64'))}}})('dist')" | sort -u
 #   style-src  : 'unsafe-inline' is required — inline style="" attributes and
 #                Leaflet's JS-injected marker styles can't be hashed (low risk for
-#                styles). unpkg.com serves Leaflet's stylesheet (leaflet.css) — without
-#                it the map tiles render scattered/unpositioned. (Fonts are self-hosted,
-#                so no Google Fonts stylesheet origin is needed.)
+#                styles). Leaflet's own stylesheet is now served from 'self'
+#                (/vendor/leaflet/leaflet.css), so no CDN origin is listed. (Fonts are
+#                self-hosted too, so no Google Fonts origin is needed either.)
 #   img-src    : self; data: (Leaflet controls); tile.openstreetmap.org (map tiles);
 #                ventrata + GTM/GA beacons. (Craft CDN hotlinks retired.)
 #   font-src   : self only — Inter woff2 is self-hosted from /fonts/ (no Google Fonts CDN).
@@ -413,7 +414,7 @@
     Referrer-Policy = "strict-origin-when-cross-origin"
     Permissions-Policy = "camera=(), microphone=(), geolocation=()"
     Strict-Transport-Security = "max-age=31536000; includeSubDomains"
-    Content-Security-Policy-Report-Only = "default-src 'self'; script-src 'self' https://cdn.checkout.ventrata.com https://unpkg.com https://www.googletagmanager.com 'sha256-Cj3srLBQY5lfMIkYVWwpCIdsVAU0CIrHEOoAp1t6rGI=' 'sha256-OEdWaK1xkzztypcSbAY6orLcxm0Shn5ZdtweyF8ndMc=' 'sha256-a6M7W2m2norr1ec6Pe3NGcHfQn+geKiKpToxIbslI4M=' 'sha256-f5yfxw++p/treber8qTOWs/piZsTEauvxWyZXXlj5Uw=' 'sha256-nDg10GKA5OMDMIPPaD0f2NoUEnsHrAPdhcRFr8MFk0Q=' 'sha256-xsxCcGvieqKvl/XM4KtLiO5nSu97ySvf7LRYnG3bIi0='; style-src 'self' 'unsafe-inline' https://unpkg.com; img-src 'self' data: https://tile.openstreetmap.org https://cdn.checkout.ventrata.com https://www.googletagmanager.com https://www.google-analytics.com; font-src 'self'; connect-src 'self' https://api.ventrata.com https://cdn.checkout.ventrata.com https://*.ventrata.com https://www.googletagmanager.com https://www.google-analytics.com; frame-src 'self' https://cdn.checkout.ventrata.com https://*.ventrata.com https://www.googletagmanager.com; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'; upgrade-insecure-requests"
+    Content-Security-Policy-Report-Only = "default-src 'self'; script-src 'self' https://cdn.checkout.ventrata.com https://www.googletagmanager.com 'sha256-Cj3srLBQY5lfMIkYVWwpCIdsVAU0CIrHEOoAp1t6rGI=' 'sha256-OEdWaK1xkzztypcSbAY6orLcxm0Shn5ZdtweyF8ndMc=' 'sha256-a6M7W2m2norr1ec6Pe3NGcHfQn+geKiKpToxIbslI4M=' 'sha256-f5yfxw++p/treber8qTOWs/piZsTEauvxWyZXXlj5Uw=' 'sha256-nDg10GKA5OMDMIPPaD0f2NoUEnsHrAPdhcRFr8MFk0Q=' 'sha256-xsxCcGvieqKvl/XM4KtLiO5nSu97ySvf7LRYnG3bIi0='; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://tile.openstreetmap.org https://cdn.checkout.ventrata.com https://www.googletagmanager.com https://www.google-analytics.com; font-src 'self'; connect-src 'self' https://api.ventrata.com https://cdn.checkout.ventrata.com https://*.ventrata.com https://www.googletagmanager.com https://www.google-analytics.com; frame-src 'self' https://cdn.checkout.ventrata.com https://*.ventrata.com https://www.googletagmanager.com; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'; upgrade-insecure-requests"
 
 # --- Keystatic CMS admin: never index -----------------------------------------
 # The admin UI (/keystatic) + API (/api/keystatic) and the /admin redirect are gated by
