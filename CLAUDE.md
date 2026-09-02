@@ -38,6 +38,7 @@ Full brief: `/docs/website-brief.md`
 | Missing content / assets | `/docs/content-checklist.md` |
 | Images / alt text / WebP | `/docs/image-conventions.md` |
 | Photography / gallery assets | `/docs/photo-inventory.md` |
+| Route/map data, importing a dataset | `/docs/data-conventions.md` |
 | Launch / redirects / DNS | `/docs/launch-checklist.md` |
 | General architecture | `/docs/website-brief.md` |
 

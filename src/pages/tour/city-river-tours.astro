@@ -21,12 +21,21 @@ import { sec, list, cards, faqs as faqItems, str } from '../../lib/pageCopy';
 // layout, components, icons, every href, the schema block, the Ventrata widgets and
 // their product IDs, and the route/sights data (src/data/tour-stops.json + the map).
 //
-// Route POIs — src/data/tour-stops.json. Provenance: the 12 highlight stops (ids
-// 1, 3, 4, 8, 11, 14, 18, 23, 25, 33, 37, 43) are the original website set. The
-// remaining ids complete the GPS commentary app's 1–43 numbering, with coordinates
-// interpolated along the waterway between those anchors. The tour-app repo
-// (C:\Users\simon\mrc-tour-app) is the intended single source of truth across
-// projects; replace tour-stops.json with an export from that project when available.
+// Route POIs — src/data/tour-stops.json: 12 CURATED LANDMARKS with landmark-accurate
+// coordinates. This is the public map and itinerary.
+//
+// ⚠ DO NOT re-import the tour app's 1–43 dataset here. Those 43 entries are GPS TRIGGER
+// ZONES for the onboard audio: each coordinate is where the BOAT must be for a commentary
+// cue to fire, which is deliberately offset from the thing being described (you hear about a
+// landmark as you approach it, not when you are level with it). Imported as map POIs they
+// render as pins in open water pointing at nothing — measured against real positions,
+// Ordsall Chord was 2.8km out, Old Trafford Cricket Ground 1.1km, Pomona Island 638m — and
+// most of the extra entries are narrative themes rather than things a passenger can see and
+// name. That import was reverted on 2026-09-02; see docs/data-conventions.md.
+//
+// The richness of the commentary is real and worth selling — it is stated in COPY
+// ("over 40 points of interest narrated live on board") rather than drawn as pins, so the
+// claim stays true while the map stays legible.
 //
 // NOTE: Items marked (TBC) await Simon's confirmed copy (content-checklist.md).
 
@@ -153,13 +162,11 @@ const structuredData = {
   ],
 };
 
-// What you'll see along the route, in order — rendered as a real <ol> beside the map so the itinerary is
-// crawlable static content and available without JavaScript. The Leaflet map reads the same source
-// (tour-stops.json). Highlights are the original 12 website stops; the collapsed list groups them first.
+// What you'll see along the route, in order — rendered as a real <ol> beside the map so the
+// itinerary is crawlable static content and available without JavaScript. The Leaflet map reads
+// the same source (tour-stops.json). Every stop is a curated landmark now, so there is no
+// highlight/other split: route order IS the list order.
 const orderedStops = [...tourStops].sort((a, b) => a.id - b.id);
-const highlightStops = orderedStops.filter((s) => s.highlight);
-const otherStops = orderedStops.filter((s) => !s.highlight);
-const listStops = [...highlightStops, ...otherStops];
 // The /tour/ namespace crumb resolves to the Events hub, which is wrong for CRT — it is the
 // flagship sightseeing product, not an event. Explicit trail keeps the IA honest now that the
 // URL sits under /tour/ (a URL decision, not a hierarchy change).
@@ -373,13 +380,10 @@ const crumbs = [
           </summary>
           <ol class="list-none space-y-1.5 border-t border-black/10 px-5 py-4">
             {
-              listStops.map((s) => (
+              orderedStops.map((s) => (
                 <li class="flex items-baseline gap-2">
                   <span aria-hidden="true" class="flex-none">{s.emoji}</span>
                   <span class="flex-none font-semibold text-ink">{s.name}</span>
-                  {s.highlight && (
-                    <span class="flex-none rounded-full bg-primary/10 px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-primary">Highlight</span>
-                  )}
                   <span class="min-w-0 flex-1 truncate text-sm text-subtle">{s.description}</span>
                 </li>
               ))
@@ -540,19 +544,17 @@ const crumbs = [
         attribution: '&copy; OpenStreetMap contributors',
       }).addTo(map);
 
-      // Highlights (the original 12) keep the emoji pin; the other 31 are smaller numbered dots.
+      // Every stop is a curated landmark, so they all get the same emoji pin — there is no
+      // second tier of lesser markers any more.
       var latlngs = [];
       ordered.forEach(function (s) {
         latlngs.push([s.lat, s.lng]);
-        var isHi = s.highlight === true;
         var icon = L.divIcon({
-          className: isHi ? 'route-marker route-marker--highlight' : 'route-marker route-marker--stop',
-          iconSize: isHi ? [32, 32] : [20, 20],
-          iconAnchor: isHi ? [16, 16] : [10, 10],
-          popupAnchor: isHi ? [0, -16] : [0, -10],
-          html: isHi
-            ? '<div style="width:32px;height:32px;display:flex;align-items:center;justify-center;border-radius:9999px;background:#fff;font-size:16px;line-height:1;box-shadow:0 1px 4px rgba(0,0,0,.3);">' + s.emoji + '</div>'
-            : '<div style="width:20px;height:20px;display:flex;align-items:center;justify-center;border-radius:9999px;background:#0b1f3a;color:#fff;font-size:10px;font-weight:700;line-height:1;box-shadow:0 1px 3px rgba(0,0,0,.3);">' + s.id + '</div>',
+          className: 'route-marker route-marker--highlight',
+          iconSize: [32, 32],
+          iconAnchor: [16, 16],
+          popupAnchor: [0, -16],
+          html: '<div style="width:32px;height:32px;display:flex;align-items:center;justify-center;border-radius:9999px;background:#fff;font-size:16px;line-height:1;box-shadow:0 1px 4px rgba(0,0,0,.3);">' + s.emoji + '</div>',
         });
         // Build the popup as real DOM nodes with textContent (never string
         // concatenation) so stop data can never be interpreted as markup.
