@@ -59,6 +59,40 @@ The unused `availability` / `availability-calendar` **browser proxies** were rem
 
 ---
 
+## Form spam protection — reCAPTCHA quota
+
+Both forms (`/contact-us`, `/private-hire`) use **Netlify's native reCAPTCHA 2**
+(`data-netlify-recaptcha`) alongside the existing honeypot. Netlify verifies the token
+**server-side** before accepting a submission, so a bot POSTing straight to the form endpoint is
+rejected there — which the honeypot alone cannot do. Both are kept: they catch different bots and
+cost nothing together.
+
+- [ ] **Submit both forms on the deploy preview and confirm the challenge renders and the
+      submission arrives.** The widget is injected by Netlify at serve time, so it does **not**
+      appear in a local `dist` build — local HTML only proves the attributes are present.
+
+⚠ **Quota exhaustion is the known failure mode.** Netlify's bundled reCAPTCHA runs on Netlify's
+own Google account under a shared quota. If it is exhausted — by our traffic or by noisy
+neighbours — the challenge stops verifying and **form submissions can start failing**, which for
+`/private-hire` means silently losing enquiries. This is not hypothetical; it is the documented
+tradeoff of using the bundled integration rather than our own keys.
+
+**Fallback, in order of preference:**
+
+1. **Bring our own reCAPTCHA keys** — create a Google reCAPTCHA site, then set
+   `SITE_RECAPTCHA_KEY` and `SITE_RECAPTCHA_SECRET` in Netlify env. Netlify uses ours instead of
+   the shared pair, with our own quota. Free, and the markup does not change.
+2. **Netlify's paid form-spam add-on** (Forms-level spam filtering) if reCAPTCHA proves too
+   much friction for enquiry conversion.
+
+- [ ] Decide before launch whether to ship our own keys from day one. Given `/private-hire` is a
+      revenue path, option 1 is cheap insurance and is the recommendation.
+
+- [ ] **Monitor the first fortnight**: check submissions are arriving (post-launch monitoring
+      already lists this) and watch for any drop that coincides with the challenge failing.
+
+---
+
 ## TBC launch gate
 
 Copy still contains `TBC` placeholders (boarding times, accessibility, vessel details, some FAQ answers, ProductCard image fallbacks). Those strings are crawlable once robots allow indexing.

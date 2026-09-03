@@ -211,12 +211,15 @@ const structuredData = {
             <p class="font-medium text-ink">{str(copy, 'enquireSuccess')}</p>
           </div>
 
+          {/* data-netlify-recaptcha: server-side verified by Netlify before the submission is
+              accepted — see the matching note on /contact-us. The honeypot stays alongside it. */}
           <form
             name="private-hire-enquiry"
             method="POST"
             action="/private-hire?success=true#ph-success"
             data-netlify="true"
             data-netlify-honeypot="bot-field"
+            data-netlify-recaptcha="true"
             class="mt-6 max-w-3xl"
           >
             {/* Required by Netlify Forms to identify the submission */}
@@ -268,6 +271,9 @@ const structuredData = {
                 <textarea id="requirements" name="requirements" rows="5" class={inputClass}></textarea>
               </div>
             </div>
+
+            {/* Netlify renders the challenge here, directly above the submit button. */}
+            <div data-netlify-recaptcha="true" class="mt-4"></div>
 
             <div class="mt-4">
               <button type="submit" class="btn btn-primary">Send enquiry</button>
