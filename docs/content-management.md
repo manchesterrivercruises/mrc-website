@@ -180,9 +180,23 @@ Netlify auto-deploys.
 ### Security / SEO
 
 - `/admin` → `/keystatic` (301). The UI (`/keystatic`) + API (`/api/keystatic`) are on-demand
-  (SSR) routes, **excluded from the sitemap** (filter in `astro.config.mjs`), **disallowed in
-  `robots.txt`**, and carry **`X-Robots-Tag: noindex`** (netlify.toml). Production access is gated
-  by **GitHub auth**.
+  (SSR) routes, **excluded from the sitemap** (filter in `astro.config.mjs`) and **disallowed in
+  `robots.txt`**. Production access is gated by **GitHub auth**.
+
+  **`X-Robots-Tag: noindex` covers the UI paths only** — `/keystatic`, `/keystatic/*`,
+  `/admin`, `/admin/*` in `netlify.toml`. This previously read as though the header covered the
+  API too. **It does not, and it cannot:** Netlify's custom `[[headers]]` apply to CDN-served
+  responses, not to responses produced by a *function*, and `/api/keystatic` is a function. A
+  header rule for it would look correct in the config and have no effect at runtime.
+
+  The actual posture for the API path is therefore: **`robots.txt` disallow** (it returns JSON,
+  not an indexable document, so there is nothing to rank even if fetched) plus the
+  **`SameSite` session cookie** Keystatic sets, which is what actually protects it. Adding a
+  `noindex` header there would be theatre.
+
+  The bare `/keystatic` and `/admin` paths also needed their own header rules: Netlify's
+  `/keystatic/*` splat does not match the bare path, so the URL people actually land on was
+  shipping without the header until 2026-09-03.
 - **CSP:** the site-wide policy is currently **Report-Only**, so it does **not** block the React
   admin UI today (confirmed).
 

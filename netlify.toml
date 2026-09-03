@@ -417,14 +417,35 @@
     Content-Security-Policy-Report-Only = "default-src 'self'; script-src 'self' https://cdn.checkout.ventrata.com https://www.googletagmanager.com 'sha256-Cj3srLBQY5lfMIkYVWwpCIdsVAU0CIrHEOoAp1t6rGI=' 'sha256-OEdWaK1xkzztypcSbAY6orLcxm0Shn5ZdtweyF8ndMc=' 'sha256-a6M7W2m2norr1ec6Pe3NGcHfQn+geKiKpToxIbslI4M=' 'sha256-f5yfxw++p/treber8qTOWs/piZsTEauvxWyZXXlj5Uw=' 'sha256-nDg10GKA5OMDMIPPaD0f2NoUEnsHrAPdhcRFr8MFk0Q=' 'sha256-xsxCcGvieqKvl/XM4KtLiO5nSu97ySvf7LRYnG3bIi0='; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://tile.openstreetmap.org https://cdn.checkout.ventrata.com https://www.googletagmanager.com https://www.google-analytics.com; font-src 'self'; connect-src 'self' https://api.ventrata.com https://cdn.checkout.ventrata.com https://*.ventrata.com https://www.googletagmanager.com https://www.google-analytics.com; frame-src 'self' https://cdn.checkout.ventrata.com https://*.ventrata.com https://www.googletagmanager.com; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'; upgrade-insecure-requests"
 
 # --- Keystatic CMS admin: never index -----------------------------------------
-# The admin UI (/keystatic) + API (/api/keystatic) and the /admin redirect are gated by
-# GitHub auth in production. X-Robots-Tag is belt-and-suspenders alongside public/robots.txt
-# and the sitemap filter (astro.config.mjs). NOTE: the site-wide CSP above is Report-Only, so
-# it does NOT block the React admin UI today. When the CSP is enforced at launch, the admin
-# needs its own relaxed policy (it loads React + talks to github.com / api.github.com for
-# OAuth + commits) — see docs/content-management.md → "CSP at enforcement".
+# The admin UI (/keystatic) and the /admin entry are gated by GitHub auth in production.
+# X-Robots-Tag is belt-and-suspenders alongside public/robots.txt and the sitemap filter
+# (astro.config.mjs).
+#
+# ⚠ BARE PATHS NEED THEIR OWN RULES. Netlify's `/keystatic/*` splat matches
+# `/keystatic/anything` but NOT the bare `/keystatic` — which is the URL people actually
+# land on and the one most likely to be linked or crawled. It was shipping without the
+# header. Same for `/admin`. Both bare paths are listed explicitly below; do not "tidy" them
+# away into the splats.
+#
+# ⚠ NOT LISTED: /api/keystatic. Netlify's custom [[headers]] apply to CDN-served responses,
+# NOT to responses produced by a function — and the Keystatic API is a function. A rule here
+# would look right and do nothing. That path is covered by robots.txt (it is an API returning
+# JSON, not an indexable document) and by the SameSite session cookie; see
+# docs/content-management.md → Security / SEO.
+#
+# NOTE: the site-wide CSP above is Report-Only, so it does NOT block the React admin UI today.
+# When the CSP is enforced at launch the admin needs its own relaxed policy (it loads React +
+# talks to github.com / api.github.com for OAuth + commits) — see docs/content-management.md.
+[[headers]]
+  for = "/keystatic"
+  [headers.values]
+    X-Robots-Tag = "noindex, nofollow"
 [[headers]]
   for = "/keystatic/*"
+  [headers.values]
+    X-Robots-Tag = "noindex, nofollow"
+[[headers]]
+  for = "/admin"
   [headers.values]
     X-Robots-Tag = "noindex, nofollow"
 [[headers]]
