@@ -57,6 +57,20 @@ Key variables:
 - `VENTRATA_CHECKOUT_API_KEY` — safe in DOM, used in widget script tag
 - `VENTRATA_ENV` — `'live'` from checkout-QA onward (`src/data/ventrata.ts`; this example var is not read by the site)
 
+### A note on the key in old git history
+
+Commits before the OCTO key was moved to `.env` contain the string
+`a79eba1c-…` in `.env.example` and in early function code.
+
+**That is Ventrata's PUBLIC demo-supplier key** — the "EdinExplore" fictional supplier that
+Ventrata publishes in its own OCTO documentation for anyone to test against. It is **not an MRC
+credential**, it has never had access to the MRC account, and it returns fictional products
+only. There is nothing to rotate and no incident here.
+
+It is recorded because a secret scanner will flag it, and the next person to see a UUID-shaped
+key in git history should not have to re-derive whether it mattered. The real MRC OCTO key has
+only ever lived in Netlify environment variables and a local `.env` — never in a commit.
+
 ---
 
 ## Project structure

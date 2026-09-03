@@ -466,27 +466,26 @@ removed — OCTO `/availability` and `/availability/calendar` are still called
 **server-side** from `day-finder` and `event-days` via `netlify/lib/octo.ts`.
 
 ```
-/.netlify/functions/products          # OCTO /products (allowlisted fields) — NO caller today
 /.netlify/functions/day-finder        # homepage date finder (browser-facing)
 /.netlify/functions/event-days        # What's On feed (browser-facing)
 /.netlify/functions/reviews           # Google Places reviews (browser-facing)
 ```
 
-**All four** functions use `withGuard(..., { requireSiteOrigin: true })`: a request is
-rejected unless its `Origin` **or** `Referer` matches the exact-origin allowlist.
+**`products` was DELETED on 2026-09-03.** It had no caller anywhere in the site — a repo-wide
+search found only its own entry in this list. It was gated rather than deleted on 2026-09-01
+because this doc published it and CLAUDE.md's build sequence named it; the security review made
+the call the other way, and that is the right one. An endpoint that proxies OCTO with our
+server-side key, is reachable by anyone, and is used by nothing is pure surface. Same reasoning
+that removed the `availability` / `availability-calendar` proxies. Recover from git history if a
+products proxy is genuinely needed later — and re-verify the allowlist filter before wiring it.
 
-`products` was the odd one out until 2026-09-01 — it had `withGuard` (so CORS + rate
-limiting) but not the Origin/Referer gate, because it is not browser-facing. It is still
-**not called from anywhere in the site**; it was gated rather than deleted because
-`docs/ventrata-integration.md` publishes it as part of the function surface and CLAUDE.md's
-build sequence (step 7) specifies it. Being uncalled is not the same as being unreachable:
-the URL is public and proxies OCTO with our server-side key, so leaving it open was free
-quota burn for anyone who found it. If it is still uncalled at launch, deleting it is the
-better end state — the unused `availability` / `availability-calendar` proxies were removed
-for exactly that reason. That raises the bar
-against casual curl/bot quota burn; it is **not** a guarantee (both headers are
-attacker-controlled). Durable global limiting is a Netlify account-level setting
-— see `docs/launch-checklist.md`.
+**All three** remaining functions use `withGuard(..., { requireSiteOrigin: true })`: a request
+is rejected unless its `Origin` **or** `Referer` matches the exact-origin allowlist. That raises
+the bar against casual curl/bot quota burn; it is **not** a guarantee (both headers are
+attacker-controlled). Each also declares `allowedQueryKeys` and rejects an unknown query key
+with 400 before any upstream call, and each is backed by a Netlify Blobs cache
+(`netlify/lib/cache.ts`) so a CDN miss is cheap. Durable global limiting is a Netlify
+account-level setting and is a **launch blocker** — see `docs/launch-checklist.md`.
 
 ### Caching policy
 

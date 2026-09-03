@@ -70,7 +70,10 @@ Do not attempt multiple steps in one session unless explicitly instructed.
 4. Design tokens — colours, typography, spacing, button styles
 5. City River Tour page (first complete page)
 6. Ventrata widget placeholders with dummy product IDs
-7. Netlify Function stubs — products, availability, availability-calendar
+7. Netlify Function stubs — day-finder, event-days, reviews. (The originally-planned
+   `products`, `availability` and `availability-calendar` browser proxies were all built and
+   then removed: nothing called them, and each was a public endpoint holding a server-side
+   key. OCTO availability is still read server-side via `netlify/lib/octo.ts`.)
 8. What's On page with mock data
 9. Replace mock data with live Ventrata API calls
 10. SEO metadata and schema — page by page
