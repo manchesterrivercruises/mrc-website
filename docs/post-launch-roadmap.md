@@ -113,10 +113,29 @@ images under one directory + `fields.image`, a small sharp build step over an up
 migrate the gallery to Astro's `image()` pipeline. Removes the manual "process + place, then paste
 path" step.
 
-**Astro major upgrade.** Take the **deferred Dependabot major bumps** (Astro + `@astrojs/netlify`
-and other `@astrojs/*` integrations) on a branch, run the full build + Keystatic/Markdoc
-verification, and merge once green. Batched deliberately out of the launch window; revisit once
-the site is stable in production. See `docs/launch-checklist.md` → "Post-launch".
+**Astro major upgrade — has a SECURITY rationale, not just a housekeeping one.**
+
+Take the **deferred Dependabot major bumps** (Astro + `@astrojs/netlify` and other `@astrojs/*`
+integrations) on a branch, run the full build + `check-schema` + Keystatic/Markdoc verification,
+and merge once green. Batched deliberately out of the launch window; revisit once the site is
+stable in production. See `docs/launch-checklist.md` → "Post-launch".
+
+**Why it is on this list rather than ignored.** The pinned Astro line carries **eight known
+advisories**. The security review confirmed that **none of them is reachable in this site as
+built** — they sit in code paths we do not use (dev-server surfaces, SSR request handling shapes
+we do not exercise, image-service behaviour we have now disabled outright). So this is not an
+emergency and was correctly kept out of the cutover window.
+
+**But "not reachable today" is a statement about today's code, not a guarantee.** It depends on
+which paths we happen to exercise, and that changes whenever a feature lands — adopting
+`astro:assets` (see the image-pipeline item above) or adding another SSR route could quietly make
+one reachable. The posture is therefore:
+
+- **Do the upgrade in the first stable window after launch**, not "eventually".
+- **Re-run the reachability question after any change that adds an SSR route or turns on an
+  Astro subsystem we currently have off** — that is the trigger to reassess, and the reason
+  this note exists rather than a bare "bump deps".
+- Until then, treat it as *accepted, dated risk with a known expiry*, not as a resolved issue.
 
 **VentrataWidget refactor.** Split `src/components/VentrataWidget.astro` (~630 lines: loader,
 embedded, popup, gift, date-preselect, focus handling) into mode-specific files after launch.

@@ -2,6 +2,7 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import SectionHeading from '../components/SectionHeading.astro';
 import CTAButton from '../components/CTAButton.astro';
+import HowToKnowItsUs from '../components/HowToKnowItsUs.astro';
 import { site } from '../data/site';
 import copy from '../content/page-copy/contact-us.json';
 import { sec, str } from '../lib/pageCopy';
@@ -160,6 +161,11 @@ const structuredData = {
         </form>
       </div>
     </div>
+
+    {/* Anti-phishing. This is the page someone lands on when a message looks wrong and they
+        want to check it against a real contact route, so it is exactly where the genuine
+        senders and the genuine portal domain need to be stated. */}
+    <HowToKnowItsUs class="mt-12" />
 
     {/* FAQ link */}
     <div class="mt-12 rounded-card bg-panel p-6 ring-1 ring-black/5 sm:flex sm:items-center sm:justify-between sm:gap-6">

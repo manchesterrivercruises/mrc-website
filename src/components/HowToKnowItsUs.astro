@@ -1,0 +1,86 @@
+---
+import { site } from '../data/site';
+import { VENTRATA_MMB_URL } from '../data/ventrata';
+
+// "How to know it's us" — an anti-phishing block for the two pages where a customer is most
+// likely to be handling a booking reference, a payment link, or an email that claims to be from
+// us: /manage-bookings and /contact-us.
+//
+// WHY IT EXISTS. Booking confirmations and tickets are sent by VENTRATA, not from an MRC
+// address, and the self-service portal lives on `checkin.ventrata.com` — a domain that is not
+// ours and looks, to a careful customer, exactly like the kind of thing they are told to
+// distrust. That gap is a phisher's opening in both directions: a customer who does not know
+// the Ventrata domain is genuine may ignore a real ticket, and a customer who assumes any
+// unfamiliar domain is fine may follow a fake one. Stating the real senders and the real
+// portal domain in one place closes it.
+//
+// ⚠ THE SENDER LIST IS (TBC) AND MUST BE CONFIRMED BY SIMON BEFORE LAUNCH. It is deliberately
+// marked rather than guessed: a wrong sender list is worse than none, because it teaches
+// customers to trust the wrong thing. See docs/content-checklist.md.
+//
+// The structure ships now so the copy is a one-line fill, not a new build.
+
+interface Props {
+  /** Extra classes on the wrapper (spacing differs per page). */
+  class?: string;
+}
+const { class: className = '' } = Astro.props;
+
+// The portal's host, shown to the customer as the thing to check in their address bar.
+const portalHost = new URL(VENTRATA_MMB_URL).host;
+---
+
+<aside
+  class={`rounded-card bg-panel p-6 ring-1 ring-black/5 ${className}`}
+  aria-labelledby="how-to-know-its-us"
+>
+  <h2 id="how-to-know-its-us" class="text-lg font-semibold text-ink">How to know it's us</h2>
+  <p class="mt-2 text-sm leading-relaxed text-body">
+    Scammers copy booking companies. Here is exactly what a genuine message from us looks like,
+    so you can check anything that seems off.
+  </p>
+
+  <ul class="mt-4 space-y-3 text-sm leading-relaxed text-body">
+    <li class="flex gap-2">
+      <span aria-hidden="true" class="flex-none text-primary">✓</span>
+      <span>
+        <strong class="font-semibold text-ink">We only ever email you from</strong>{' '}
+        <span class="text-subtle">(sender addresses — TBC)</span>. If an email claims to be from
+        us and comes from anywhere else, treat it as suspicious.
+      </span>
+    </li>
+    <li class="flex gap-2">
+      <span aria-hidden="true" class="flex-none text-primary">✓</span>
+      <span>
+        <strong class="font-semibold text-ink">Your tickets and booking confirmations come from
+        Ventrata</strong>, our booking system — not from an {site.name} address. That is normal
+        and expected, and it is why a confirmation may not look like it came from us directly.
+      </span>
+    </li>
+    <li class="flex gap-2">
+      <span aria-hidden="true" class="flex-none text-primary">✓</span>
+      <span>
+        <strong class="font-semibold text-ink">The booking portal is at</strong>{' '}
+        <code class="rounded bg-white px-1.5 py-0.5 font-mono text-[0.8125rem] text-ink ring-1 ring-black/5">{portalHost}</code>.
+        That address is genuinely ours — it is Ventrata's secure portal, branded for us. Checking
+        your booking there is safe.
+      </span>
+    </li>
+    <li class="flex gap-2">
+      <span aria-hidden="true" class="flex-none text-primary">✓</span>
+      <span>
+        <strong class="font-semibold text-ink">We will never</strong> ask for your full card
+        number by email, phone or text, and we will never ask you to pay by bank transfer to a
+        personal account.
+      </span>
+    </li>
+  </ul>
+
+  <p class="mt-4 text-sm leading-relaxed text-subtle">
+    Not sure about something you have received?{' '}
+    <a href="/contact-us" class="font-medium text-primary underline-offset-4 hover:underline">
+      Check with us
+    </a>{' '}
+    before you click or pay. We would always rather you asked.
+  </p>
+</aside>
