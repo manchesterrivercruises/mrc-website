@@ -213,10 +213,16 @@
 # SELF-HEALING: `force` is omitted, so the moment the event is published the real
 # page exists and Netlify serves it INSTEAD of this rule. No cleanup required —
 # but publishing the event is the actual fix. See docs/url-parity.md.
+# 302, NOT 301 — this is a TEMPORARY net for a page that is coming back. A 301 is
+# cached by the browser and treated by Google as a permanent move: a visitor who hit
+# this while the event was shelved would keep being bounced to /whats-on by their own
+# cache after republish, and search signals for the slug would consolidate into
+# /whats-on — losing the exact URL equity this rule exists to protect. Omitting
+# `force` heals the SERVER side; 302 is what heals the CLIENT and the index.
 [[redirects]]
   from = "/tour/wizards-and-fairies-cruise"
   to = "/whats-on"
-  status = 301
+  status = 302
 
 # --- Pirates & Mermaids: interim net while the event is shelved ----------------
 # Shelved for this year (draft: true, 2026-09-01) — the product is not running, so
@@ -230,10 +236,16 @@
 # NOTE the resulting 2-hop for the legacy Craft path, which is deliberate and matches
 # Wizards: /cruises/pirates-and-mermaids → /tour/pirates-and-mermaid-cruise → /whats-on.
 # Pointing the first hop straight at /whats-on would silently become WRONG on republish.
+# 302, NOT 301 — this is a TEMPORARY net for a page that is coming back. A 301 is
+# cached by the browser and treated by Google as a permanent move: a visitor who hit
+# this while the event was shelved would keep being bounced to /whats-on by their own
+# cache after republish, and search signals for the slug would consolidate into
+# /whats-on — losing the exact URL equity this rule exists to protect. Omitting
+# `force` heals the SERVER side; 302 is what heals the CLIENT and the index.
 [[redirects]]
   from = "/tour/pirates-and-mermaid-cruise"
   to = "/whats-on"
-  status = 301
+  status = 302
 
 # --- Retired legacy category facets (Craft `tourCategory` / `tourEvent`) -------
 # Thin listing pages that shared the /tour/ namespace with real products. None of
