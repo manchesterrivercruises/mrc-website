@@ -2,6 +2,7 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import SectionHeading from '../components/SectionHeading.astro';
 import CTAButton from '../components/CTAButton.astro';
+import HowToKnowItsUs from '../components/HowToKnowItsUs.astro';
 import { site } from '../data/site';
 import copy from '../content/page-copy/contact-us.json';
 import { sec, str } from '../lib/pageCopy';
@@ -107,12 +108,17 @@ const structuredData = {
       {/* Right column — enquiry form (Netlify Forms; static HTML at build time) */}
       <div>
         <SectionHeading as="h2">{sec(copy, 'form').heading}</SectionHeading>
+        {/* data-netlify-recaptcha: Netlify verifies the token SERVER-SIDE before accepting the
+            submission, so a bot POSTing straight to the form endpoint is rejected there —
+            something the honeypot cannot do on its own. Both are kept: they catch different
+            bots and cost nothing together. */}
         <form
           name="contact"
           method="POST"
           action="/contact-us?success=true#contact-success"
           data-netlify="true"
           data-netlify-honeypot="bot-field"
+          data-netlify-recaptcha="true"
           class="mt-6 space-y-4"
         >
           {/* Required by Netlify Forms to identify the submission */}
@@ -144,12 +150,22 @@ const structuredData = {
             <label for="message" class={fieldLabel}>Message</label>
             <textarea id="message" name="message" rows="5" required class={inputClass}></textarea>
           </div>
+          {/* Netlify renders the challenge here. Placed directly above the submit button so
+              the flow reads challenge → send, and so a keyboard user meets it before the
+              button rather than after. */}
+          <div data-netlify-recaptcha="true"></div>
+
           <div>
             <button type="submit" class="btn btn-primary">{str(copy, 'submitLabel')}</button>
           </div>
         </form>
       </div>
     </div>
+
+    {/* Anti-phishing. This is the page someone lands on when a message looks wrong and they
+        want to check it against a real contact route, so it is exactly where the genuine
+        senders and the genuine portal domain need to be stated. */}
+    <HowToKnowItsUs class="mt-12" />
 
     {/* FAQ link */}
     <div class="mt-12 rounded-card bg-panel p-6 ring-1 ring-black/5 sm:flex sm:items-center sm:justify-between sm:gap-6">

@@ -7,6 +7,7 @@
 // public allowlist in sequential ≤62-day windows (the OCTO range cap), collapses each date
 // to its min from-price and an availability state. Server-side key; cached 15 minutes.
 
+import { safeStore, withBlobCache } from '../lib/cache';
 import { withGuard, jsonError } from '../lib/guard';
 import { isAllowedProductId } from '../lib/products';
 import { octoPost, mapConcurrent, priceFromUnits, resolveTargets } from '../lib/octo';
@@ -14,6 +15,13 @@ import { octoPost, mapConcurrent, priceFromUnits, resolveTargets } from '../lib/
 const CONCURRENCY = 6;
 const HORIZON_DAYS = 92; // ~3 months
 const WINDOW_DAYS = 60; // ≤ 62-day OCTO cap
+
+// Blobs TTL, mirroring day-finder. 15 min matches the CDN Cache-Control already on the response:
+// within that window a CDN revalidation is answered from ONE blob read instead of re-paying the
+// ~19-product fan-out across two windows. The checkout revalidates live at booking time, so a
+// slightly-stale listing costs nothing real.
+const EVENT_DAYS_TTL_MS = 15 * 60 * 1000;
+const store = safeStore('event-days');
 
 export type EventDayState = 'available' | 'limited' | 'sold-out';
 export interface EventDay {
@@ -75,53 +83,64 @@ export default withGuard(
   }
 
   try {
-    const targets = await resolveTargets(key, isAllowedProductId);
-    const now = new Date();
-    const wins = windows(now);
+    // Keyed by UTC day: the horizon is computed from "today", so a date-less key would keep
+    // serving yesterday's window after midnight. resolveTargets AND the fan-out live inside the
+    // producer, so a cache hit skips the GET /products option resolution as well as the calls.
+    const eventDays = await withBlobCache(
+      store,
+      `days/${new Date().toISOString().slice(0, 10)}`,
+      EVENT_DAYS_TTL_MS,
+      async () => {
+      const targets = await resolveTargets(key, isAllowedProductId);
+      const now = new Date();
+      const wins = windows(now);
 
-    // One task per product × window; per-item failures degrade to [] (partial data ok).
-    const jobs = targets.flatMap((t) => wins.map((w) => ({ ...t, ...w })));
-    const results = await mapConcurrent(jobs, CONCURRENCY, async (jobUnknown) => {
-      const job = jobUnknown as { productId: string; optionId: string; start: string; end: string };
-      try {
-        const cal = await octoPost('/availability/calendar', key, {
-          productId: job.productId,
-          optionId: job.optionId,
-          localDateStart: job.start,
-          localDateEnd: job.end,
-        });
-        if (!Array.isArray(cal)) return [] as EventDay[];
-        const days: EventDay[] = [];
-        for (const eUnknown of cal) {
-          const e = eUnknown as Record<string, unknown>;
-          const date = e.localDate;
-          if (typeof date !== 'string') continue;
-          const state = stateOf(e);
-          if (!state) continue;
-          days.push({
+      // One task per product × window; per-item failures degrade to [] (partial data ok).
+      const jobs = targets.flatMap((t) => wins.map((w) => ({ ...t, ...w })));
+      const results = await mapConcurrent(jobs, CONCURRENCY, async (jobUnknown) => {
+        const job = jobUnknown as { productId: string; optionId: string; start: string; end: string };
+        try {
+          const cal = await octoPost('/availability/calendar', key, {
             productId: job.productId,
-            date,
-            priceFrom: priceFromUnits(e.unitPricingFrom),
-            state,
+            optionId: job.optionId,
+            localDateStart: job.start,
+            localDateEnd: job.end,
           });
+          if (!Array.isArray(cal)) return [] as EventDay[];
+          const days: EventDay[] = [];
+          for (const eUnknown of cal) {
+            const e = eUnknown as Record<string, unknown>;
+            const date = e.localDate;
+            if (typeof date !== 'string') continue;
+            const state = stateOf(e);
+            if (!state) continue;
+            days.push({
+              productId: job.productId,
+              date,
+              priceFrom: priceFromUnits(e.unitPricingFrom),
+              state,
+            });
+          }
+          return days;
+        } catch (err) {
+          console.error(`event-days: calendar ${job.productId} ${job.start} failed —`, (err as Error).message);
+          return [] as EventDay[];
         }
-        return days;
-      } catch (err) {
-        console.error(`event-days: calendar ${job.productId} ${job.start} failed —`, (err as Error).message);
-        return [] as EventDay[];
-      }
-    });
+      });
 
-    // Flatten + dedupe by product×date (windows don't overlap, but guard anyway), sorted by date.
-    const seen = new Set<string>();
-    const eventDays: EventDay[] = [];
-    for (const d of results.flat()) {
-      const k = `${d.productId}|${d.date}`;
-      if (seen.has(k)) continue;
-      seen.add(k);
-      eventDays.push(d);
-    }
-    eventDays.sort((a, b) => (a.date < b.date ? -1 : a.date > b.date ? 1 : 0));
+      // Flatten + dedupe by product×date (windows don't overlap, but guard anyway), sorted by date.
+      const seen = new Set<string>();
+      const out: EventDay[] = [];
+      for (const d of results.flat()) {
+        const k = `${d.productId}|${d.date}`;
+        if (seen.has(k)) continue;
+        seen.add(k);
+        out.push(d);
+      }
+      out.sort((a, b) => (a.date < b.date ? -1 : a.date > b.date ? 1 : 0));
+        return out;
+      },
+    );
 
     return json({ eventDays });
   } catch (err) {
@@ -129,5 +148,6 @@ export default withGuard(
     return jsonError('Upstream service error', 502);
   }
 },
-  { requireSiteOrigin: true },
+  // Takes no query at all — the horizon is fixed in code.
+  { requireSiteOrigin: true, allowedQueryKeys: [] },
 );

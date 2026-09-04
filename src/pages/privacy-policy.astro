@@ -80,22 +80,37 @@ const heading = 'text-lg font-semibold text-ink';
         </p>
       </section>
 
+      {/* ⚠ TENSE MATTERS HERE. Meta Pixel and Klaviyo are NOT wired up yet. A privacy policy
+          that lists a processor we do not use is a false statement about where personal data
+          goes — the exact thing the policy exists to get right — and it also names recipients
+          the customer has not actually been exposed to. Both are described as INTENDED until
+          they are genuinely live, matching how GA4/GTM and the consent mechanism are already
+          worded above. Flip each to present tense in the same change that wires it.
+          FLAGGED FOR THE SOLICITOR PASS — see docs/launch-checklist.md. */}
       <section aria-labelledby="marketing">
         <SectionHeading id="marketing" as="h2">Email marketing</SectionHeading>
         <p class="mt-4">
-          If you sign up to our newsletter or opt in during booking, we use <strong>Klaviyo</strong>
-          to send marketing emails (such as offers, event announcements and pre-cruise reminders).
-          You can unsubscribe at any time using the link in any email. Lawful basis: your consent.
+          We intend to use <strong>Klaviyo</strong> to send marketing emails (such as offers, event
+          announcements and pre-cruise reminders) to people who sign up to our newsletter or opt in
+          during booking. This is not yet in use. When it is, you will be able to unsubscribe at any
+          time using the link in any email. Lawful basis: your consent.
         </p>
       </section>
 
       <section aria-labelledby="sharing">
         <SectionHeading id="sharing" as="h2">Who we share data with</SectionHeading>
         <p class="mt-4">
-          We share personal data only with the processors that run our services — currently Netlify
-          (hosting and forms), Ventrata (bookings), Google (analytics/tag management), Meta
-          (advertising) and Klaviyo (email marketing) — and where required by law. We do not sell
-          your personal data.
+          We share personal data only with the processors that run our services, and where required
+          by law. We do not sell your personal data.
+        </p>
+        <p class="mt-4">
+          <strong>In use now:</strong> Netlify (hosting and forms) and Ventrata (bookings).
+        </p>
+        <p class="mt-4">
+          <strong>Intended, not yet in use:</strong> Google (analytics and tag management), Meta
+          (advertising) and Klaviyo (email marketing). We will update this policy before any of
+          these begins processing your data, and non-essential tags will not run until you have
+          given consent.
         </p>
       </section>
 

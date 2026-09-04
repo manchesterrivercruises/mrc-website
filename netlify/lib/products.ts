@@ -41,61 +41,13 @@ export function isAllowedProductId(id: string): boolean {
   return ALLOWED.has(id);
 }
 
-// The subset of an OCTO unit the frontend needs for "from £X" pricing. `pricingFrom` is
-// the confirmed unit-level pricing (retail, GBP, currencyPrecision) — see
-// docs/ventrata-integration.md.
-function filterUnit(u: unknown): Record<string, unknown> {
-  const unit = (u ?? {}) as Record<string, unknown>;
-  return {
-    id: unit.id,
-    type: unit.type,
-    pricingFrom: unit.pricingFrom,
-  };
-}
-
-// The subset of an OCTO option the frontend needs to drive the checkout widget, render
-// departure times, and show per-unit from-prices.
-function filterOption(o: unknown): Record<string, unknown> {
-  const opt = (o ?? {}) as Record<string, unknown>;
-  return {
-    id: opt.id,
-    internalName: opt.internalName,
-    title: opt.title,
-    availabilityLocalStartTimes: opt.availabilityLocalStartTimes,
-    units: Array.isArray(opt.units) ? opt.units.map(filterUnit) : [],
-  };
-}
-
-// Project one OCTO product to ONLY the display/booking fields the site uses. Every
-// other upstream field (internal references, connection & capability metadata,
-// delivery/redemption config, pricing internals, etc.) is dropped so the proxy never
-// leaks more of the upstream shape than the frontend needs. Expand this list
-// deliberately if a page starts needing another field (build sequence step 9).
-export function filterProduct(p: unknown): Record<string, unknown> {
-  const prod = (p ?? {}) as Record<string, unknown>;
-  return {
-    id: prod.id,
-    internalName: prod.internalName,
-    title: prod.title,
-    subtitle: prod.subtitle,
-    shortDescription: prod.shortDescription,
-    pricingFrom: prod.pricingFrom,
-    defaultCurrency: prod.defaultCurrency,
-    availabilityType: prod.availabilityType,
-    options: Array.isArray(prod.options) ? prod.options.map(filterOption) : [],
-  };
-}
-
-// Map the upstream /products array to the filtered projection. CRITICAL: only PUBLIC
-// allowlisted products are surfaced — the upstream account also carries internal variants,
-// private hire, discount-code and superseded products that must never reach the public
-// endpoint. Non-array or malformed upstream shapes collapse to an empty array.
-export function filterProductsResponse(products: unknown): Record<string, unknown>[] {
-  if (!Array.isArray(products)) return [];
-  return products
-    .filter((p) => {
-      const id = (p as Record<string, unknown> | null)?.id;
-      return typeof id === 'string' && isAllowedProductId(id);
-    })
-    .map(filterProduct);
-}
+// NOTE — the OCTO product PROJECTION (filterUnit / filterOption / filterProduct /
+// filterProductsResponse) was removed on 2026-09-03 alongside netlify/functions/products.ts.
+// Those helpers existed solely to trim that endpoint's response; with the endpoint gone they
+// had no caller, and dead security-shaped code is worse than none — it reads as protection
+// that is actually running nowhere. Recover from git history if a products proxy is ever
+// reinstated, and re-verify the allowlist filter still applies before wiring it.
+//
+// PUBLIC_PRODUCT_IDS and isAllowedProductId above are very much live: they gate day-finder,
+// event-days and the request validator, and (since L2) the build-time check in
+// src/content/config.ts that stops an internal product being wired to a public page.

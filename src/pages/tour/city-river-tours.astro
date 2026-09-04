@@ -203,7 +203,11 @@ const crumbs = [
   <script type="application/ld+json" is:inline set:html={JSON.stringify(structuredData)} />
 
   <!-- Leaflet (CDN — loaded only on this page). CSS must load before the JS below. -->
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  {/* Leaflet 1.9.4 — SELF-HOSTED from public/vendor/leaflet (see docs/data-conventions.md).
+      Vendored rather than CDN-loaded so a third party cannot serve script into our origin, and
+      so the CSP needs no external script-src/style-src entry. SRI is moot once the file is ours.
+      Refresh with scripts/vendor-leaflet.mjs, which re-downloads and verifies the hashes. */}
+  <link rel="stylesheet" href="/vendor/leaflet/leaflet.css" />
   <style is:global>
     /* Explicit pixel height in CSS (Leaflet needs a real height, not only Tailwind). */
     #route-map {
@@ -526,7 +530,7 @@ const crumbs = [
   </div>
 
   {/* Leaflet — CSS is loaded above (before this JS). Markers only, no route line. */}
-  <script is:inline src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script is:inline src="/vendor/leaflet/leaflet.js"></script>
   {/* Shared tap-to-activate helper (mobile scroll-trap fix) — defines window.mrcInitTapMap. */}
   <MapTapActivate />
   <script is:inline define:vars={{ stops: tourStops }}>

@@ -7,7 +7,7 @@ import KeyFacts from '../../../components/KeyFacts.astro';
 import BookingPanel from '../../../components/BookingPanel.astro';
 import VentrataWidget from '../../../components/VentrataWidget.astro';
 import { site } from '../../../data/site';
-import { departurePoints, otherDeparturePoint } from '../../../data/mufcFerry';
+import { departurePoints, otherDeparturePoint, TRAFFORD_WHARF } from '../../../data/mufcFerry';
 import copy from '../../../content/page-copy/boat-to-old-trafford-point.json';
 import { sec, str, fill } from '../../../lib/pageCopy';
 
@@ -57,7 +57,14 @@ const keyFacts = (copy.keyFacts ?? []).map((text, i) => ({
   icon: factIcons[i] ?? icons.pin,
 }));
 
-const mapsQuery = encodeURIComponent(`${point.name} Manchester`);
+// Maps link — the operator-confirmed COORDINATES, not a name search.
+//
+// It was `"<point name> Manchester"`, which asks Google to guess: "Stephenson's Bridge
+// Manchester" is ambiguous and "Ralli Quay" is a building, not the boarding point on the
+// water. Now that the pins are operator-confirmed (src/data/mufcFerry.ts) the link can be
+// exact. Google Maps' search URL takes only ?api=1&query=, so the pin is the coordinate
+// itself — which is the point: it lands on the boarding spot, not a guessed building.
+const mapsQuery = encodeURIComponent(`${point.lat},${point.lng}`);
 
 const pageTitle = fill(copy.seoTitle!, vars);
 const pageDescription = fill(copy.seoDescription!, vars);
@@ -68,8 +75,21 @@ const structuredData = {
   name: `MUFC Matchday Ferry — ${point.name} to Trafford Wharf`,
   description: pageDescription,
   url: `${site.url}/tour/boat-to-old-trafford/${point.slug}`,
-  departureBoatTerminal: { '@type': 'BoatTerminal', name: point.name },
-  arrivalBoatTerminal: { '@type': 'BoatTerminal', name: 'Trafford Wharf' },
+  // Both terminals now carry GeoCoordinates. They previously had a name only — which told a
+  // search engine a terminal existed but not where, so a "ferry near me" style query had
+  // nothing to match on. The values are operator-confirmed (src/data/mufcFerry.ts), so this is
+  // now a factual claim we can stand behind; asserting coordinates while they were still
+  // approximations would have been the wrong order to do this in.
+  departureBoatTerminal: {
+    '@type': 'BoatTerminal',
+    name: point.name,
+    geo: { '@type': 'GeoCoordinates', latitude: point.lat, longitude: point.lng },
+  },
+  arrivalBoatTerminal: {
+    '@type': 'BoatTerminal',
+    name: TRAFFORD_WHARF.name,
+    geo: { '@type': 'GeoCoordinates', latitude: TRAFFORD_WHARF.lat, longitude: TRAFFORD_WHARF.lng },
+  },
   provider: { '@id': `${site.url}#business` },
   // Only emit an InStock offer for a departure that is actually bookable — Stephenson's
   // Bridge (productReady: false) has no Ventrata product, so a priced InStock offer would

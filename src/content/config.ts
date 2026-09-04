@@ -1,5 +1,9 @@
 import { defineCollection, z } from 'astro:content';
 import { glob } from 'astro/loaders';
+// Single source of truth for which Ventrata products are PUBLIC. Imported from the same module
+// the OCTO proxy functions validate against, so the build and the runtime can never disagree
+// about what is safe to expose.
+import { PUBLIC_PRODUCT_IDS } from '../../netlify/lib/products';
 
 // Astro Content Collections — schema definitions.
 // The collections are populated (events, gallery, discover, attractions, vessels).
@@ -25,6 +29,12 @@ const discover = defineCollection({
 
 // Event / special-cruise pages (linked to a Ventrata product).
 // Markdoc (.mdoc) so Keystatic can manage the body + frontmatter (see keystatic.config.ts).
+// Ventrata has public products AND internal ones — private-hire variants, discount-code
+// products, superseded events. Wiring an internal product to a public page would expose a
+// checkout that was never meant to be sold online, and nothing about the ID itself reveals
+// which kind it is. So the build checks membership rather than trusting the editor.
+const PUBLIC_IDS = new Set<string>(PUBLIC_PRODUCT_IDS);
+
 const events = defineCollection({
   loader: glob({ pattern: '**/*.mdoc', base: './src/content/events' }),
   schema: z.object({
@@ -50,7 +60,29 @@ const events = defineCollection({
     heroImage: z.string().optional(),
     heroImageAlt: z.string().optional(),
     draft: z.boolean().default(false),
-  }),
+  })
+    .superRefine((data, ctx) => {
+      // PUBLISHED events only. Drafts legitimately carry a partial/placeholder ID while the real
+      // one is confirmed (broadway-boat-party, halloween-boat-party, wizards-and-fairies-cruise
+      // each hold an 8-char stub — see docs/content-checklist.md). A draft renders no page and
+      // is wired to no checkout, so a stub is harmless there; the moment it is published this
+      // check fires and the build fails, which is exactly when it matters.
+      if (data.draft || !data.ventrataProductId) return;
+      if (PUBLIC_IDS.has(data.ventrataProductId)) return;
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ['ventrataProductId'],
+        message:
+          `"${data.title}" is published with ventrataProductId "${data.ventrataProductId}", which is NOT in the public allowlist.\n\n` +
+          `  Find it:  grep -rl "${data.ventrataProductId}" src/content/events/\n\n` +
+          `  Either the ID is wrong/incomplete, or it is an INTERNAL Ventrata product (private-hire\n` +
+          `  variant, discount-code product, superseded event). Internal products must never be wired\n` +
+          `  to a public page — they expose a checkout that was not meant to be sold online.\n\n` +
+          `  If it IS a genuine new public product, add it to PUBLIC_PRODUCT_IDS in\n` +
+          `  netlify/lib/products.ts (and .env.example) first — that list also gates the OCTO proxy,\n` +
+          `  so an ID missing from it would fail at runtime anyway.`,
+      });
+    }),
 });
 
 // "Make a day of it" attractions.

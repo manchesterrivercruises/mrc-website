@@ -113,10 +113,68 @@ images under one directory + `fields.image`, a small sharp build step over an up
 migrate the gallery to Astro's `image()` pipeline. Removes the manual "process + place, then paste
 path" step.
 
-**Astro major upgrade.** Take the **deferred Dependabot major bumps** (Astro + `@astrojs/netlify`
-and other `@astrojs/*` integrations) on a branch, run the full build + Keystatic/Markdoc
-verification, and merge once green. Batched deliberately out of the launch window; revisit once
-the site is stable in production. See `docs/launch-checklist.md` → "Post-launch".
+**Boarding points into the CMS — RECOMMENDED, with validation. Near-term, not "someday".**
+
+Ferry departure points live in code (`src/data/mufcFerry.ts`). Simon expected to edit them in the
+CMS, and he is right to: a boarding point is **operational data he owns**, it changes without any
+code change, and **the Melody city-centre pier is due within weeks**. Routing each move through a
+developer leaves the site wrong for the window between the pier opening and the next deploy —
+which, for a matchday ferry, is the window that matters.
+
+**But a naive text field would be worse than code.** This data has exactly one failure mode and
+it is silent: a transposed or mistyped coordinate renders a completely normal-looking page that
+sends passengers to the wrong bank of the canal. Nothing downstream would catch it — not the
+build, not `astro check`, not a proofread. The 2026-09-04 confirmation replaced values that were
+out by up to **758m**, and nothing on the site had flagged that for months.
+
+So the field must validate. Minimum shape:
+
+| Field | Type | Validation |
+|---|---|---|
+| `lat` | number | `53.35 … 53.55` |
+| `lng` | number | `-2.45 … -2.10` |
+| `confirmedOn` | date | required whenever lat/lng change |
+
+- **Two numeric fields, never one "lat, lng" string** — a single string invites a transposition
+  or a lost minus sign, and a lost minus sign on longitude puts the pin in Kazakhstan while
+  still looking like a plausible number.
+- **Bounding box on Greater Manchester** rejects that class of error *at save*, in the CMS,
+  while Simon is still looking at it — rather than at sailing.
+- **`confirmedOn` travels with the value**, so provenance is visible in the admin and the "is
+  this surveyed or guessed?" question never has to be re-derived. This is the same lesson as
+  `docs/data-conventions.md` — a coordinate's provenance matters as much as its value.
+
+Keystatic supports this today: `fields.number` with `validation: { min, max }` plus
+`fields.date`. Model the points as a **data collection** (one YAML per point, like `vessels`),
+which also makes adding the Melody pier a CMS action rather than a PR.
+
+**Sequencing.** Worth doing **before** the Melody pier lands, so its coordinates are entered once,
+in the CMS, by the person who has the pin — instead of being added in code and migrated later.
+Until then, the operator-confirmed values in `mufcFerry.ts` stand and are correct.
+
+**Astro major upgrade — has a SECURITY rationale, not just a housekeeping one.**
+
+Take the **deferred Dependabot major bumps** (Astro + `@astrojs/netlify` and other `@astrojs/*`
+integrations) on a branch, run the full build + `check-schema` + Keystatic/Markdoc verification,
+and merge once green. Batched deliberately out of the launch window; revisit once the site is
+stable in production. See `docs/launch-checklist.md` → "Post-launch".
+
+**Why it is on this list rather than ignored.** The pinned Astro line carries **eight known
+advisories**. The security review confirmed that **none of them is reachable in this site as
+built** — they sit in code paths we do not use (dev-server surfaces, SSR request handling shapes
+we do not exercise, image-service behaviour we have now disabled outright). So this is not an
+emergency and was correctly kept out of the cutover window.
+
+**But "not reachable today" is a statement about today's code, not a guarantee.** It depends on
+which paths we happen to exercise, and that changes whenever a feature lands — adopting
+`astro:assets` (see the image-pipeline item above) or adding another SSR route could quietly make
+one reachable. The posture is therefore:
+
+- **Do the upgrade in the first stable window after launch**, not "eventually".
+- **Re-run the reachability question after any change that adds an SSR route or turns on an
+  Astro subsystem we currently have off** — that is the trigger to reassess, and the reason
+  this note exists rather than a bare "bump deps".
+- Until then, treat it as *accepted, dated risk with a known expiry*, not as a resolved issue.
 
 **VentrataWidget refactor.** Split `src/components/VentrataWidget.astro` (~630 lines: loader,
 embedded, popup, gift, date-preselect, focus handling) into mode-specific files after launch.

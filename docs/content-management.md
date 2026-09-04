@@ -180,11 +180,61 @@ Netlify auto-deploys.
 ### Security / SEO
 
 - `/admin` → `/keystatic` (301). The UI (`/keystatic`) + API (`/api/keystatic`) are on-demand
-  (SSR) routes, **excluded from the sitemap** (filter in `astro.config.mjs`), **disallowed in
-  `robots.txt`**, and carry **`X-Robots-Tag: noindex`** (netlify.toml). Production access is gated
-  by **GitHub auth**.
+  (SSR) routes, **excluded from the sitemap** (filter in `astro.config.mjs`) and **disallowed in
+  `robots.txt`**. Production access is gated by **GitHub auth**.
+
+  **`X-Robots-Tag: noindex` covers the UI paths only** — `/keystatic`, `/keystatic/*`,
+  `/admin`, `/admin/*` in `netlify.toml`. This previously read as though the header covered the
+  API too. **It does not, and it cannot:** Netlify's custom `[[headers]]` apply to CDN-served
+  responses, not to responses produced by a *function*, and `/api/keystatic` is a function. A
+  header rule for it would look correct in the config and have no effect at runtime.
+
+  The actual posture for the API path is therefore: **`robots.txt` disallow** (it returns JSON,
+  not an indexable document, so there is nothing to rank even if fetched) plus the
+  **`SameSite` session cookie** Keystatic sets, which is what actually protects it. Adding a
+  `noindex` header there would be theatre.
+
+  The bare `/keystatic` and `/admin` paths also needed their own header rules: Netlify's
+  `/keystatic/*` splat does not match the bare path, so the URL people actually land on was
+  shipping without the header until 2026-09-03.
 - **CSP:** the site-wide policy is currently **Report-Only**, so it does **not** block the React
   admin UI today (confirmed).
+
+### Known upstream issue — Keystatic OAuth `state` / login CSRF
+
+**Status: upstream, low impact, tracked. Not a finding to re-raise.**
+
+Recorded here so the next security pass recognises it as known rather than discovering it fresh.
+
+**What it is.** Keystatic's GitHub OAuth login flow does not bind the OAuth `state` parameter to
+the user's session the way the spec intends. In principle that allows a *login CSRF*: an
+attacker who can get a victim to follow a crafted callback URL could sign the victim's browser
+into the **attacker's** GitHub account on our admin, rather than the victim's own.
+
+**Why the impact is low here.**
+
+- It is **login** CSRF, not account takeover. It cannot sign an attacker into *Simon's* account,
+  read his session, or exfiltrate a token. The damage is a confusing session, not stolen access.
+- Our admin has a **tiny, closed user set** — the people with repo access. There is no signup,
+  no untrusted user pool, and everything the CMS can do is already gated by GitHub App
+  authorisation on top.
+- Any commit it produced would be attributed to the *attacker's* GitHub account and land as a
+  visible commit on `main`, which is monitored (and is exactly what the offboarding checklist
+  says to watch).
+- Exploiting it needs the victim to follow an attacker-crafted URL while an admin session is in
+  flight — a narrow window against a handful of known people.
+
+**Why we are not patching it.** The flow lives inside `@keystatic/core`, not in our code. There
+is no supported configuration hook to change it, so a fix means forking or monkey-patching a
+dependency that Dependabot updates regularly — materially worse for security than the issue
+itself.
+
+**What we do instead.**
+
+- Keep `@keystatic/core` current (Dependabot already tracks it; 0.6.9 as of 2026-09-02) so an
+  upstream fix arrives on its own.
+- Watch `main` for unexpected commits — already a step in `docs/offboarding-checklist.md`.
+- Re-check on any major Keystatic bump: if upstream fixes it, this note goes.
 
 ---
 

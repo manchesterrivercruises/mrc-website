@@ -9,11 +9,16 @@
 // aggregate for SEO and silently falls back to it on any failure. NO schema.org markup is
 // generated from these reviews — Google prohibits marking up Google-sourced reviews.
 
+import { safeStore, withBlobCache } from '../lib/cache';
 import { withGuard, jsonError } from '../lib/guard';
 
 const PLACES_BASE = 'https://places.googleapis.com/v1/places';
 const MIN_RATING = 4; // only surface 4- and 5-star reviews
 const TEXT_CAP = 280; // cap review text length
+
+// Blobs TTL matched to the 12h CDN window already set on the response.
+const REVIEWS_TTL_MS = 12 * 60 * 60 * 1000;
+const store = safeStore('reviews');
 
 interface PlacesReview {
   rating?: number;
@@ -54,44 +59,51 @@ export default withGuard(
   }
 
   try {
-    const upstream = await fetch(`${PLACES_BASE}/${encodeURIComponent(placeId)}`, {
-      headers: {
-        'X-Goog-Api-Key': key,
-        // Only request what we use — keeps the response (and billing SKU) minimal.
-        'X-Goog-FieldMask': 'rating,userRatingCount,reviews',
-      },
+    // Blobs cache in front of the Places call. Places is BILLED PER REQUEST, so a CDN miss is
+    // not just latency — it is money, and an attacker who can force misses is spending it.
+    // Keyed by place id (the only input), TTL matched to the 12h CDN window already on the
+    // response. Fetch + parse + trim all live inside the producer, so a hit does no upstream
+    // work at all.
+    const payload = await withBlobCache(store, `place/${placeId}`, REVIEWS_TTL_MS, async () => {
+      const upstream = await fetch(`${PLACES_BASE}/${encodeURIComponent(placeId)}`, {
+        headers: {
+          'X-Goog-Api-Key': key,
+          // Only request what we use — keeps the response (and billing SKU) minimal.
+          'X-Goog-FieldMask': 'rating,userRatingCount,reviews',
+        },
+      });
+
+      const body = await upstream.text();
+      if (!upstream.ok) {
+        // Log the real upstream status server-side; the catch below returns a generic message.
+        console.error(`reviews: Google Places upstream error ${upstream.status}`);
+        throw new Error(`upstream ${upstream.status}`);
+      }
+
+      let data: PlacesDetails;
+      try {
+        data = JSON.parse(body) as PlacesDetails;
+      } catch {
+        console.error('reviews: Google Places returned non-JSON body');
+        throw new Error('non-JSON body');
+      }
+
+      const reviews = (Array.isArray(data.reviews) ? data.reviews : [])
+        .filter((r) => typeof r.rating === 'number' && r.rating >= MIN_RATING)
+        .map((r) => ({
+          author: firstName(r.authorAttribution?.displayName),
+          rating: r.rating as number,
+          time: r.relativePublishTimeDescription ?? '',
+          text: capText(r.text?.text),
+        }))
+        .filter((r) => r.text.length > 0);
+
+      return {
+        rating: typeof data.rating === 'number' ? data.rating : null,
+        count: typeof data.userRatingCount === 'number' ? data.userRatingCount : null,
+        reviews,
+      };
     });
-
-    const body = await upstream.text();
-    if (!upstream.ok) {
-      // Log the real upstream status server-side; return a generic message.
-      console.error(`reviews: Google Places upstream error ${upstream.status}`);
-      return jsonError('Upstream service error', 502);
-    }
-
-    let data: PlacesDetails;
-    try {
-      data = JSON.parse(body) as PlacesDetails;
-    } catch {
-      console.error('reviews: Google Places returned non-JSON body');
-      return jsonError('Upstream service error', 502);
-    }
-
-    const reviews = (Array.isArray(data.reviews) ? data.reviews : [])
-      .filter((r) => typeof r.rating === 'number' && r.rating >= MIN_RATING)
-      .map((r) => ({
-        author: firstName(r.authorAttribution?.displayName),
-        rating: r.rating as number,
-        time: r.relativePublishTimeDescription ?? '',
-        text: capText(r.text?.text),
-      }))
-      .filter((r) => r.text.length > 0);
-
-    const payload = {
-      rating: typeof data.rating === 'number' ? data.rating : null,
-      count: typeof data.userRatingCount === 'number' ? data.userRatingCount : null,
-      reviews,
-    };
 
     return new Response(JSON.stringify(payload), {
       status: 200,
@@ -107,5 +119,6 @@ export default withGuard(
     return jsonError('Upstream service error', 502);
   }
 },
-  { requireSiteOrigin: true },
+  // Takes no query at all — the place is fixed by env.
+  { requireSiteOrigin: true, allowedQueryKeys: [] },
 );

@@ -1,6 +1,6 @@
 // @ts-check
 import fs from 'node:fs';
-import { defineConfig } from 'astro/config';
+import { defineConfig, passthroughImageService } from 'astro/config';
 import netlify from '@astrojs/netlify';
 import sitemap from '@astrojs/sitemap';
 import react from '@astrojs/react';
@@ -54,10 +54,31 @@ export default defineConfig({
   // static files, so the build format does not apply to them.
   build: { format: 'file' },
   trailingSlash: 'never',
+  // IMAGE SERVICE — passthrough, i.e. no runtime transformation at all.
+  //
+  // This site does not use astro:assets: there is no src/assets, no <Image />, and no image()
+  // schema helper. Every image is a plain <img> pointing at a pre-processed WebP in public/,
+  // produced by scripts/ingest-images.mjs and scripts/make-favicons.mjs (see
+  // docs/image-conventions.md). Astro therefore has nothing to optimise.
+  //
+  // Despite that, the Netlify adapter was injecting a live SSR endpoint at /_image backed by
+  // @astrojs/netlify/image-service.js, which 500s on request — an endpoint that does nothing
+  // for us, cannot succeed, and is reachable by anyone. A stack-tracing endpoint is both an
+  // error-noise source and a small information leak.
+  //
+  // passthroughImageService() is Astro's supported "do not transform" service. It removes the
+  // sharp/Image-CDN dependency from the request path so the endpoint can no longer fail.
+  // If astro:assets is ever adopted (the documented migration in docs/image-conventions.md),
+  // this line is what to revisit — with a service the host actually supports.
+  image: { service: passthroughImageService() },
   // Static output (default). The Netlify adapter is the deployment target and also enables
   // the on-demand (prerender:false) routes Keystatic injects: the admin UI at /keystatic and
   // its API at /api/keystatic (see keystatic.config.ts).
-  adapter: netlify(),
+  // imageCDN: false — the adapter otherwise FORCES its own image service
+  // (@astrojs/netlify/image-service.js) and overrides the `image.service` set below, which is
+  // why configuring passthrough alone did not take. With it false the adapter leaves the
+  // service alone and our passthrough stands. See the `image` note below.
+  adapter: netlify({ imageCDN: false }),
   integrations: [
     // Markdoc renders the events + discover collections (.mdoc). typographer:true reproduces
     // the smart quotes/ellipsis the previous markdown pipeline emitted; heading slug ids are

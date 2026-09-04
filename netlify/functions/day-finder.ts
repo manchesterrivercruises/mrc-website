@@ -15,7 +15,7 @@
 // `retail` (falling back to the min non-zero retail across units), in GBP (currencyPrecision
 // 2 → pounds). Confirmed against the live MRC key.
 
-import { getStore } from '@netlify/blobs';
+import { safeStore, withBlobCache } from '../lib/cache';
 import { withGuard, jsonError } from '../lib/guard';
 import { isAllowedProductId } from '../lib/products';
 import { readDayFinderQuery } from '../lib/validate';
@@ -31,42 +31,8 @@ const CONCURRENCY = 6;
 const MONTH_TTL_MS = 60 * 60 * 1000; // 60 min
 const DAY_TTL_MS = 10 * 60 * 1000; // 10 min
 
-// Netlify Blobs shared cache. The CDN durable cache still fronts this, but on a CDN miss (cold
-// start, new edge node, expired window) the function reads the aggregated result from Blobs —
-// one read — instead of re-paying the ~19-product OCTO fan-out every time. Keyed by month/date,
-// per-view TTL. Degrades gracefully: if Blobs is unavailable the store is null and we always compute.
-function safeStore(name: string) {
-  try {
-    return getStore(name);
-  } catch {
-    return null;
-  }
-}
-
-async function withBlobCache<T>(
-  store: ReturnType<typeof safeStore>,
-  key: string,
-  ttlMs: number,
-  producer: () => Promise<T>,
-): Promise<T> {
-  if (store) {
-    try {
-      const hit = (await store.get(key, { type: 'json' })) as { t: number; v: T } | null;
-      if (hit && typeof hit.t === 'number' && Date.now() - hit.t < ttlMs) return hit.v;
-    } catch {
-      /* unreadable/absent — fall through and compute */
-    }
-  }
-  const v = await producer();
-  if (store) {
-    try {
-      await store.setJSON(key, { t: Date.now(), v });
-    } catch {
-      /* best-effort write */
-    }
-  }
-  return v;
-}
+// Blobs cache: safeStore + withBlobCache now live in ../lib/cache so event-days and reviews
+// share exactly this implementation rather than three copies that can drift.
 
 function monthRange(month: string): { start: string; end: string } {
   const [y, m] = month.split('-').map(Number);
@@ -202,5 +168,6 @@ export default withGuard(
     return jsonError('Upstream service error', 502);
   }
 },
-  { requireSiteOrigin: true },
+  // month/date are the only inputs; anything else is a bug or cache-buster probing.
+  { requireSiteOrigin: true, allowedQueryKeys: ['month', 'date'] },
 );

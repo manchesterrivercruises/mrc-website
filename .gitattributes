@@ -1,0 +1,14 @@
+# Vendored third-party files must stay BYTE-IDENTICAL to what upstream published.
+#
+# Without this, git's autocrlf normalises leaflet.js/.css to CRLF in a Windows working tree.
+# The committed blob would still be LF, but the file on disk would no longer match the sha256
+# that scripts/vendor-leaflet.mjs prints and that the L1 commit records — so a genuine
+# integrity check would look like a mismatch, and a real mismatch could hide in the noise.
+# `-text` disables all end-of-line conversion for this tree.
+public/vendor/** -text
+
+# Same reasoning for the generated icon set: these are binary, and any conversion corrupts them.
+# (Git detects most binaries automatically; this makes it explicit for the .ico and .svg, the
+# latter being text-like enough that autocrlf would otherwise touch it.)
+public/favicon.ico -text
+public/favicon.svg -text

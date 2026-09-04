@@ -93,15 +93,22 @@ Music"). The product template and both flagship pages now pass explicit trails.
    product slug, so the redirects cannot shadow a live page.
 5. **Wizards is still `draft: true`, so `/tour/wizards-and-fairies-cruise` does not render.**
    GA shows it earning 517 sessions and £1,236, so launching would 404 real demand. An interim
-   301 to `/whats-on` covers it and is **self-healing** — `force` is omitted, so Netlify serves
+   **302** to `/whats-on` covers it and is **self-healing** — `force` is omitted, so Netlify serves
    the real page the moment the event is published. **Publishing the event is the actual fix.**
 6. **Pirates & Mermaids is shelved for this year** (`draft: true`, 2026-09-01), so
    `/tour/pirates-and-mermaid-cruise` no longer renders. GA puts it at **£5.6k over 2.5 years**
-   — the highest-value event URL in this table — so an interim 301 to `/whats-on` covers it,
+   — the highest-value event URL in this table — so an interim **302** to `/whats-on` covers it,
    exactly as Wizards does. It is **self-healing**: `force` is omitted, so Netlify serves the
    real page again the moment the event is un-drafted. Republishing the event IS the fix; no
    redirect edit is needed. This makes **two** deliberate 2-hop legacy paths
    (`/cruises/pirates-and-mermaids` → `/tour/pirates-and-mermaid-cruise` → `/whats-on`).
+
+   **Both interim nets are 302, not 301, and that distinction is load-bearing.** Omitting
+   `force` heals the *server* side — Netlify serves the real page again the moment it builds.
+   It does nothing about the two caches that matter: the visitor’s browser, which honours a
+   301 without re-asking, and Google, which reads 301 as "this URL is gone for good" and
+   folds its signals into `/whats-on`. On a URL worth £5.6k that is the opposite of the
+   intent. A 302 keeps the slug’s identity intact for the shelved season.
 7. **An "Elves" cruise may exist with no successor.** The legacy `/kids-takeover` page advertises
    "Pirates to Wizards, Elves to Mermaids". Pirates and Wizards both turned out to have
    sitemap-invisible URLs; Elves may too. Only the GA export can settle it.

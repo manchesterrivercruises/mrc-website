@@ -365,7 +365,12 @@ export default config({
         ventrataProductId: fields.text({
           label: 'Ventrata product ID',
           description:
-            'Links this page to its Ventrata product. IMPORTANT: dates, times and live prices come from Ventrata (OCTO) and are NOT edited in the CMS.',
+            'Links this page to its Ventrata product. IMPORTANT: dates, times and live prices come ' +
+            'from Ventrata (OCTO) and are NOT edited in the CMS. ' +
+            'Use a PUBLIC product only — never an internal one (private-hire variant, discount-code ' +
+            'product, superseded event); those expose a checkout that was not meant to be sold ' +
+            'online. Publishing an event whose ID is not on the public allowlist FAILS THE BUILD ' +
+            'with a message naming the event.',
         }),
         category: fields.select({
           label: 'Category',
